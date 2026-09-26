@@ -9,6 +9,7 @@ public import AlgebraicGroups.Algebra.Smooth
 public import AlgebraicGroups.Algebra.SymmetricAlgebra
 public import AlgebraicGroups.Algebra.SymmetricAlgebraPoints
 public import AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal
+public import AlgebraicGroups.Algebra.SpecialLinearCoordinateRing
 public import AlgebraicGroups.Algebra.MonoidAlgebraPrimitive
 public import AlgebraicGroups.Category.Extensive
 public import AlgebraicGroups.Category.EquivalenceRelation
@@ -44,6 +45,7 @@ public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLine
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLineBaseChange
 public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
+public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantSection
 public import AlgebraicGroups.GroupScheme.GeneralLinearModule
 public import AlgebraicGroups.GroupScheme.IdentityComponent
 public import AlgebraicGroups.GroupScheme.IdentityComponentBaseChange
@@ -58,6 +60,7 @@ public import AlgebraicGroups.GroupScheme.Reduction
 public import AlgebraicGroups.GroupScheme.ReducedIdentityComponent
 public import AlgebraicGroups.GroupScheme.RootsOfUnity
 public import AlgebraicGroups.GroupScheme.Separated
+public import AlgebraicGroups.GroupScheme.SpecialLinearKernel
 public import AlgebraicGroups.GroupScheme.Smooth
 public import AlgebraicGroups.LinearAlgebra.Basis.Semilocal
 public import AlgebraicGroups.LinearAlgebra.FiniteProjective.Charpoly

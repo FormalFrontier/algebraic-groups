@@ -68,23 +68,29 @@ status:
     and scheme results. Explicit finiteness, field, rank, geometric-connectedness
     and reducedness hypotheses remain as stated in the formal APIs. General
     finite-flat quotient effectivity, a canonical basis-free arbitrary-module
-    automorphism group scheme, arbitrary-module determinant scheme morphism and
-    special-linear group schemes are not claimed. Complete source formalization
-    is not claimed.
+    automorphism group scheme and arbitrary-module determinant scheme morphism
+    are not claimed. The library includes a one-pivot finite-matrix determinant
+    section (requiring a chosen index), the determinant-one finite special-linear
+    Hopf quotient and group scheme,
+    and its actual scheme/group-scheme kernel. A basis-free arbitrary-module
+    determinant or SL(V), and SL smoothness or flatness, are not claimed.
+    Complete source formalization is not claimed.
 
 review:
   status: agent-reviewed
   notes: >-
     The library uses independent non-author agent mathematical and API review.
-    It contains 107 Lean modules and 21 persistent regression roots. Release
-    verification requires applicable pinned-graph module and default builds and
+    The library contains 113 Lean modules and 23 persistent regression roots.
+    Release verification requires applicable pinned-graph module and default builds and
     a complete transitive standard-axiom audit of public/server/private compiled
     declarations, reusing unchanged evidence only where its inputs still apply.
     Exact-version review, check evidence and release decisions are recorded
     separately. Independent documentation, metadata, artifact and rights
     review and protected acceptance are not certified by this metadata.
-    Development review and schema validity do not establish release acceptance,
-    publication, human review or source-author endorsement.
+    Origin mathematical reviews do not themselves accept a destination transfer;
+    independent destination review, owner integration, release acceptance and
+    publication are separate exact-version recorded decisions. Development review and schema validity do not
+    establish release acceptance, human review or source-author endorsement.
 
 acknowledgements: >-
   Lattice supplied earlier research, reusable mathematical implementations and
