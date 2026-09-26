@@ -17,9 +17,9 @@ corresponding source-metadata repositories.
 
 The results below describe the library's mathematical scope, with explicit
 hypotheses and exclusions. They do not assert complete formalization of a book
-or a general quotient-effectivity theorem. All 102 shipped Lean files declare
-the module system, and all 19 regression files are persistent default-build
-roots. The applicable final-graph module builds and the no-target default build
+or a general quotient-effectivity theorem. All 105 shipped Lean files declare
+the module system, and all 20 regression files are persistent default-build
+roots. The applicable pinned-graph module builds and the actual no-target default build
 passed on 2026-09-26. Release verification also requires a complete transitive
 axiom audit, including private declarations, allowing only `propext`,
 `Classical.choice` and `Quot.sound`. Build success and metadata schema validity
@@ -191,9 +191,27 @@ instead of this compiler-generated auxiliary; no compatibility alias is added.
   with the native matrix GL functor. All these constructions admit arbitrary
   commutative base and target rings, including zero rings and empty finite
   index types; finite indices need `Fintype` and `DecidableEq`. See
-  `AlgebraicGroupsTest/GeneralLinear.lean` for direct examples. Automorphisms
-  of arbitrary modules, determinant morphisms to the multiplicative group and
-  special linear group schemes are not part of this finite-matrix API.
+  `AlgebraicGroupsTest/GeneralLinear.lean` for direct examples. Arbitrary-module
+  automorphisms are treated separately below; determinant morphisms to the
+  multiplicative group and special linear group schemes are not part of this API.
+- `endBaseChangeRingHom` packages scalar extension of endomorphisms of an
+  arbitrary module as a composition-preserving ring map. For any commutative
+  base `K`, `generalLinearModuleFunctor` uses native invertible endomorphisms
+  and `MonCat.units` to obtain a group functor on all commutative coefficient
+  algebras and algebra maps. `generalLinearModuleAutomorphisms` compares it
+  with linear equivalences; `sourceOrderedGeneralLinearIso` compares it
+  naturally with the transported literal-order tensor `V ⊗[K] R`. The
+  pure-tensor formulas require neither finite generation nor flatness.
+- A chosen finite basis, including an empty one, gives the natural matrix
+  comparison `generalLinearModuleMatrixIso` and the pointwise representation
+  `generalLinearModulePointsIso` by the existing finite-type affine GL group
+  scheme. Both work over any commutative base ring, including zero rings.
+  Entries, vector action, `Spec.map`, coordinate evaluation and inverse-
+  determinant pullback have explicit equations. `generalLinearModuleChangeBasisIso`
+  compares chosen presentations, with identity, composition, naturality and
+  coordinate equations for the same underlying automorphism. There is no
+  canonical basis-independent GL(V) scheme, determinant scheme morphism, SL
+  scheme or functoriality along noninvertible module maps asserted here.
 - `RingHom.FaithfullyFlat.ofLocalizationSpan` proves that faithful flatness can
   be checked after localizing along a family of source elements that spans the
   unit ideal. It accepts arbitrary principal-open covers, including infinite
@@ -563,7 +581,7 @@ default build and checking every shipped file. These measurements are not a
 timing guarantee or a cold-build benchmark for the final graph.
 
 The default build selects the production aggregate and the `AlgebraicGroupsTest`
-target. Its 19 explicit roots in [lakefile.toml](lakefile.toml) cover every
+target. Its 20 explicit roots in [lakefile.toml](lakefile.toml) cover every
 checked-in file under `AlgebraicGroupsTest/`. Additive's twenty original
 examples are persistent private declarations: they are compiled but do not
 extend the public API. The native Artin--Schreier test also uses named private
@@ -572,11 +590,17 @@ normal-form projections and the smoothness/domain/connectedness APIs. It is a
 focused regression, not an audit of every generated declaration, a source
 correspondence decision, or a release-acceptance check.
 
-The checked-in tree contains 102 Lean source files: 83 production files,
-including the aggregate, and 19 regression files. The aggregate and all 19
-explicit test roots reach all 102 local modules. There are no shipped tests
+The checked-in tree contains 105 Lean source files: 85 production files,
+including the aggregate, and 20 regression files. The aggregate and all 20
+explicit test roots reach all 105 local modules. There are no shipped tests
 outside the declared default targets. Source reachability alone establishes neither a
 successful build, complete transitive axiom audit or release acceptance.
+
+The GL(V) regression adds 25 named private clients for arbitrary-module
+coefficient change, transported tensor order, finite-basis matrices and
+coordinate points. It also checks the empty basis, zero base and target rings,
+finite-field coefficients, and a nonidentity polynomial shear under evaluation.
+These clients do not add public mathematical declarations.
 
 The native MatrixEndBaseChange test has named private ordinary-import clients
 for tensor order, wrapper projections and addition, transported scalar action,
@@ -687,6 +711,15 @@ pinned project. The focused production build is
 `lake build AlgebraicGroups.GroupScheme.GeneralLinear`. The
 regression client imports that focused native module rather than the aggregate;
 build both with `lake build AlgebraicGroupsTest.GeneralLinear`.
+
+For general linear groups of modules, after the matching `lake exe cache get`,
+build the focused producers with `lake build
+AlgebraicGroups.Algebra.GeneralLinearBaseChange
+AlgebraicGroups.GroupScheme.GeneralLinearModule`. Then build `AlgebraicGroups`
+before running the aggregate-import client with `lake env lean
+AlgebraicGroupsTest/GeneralLinearModule.lean`, or include that registered root
+in the ordinary no-target `lake build`. Each producer also supports a direct
+module import without first importing the aggregate.
 
 ## References, credit and license
 

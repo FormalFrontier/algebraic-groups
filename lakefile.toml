@@ -23,6 +23,7 @@ roots = [
   "AlgebraicGroupsTest.ArtinSchreierTwistedLine",
   "AlgebraicGroupsTest.FiniteConstantPoints",
   "AlgebraicGroupsTest.GeneralLinear",
+  "AlgebraicGroupsTest.GeneralLinearModule",
   "AlgebraicGroupsTest.InfinitesimalAdditive",
   "AlgebraicGroupsTest.InfinitesimalAdditiveNonisomorphism",
   "AlgebraicGroupsTest.InfinitesimalAdditiveTranslation",
