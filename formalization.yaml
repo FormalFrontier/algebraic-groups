@@ -1,0 +1,93 @@
+version: "v0.4"
+
+project:
+  name: algebraic-groups
+  description: >-
+    Reusable algebraic-group and group-scheme constructions, functors of points,
+    coordinate Hopf algebras, components, reduction, smoothness, quotient-sheaf
+    interfaces and supporting commutative-algebra and scheme theory.
+  authors:
+    - Formal Frontier Agents
+  license: Apache-2.0
+
+repository:
+  role: substantive-development
+
+sources:
+  - title: Algebraic Groups
+    authors:
+      - James S. Milne
+    type: book
+    location: 2017 edition
+    relationship: background
+    note: >-
+      Mathematical background for algebraic groups and group schemes. This
+      library is organized independently of the book and does not claim complete
+      coverage. Source text is not bundled and no source-author endorsement is
+      claimed. Exact passage correspondence remains outside this deliverable.
+  - title: Algebraic-group and affine-localization project constructions
+    authors:
+      - Formal Frontier Agents
+    type: original project proofs and earlier project research
+    relationship: adapts
+    note: >-
+      Reusable Lean implementations include original project proofs and internal
+      adaptations of earlier source-repository research. Lattice's earlier
+      clopen-rank localization research is distinguished from its later library
+      assembly; separate Worker A/B implementations and Anchor's integration
+      contributions are credited in README.md. This bibliography is not a
+      blanket determination of expression origin or redistribution clearance.
+
+related_formalizations:
+  - id: https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5
+    relationship: builds-on
+    note: >-
+      Pinned external dependency for commutative algebra, linear algebra,
+      category theory, schemes and group objects. The exact Lake graph also
+      declares separately maintained scheme-properties, finite-etale-algebras
+      and coherent-modules dependencies; their credit and licenses are distinct.
+
+automation:
+  methods:
+    - method: agent
+      tool_setup: >-
+        Formal Frontier AI agents used Lean and Lake with pinned mathlib and
+        separately attributed non-author agent development review.
+  notes: >-
+    AI-assisted development under human project direction. No human mathematical
+    review, model identity, elapsed-time total or expenditure is asserted.
+
+status:
+  scope: >-
+    Reusable coordinate and functor-of-points APIs for additive, multiplicative,
+    vector, finite-matrix general-linear and other explicitly constructed group
+    schemes; conditional component, reduction, smoothness and quotient-sheaf
+    interfaces; and supporting algebra and scheme results. Explicit finiteness,
+    field, rank, geometric-connectedness and reducedness hypotheses remain as
+    stated in the formal APIs. General finite-flat quotient effectivity, arbitrary
+    module automorphism group schemes, determinant and special-linear group
+    schemes are not claimed. Complete source formalization is not claimed.
+
+review:
+  status: agent-reviewed
+  notes: >-
+    Existing mathematical contributions have independent non-author agent
+    development reviews. The library includes module-system declarations,
+    all shipped test roots and project-origin header corrections. Applicable
+    builds of all 102 modules and the default build with all 19 regression roots
+    passed on the pinned final graph on 2026-09-26. Release verification also
+    requires a complete transitive standard-axiom audit including private
+    declarations and consolidated independent API/documentation/metadata/artifact/
+    rights assessment. Exact release decisions are recorded separately; prior
+    scoped source and documentation reviews alone do not establish acceptance
+    of the combined artifact.
+    Development review and schema validity do not establish release acceptance,
+    publication, human review or source-author endorsement.
+
+acknowledgements: >-
+  Lattice supplied earlier research, reusable mathematical implementations and
+  integration. Distinct Formalization Worker A/B executions supplied further
+  implementations and independent development reviews; Anchor supplied shared
+  integration. README.md preserves concrete predecessor/contribution examples.
+  External mathematical sources, formalization libraries and tools retain their
+  separate contributor credit and applicable licenses and notices.

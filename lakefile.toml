@@ -1,0 +1,40 @@
+name = "algebraic-groups"
+version = "0.1.0"
+defaultTargets = ["AlgebraicGroups", "AlgebraicGroupsTest"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
+
+[[require]]
+name = "scheme-properties"
+git = "https://github.com/FormalFrontier/scheme-properties.git"
+rev = "6b204a3e49f022e51d78a9f93e77513b99a87e00"
+
+[[lean_lib]]
+name = "AlgebraicGroups"
+
+[[lean_lib]]
+name = "AlgebraicGroupsTest"
+roots = [
+  "AlgebraicGroupsTest.Additive",
+  "AlgebraicGroupsTest.AdditivePowerQuotient",
+  "AlgebraicGroupsTest.ArtinSchreierTwistedLine",
+  "AlgebraicGroupsTest.FiniteConstantPoints",
+  "AlgebraicGroupsTest.GeneralLinear",
+  "AlgebraicGroupsTest.InfinitesimalAdditive",
+  "AlgebraicGroupsTest.InfinitesimalAdditiveNonisomorphism",
+  "AlgebraicGroupsTest.InfinitesimalAdditiveTranslation",
+  "AlgebraicGroupsTest.InfinitesimalAdditiveZero",
+  "AlgebraicGroupsTest.MatrixEndAdditive",
+  "AlgebraicGroupsTest.MatrixEndBaseChange",
+  "AlgebraicGroupsTest.MatrixEndScheme",
+  "AlgebraicGroupsTest.MonoidAlgebraPrimitive",
+  "AlgebraicGroupsTest.Multiplicative",
+  "AlgebraicGroupsTest.PrimitivePowerHopfIdeal",
+  "AlgebraicGroupsTest.SymmetricAlgebra",
+  "AlgebraicGroupsTest.TargetCopy",
+  "AlgebraicGroupsTest.Vector",
+  "AlgebraicGroupsTest.VectorProduct",
+]
