@@ -61,25 +61,27 @@ status:
   scope: >-
     Reusable coordinate and functor-of-points APIs for additive, multiplicative,
     vector, finite-matrix general-linear and other explicitly constructed group
-    schemes; arbitrary-module automorphism functors and their chosen-finite-basis
+    schemes; the finite general-linear determinant character to the multiplicative
+    group; arbitrary-module automorphism functors and their chosen-finite-basis
     representation by the existing general-linear scheme; conditional component,
     reduction, smoothness and quotient-sheaf interfaces; and supporting algebra
     and scheme results. Explicit finiteness, field, rank, geometric-connectedness
     and reducedness hypotheses remain as stated in the formal APIs. General
     finite-flat quotient effectivity, a canonical basis-free arbitrary-module
-    automorphism group scheme, determinant and special-linear group schemes are
-    not claimed. Complete source formalization is not claimed.
+    automorphism group scheme, arbitrary-module determinant scheme morphism and
+    special-linear group schemes are not claimed. Complete source formalization
+    is not claimed.
 
 review:
   status: agent-reviewed
   notes: >-
     The library uses independent non-author agent mathematical and API review.
-    It contains 105 Lean modules and 20 persistent regression roots; applicable
-    pinned-graph module and default builds passed on 2026-09-26. Complete transitive
-    standard-axiom evidence covers 2866 distinct module/name pairs, combining the
-    unchanged predecessor's 2758 with the 108 added public/server/private compiled
-    declarations. Exact-version review, check evidence and release decisions are
-    recorded separately. Independent documentation, metadata, artifact and rights
+    It contains 107 Lean modules and 21 persistent regression roots. Release
+    verification requires applicable pinned-graph module and default builds and
+    a complete transitive standard-axiom audit of public/server/private compiled
+    declarations, reusing unchanged evidence only where its inputs still apply.
+    Exact-version review, check evidence and release decisions are recorded
+    separately. Independent documentation, metadata, artifact and rights
     review and protected acceptance are not certified by this metadata.
     Development review and schema validity do not establish release acceptance,
     publication, human review or source-author endorsement.

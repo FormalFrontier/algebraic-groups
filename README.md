@@ -17,10 +17,10 @@ corresponding source-metadata repositories.
 
 The results below describe the library's mathematical scope, with explicit
 hypotheses and exclusions. They do not assert complete formalization of a book
-or a general quotient-effectivity theorem. All 105 shipped Lean files declare
-the module system, and all 20 regression files are persistent default-build
-roots. The applicable pinned-graph module builds and the actual no-target default build
-passed on 2026-09-26. Release verification also requires a complete transitive
+or a general quotient-effectivity theorem. All 107 shipped Lean files declare
+the module system, and all 21 regression files are persistent default-build
+roots. Release verification requires applicable pinned-graph module builds,
+the actual no-target default build and a complete transitive
 axiom audit, including private declarations, allowing only `propext`,
 `Classical.choice` and `Quot.sound`. Build success and metadata schema validity
 alone do not establish independent release acceptance or publication.
@@ -192,8 +192,20 @@ instead of this compiler-generated auxiliary; no compatibility alias is added.
   commutative base and target rings, including zero rings and empty finite
   index types; finite indices need `Fintype` and `DecidableEq`. See
   `AlgebraicGroupsTest/GeneralLinear.lean` for direct examples. Arbitrary-module
-  automorphisms are treated separately below; determinant morphisms to the
-  multiplicative group and special linear group schemes are not part of this API.
+  automorphisms and the finite determinant character are treated separately
+  below; special linear group schemes are not part of this API.
+- `AlgebraicGeometry.generalLinearDeterminantSchemeHom K n` is the native
+  group-scheme morphism from finite matrix GL to the multiplicative group over
+  any commutative base ring. Its coordinate map sends the Laurent generator
+  to the determinant of the universal matrix and its inverse to `detInverse`.
+  The API proves the actual GL comultiplication, counit and antipode equations;
+  `generalLinearDeterminantBialgHom` and `hopfSpec` construct the scheme map.
+  `generalLinearDeterminant_point` identifies its action on every coefficient
+  algebra with the unit-valued matrix determinant, and
+  `generalLinearDeterminantFunctorHom` packages coefficient naturality.
+  Empty finite indices, zero rings and non-flat coefficient maps are allowed;
+  no field or nontriviality assumption is added. This does not construct SL,
+  its kernel scheme, or a canonical determinant on arbitrary modules.
 - `endBaseChangeRingHom` packages scalar extension of endomorphisms of an
   arbitrary module as a composition-preserving ring map. For any commutative
   base `K`, `generalLinearModuleFunctor` uses native invertible endomorphisms
@@ -210,8 +222,9 @@ instead of this compiler-generated auxiliary; no compatibility alias is added.
   determinant pullback have explicit equations. `generalLinearModuleChangeBasisIso`
   compares chosen presentations, with identity, composition, naturality and
   coordinate equations for the same underlying automorphism. There is no
-  canonical basis-independent GL(V) scheme, determinant scheme morphism, SL
-  scheme or functoriality along noninvertible module maps asserted here.
+  canonical basis-independent GL(V) scheme or arbitrary-module determinant
+  scheme morphism, SL scheme or functoriality along noninvertible module maps
+  asserted here. The finite matrix determinant character above is separate.
 - `RingHom.FaithfullyFlat.ofLocalizationSpan` proves that faithful flatness can
   be checked after localizing along a family of source elements that spans the
   unit ideal. It accepts arbitrary principal-open covers, including infinite
@@ -581,7 +594,7 @@ default build and checking every shipped file. These measurements are not a
 timing guarantee or a cold-build benchmark for the final graph.
 
 The default build selects the production aggregate and the `AlgebraicGroupsTest`
-target. Its 20 explicit roots in [lakefile.toml](lakefile.toml) cover every
+target. Its 21 explicit roots in [lakefile.toml](lakefile.toml) cover every
 checked-in file under `AlgebraicGroupsTest/`. Additive's twenty original
 examples are persistent private declarations: they are compiled but do not
 extend the public API. The native Artin--Schreier test also uses named private
@@ -590,9 +603,9 @@ normal-form projections and the smoothness/domain/connectedness APIs. It is a
 focused regression, not an audit of every generated declaration, a source
 correspondence decision, or a release-acceptance check.
 
-The checked-in tree contains 105 Lean source files: 85 production files,
-including the aggregate, and 20 regression files. The aggregate and all 20
-explicit test roots reach all 105 local modules. There are no shipped tests
+The checked-in tree contains 107 Lean source files: 86 production files,
+including the aggregate, and 21 regression files. The aggregate and all 21
+explicit test roots reach all 107 local modules. There are no shipped tests
 outside the declared default targets. Source reachability alone establishes neither a
 successful build, complete transitive axiom audit or release acceptance.
 
@@ -601,6 +614,12 @@ coefficient change, transported tensor order, finite-basis matrices and
 coordinate points. It also checks the empty basis, zero base and target rings,
 finite-field coefficients, and a nonidentity polynomial shear under evaluation.
 These clients do not add public mathematical declarations.
+
+The determinant regression imports its focused producer and uses named private
+checks for the actual group-scheme morphism, both Laurent coordinates, the Hopf
+equations and all-algebra points/naturality. It includes empty indices, a zero
+ring, the non-flat coefficient map from integers to `ZMod 2`, and the explicit
+nonidentity negative-one matrix over the integers. It adds no public API.
 
 The native MatrixEndBaseChange test has named private ordinary-import clients
 for tensor order, wrapper projections and addition, transported scalar action,
@@ -690,8 +709,9 @@ reducibility commitment; no new public wrapper or global simp rule is added.
 
 All regression modules are now selected by the default build; separate direct
 invocations are unnecessary merely to include previously unregistered sources.
-This configuration passed the actual default build on the final official
-dependency graph. Generated, revision-bound API documentation is not supplied;
+The selected configuration must pass the actual default build on the pinned
+official dependency graph; exact-version results are recorded separately.
+Generated, revision-bound API documentation is not supplied;
 the README and source docstrings provide the reader documentation. Their claims
 require independent inspection; fresh expensive documentation generation is not
 a release prerequisite.
@@ -720,6 +740,11 @@ before running the aggregate-import client with `lake env lean
 AlgebraicGroupsTest/GeneralLinearModule.lean`, or include that registered root
 in the ordinary no-target `lake build`. Each producer also supports a direct
 module import without first importing the aggregate.
+
+For the finite determinant character, after the matching cache fetch, run
+`lake build AlgebraicGroupsTest.GeneralLinearDeterminant`. Its direct import is
+`AlgebraicGroups.GroupScheme.GeneralLinearDeterminant`; the public definitions
+and theorems are also available through the aggregate `AlgebraicGroups` import.
 
 ## References, credit and license
 
