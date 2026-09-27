@@ -76,7 +76,8 @@ LEAN_NUM_THREADS=1 lake --wfail build AlgebraicGroupsTest.GeneralLinearDetermina
 ```
 
 A focused build alone does not establish the complete destination check. The
-accepted 125-module destination graph passed its actual default build and
-private-inclusive standard-axiom audit (native job 530), with fresh independent
-affected review and owner code acceptance. This documentation-only release
-candidate keeps those checked inputs but remains unaccepted and unpublished.
+separately accepted 125-module destination predecessor passed the default build
+and private-inclusive standard-axiom audit (native job 530); the accepted
+130-module combined main graph passed both checks (native job 533), with fresh
+independent affected reviews. This documentation-only release candidate keeps
+those checked inputs but remains unaccepted and unpublished.

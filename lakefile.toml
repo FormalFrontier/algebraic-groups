@@ -28,6 +28,8 @@ roots = [
   "AlgebraicGroupsTest.GeneralLinearDeterminantConjugation",
   "AlgebraicGroupsTest.GeneralLinearDeterminantSection",
   "AlgebraicGroupsTest.GeneralLinearModule",
+  "AlgebraicGroupsTest.GeneralSpecialLinearDimension",
+  "AlgebraicGroupsTest.GeneralSpecialLinearGeometricIntegral",
   "AlgebraicGroupsTest.GeneralSpecialLinearSmooth",
   "AlgebraicGroupsTest.InfinitesimalAdditive",
   "AlgebraicGroupsTest.InfinitesimalAdditiveNonisomorphism",

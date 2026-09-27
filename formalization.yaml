@@ -97,6 +97,14 @@ status:
     its actual special-linear kernel and has a native matrix readback over
     every commutative coefficient algebra; inverses are formed in units before
     coercion. Rank zero remains outside this chosen-pivot construction.
+    For finite decidable indices, the actual GL and SL coordinate rings are
+    domains and their underlying schemes integral over domain bases; their
+    structure maps are geometrically integral over every commutative base,
+    including the zero ring's vacuous field fibers. Over fields their coordinate
+    rings and underlying schemes have dimensions N squared for GL and natural
+    N squared minus one for SL, including the separate rank-zero case. A generic
+    multivariate-polynomial rational-point height result needs no decidable
+    equality on its finite index type and allows distinct universes.
     Complete source formalization is not claimed.
 
 review:
@@ -106,11 +114,13 @@ review:
     The predecessor's 121 Lean modules and 27 persistent regression roots have
     applicable destination build and private-inclusive standard-three axiom
     evidence at their exact inputs. The separately accepted 125-module, 29-root
-    semidirect/conjugation successor at 65ce7b678b1611d391ef05e5b7499a774fd89c4f
-    has successful native job 530: both default targets, all 125 modules and a
-    complete private-inclusive transitive audit of 3231 module-origin declarations
-    (919 private-prefix), permitting only propext, Classical.choice and Quot.sound.
-    The earlier checks alone did not certify this changed graph.
+    semidirect predecessor has applicable native job 530 and independent affected
+    review at its exact inputs. The accepted 130-module, 31-root combined main
+    graph at aa9e9326ac1673549825f0defaf32714120dd71c has successful native
+    job 533: both default targets, all 130 modules and a complete private-inclusive
+    transitive audit of 3268 module-origin declarations (944 private-prefix),
+    permitting only propext, Classical.choice and Quot.sound. Earlier checks
+    alone do not certify a changed graph.
     The transferred finite-free SL(V) and finite GL/SL smoothness APIs have
     independent origin reviews; destination and release decisions are recorded
     separately for each exact version.
@@ -118,11 +128,15 @@ review:
     clients have independent origin and destination mathematical and API reviews.
     The additionally transferred split-kernel semidirect and finite determinant
     conjugation modules and clients retain independent source-only transfer
-    review. Native job 530, fresh independent affected review and owner code
-    acceptance cover their accepted 125-module destination assembly. Source-only
-    review and incubator origin evidence are not substituted for those checks.
-    The checked computational inputs remain unchanged in this documentation-only
-    release candidate.
+    review. Native job 530, fresh affected review and owner code acceptance cover
+    their accepted 125-module destination predecessor; native job 533 and fresh
+    affected review also cover the accepted combined graph. Source-only transfer
+    review and incubator origin evidence are not substituted for these checks.
+    The accepted incubator geometric-integrality, dimension and rational-point
+    height origins have an independently reviewed original source-only transfer,
+    distinct from fresh independent review, native job 533 and owner code
+    acceptance of this combined destination assembly. The checked computational
+    inputs remain unchanged in the documentation-only release candidate.
     Exact-version review, check evidence and release decisions are recorded
     separately. Independent documentation, metadata, complete artifact/history
     and rights review and protected release acceptance remain pending; this
@@ -143,6 +157,11 @@ acknowledgements: >-
   Distinct Worker B executions authored the split-kernel conjugation and finite
   determinant-conjugation proofs and clients; another Worker B execution
   prepared their destination import and namespace transfer.
+  Separate Worker B executions researched and authored the finite GL/SL
+  geometric-integrality and dimension proofs and clients, reusing Worker A's
+  earlier normalization section. A distinct Worker B execution prepared this
+  destination import and client-namespace transfer. README.md records their
+  distinct roles; incubator acceptance is not destination review or publication.
   README.md preserves concrete
   predecessor/contribution examples.
   External mathematical sources, formalization libraries and tools retain their

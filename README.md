@@ -17,19 +17,19 @@ corresponding source-metadata repositories.
 
 The results below describe the library's mathematical scope, with explicit
 hypotheses and exclusions. They do not assert complete formalization of a book
-or a general quotient-effectivity theorem. All 125 checked-in Lean files declare
-the module system, and all 29 regression files are persistent default-build
+or a general quotient-effectivity theorem. All 130 checked-in Lean files declare
+the module system, and all 31 regression files are persistent default-build
 roots. Release verification requires applicable pinned-graph module builds,
 the actual no-target default build and a complete transitive
 axiom audit, including private declarations, allowing only `propext`,
 `Classical.choice` and `Quot.sound`. Build success and metadata schema validity
 alone do not establish independent release acceptance or publication.
-The accepted 125-module main snapshot `65ce7b678b1611d391ef05e5b7499a774fd89c4f`
-has an applicable successful native default build and complete private-inclusive
-standard-axiom audit (job 530, 2026-09-27), fresh independent affected review
-and owner code acceptance. This documentation-only release preparation preserves
-its checked Lean and dependency inputs; the release candidate remains
-**independently unaccepted and unpublished**.
+The accepted main snapshot `aa9e9326ac1673549825f0defaf32714120dd71c`
+has an applicable successful native default build and complete standard-axiom
+audit of all 130 modules (job 533, 2026-09-27). Its 125-module semidirect
+predecessor has its own successful native job 530. This documentation-only
+release preparation preserves those checked Lean and dependency inputs; the
+new release candidate is **not yet independently accepted or published**.
 
 The public mathematical interfaces retain their intended hypotheses and scope.
 Compiler-generated proof and simplifier auxiliary names and types can change
@@ -272,6 +272,26 @@ instead of this compiler-generated auxiliary; no compatibility alias is added.
   These results alone do not assert smoothness of the determinant morphism,
   faithful flatness or a semidirect-product decomposition. The focused client is
   `AlgebraicGroupsTest.GeneralSpecialLinearSmooth`.
+- `AlgebraicGroups.GroupScheme.GeneralSpecialLinearGeometricIntegral` proves
+  `IsDomain` for the actual finite GL and SL coordinate rings and `IsIntegral`
+  for their underlying schemes when the commutative base `K` is a domain.
+  Their *actual structure morphisms* are `GeometricallyIntegral` over every
+  commutative `K`, including the zero ring (where field-valued fibers are
+  vacuous). Finite decidable indices include ranks zero, one and two; no
+  integral total space is claimed over an arbitrary non-domain base. The
+  ordinary-import client is `AlgebraicGroupsTest.GeneralSpecialLinearGeometricIntegral`;
+  see its [guide](AlgebraicGroups/GroupScheme/GeneralSpecialLinearGeometricIntegral/README.md).
+- `AlgebraicGroups.Algebra.PolynomialRationalPointHeight` proves
+  `MvPolynomial.height_ker_eval` over a field for any finite index type,
+  including different field/index universes, without `DecidableEq`. The focused
+  `AlgebraicGroups.GroupScheme.GeneralSpecialLinearDimension` import publicly
+  exposes that helper and computes the actual GL/SL coordinate-ring Krull
+  dimensions and underlying-scheme topological Krull dimensions over a field:
+  `N ^ 2` for GL and `N ^ 2 - 1` for SL, with natural subtraction *before*
+  casting to `WithBot ℕ∞` and rank zero handled separately. Its client
+  `AlgebraicGroupsTest.GeneralSpecialLinearDimension` covers different
+  universes, ranks zero/one/two and `ZMod 2`; see the
+  [guide](AlgebraicGroups/GroupScheme/GeneralSpecialLinearDimension/README.md).
 - `AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct` uses the
   section and actual determinant-one kernel pullback to construct
   `generalLinearDeterminantProductIso K n pivot : SL(n,K) ⊗ Gₘ,K ≅ GL(n,K)`
@@ -680,7 +700,7 @@ default build and checking every shipped file. These measurements are not a
 timing guarantee or a cold-build benchmark for the final graph.
 
 The default build selects the production aggregate and the `AlgebraicGroupsTest`
-target. Its 29 explicit roots in [lakefile.toml](lakefile.toml) cover every
+target. Its 31 explicit roots in [lakefile.toml](lakefile.toml) cover every
 checked-in file under `AlgebraicGroupsTest/`. Additive's twenty original
 examples are persistent private declarations: they are compiled but do not
 extend the public API. The native Artin--Schreier test also uses named private
@@ -689,11 +709,17 @@ normal-form projections and the smoothness/domain/connectedness APIs. It is a
 focused regression, not an audit of every generated declaration, a source
 correspondence decision, or a release-acceptance check.
 
-The checked-in tree contains 125 Lean source files: 96 production files,
-including the aggregate, and 29 regression files. The aggregate and all 29
-explicit test roots reach all 125 local modules. There are no shipped tests
+The checked-in tree contains 130 Lean source files: 99 production files,
+including the aggregate, and 31 regression files. The aggregate and all 31
+explicit test roots reach all 130 local modules. There are no shipped tests
 outside the declared default targets. Source reachability alone establishes neither a
 successful build, complete transitive axiom audit or release acceptance.
+The accepted 130-module main graph has a successful actual both-default-target
+build (native job 533, 3,468 jobs) and a complete private-inclusive transitive
+axiom audit (3,268 module-origin declarations, including 944 private-prefix
+declarations; only the three allowed axioms). These checks apply to unchanged
+Lean, build, dependency and checker inputs in this documentation-only candidate;
+they do not establish release acceptance.
 
 The GL(V) regression adds 25 named private clients for arbitrary-module
 coefficient change, transported tensor order, finite-basis matrices and
@@ -730,10 +756,18 @@ readback and the twisted product law, including a nonabelian `Fin 3`
 permutation example. The determinant-conjugation client checks every-algebra
 points and opposite row/column pivot scaling over `ZMod 5`. Both are
 persistent ordinary-import roots. The original transfer has independent
-source-only review; this accepted 125-module assembly has a successful native
-default build, complete private-inclusive standard-axiom audit (job 530), fresh
-independent affected review and owner code acceptance. Neither the checks nor
-main acceptance approves or publishes the release candidate.
+source-only review. The separately accepted 125-module PR183 predecessor has
+its own applicable native job 530 and independent affected review; this
+130-module union has applicable native job 533 and fresh affected review.
+Native job 477 covered only the earlier 121-module predecessor at its inputs.
+Neither main integration nor these checks accepts the new release candidate.
+
+The finite GL/SL geometric-integrality client checks ranks zero, one and two,
+including the zero base; the dimension client checks those ranks, `ZMod 2`
+and distinct universes without a decidable-equality assumption on the index.
+Both are persistent ordinary-import roots. Their original source-only transfer
+has independent review; the accepted 130-module assembly has applicable native
+job 533 and fresh affected review. This does not accept or publish its release.
 
 The native MatrixEndBaseChange test has named private ordinary-import clients
 for tensor order, wrapper projections and addition, transported scalar action,
@@ -825,9 +859,9 @@ All regression modules are now selected by the default build; separate direct
 invocations are unnecessary merely to include previously unregistered sources.
 The selected configuration must pass the actual default build on the pinned
 official dependency graph; exact-version results are recorded separately.
-Generated, revision-bound API documentation for this 125-module snapshot is not
-supplied; earlier generated snapshots have not been regenerated. The README
-and source docstrings provide the reader documentation. Their claims
+Generated, revision-bound API documentation for this 130-module snapshot is not
+supplied; earlier generated snapshots have not been regenerated. The README and
+source docstrings provide the reader documentation. Their claims
 require independent inspection; fresh expensive documentation generation is not
 a release prerequisite.
 
@@ -921,6 +955,28 @@ replaces, individual project contribution roles:
   `512c720d-9ced-444e-ae00-adfd93ed9c63`) prepared the destination transfer;
   its completed destination review, integration and earlier release remain
   distinct from the origin acceptance and from this new release candidate.
+- The earlier finite GL/SL geometric-integrality investigation was by Worker B
+  Task `hive-request-4694e54904a86ba5cd23a09f174650df4ec77484` (UID
+  `62aa584a-e574-4ca7-bf87-d5548e0cd712`). The geometric-integrality
+  mathematics and client were authored by Worker B Task
+  `hive-request-902e3e18b35d53eb4fd3b421954a339ef7741dd5` (UID
+  `8c21821f-f9ac-4e4b-80b6-b1452edb4276`), reusing the earlier Worker A
+  normalization section credited above. The finite GL/SL dimension research
+  was by Worker B Task `hive-request-495409ddb864bb2a4c42d577e7ee9d2b19e474d5`
+  (UID `b4c67a11-087b-42ac-bfa7-55dcc856c070`); its helper, dimensions
+  and client were authored by Worker B Task
+  `hive-request-020720d1eb5fc515621730cc4e303793d7178919` (UID
+  `add4b4bc-9720-4317-9f70-308e77b22c36`). Both mathematical origins
+  were accepted in the incubator. A distinct Worker B Task
+  `hive-request-81805fb1290c8839628802cab794e0fdec6df0a4` (UID
+  `26e301d0-dc56-4edc-8708-d41b7f543dbe`) prepared this source-only
+  import/client-namespace transfer without changing the proofs. Independent
+  Worker A Task `hive-request-2811b0c87b969db9f7708cfd5ac00e63ca785513`
+  (UID `92620a93-8c41-477e-acff-c33eb2b4e642`) approved that original
+  source-only transfer at `ca1a807ac2b00959fd9c6c496d48700c2f5a92c8`,
+  not the combined assembly. Native job 533, fresh independent affected review
+  and owner code acceptance now cover the exact combined destination snapshot;
+  independent release acceptance and publication remain outstanding.
 - Separate Worker B executions authored the split-kernel product and finite
   determinant-product producers and their ordinary-import clients. A Worker B
   execution prepared their import/namespace normalization for this library;
@@ -932,9 +988,10 @@ replaces, individual project contribution roles:
 - Distinct Worker B executions authored the original split-kernel conjugation
   and finite determinant-conjugation producers and clients. A further Worker B
   execution prepared their import/namespace normalization for this library;
-  independent source-only review covers that original transfer. This separately
-  accepted 125-module destination assembly has native job 530 and a fresh
-  independent affected review. Neither acceptance is release publication.
+  independent source-only review covers that original transfer. Their separately
+  accepted 125-module destination predecessor has native job 530 and an
+  independent affected review; the accepted 130-module union has native job 533
+  and fresh affected review. Neither acceptance is release publication.
 
 The full [LICENSE](LICENSE) supplies Apache-2.0 for original Formal Frontier
 contributions, including verified earlier original project research adopted
