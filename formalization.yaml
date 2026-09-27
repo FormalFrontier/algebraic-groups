@@ -79,19 +79,29 @@ status:
     and SL coordinate algebras and their actual Spec structure morphisms are
     smooth over arbitrary commutative bases, including empty indices and zero
     rings. Their nonempty normalization is an algebra retract, not a group/Hopf
-    map. A canonical basis-free SL(V) scheme, arbitrary-projective-module SL,
-    determinant-map smoothness, faithful flatness and semidirect decomposition
-    are not claimed.
+    map. The split-kernel product supplies an underlying-object isomorphism
+    for any genuine group-object kernel square and arbitrary underlying-object
+    section, with section-first multiplication; it is not a direct-product
+    group-object isomorphism. For finite decidable matrix indices with a chosen
+    pivot, the actual determinant-one kernel gives an underlying-scheme product
+    SL(n,K) × Gm,K isomorphic to GL(n,K), an actual determinant triangle and
+    smoothness of the actual determinant scheme morphism over arbitrary
+    commutative rings, including zero rings and rank one. Rank zero,
+    a canonical basis-free SL(V) scheme, arbitrary-projective-module SL,
+    assumed flatness, faithful flatness and
+    semidirect decomposition are not claimed.
     Complete source formalization is not claimed.
 
 review:
   status: agent-reviewed
   notes: >-
     The library uses independent non-author agent mathematical and API review.
-    The library contains 117 Lean modules and 25 persistent regression roots.
+    The candidate contains 121 Lean modules and 27 persistent regression roots.
     The transferred finite-free SL(V) and finite GL/SL smoothness APIs have
     independent origin reviews; destination and release decisions are recorded
     separately for each exact version.
+    The transferred split-kernel and determinant-product modules and their
+    clients have independent origin and destination mathematical and API reviews.
     Release verification requires applicable pinned-graph module and default builds and
     a complete transitive standard-axiom audit of public/server/private compiled
     declarations, reusing unchanged evidence only where its inputs still apply.
@@ -110,7 +120,10 @@ acknowledgements: >-
   integration. README.md credits the original finite-free SL(V) Worker B author
   and Worker A reviewer, the finite GL/SL smoothness Worker A author, the Worker B
   destination transfer and Antoine Chambert-Loir's reused mathlib API. Origin
-  and destination review/acceptance are distinct. README.md preserves concrete
+  and destination review/acceptance are distinct. Separate Worker B executions
+  authored the generic split-kernel and finite determinant-product proofs and
+  clients; a further Worker B execution prepared their destination transfer.
+  README.md preserves concrete
   predecessor/contribution examples.
   External mathematical sources, formalization libraries and tools retain their
   separate contributor credit and applicable licenses and notices.
