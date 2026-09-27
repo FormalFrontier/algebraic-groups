@@ -17,13 +17,19 @@ corresponding source-metadata repositories.
 
 The results below describe the library's mathematical scope, with explicit
 hypotheses and exclusions. They do not assert complete formalization of a book
-or a general quotient-effectivity theorem. All 121 checked-in Lean files declare
-the module system, and all 27 regression files are persistent default-build
+or a general quotient-effectivity theorem. All 125 checked-in Lean files declare
+the module system, and all 29 regression files are persistent default-build
 roots. Release verification requires applicable pinned-graph module builds,
 the actual no-target default build and a complete transitive
 axiom audit, including private declarations, allowing only `propext`,
 `Classical.choice` and `Quot.sound`. Build success and metadata schema validity
 alone do not establish independent release acceptance or publication.
+The accepted 125-module main snapshot `65ce7b678b1611d391ef05e5b7499a774fd89c4f`
+has an applicable successful native default build and complete private-inclusive
+standard-axiom audit (job 530, 2026-09-27), fresh independent affected review
+and owner code acceptance. This documentation-only release preparation preserves
+its checked Lean and dependency inputs; the release candidate remains
+**independently unaccepted and unpublished**.
 
 The public mathematical interfaces retain their intended hypotheses and scope.
 Compiler-generated proof and simplifier auxiliary names and types can change
@@ -280,6 +286,15 @@ instead of this compiler-generated auxiliary; no compatibility alias is added.
   rank zero, a group-scheme product isomorphism and basis-free SL(V) are not
   claimed. See its [guide](AlgebraicGroups/GroupScheme/GeneralLinearDeterminantProduct/README.md)
   and `AlgebraicGroupsTest.GeneralLinearDeterminantProduct`.
+- `AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation` restricts
+  diagonal conjugation to the genuine determinant-one kernel, as an arrow over
+  `Spec K`. Its affine point formula works over every commutative `K`-algebra;
+  diagonal entries are units before coercion and inversion. A chosen pivot
+  excludes rank zero, while rank one and zero rings are allowed. The underlying
+  product iso has section-first twisted multiplication, not a canonical
+  direct-product group-scheme law. See its
+  [guide](AlgebraicGroups/GroupScheme/GeneralLinearDeterminantConjugation/README.md)
+  and `AlgebraicGroupsTest.GeneralLinearDeterminantConjugation`.
 - `RingHom.FaithfullyFlat.ofLocalizationSpan` proves that faithful flatness can
   be checked after localizing along a family of source elements that spans the
   unit ideal. It accepts arbitrary principal-open covers, including infinite
@@ -474,6 +489,13 @@ instead of this compiler-generated auxiliary; no compatibility alias is added.
   [guide](AlgebraicGroups/GroupObject/SplitKernelProduct/README.md) and
   `AlgebraicGroupsTest.SplitKernelProduct`, which includes a concrete
   nonmultiplicative-section example.
+- `CategoryTheory.splitKernelConj` is the pullback-defined conjugation of an
+  actual group-object kernel by an arbitrary underlying-object section. A
+  multiplicative section additionally gives the internal left-action laws and
+  the explicit section-first twisted multiplication for the underlying-object
+  product iso; no direct-product group-object isomorphism is asserted. See its
+  [guide](AlgebraicGroups/GroupObject/SplitKernelSemidirect/README.md) and the
+  nonabelian client `AlgebraicGroupsTest.SplitKernelSemidirect`.
 - `CategoryTheory.NatTrans.IsPointwiseNormal.quotient` constructs the
   pointwise quotient of a group-valued functor by a transformation with normal
   component ranges. Its canonical map is pointwise surjective with the expected
@@ -658,7 +680,7 @@ default build and checking every shipped file. These measurements are not a
 timing guarantee or a cold-build benchmark for the final graph.
 
 The default build selects the production aggregate and the `AlgebraicGroupsTest`
-target. Its 27 explicit roots in [lakefile.toml](lakefile.toml) cover every
+target. Its 29 explicit roots in [lakefile.toml](lakefile.toml) cover every
 checked-in file under `AlgebraicGroupsTest/`. Additive's twenty original
 examples are persistent private declarations: they are compiled but do not
 extend the public API. The native Artin--Schreier test also uses named private
@@ -667,9 +689,9 @@ normal-form projections and the smoothness/domain/connectedness APIs. It is a
 focused regression, not an audit of every generated declaration, a source
 correspondence decision, or a release-acceptance check.
 
-The checked-in tree contains 121 Lean source files: 94 production files,
-including the aggregate, and 27 regression files. The aggregate and all 27
-explicit test roots reach all 121 local modules. There are no shipped tests
+The checked-in tree contains 125 Lean source files: 96 production files,
+including the aggregate, and 29 regression files. The aggregate and all 29
+explicit test roots reach all 125 local modules. There are no shipped tests
 outside the declared default targets. Source reachability alone establishes neither a
 successful build, complete transitive axiom audit or release acceptance.
 
@@ -702,6 +724,16 @@ and a provably nonmultiplicative section. The finite determinant-product client
 checks the actual determinant triangle, normalized inverse and smoothness for
 rank-one integers and a zero ring. Both are persistent ordinary-import roots;
 their destination validation and review are recorded against exact revisions.
+
+The split-kernel semidirect client checks the arbitrary-section conjugation
+readback and the twisted product law, including a nonabelian `Fin 3`
+permutation example. The determinant-conjugation client checks every-algebra
+points and opposite row/column pivot scaling over `ZMod 5`. Both are
+persistent ordinary-import roots. The original transfer has independent
+source-only review; this accepted 125-module assembly has a successful native
+default build, complete private-inclusive standard-axiom audit (job 530), fresh
+independent affected review and owner code acceptance. Neither the checks nor
+main acceptance approves or publishes the release candidate.
 
 The native MatrixEndBaseChange test has named private ordinary-import clients
 for tensor order, wrapper projections and addition, transported scalar action,
@@ -793,8 +825,9 @@ All regression modules are now selected by the default build; separate direct
 invocations are unnecessary merely to include previously unregistered sources.
 The selected configuration must pass the actual default build on the pinned
 official dependency graph; exact-version results are recorded separately.
-Generated, revision-bound API documentation is not supplied;
-the README and source docstrings provide the reader documentation. Their claims
+Generated, revision-bound API documentation for this 125-module snapshot is not
+supplied; earlier generated snapshots have not been regenerated. The README
+and source docstrings provide the reader documentation. Their claims
 require independent inspection; fresh expensive documentation generation is not
 a release prerequisite.
 
@@ -827,11 +860,12 @@ For the finite determinant character, after the matching cache fetch, run
 `lake build AlgebraicGroupsTest.GeneralLinearDeterminant`. Its direct import is
 `AlgebraicGroups.GroupScheme.GeneralLinearDeterminant`; the public definitions
 and theorems are also available through the aggregate `AlgebraicGroups` import.
-For the generic split-kernel object and the finite determinant product, build
-the focused clients with `lake build AlgebraicGroupsTest.SplitKernelProduct
-AlgebraicGroupsTest.GeneralLinearDeterminantProduct` after the matching cache
-fetch. Their producers also have direct imports and are registered in the
-aggregate; a focused build is not the required complete default build/audit.
+For the generic split-kernel object and the finite determinant product and
+conjugation, build the focused clients with
+`lake build AlgebraicGroupsTest.SplitKernelProduct AlgebraicGroupsTest.SplitKernelSemidirect AlgebraicGroupsTest.GeneralLinearDeterminantProduct AlgebraicGroupsTest.GeneralLinearDeterminantConjugation`
+after the matching cache fetch. Their producers also have direct imports and
+are registered in the aggregate; a focused build is not the required complete
+default build/audit.
 
 ## References, credit and license
 
@@ -884,8 +918,9 @@ replaces, individual project contribution roles:
   `9d7acf51-7653-4b52-a05e-c0cd9d9599e0`). Their origin acceptance and
   independent review are separate from this destination transfer. Worker B
   Task `hive-request-77410a8f9682982b27001cf7ada17cb054f4b479` (UID
-  `512c720d-9ced-444e-ae00-adfd93ed9c63`) prepares the destination transfer;
-  destination review, integration and release remain separate decisions.
+  `512c720d-9ced-444e-ae00-adfd93ed9c63`) prepared the destination transfer;
+  its completed destination review, integration and earlier release remain
+  distinct from the origin acceptance and from this new release candidate.
 - Separate Worker B executions authored the split-kernel product and finite
   determinant-product producers and their ordinary-import clients. A Worker B
   execution prepared their import/namespace normalization for this library;
@@ -894,6 +929,12 @@ replaces, individual project contribution roles:
   mathematical and API review is distinct from the original proof reviews;
   destination integration, final release acceptance and publication remain
   separate exact-revision decisions.
+- Distinct Worker B executions authored the original split-kernel conjugation
+  and finite determinant-conjugation producers and clients. A further Worker B
+  execution prepared their import/namespace normalization for this library;
+  independent source-only review covers that original transfer. This separately
+  accepted 125-module destination assembly has native job 530 and a fresh
+  independent affected review. Neither acceptance is release publication.
 
 The full [LICENSE](LICENSE) supplies Apache-2.0 for original Formal Frontier
 contributions, including verified earlier original project research adopted

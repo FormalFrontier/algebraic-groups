@@ -89,29 +89,46 @@ status:
     commutative rings, including zero rings and rank one. Rank zero,
     a canonical basis-free SL(V) scheme, arbitrary-projective-module SL,
     assumed flatness, faithful flatness and
-    semidirect decomposition are not claimed.
+    a canonical direct-product group-object or group-scheme decomposition are
+    not claimed. A genuine group-object kernel admits pullback-defined
+    conjugation by an arbitrary section; a multiplicative section gives its
+    internal left-action and section-first twisted product law. For a finite
+    matrix determinant with chosen pivot, diagonal conjugation restricts to
+    its actual special-linear kernel and has a native matrix readback over
+    every commutative coefficient algebra; inverses are formed in units before
+    coercion. Rank zero remains outside this chosen-pivot construction.
     Complete source formalization is not claimed.
 
 review:
   status: agent-reviewed
   notes: >-
     The library uses independent non-author agent mathematical and API review.
-    The candidate contains 121 Lean modules and 27 persistent regression roots.
+    The predecessor's 121 Lean modules and 27 persistent regression roots have
+    applicable destination build and private-inclusive standard-three axiom
+    evidence at their exact inputs. The separately accepted 125-module, 29-root
+    semidirect/conjugation successor at 65ce7b678b1611d391ef05e5b7499a774fd89c4f
+    has successful native job 530: both default targets, all 125 modules and a
+    complete private-inclusive transitive audit of 3231 module-origin declarations
+    (919 private-prefix), permitting only propext, Classical.choice and Quot.sound.
+    The earlier checks alone did not certify this changed graph.
     The transferred finite-free SL(V) and finite GL/SL smoothness APIs have
     independent origin reviews; destination and release decisions are recorded
     separately for each exact version.
     The transferred split-kernel and determinant-product modules and their
     clients have independent origin and destination mathematical and API reviews.
-    Release verification requires applicable pinned-graph module and default builds and
-    a complete transitive standard-axiom audit of public/server/private compiled
-    declarations, reusing unchanged evidence only where its inputs still apply.
+    The additionally transferred split-kernel semidirect and finite determinant
+    conjugation modules and clients retain independent source-only transfer
+    review. Native job 530, fresh independent affected review and owner code
+    acceptance cover their accepted 125-module destination assembly. Source-only
+    review and incubator origin evidence are not substituted for those checks.
+    The checked computational inputs remain unchanged in this documentation-only
+    release candidate.
     Exact-version review, check evidence and release decisions are recorded
-    separately. Independent documentation, metadata, artifact and rights
-    review and protected acceptance are not certified by this metadata.
-    Origin mathematical reviews do not themselves accept a destination transfer;
-    independent destination review, owner integration, release acceptance and
-    publication are separate exact-version recorded decisions. Development review and schema validity do not
-    establish release acceptance, human review or source-author endorsement.
+    separately. Independent documentation, metadata, complete artifact/history
+    and rights review and protected release acceptance remain pending; this
+    candidate is unpublished. Incubator origin, development review and schema
+    validity do not establish release acceptance, source coverage, human review
+    or source-author endorsement.
 
 acknowledgements: >-
   Lattice supplied earlier research, reusable mathematical implementations and
@@ -123,6 +140,9 @@ acknowledgements: >-
   and destination review/acceptance are distinct. Separate Worker B executions
   authored the generic split-kernel and finite determinant-product proofs and
   clients; a further Worker B execution prepared their destination transfer.
+  Distinct Worker B executions authored the split-kernel conjugation and finite
+  determinant-conjugation proofs and clients; another Worker B execution
+  prepared their destination import and namespace transfer.
   README.md preserves concrete
   predecessor/contribution examples.
   External mathematical sources, formalization libraries and tools retain their

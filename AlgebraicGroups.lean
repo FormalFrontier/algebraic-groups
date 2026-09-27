@@ -23,6 +23,7 @@ public import AlgebraicGroups.GroupObject.Hom
 public import AlgebraicGroups.GroupObject.KernelTorsor
 public import AlgebraicGroups.GroupObject.Quotient
 public import AlgebraicGroups.GroupObject.SplitKernelProduct
+public import AlgebraicGroups.GroupObject.SplitKernelSemidirect
 public import AlgebraicGroups.GroupObject.Translation
 public import AlgebraicGroups.GroupScheme.Additive
 public import AlgebraicGroups.GroupScheme.Vector
@@ -47,6 +48,7 @@ public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLineBaseChange
 public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct
+public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantSection
 public import AlgebraicGroups.GroupScheme.GeneralLinearModule
 public import AlgebraicGroups.GroupScheme.GeneralSpecialLinearSmooth
