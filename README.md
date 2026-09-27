@@ -17,8 +17,8 @@ corresponding source-metadata repositories.
 
 The results below describe the library's mathematical scope, with explicit
 hypotheses and exclusions. They do not assert complete formalization of a book
-or a general quotient-effectivity theorem. All 113 shipped Lean files declare
-the module system, and all 23 regression files are persistent default-build
+or a general quotient-effectivity theorem. All 117 shipped Lean files declare
+the module system, and all 25 regression files are persistent default-build
 roots. Release verification requires applicable pinned-graph module builds,
 the actual no-target default build and a complete transitive
 axiom audit, including private declarations, allowing only `propext`,
@@ -224,7 +224,8 @@ instead of this compiler-generated auxiliary; no compatibility alias is added.
   rings and pullback in schemes over `Spec K` and group schemes, with universal
   properties for arbitrary scheme and group-scheme tests. All of this allows
   arbitrary commutative bases, empty finite indices and zero rings; it asserts
-  neither smoothness/flatness nor a basis-free SL(V). The focused client is
+  neither a basis-free SL(V) nor a determinant-map smoothness or flatness theorem.
+  Finite GL/SL smoothness is supplied by a separate focused module below. The client is
   `AlgebraicGroupsTest.SpecialLinear`.
 - `endBaseChangeRingHom` packages scalar extension of endomorphisms of an
   arbitrary module as a composition-preserving ring map. For any commutative
@@ -245,6 +246,24 @@ instead of this compiler-generated auxiliary; no compatibility alias is added.
   canonical basis-independent GL(V) scheme or arbitrary-module determinant
   scheme morphism, SL scheme or functoriality along noninvertible module maps
   asserted here. The finite matrix determinant character above is separate.
+- `AlgebraicGroups.GroupScheme.SpecialLinearModule` defines the determinant-one
+  automorphism functor of scalar extensions of a finite-free module and canonical
+  coefficient reassociation compatible with GL(V). A *chosen* finite basis
+  identifies it naturally with the native matrix SL group and the represented
+  finite SL scheme's affine points; entry, action, determinant-inverse evaluation
+  and change-of-basis laws are available. The basis can be empty; arbitrary
+  commutative and zero rings are allowed. No canonical basis-free SL(V) scheme
+  or construction for arbitrary/projective modules is asserted. Its focused
+  client is `AlgebraicGroupsTest.SpecialLinearModule`.
+- `AlgebraicGroups.GroupScheme.GeneralSpecialLinearSmooth` proves finite matrix
+  GL and SL coordinate algebras smooth over every commutative base and the actual
+  `Spec` structure morphisms smooth, including empty indices and zero rings.
+  For nonempty indices a chosen pivot normalizes the universal GL matrix to
+  determinant one and splits the quotient **as an algebra map**, not as a
+  group/Hopf map; empty rank uses the bottom-ideal quotient equivalence.
+  These results do not assert smoothness of the determinant morphism, faithful
+  flatness or a semidirect-product decomposition. The focused client is
+  `AlgebraicGroupsTest.GeneralSpecialLinearSmooth`.
 - `RingHom.FaithfullyFlat.ofLocalizationSpan` proves that faithful flatness can
   be checked after localizing along a family of source elements that spans the
   unit ideal. It accepts arbitrary principal-open covers, including infinite
@@ -614,7 +633,7 @@ default build and checking every shipped file. These measurements are not a
 timing guarantee or a cold-build benchmark for the final graph.
 
 The default build selects the production aggregate and the `AlgebraicGroupsTest`
-target. Its 23 explicit roots in [lakefile.toml](lakefile.toml) cover every
+target. Its 25 explicit roots in [lakefile.toml](lakefile.toml) cover every
 checked-in file under `AlgebraicGroupsTest/`. Additive's twenty original
 examples are persistent private declarations: they are compiled but do not
 extend the public API. The native Artin--Schreier test also uses named private
@@ -623,9 +642,9 @@ normal-form projections and the smoothness/domain/connectedness APIs. It is a
 focused regression, not an audit of every generated declaration, a source
 correspondence decision, or a release-acceptance check.
 
-The checked-in tree contains 113 Lean source files: 90 production files,
-including the aggregate, and 23 regression files. The aggregate and all 23
-explicit test roots reach all 113 local modules. There are no shipped tests
+The checked-in tree contains 117 Lean source files: 92 production files,
+including the aggregate, and 25 regression files. The aggregate and all 25
+explicit test roots reach all 117 local modules. There are no shipped tests
 outside the declared default targets. Source reachability alone establishes neither a
 successful build, complete transitive axiom audit or release acceptance.
 
@@ -646,6 +665,12 @@ zero coefficient rings, coefficient changes and arbitrary scheme tests. The SL
 client checks the Hopf quotient, degenerate cases, nontrivial shear, affine
 points and genuine scheme/group-scheme kernel pullbacks. Both remain default
 roots; neither declares a new public mathematical API.
+
+The SL(V) client checks empty, rank-one and rank-two bases, zero-ring targets,
+an integer shear, scalar extension and nontrivial basis changes. The finite
+GL/SL smoothness client checks finite presentation, coordinate and `Spec`
+smoothness, empty indices and zero rings, and the quotient normalization and
+retraction. Both focused clients are persistent default-build roots.
 
 The native MatrixEndBaseChange test has named private ordinary-import clients
 for tensor order, wrapper projections and addition, transported scalar action,
@@ -812,6 +837,19 @@ replaces, individual project contribution roles:
   `hive-request-0e7110fd5786b2d754dc8860768facd89f7ac80a`
   (UID `ae076404-5b1e-4cac-84a6-ab129a7c5337`) prepared this destination
   transfer. These are contribution roles, not source-author endorsement.
+- Finite-free SL(V) module functor implementation and its client were authored by
+  Worker B Task `hive-request-1ce56ef08640ec6a13b8bf1b2109825745c97ff2` (UID
+  `60082129-cd44-4809-8b70-88f24a495825`) and independently reviewed by
+  Worker A Task `hive-request-ced4ffe3612c04650bdc8fd5ea33c38281f94616` (UID
+  `95f4ca5c-071f-437b-92a0-f434bfce7d05`). The module reuses Antoine
+  Chambert-Loir's native special-linear-group API from mathlib.
+- Finite GL/SL coordinate and `Spec` smoothness and its client were authored
+  by Worker A Task `hive-request-a5e6c90d8ec39f1e9fa69dab1ca73e6f793e8dfd` (UID
+  `9d7acf51-7653-4b52-a05e-c0cd9d9599e0`). Their origin acceptance and
+  independent review are separate from this destination transfer. Worker B
+  Task `hive-request-77410a8f9682982b27001cf7ada17cb054f4b479` (UID
+  `512c720d-9ced-444e-ae00-adfd93ed9c63`) prepares the destination transfer;
+  destination review, integration and release remain separate decisions.
 
 The full [LICENSE](LICENSE) supplies Apache-2.0 for original Formal Frontier
 contributions, including verified earlier original project research adopted

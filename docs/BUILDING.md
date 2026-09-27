@@ -6,7 +6,7 @@ The current Lean version is `v4.34.0-rc2`, with mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5`. The project dependencies use
 official published GitHub release commits listed in the README and manifest.
 The GitHub repositories are currently private and require authorized access.
-The checked-in tree ships 113 modules with 23 regression roots selected by the
+The checked-in tree ships 117 modules with 25 regression roots selected by the
 no-target default build. Build and audit requirements are described below;
 exact-version checks and release decisions are recorded separately.
 
@@ -26,9 +26,9 @@ compiling the selected library sources. An existing successful build may be
 reused when Lean, source and build/dependency inputs are unchanged; a
 documentation-only change does not require another build.
 
-The default targets are the production aggregate and all 23 registered regression
-roots, reaching all 113 local Lean modules: 90 production files including the
-aggregate, and 23 test files. Every shipped Lean file declares the module system;
+The default targets are the production aggregate and all 25 registered regression
+roots, reaching all 117 local Lean modules: 92 production files including the
+aggregate, and 25 test files. Every shipped Lean file declares the module system;
 the default build checks all regression examples, including anonymous examples.
 The axiom audit covers every retained named, private and generated compiled
 declaration; a module may contain checked examples without retaining constants.

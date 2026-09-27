@@ -72,15 +72,26 @@ status:
     are not claimed. The library includes a one-pivot finite-matrix determinant
     section (requiring a chosen index), the determinant-one finite special-linear
     Hopf quotient and group scheme,
-    and its actual scheme/group-scheme kernel. A basis-free arbitrary-module
-    determinant or SL(V), and SL smoothness or flatness, are not claimed.
+    and its actual scheme/group-scheme kernel. Finite-free scalar-extension
+    determinant-one automorphism functors admit canonical coefficient change,
+    agreement with GL(V), and chosen-basis comparison with the represented
+    finite matrix SL points, including change-of-basis laws. Finite matrix GL
+    and SL coordinate algebras and their actual Spec structure morphisms are
+    smooth over arbitrary commutative bases, including empty indices and zero
+    rings. Their nonempty normalization is an algebra retract, not a group/Hopf
+    map. A canonical basis-free SL(V) scheme, arbitrary-projective-module SL,
+    determinant-map smoothness, faithful flatness and semidirect decomposition
+    are not claimed.
     Complete source formalization is not claimed.
 
 review:
   status: agent-reviewed
   notes: >-
     The library uses independent non-author agent mathematical and API review.
-    The library contains 113 Lean modules and 23 persistent regression roots.
+    The library contains 117 Lean modules and 25 persistent regression roots.
+    The transferred finite-free SL(V) and finite GL/SL smoothness APIs have
+    independent origin reviews; destination and release decisions are recorded
+    separately for each exact version.
     Release verification requires applicable pinned-graph module and default builds and
     a complete transitive standard-axiom audit of public/server/private compiled
     declarations, reusing unchanged evidence only where its inputs still apply.
@@ -96,6 +107,10 @@ acknowledgements: >-
   Lattice supplied earlier research, reusable mathematical implementations and
   integration. Distinct Formalization Worker A/B executions supplied further
   implementations and independent development reviews; Anchor supplied shared
-  integration. README.md preserves concrete predecessor/contribution examples.
+  integration. README.md credits the original finite-free SL(V) Worker B author
+  and Worker A reviewer, the finite GL/SL smoothness Worker A author, the Worker B
+  destination transfer and Antoine Chambert-Loir's reused mathlib API. Origin
+  and destination review/acceptance are distinct. README.md preserves concrete
+  predecessor/contribution examples.
   External mathematical sources, formalization libraries and tools retain their
   separate contributor credit and applicable licenses and notices.

@@ -47,6 +47,7 @@ public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantSection
 public import AlgebraicGroups.GroupScheme.GeneralLinearModule
+public import AlgebraicGroups.GroupScheme.GeneralSpecialLinearSmooth
 public import AlgebraicGroups.GroupScheme.IdentityComponent
 public import AlgebraicGroups.GroupScheme.IdentityComponentBaseChange
 public import AlgebraicGroups.GroupScheme.InfinitesimalAdditive
@@ -61,6 +62,7 @@ public import AlgebraicGroups.GroupScheme.ReducedIdentityComponent
 public import AlgebraicGroups.GroupScheme.RootsOfUnity
 public import AlgebraicGroups.GroupScheme.Separated
 public import AlgebraicGroups.GroupScheme.SpecialLinearKernel
+public import AlgebraicGroups.GroupScheme.SpecialLinearModule
 public import AlgebraicGroups.GroupScheme.Smooth
 public import AlgebraicGroups.LinearAlgebra.Basis.Semilocal
 public import AlgebraicGroups.LinearAlgebra.FiniteProjective.Charpoly
