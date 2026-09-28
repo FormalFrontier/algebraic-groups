@@ -1,3 +1,22 @@
+# Current publication and verification context (2026-09-28)
+
+This geometry is published at official release
+`183bbbcebf0693df849ad6f5781df4c97d33364f`; the later native
+central-filtration and successive-quotient results are also published at
+`38b7ebdcb38bd0d1b3c9a72e266162718f4647c2`. Native job 811 checked
+that older 139-module G/Q graph. The accepted sharpness transfer at
+`172234b1ae20be037a781f0a105ae88dfbe3e856` additionally passed native job
+843 and fresh independent destination review on the 141-module, 36-root,
+13-package graph with its official `general-linear-groups` dependency.
+The complete private/generated-inclusive audit permitted only the standard
+three axioms. See [current build guidance](../../../docs/BUILDING.md);
+exact release acceptance/publication are recorded separately.
+The original guide below is retained verbatim as a dated snapshot: its
+G/Q-publication-pending wording records the earlier preparation, not the
+current release status. This geometry's statements and proofs do not change.
+
+---
+
 # Geometry of upper-unitriangular group schemes
 
 Import `AlgebraicGroups.GroupScheme.UnitriangularGeometry` (or the aggregate

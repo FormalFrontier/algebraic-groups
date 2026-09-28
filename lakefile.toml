@@ -12,6 +12,11 @@ name = "scheme-properties"
 git = "https://github.com/FormalFrontier/scheme-properties.git"
 rev = "6b204a3e49f022e51d78a9f93e77513b99a87e00"
 
+[[require]]
+name = "general-linear-groups"
+git = "https://github.com/FormalFrontier/general-linear-groups.git"
+rev = "ad7c50a0523441116537fb1d6e3c8d2a665af1fc"
+
 [[lean_lib]]
 name = "AlgebraicGroups"
 
@@ -53,4 +58,5 @@ roots = [
   "AlgebraicGroupsTest.VectorProduct",
   "AlgebraicGroupsTest.UnitriangularCentralFiltration",
   "AlgebraicGroupsTest.UnitriangularSuperdiagonalQuotients",
+  "AlgebraicGroupsTest.UnitriangularNilpotencyClass",
 ]

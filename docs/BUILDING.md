@@ -1,3 +1,44 @@
+# Current build and dependency guidance (2026-09-28)
+
+The accepted native unitriangular sharpness transfer adds the official
+`general-linear-groups` GitHub dependency at
+`ad7c50a0523441116537fb1d6e3c8d2a665af1fc` to pinned mathlib
+`83abb3e776bdefcbc447a1e44d0debe4010039e5` and scheme-properties
+`6b204a3e49f022e51d78a9f93e77513b99a87e00`. With Lean `v4.34.0-rc2`,
+the project selects 141 Lean modules, including 36 persistent regression
+roots, across 13 resolved packages. To reproduce the build, successfully
+fetch the matching cache before building both declared defaults:
+
+```sh
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+Native job 843 succeeded on `172234b1ae20be037a781f0a105ae88dfbe3e856`
+with this exact graph: the matching cache was fetched before both default
+targets (`AlgebraicGroups` and `AlgebraicGroupsTest`) were built. All 141
+local modules and 36 test roots were checked. The complete transitive audit
+enumerated 3585 module-origin declarations, including 1082 private-named origins
+and all generated origins, and rejected none: only `propext`, `Classical.choice`
+and `Quot.sound` occurred. Different modules can reuse a declaration name;
+there were 3567 distinct name strings, not 3567 audited module-origin pairs.
+Fresh independent destination review and maintainer acceptance followed.
+The present documentation changes preserve all Lean, build, toolchain and
+dependency inputs, so that successful evidence remains applicable without
+another proof build or audit. Release acceptance and publication are distinct
+decisions recorded against their exact revisions.
+
+G/Q are already published at official commit
+`38b7ebdcb38bd0d1b3c9a72e266162718f4647c2`; their native job 811
+certifies its earlier **139-module, 35-root, 12-package** graph only.
+The new [sharpness guide](../AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass/README.md)
+and ordinary-import `AlgebraicGroupsTest.UnitriangularNilpotencyClass` client
+describe the additions. The remainder of this guide is the unmodified dated
+I6 build/resource snapshot: its then-pending G/Q publication, counts,
+measurements and job references are historical, not the current graph's checks.
+
+---
+
 # Build and resource guidance
 
 This guide describes the checked-in library and its build inputs. Use the

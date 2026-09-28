@@ -1,3 +1,22 @@
+# Current publication and verification context (2026-09-28)
+
+These whole-stage quotients and the central filtration are published in
+official release `38b7ebdcb38bd0d1b3c9a72e266162718f4647c2`.
+Native job 811 applies to their older 139-module, 35-root, 12-package graph.
+The accepted sharpness transfer at
+`172234b1ae20be037a781f0a105ae88dfbe3e856` passed native job 843 and fresh
+independent destination review on the 141-module, 36-root, 13-package graph
+with its direct official `general-linear-groups` dependency.
+The [sharpness guide](../UnitriangularNilpotencyClass/README.md) describes
+the separate native class result. Both default builds and the complete
+private/generated-inclusive standard-three audit passed; see
+[current build guidance](../../../docs/BUILDING.md). Exact release
+acceptance/publication are recorded separately from that accepted-code evidence. The complete
+original guide below (including its then-pending G/Q publication) is
+preserved as dated history, not a description of current release status.
+
+---
+
 # Successive superdiagonal quotients of unitriangular point groups
 
 Import `AlgebraicGroups.GroupTheory.UnitriangularSuperdiagonalQuotients` for

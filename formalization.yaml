@@ -7,8 +7,9 @@ project:
     coordinate Hopf algebras, components, reduction, smoothness, quotient-sheaf
     interfaces, finite upper-unitriangular Hopf quotients, group schemes and
     the geometry of their underlying schemes, central filtrations and successive
-    quotients of their native point groups,
-    and supporting commutative-algebra and scheme theory.
+    quotients of their native point groups, exact nilpotency classes of finite
+    native unitriangular groups over nontrivial commutative rings, and
+    supporting commutative-algebra and scheme theory.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -49,6 +50,14 @@ related_formalizations:
       category theory, schemes and group objects. The exact Lake graph also
       declares separately maintained scheme-properties, finite-etale-algebras
       and coherent-modules dependencies; their credit and licenses are distinct.
+  - id: https://github.com/FormalFrontier/general-linear-groups/tree/ad7c50a0523441116537fb1d6e3c8d2a665af1fc
+    relationship: builds-on
+    note: >-
+      Exact official direct dependency supplying the general-linear elementary
+      matrix unit and ordered elementary commutator identity. This library
+      transfers that identity into the native unitriangular point group and
+      derives its sharp nilpotency class using its own central-filtration bound.
+      General-linear-groups retains distinct contributors, rights and license.
 
 automation:
   methods:
@@ -62,6 +71,18 @@ automation:
 
 status:
   scope: >-
+    The library includes the native finite-unitriangular elementary unit,
+    its general-linear/matrix images and ordered commutator, the exact class
+    n-1 under Nontrivial R, and class zero under Subsingleton R, for all n.
+    It does not identify every lower central stage or establish a subgroup
+    scheme or source coverage. Earlier G/Q point-group results are officially
+    published at 38b7ebdcb38bd0d1b3c9a72e266162718f4647c2; the
+    GLG-dependent sharpness graph passed native job 843 and independent
+    destination review at 172234b1ae20be037a781f0a105ae88dfbe3e856,
+    followed by maintainer acceptance and integration on 2026-09-28.
+    Exact release acceptance and publication are recorded separately.
+    The history below describes
+    the prior destination snapshot, including its then-pending G/Q publication.
     Reusable coordinate and functor-of-points APIs for additive, multiplicative,
     vector, finite-matrix general-linear and other explicitly constructed group
     schemes; the finite upper-unitriangular Hopf quotient, its free strict-upper
@@ -258,10 +279,39 @@ status:
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
     - declaration: Matrix.UnitriangularGroup.superdiagonalQuotientEquiv_natural
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.elementary
+      file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
+    - declaration: Matrix.UnitriangularGroup.elementary_gl
+      file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
+    - declaration: Matrix.UnitriangularGroup.elementary_coe
+      file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
+    - declaration: Matrix.UnitriangularGroup.elementary_commutator
+      file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
+    - declaration: Matrix.UnitriangularGroup.nilpotencyClass_eq_of_nontrivial
+      file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
+    - declaration: Matrix.UnitriangularGroup.nilpotencyClass_eq_zero_of_subsingleton
+      file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
 
 review:
-  status: geometry published; point-group destination accepted; release pending
+  status: sharpness destination build, standard-axiom audit and independent review accepted at the recorded revision; release decisions recorded separately
   notes: >-
+    Verification context dated 2026-09-28. G/Q publication completed at official P6
+    38b7ebdcb38bd0d1b3c9a72e266162718f4647c2. The added sharpness
+    producer and ordinary-import client retain the incubator-accepted proofs
+    and tests with only import/client namespace substitutions, but introduce
+    a new direct official general-linear-groups dependency. At exact revision
+    172234b1ae20be037a781f0a105ae88dfbe3e856, native job 843 passed both
+    default targets and all 141 local modules, including 36 regression roots,
+    on the 13-package graph. Its complete transitive audit covered 3585
+    module-origin declarations, including 1082 private-named origins and all
+    generated origins; only propext, Classical.choice and Quot.sound occurred.
+    Fresh independent destination review 4661 approved that revision, followed
+    by maintainer acceptance and integration. This documentation-only release
+    preparation retains all computational inputs. Separate exact release
+    decisions and verified publication are not implied by these code checks.
+    Prior 139-module native job 811 and isolated donor review apply to their
+    exact older inputs and are not substitutes for the destination result. The prior
+    state and evidence are preserved in the rest of this notes history.
     The library uses independent non-author agent mathematical and API review.
     The predecessor's 121 Lean modules and 27 persistent regression roots have
     applicable destination build and private-inclusive standard-three axiom
@@ -353,6 +403,15 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  The original sharpness producer and client were authored by Worker B Task
+  hive-request-ab5c4c6678d82359fa32ccfaa517a4425fcf39ce (UID
+  ba69c483-3f91-493e-a0c4-340c651e95b2), and independently reviewed in
+  isolation by Worker A Task hive-request-57fef4455a2bccd178efea860926ebaf66ae3c6a
+  (UID 64dceb3e-1736-48ac-aa66-cb3365616b25). This destination transfer
+  is by Worker A Task hive-request-d138a642525fced6b79cecf573da9c4c3b84e0c2
+  (UID 6cc61c4a-18ae-4edf-88c0-61b1a253fa0d); no fresh destination review
+  is implied. General-linear-groups is an independently authored official
+  dependency supplying the elementary commutator. Earlier credits follow.
   Lattice supplied earlier research, reusable mathematical implementations and
   integration. Distinct Formalization Worker A/B executions supplied further
   implementations and independent development reviews; Anchor supplied shared

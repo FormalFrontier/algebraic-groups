@@ -51,6 +51,7 @@ public import AlgebraicGroups.GroupScheme.Unitriangular
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
 public import AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration
 public import AlgebraicGroups.GroupTheory.UnitriangularSuperdiagonalQuotients
+public import AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation

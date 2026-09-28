@@ -1,3 +1,101 @@
+# Algebraic groups: unitriangular sharpness and group-scheme APIs
+
+Reusable source-independent Lean results for algebraic groups, group schemes
+and native matrix point groups, licensed under [Apache-2.0](LICENSE). The library
+includes the **exact nilpotency class** of native finite unitriangular point
+groups alongside their central filtration, successive quotients and underlying
+scheme geometry. Dependencies retain their own authors, licenses and mathematical
+contributions. Source interpretation and coverage remain separate from library
+acceptance.
+
+## Headline results
+
+- **Unitriangular groups as affine schemes.** For a finite ordered index type
+  over an arbitrary commutative base ring, strict-upper coordinates identify
+  the underlying unitriangular group scheme with affine space over the base.
+  Its polynomial coordinate algebra gives relative smoothness and geometric
+  integrality; over a domain the total scheme is integral, and over a field
+  its dimension is the number of strict-upper positions. This is an isomorphism
+  of underlying schemes over the base, not an additive group-scheme
+  isomorphism. See the [geometry guide](AlgebraicGroups/GroupScheme/UnitriangularGeometry/README.md).
+- **Central filtration and successive point-group quotients.** For all
+  `n : ℕ`, `R : Type`, `[CommRing R]`, the normal superdiagonal stages satisfy
+  `F₀ = F₁ = ⊤`, `Fₙ = ⊥` and the mixed commutator bound
+  `⁅Fᵣ, Fₛ⁆ ≤ Fᵣ₊ₛ`. This yields a nilpotent group with class at most `n - 1`,
+  without assuming a nonzero ring. For `1 ≤ r`, the actual quotient of `Fᵣ`
+  by `Fᵣ₊₁` viewed as a subgroup of `Fᵣ` is the additive group of its
+  r-th-superdiagonal coordinates, naturally under unital coefficient-ring maps.
+  This is a whole-stage point-group quotient, not a scheme quotient or a
+  homomorphic splitting. See the [filtration](AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration/README.md)
+  and [quotient](AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients/README.md) guides.
+- **Sharp nilpotency class.** Over a nontrivial commutative ring, the native
+  unitriangular group on `Fin n` has class exactly `n - 1`; over a subsingleton
+  ring it has class zero. Native elementary units and their ordered commutator
+  provide the lower bound, using the elementary commutator supplied by the
+  separately maintained general-linear-groups dependency. The statement includes
+  dimensions zero and one and imposes no field, domain or reducedness assumption.
+
+### Using the exact-class API
+
+For `n : ℕ`, `R : Type`, `[CommRing R] [Nontrivial R]`, the library's
+`Matrix.UnitriangularGroup.nilpotencyClass_eq_of_nontrivial n R` identifies
+the class with `n - 1`, including dimensions zero and one. Under
+`[Subsingleton R]`, `nilpotencyClass_eq_zero_of_subsingleton n R` instead
+gives class zero for all dimensions. `elementary` constructs native units
+without inverting their coefficients; `elementary_gl` and `elementary_coe`
+describe their images, and `elementary_commutator` gives the ordered
+`x*y*x⁻¹*y⁻¹` relation with product coefficient `a*b`. These six public
+declarations have a [focused guide](AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass/README.md)
+and an ordinary-import regression client. They use the already-published
+central-filtration upper bound and the *direct*, exact official
+`general-linear-groups` dependency at `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`
+for its elementary commutator; the project still pins mathlib at
+`83abb3e776bdefcbc447a1e44d0debe4010039e5` and scheme-properties at
+`6b204a3e49f022e51d78a9f93e77513b99a87e00`.
+
+```lean
+import AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass
+
+example (R : Type) [CommRing R] [Nontrivial R] :
+    Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin 4) R) = 3 := by
+  simpa using Matrix.UnitriangularGroup.nilpotencyClass_eq_of_nontrivial 4 R
+```
+
+The proofs and original client were authored in the incubator by Formal
+Frontier Agents, with separate independent origin review. This transfer
+retains their proofs and credits; the general-linear-groups library retains
+its own authorship, mathematical contribution and license. Neither origin
+review nor the earlier published 139-module graph's checks alone verify the
+changed graph. No all-stage lower-central-series identification, subgroup-scheme
+quotient or unconditional nontrivial class is asserted.
+
+### Verification and release context (2026-09-28)
+
+The transferred sharpness contribution passed independent destination review
+and native job 843 on `172234b1ae20be037a781f0a105ae88dfbe3e856`, then
+was accepted and integrated. That run checked both default targets, all 141
+local Lean modules and 36 regression roots with the complete 13-package graph.
+Its transitive audit covered 3585 module-origin declarations, including 1082
+private-named origins and generated declarations, with only `propext`,
+`Classical.choice` and `Quot.sound`. This documentation-only preparation keeps
+all of those Lean, build and dependency inputs unchanged. See
+[build guidance](docs/BUILDING.md) for commands and evidence scope.
+
+Geometry and filtration/quotient APIs were already published in official
+release `38b7ebdcb38bd0d1b3c9a72e266162718f4647c2`; that earlier release does
+not contain the sharpness additions. Exact release acceptance and publication
+are recorded separately from the accepted-code and build evidence above.
+Use `lake exe cache get` successfully before any build with the pinned
+Lean `v4.34.0-rc2` toolchain, then `LAKE_JOBS=2 lake build` for both defaults.
+
+---
+
+## Dated history: complete I6 README (2026-09-28)
+
+Everything from the original title onward is retained verbatim as a historical
+snapshot. In particular, its G/Q-publication-pending prose describes I6
+preparation, not the present status after official release P6.
+
 # Algebraic groups and unitriangular point-group quotients
 
 Reusable Lean APIs for algebraic groups, group schemes and their matrix points.

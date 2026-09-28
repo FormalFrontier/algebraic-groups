@@ -1,3 +1,22 @@
+# Current publication and verification context (2026-09-28)
+
+This central-filtration API and its successive-quotient companion are
+published in official release `38b7ebdcb38bd0d1b3c9a72e266162718f4647c2`.
+Native job 811 verified their earlier 139-module, 35-root, 12-package
+graph. The accepted sharpness transfer at
+`172234b1ae20be037a781f0a105ae88dfbe3e856` passed native job 843 and
+fresh independent destination review on the 141-module, 36-root, 13-package
+graph, which additionally imports official `general-linear-groups`.
+The [sharpness guide](../UnitriangularNilpotencyClass/README.md) describes
+the exact class over nontrivial rings. Both default builds and the complete
+private/generated-inclusive standard-three audit passed; see
+[current build guidance](../../../docs/BUILDING.md). Exact release
+acceptance/publication remain separate from that accepted-code evidence. The entire
+original guide below, including then-pending publication language, is
+retained as dated history, not as the current lifecycle report.
+
+---
+
 # Central filtration of unitriangular point groups
 
 Import `AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration` for the
