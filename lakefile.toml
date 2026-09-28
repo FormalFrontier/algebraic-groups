@@ -51,4 +51,6 @@ roots = [
   "AlgebraicGroupsTest.UnitriangularGeometry",
   "AlgebraicGroupsTest.Vector",
   "AlgebraicGroupsTest.VectorProduct",
+  "AlgebraicGroupsTest.UnitriangularCentralFiltration",
+  "AlgebraicGroupsTest.UnitriangularSuperdiagonalQuotients",
 ]

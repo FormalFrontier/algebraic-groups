@@ -6,7 +6,8 @@ project:
     Reusable algebraic-group and group-scheme constructions, functors of points,
     coordinate Hopf algebras, components, reduction, smoothness, quotient-sheaf
     interfaces, finite upper-unitriangular Hopf quotients, group schemes and
-    the geometry of their underlying schemes,
+    the geometry of their underlying schemes, central filtrations and successive
+    quotients of their native point groups,
     and supporting commutative-algebra and scheme theory.
   authors:
     - Formal Frontier Agents
@@ -127,8 +128,23 @@ status:
     private/generated-inclusive standard-axiom audit succeeded in native job 718.
     Independent destination review and maintainer code acceptance/protected main
     integration cover commit 31492d5a182c21f40af029121718ceca8085568a.
-    Its separate independent release review and official geometry publication
-    remain pending; no source-coverage decision follows from this transfer.
+    Separate independent release review and official geometry publication are
+    complete at 183bbbcebf0693df849ad6f5781df4c97d33364f; no source-coverage
+    decision follows from that transfer.
+    The separately destination-accepted point-group transfer adds a normal superdiagonal
+    filtration, its mixed-stage commutator bound and nilpotency-class upper
+    bound over arbitrary commutative rings, and identifies each successive
+    whole-stage quotient with its additive superdiagonal coordinates for
+    1 <= r. Coefficient maps preserve the stages and induce natural maps on
+    all quotient elements. These results concern native matrix point groups,
+    not subgroup schemes, group-scheme quotients or an exact nilpotency class.
+    Fresh independent destination review and maintainer acceptance/protected
+    integration cover 535d623443808796af231ed5761f837c13934cdd, with native
+    job 811 providing the complete 139-module both-target build and transitive
+    private/generated-inclusive standard-three axiom audit. This documentation-only
+    preparation preserves those computational inputs. Separate independent
+    release acceptance and verified point-group publication remain pending;
+    the published geometry predecessor does not contain these point-group additions.
   main_results:
     - declaration: UnitriangularCoordinateRing.ideal_isHopfIdeal
       file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
@@ -186,9 +202,65 @@ status:
       file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
     - declaration: AlgebraicGeometry.unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin
       file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.mem_superdiagonalSubgroup
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_one
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_zero
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_antitone
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_succ_le
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_end
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_normal
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_commutator
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.descendingSeries
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.descendingSeries_isDescendingCentralSeries
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.descendingSeries_end
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.instIsNilpotent
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.nilpotencyClass_le
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.map_mem_superdiagonalSubgroup
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_map
+      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalIndex
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom_apply
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom_ker
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom_surjective
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalQuotientEquiv
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalQuotientEquiv_mk
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalStageMap
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateMap
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom_natural
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalQuotientMap
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalQuotientEquiv_natural
+      file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
 
 review:
-  status: geometry code agent-reviewed and accepted on main; release review pending
+  status: geometry published; point-group destination accepted; release pending
   notes: >-
     The library uses independent non-author agent mathematical and API review.
     The predecessor's 121 Lean modules and 27 persistent regression roots have
@@ -256,6 +328,29 @@ review:
     the old whole-153-file input digest does not describe the updated documents.
     Independent release review, protected release acceptance and verified
     geometry publication remain pending. No source coverage is upgraded.
+    The preceding geometry-release-pending statements describe their respective
+    historical snapshots; geometry was subsequently published. The G/Q
+    point-group transfer is preparatory, with only import and client-namespace
+    substitutions from separately accepted isolated implementations. Its
+    destination graph and two added client roots have no applicable changed-input
+    build or private/generated-inclusive transitive axiom check yet. The
+    isolated origin reviews and native checks and the unchanged I2 job 718 are
+    not destination review or certification. Fresh exact-candidate review,
+    native checks, maintainer acceptance and a separately reviewed official
+    release remain pending; no source correspondence or coverage is claimed.
+    Those preparatory G/Q statements describe the transfer before its destination
+    gates completed. Fresh independent exact-candidate review and owner acceptance
+    now cover protected main 535d623443808796af231ed5761f837c13934cdd.
+    Native job 811 on 2026-09-28 fetched and verified the matching mathlib cache,
+    built both default targets (3480 jobs), and audited all 139 project modules
+    and 3542 actual origins, including 1048 private-named origins and all generated
+    origins, permitting only propext, Classical.choice and Quot.sound with zero
+    disallowed axioms. This documentation-only release preparation changes six
+    documentation/metadata files; all 153 outside tuples, all Lean/build/checker
+    inputs, 35 test modules, 56 selected objects and twelve resolved packages are
+    unchanged. The whole-file input digest is not claimed unchanged. Independent
+    release review, protected release acceptance and verified publication remain
+    pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
   Lattice supplied earlier research, reusable mathematical implementations and
@@ -294,3 +389,15 @@ acknowledgements: >-
   by Lattice's code acceptance/protected integration. A further Worker B execution
   prepared the documentation-only geometry-release candidate. These steps are
   distinct from still-pending independent release acceptance and publication.
+  Separate Worker A executions authored the original central-filtration and
+  successive-quotient Lean proofs and clients; distinct Worker B executions
+  independently reviewed each isolated implementation. Their mathematical
+  exposition authors and reviewers are separate from these code roles. Another
+  Worker A execution prepared this point-group transfer, its paths, guides and
+  metadata without changing proof bodies. Fresh destination review and Lattice's
+  acceptance are pending. Historical geometry-release-pending wording above
+  describes its preparation; its official publication occurred subsequently.
+  That G/Q preparation wording is historical: a fresh Worker B execution reviewed
+  the exact destination contribution, followed by Lattice's acceptance/protected
+  integration and these documentation-only release-readiness updates. Independent
+  release review and publication remain distinct from those completed steps.

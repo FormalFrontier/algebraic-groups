@@ -6,7 +6,7 @@ The current Lean version is `v4.34.0-rc2`, with mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5`. The project dependencies use
 official published GitHub release commits listed in the README and manifest.
 The GitHub repositories are currently private and require authorized access.
-The checked-in tree includes 135 modules with 33 regression roots selected by the
+The checked-in tree includes 139 modules with 35 regression roots selected by the
 no-target default build. Build and audit requirements are described below;
 exact-version checks and release decisions are recorded separately.
 
@@ -26,9 +26,9 @@ compiling the selected library sources. An existing successful build may be
 reused when Lean, source and build/dependency inputs are unchanged; a
 documentation-only change does not require another build.
 
-The default targets are the production aggregate and all 33 registered regression
-roots, reaching all 135 local Lean modules: 102 production files including the
-aggregate, and 33 test files. Every checked-in Lean file declares the module system;
+The default targets are the production aggregate and all 35 registered regression
+roots, reaching all 139 local Lean modules: 104 production files including the
+aggregate, and 35 test files. Every checked-in Lean file declares the module system;
 the default build checks all regression examples, including anonymous examples.
 The axiom audit covers every retained named, private and generated compiled
 declaration; a module may contain checked examples without retaining constants.
@@ -66,11 +66,25 @@ and audited all 135 modules and 3,419 actual-origin declarations, including
 actual geometry declarations include generated and private names; the twelve
 selected metadata rows are not its complete audit. Independent non-author
 transfer review and maintainer code acceptance/protected main integration are
-complete. The preceding official published release has coordinate/group but
-not geometry; independent geometry-release review, protected release acceptance
-and publication remain pending. These documentation-only corrections preserve
-the exact checked Lean, build, dependency and checker inputs, not the original
-whole-153-file input digest.
+complete. Geometry subsequently received independent release acceptance and
+verified official publication at
+`183bbbcebf0693df849ad6f5781df4c97d33364f`. That geometry-release preparation
+preserved its checked Lean, build, dependency and checker inputs; the original
+whole-153-file input digest describes that earlier destination, not this tree.
+
+The later central-filtration and successive-quotient transfer added four Lean
+modules, including two regression roots. Native job 811 (2026-09-28, exact
+accepted main `535d623443808796af231ed5761f837c13934cdd`) fetched and verified
+the matching mathlib cache, built both default targets (3,480 jobs), and audited
+all 139 project modules and 3,542 actual-origin declarations, including 1,048
+private-named origins and all generated origins. Only the three permitted
+axioms occurred. Neither job 718 nor isolated donor checks certify the added
+G/Q graph; job 811 is its complete destination pass. Fresh independent
+destination review and maintainer acceptance/protected integration are complete.
+This documentation-only release preparation preserves all checked computational
+inputs, but not the original whole-file input digest. Independent G/Q release
+acceptance and verified publication remain separate, still-pending steps; the
+published geometry release named above does not contain G/Q.
 
 Start a downstream client with `import AlgebraicGroups`, or use a focused import
 such as `AlgebraicGroups.GroupScheme.Additive` or
@@ -83,6 +97,13 @@ describes its precise hypotheses and boundaries. The new focused import
 21-example client `AlgebraicGroupsTest.UnitriangularGeometry` expose the
 underlying affine-space iso, relative smoothness/integrality and field-only
 numeric dimensions; see the [geometry guide](../AlgebraicGroups/GroupScheme/UnitriangularGeometry/README.md).
+For the point-group central series and positive-stage successive quotients, use
+`AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration` and
+`AlgebraicGroups.GroupTheory.UnitriangularSuperdiagonalQuotients`; their two
+ordinary-import clients are included in the 35 regression roots. The
+[filtration guide](../AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration/README.md)
+and [quotient guide](../AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients/README.md)
+state the exact hypotheses and distinguish these APIs from scheme quotients.
 After a successful matching cache fetch, reproduce the focused clients and
 both default targets with:
 
@@ -93,9 +114,10 @@ lake build AlgebraicGroupsTest.UnitriangularGeometry
 lake build
 ```
 
-These commands are reproduction guidance; native job 718 supplies applicable
+These commands are reproduction guidance; native job 811 supplies applicable
 destination build and audit evidence for the unchanged computational inputs.
-That evidence does not by itself accept or publish this geometry release.
+That evidence does not by itself accept or publish the G/Q release. Job 718 is
+retained above as evidence for the earlier, now-published geometry destination.
 Representative clients are in `AlgebraicGroupsTest/`. Some generated auxiliary
 names have changed during the native-module migration; use the authored APIs
 described in the README.

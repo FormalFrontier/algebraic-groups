@@ -1,3 +1,124 @@
+# Algebraic groups and unitriangular point-group quotients
+
+Reusable Lean APIs for algebraic groups, group schemes and their matrix points.
+Original project contributions are licensed under [Apache-2.0](LICENSE).
+The library is independent of any particular book; source interpretation and
+coverage are separate from library acceptance. Dependencies retain their own
+authors, licenses and mathematical contributions.
+
+**Release preparation, 2026-09-28.** The upper-unitriangular coordinate, group-scheme
+and affine-geometry results are already in the official geometry-bearing release
+`183bbbcebf0693df849ad6f5781df4c97d33364f`. This branch additionally transfers
+the central filtration and successive quotients of native unitriangular point
+groups. Those additions passed fresh independent destination review, native
+cache-first builds and the complete standard-axiom audit, and were accepted and
+integrated at `535d623443808796af231ed5761f837c13934cdd`. This documentation-only
+release preparation does not change checked Lean or dependency inputs. Separate
+independent release acceptance and verified publication are still pending; the
+geometry-bearing release named above does not contain these additions.
+The historical README preserved below predates this transfer;
+its former geometry-publication-pending wording is no longer current.
+
+## Headline results
+
+- **Unitriangular groups as affine schemes.** For a finite ordered matrix index
+  type over an arbitrary commutative base ring, the strict-upper coordinates
+  identify the underlying upper-unitriangular group scheme with affine space
+  over the base. The coordinate ring is a polynomial algebra; the construction
+  includes a closed inclusion into the general-linear group and a multiplicative
+  natural equivalence with native unitriangular matrix points. The geometry API
+  gives relative smoothness and geometric integrality, absolute integrality over
+  domain bases, and ring/scheme dimensions over fields. Empty indices and the
+  zero ring are allowed where the stated hypotheses permit them. The affine-space
+  isomorphism is not an additive group-scheme isomorphism. See the
+  [unitriangular module](AlgebraicGroups/GroupScheme/Unitriangular.lean) and
+  [geometry guide](AlgebraicGroups/GroupScheme/UnitriangularGeometry/README.md).
+- **A central filtration and nilpotence of matrix point groups.** For every
+  natural `n` and commutative ring `R : Type`, let `F_r` consist of the native
+  unitriangular matrices whose difference from the identity vanishes below the
+  `r`-th superdiagonal. The new
+  [central-filtration API](AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration/README.md)
+  proves normality, `F_0 = F_1 = top`, `F_n = bot` and
+  `[F_r, F_s] <= F_(r+s)`. It supplies a descending central series, a native
+  nilpotent-group instance and the upper bound `nilpotencyClass <= n-1`.
+  No field, nonzero-ring, characteristic or reducedness assumption is needed.
+  This is an upper bound, not an exact-class theorem or a subgroup-scheme
+  filtration.
+- **Successive quotients are additive coordinate groups.** For `1 <= r`, the
+  new [quotient API](AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients/README.md)
+  identifies the actual quotient of `F_r` by `(F_(r+1)).subgroupOf F_r` with
+  the additive group of functions on the `r`-th superdiagonal positions. Every
+  coordinate family has a lift, but no homomorphic section is asserted.
+  Arbitrary unital coefficient-ring maps preserve the stages and commute with
+  this equivalence on every quotient element; they need not be injective or
+  surjective. Empty dimensions/superdiagonals and zero or nonreduced rings are
+  included. The equivalence excludes `r=0` and is not a group-scheme or additive
+  group-scheme quotient.
+
+These are implemented, destination-accepted statements, with the new point-group
+transfer still subject to its separate release gates above. They use mathlib's matrix,
+subgroup, nilpotent-group and quotient interfaces together with this repository's
+native unitriangular provider; no dependency supplies the two new point-group
+modules. The remaining general-linear, special-linear, group-object, component,
+quotient-sheaf and supporting algebra/scheme APIs are documented in the preserved
+mathematical sections below. No exact nilpotency class, torus or Lie theory,
+general quotient effectivity, or complete source coverage is claimed here.
+
+## Using the new point-group APIs
+
+```lean
+import AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration
+import AlgebraicGroups.GroupTheory.UnitriangularSuperdiagonalQuotients
+
+example (R : Type) [CommRing R] :
+    Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin 3) R) ≤ 2 := by
+  simpa using Matrix.UnitriangularGroup.nilpotencyClass_le 3 R
+```
+
+Both modules are also publicly imported by `AlgebraicGroups`. Their standalone
+guides give precise declarations, quotient representatives and coefficient-map
+examples. The existing native matrix provider ties index and coefficient
+universes, hence `R : Type` here rather than an asserted unrestricted `Type*`.
+
+This candidate has 139 project Lean modules and 35 persistent regression roots.
+The two added clients retain ordinary imports and examples for `Fin 0/1`, empty
+superdiagonals, `ZMod 1/2/4` and general coefficient maps. All twelve resolved
+packages, toolchain, default targets and prior regression roots remain unchanged.
+For the pinned environment, fetch the matching mathlib cache before building:
+
+```sh
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+Native job 811 successfully fetched and verified the matching mathlib cache,
+built both default targets (3,480 jobs), and audited all 139 project modules:
+3,542 actual-origin declarations, including 1,048 private-named origins and all
+generated origins, with complete transitive inspection allowing only `propext`,
+`Classical.choice` and `Quot.sound`. No disallowed axiom was found. This is the
+destination pass, not a substitution of isolated or predecessor evidence.
+Fresh independent destination review and maintainer acceptance/protected
+integration are complete. A separate reviewed official release and verified
+publication follow; no local incubator implementation is removed beforehand.
+
+Separate Worker A executions authored the original filtration and quotient Lean
+modules and clients; distinct Worker B executions independently reviewed each
+isolated implementation. Mathematical exposition authors and reviewers were
+separate contributions. Another Worker A execution prepared the destination
+import/client-namespace transfer and standalone guides without changing proofs;
+Lattice assembled this bounded README update. Exact contribution and evidence
+records remain with the responsible maintainer. None of these agent roles claims
+human review or source-author endorsement. A fresh Worker B execution supplied
+the exact destination review; Lattice accepted and integrated the contribution
+and prepared these lifecycle-only updates. Release decisions remain separate.
+
+## Dated history: complete preceding geometry-release README
+
+The entire preceding README follows unchanged, preserving its mathematics,
+contributor credit and dated verification history. Its module/root counts and
+pending-publication statements describe that earlier snapshot, not the current
+candidate or the already published geometry release identified above.
+
 # algebraic-groups
 
 Reusable Lean formalization for algebraic groups and group schemes.

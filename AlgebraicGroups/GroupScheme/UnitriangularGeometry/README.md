@@ -74,12 +74,17 @@ built both default targets and audited all actual declarations in the accepted
 135-module destination, including private and generated names, using only
 `propext`, `Classical.choice` and `Quot.sound`. Independent non-author transfer
 review and maintainer acceptance/protected main integration cover exact commit
-`31492d5a182c21f40af029121718ceca8085568a`. These completed destination
-checks are separate from still-pending independent release acceptance and
-verified official geometry publication. The preceding official private release
-contains only the coordinate/group predecessor. No source coverage,
-base-change theorem, triangular/diagonal decomposition, nilpotence or Lie theory
-is asserted. This original project development credits Formal Frontier Agents;
+`31492d5a182c21f40af029121718ceca8085568a`. Separate independent geometry
+release acceptance and verified official publication subsequently completed on
+2026-09-28 at `183bbbcebf0693df849ad6f5781df4c97d33364f`, which includes these
+geometry results. Job 718 describes that earlier destination graph, not the
+later G/Q point-group additions. Native job 811 supplies the current complete
+139-module build and transitive standard-three audit, including the unchanged
+geometry implementation. The G/Q contribution's separate release acceptance and
+verified publication remain pending; they do not reopen geometry publication.
+These geometry APIs assert no source coverage, base-change theorem,
+triangular/diagonal decomposition, nilpotence or Lie theory.
+This original project development credits Formal Frontier Agents;
 the original Worker B producer/client author and distinct Worker A isolated
 reviewer are credited in the repository [README](../../../README.md). The
 isolated review alone does not certify the changed destination graph; the
