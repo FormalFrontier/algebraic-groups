@@ -17,8 +17,8 @@ corresponding source-metadata repositories.
 
 The results below describe the library's mathematical scope, with explicit
 hypotheses and exclusions. They do not assert complete formalization of a book
-or a general quotient-effectivity theorem. All 133 checked-in Lean files declare
-the module system, and all 32 regression files are persistent default-build
+or a general quotient-effectivity theorem. All 135 checked-in Lean files declare
+the module system, and all 33 regression files are persistent default-build
 roots. Release verification requires applicable pinned-graph module builds,
 the actual no-target default build and a complete transitive
 axiom audit, including private declarations, allowing only `propext`,
@@ -34,10 +34,21 @@ upper-unitriangular destination snapshot
 (2026-09-28): both configured default targets, all 133 modules and a complete
 transitive standard-axiom audit of 3,404 declarations, including 955 private-named
 declarations. Independent non-author destination review and maintainer code
-acceptance are complete. At this release's preparation, independent release
-review, protected release acceptance and publication are still separate pending
-decisions; this preparation changes documentation and metadata only, preserving
-all Lean, toolchain, build, dependency and checker inputs.
+acceptance are complete for that predecessor. Its release preparation's pending
+status is historical: the coordinate/group-only snapshot has since been
+separately released and verified on the private official GitHub main. The
+subsequently accepted geometry transfer adds two Lean modules, one aggregate
+import and one explicit client root. Unlike job 682 or the isolated geometry
+checks, native job 718 (2026-09-28, exact main commit
+`31492d5a182c21f40af029121718ceca8085568a`) successfully built both
+default targets (3,473 jobs) and audited all 135 modules: 3,419 actual-origin
+declarations, including 956 private-named declarations, with only the three
+allowed axioms. An independent non-author transfer review approved this exact
+commit, and the responsible maintainer accepted and protected-integrated it
+on 2026-09-28. This completes destination code acceptance, **not** independent
+acceptance or publication of a geometry-bearing release. The preceding official
+private GitHub release `20939506447f61a3f383cc67e76802fd4a2fbb75`
+contains coordinate/group results but not this geometry.
 
 The public mathematical interfaces retain their intended hypotheses and scope.
 Compiler-generated proof and simplifier auxiliary names and types can change
@@ -120,7 +131,7 @@ and `endBaseChange_comp._simp_1_2` become private, while
 `endBaseChangeAddHom._proof_1` is replaced by `_proof_3`; other generated proof
 types change. Those generated names are not
 backward-compatible; use the named `endBaseChange_tmul`, `endBaseChange_id` and
-`endBaseChange_comp` statements instead. This is a pre-release development
+`endBaseChange_comp` statements instead. This was a pre-release development
 migration, not source-coverage acceptance. Earlier bounded default attempts
 timed out; these historical failures are not reclassified as successes. The
 combined final-graph build now includes these producer and regression modules;
@@ -152,9 +163,33 @@ ten-example client is `AlgebraicGroupsTest.Unitriangular`; see the
 [upper-unitriangular guide](AlgebraicGroups/GroupScheme/Unitriangular/README.md)
 for presentation maps, points, naturality and precise limits. Native job 682
 and distinct independent destination review support maintainer code acceptance
-of this graph. The predecessor's checks were not substituted for the changed
-graph's own successful both-target build and complete private-inclusive
-transitive standard-axiom audit. Release decisions remain separately recorded.
+of the already released coordinate/group predecessor; its checks were not
+substituted for the changed geometry graph's own successful native job 718 and
+independent transfer review. The geometry below is accepted on development
+main but not yet independently accepted for release or published.
+
+## Upper-unitriangular affine geometry
+
+The underlying scheme of the unitriangular group is isomorphic **over `Spec K`**
+to affine space on its strictly upper matrix entries for every commutative
+coefficient ring and finite linear order. This is not an additive group-scheme
+isomorphism: rank-three multiplication retains a cross term. The actual
+structural morphism is smooth and geometrically integral even over the zero
+ring (where the relative integrality condition is vacuous), while absolute
+integrality of the underlying scheme needs `IsDomain K`. Numeric ring and
+underlying-scheme Krull dimensions are `card ι` choose two **over fields**;
+there is no unconditional absolute dimension formula over arbitrary bases.
+The isomorphism's forward and inverse `Spec.preimage` readbacks, finite
+presentation, smoothness and dimension theorems live in
+`AlgebraicGroups.GroupScheme.UnitriangularGeometry`. Import that focused module
+or `AlgebraicGroups`; see the [geometry guide](AlgebraicGroups/GroupScheme/UnitriangularGeometry/README.md)
+and the 21-example `AlgebraicGroupsTest.UnitriangularGeometry` client for the
+zero ring and ranks `0,1,2,3`. Beyond the independently agent-reviewed isolated
+origin, exact destination commit `31492d5a182c21f40af029121718ceca8085568a`
+has a successful both-target build and complete private/generated-inclusive
+transitive standard-axiom audit (native job 718), independent transfer review
+and maintainer code acceptance. Independent release review and protected
+release acceptance/publication remain pending; no source-coverage decision follows.
 
 ## Current results
 
@@ -732,7 +767,7 @@ default build and checking every shipped file. These measurements are not a
 timing guarantee or a cold-build benchmark for the final graph.
 
 The default build selects the production aggregate and the `AlgebraicGroupsTest`
-target. Its 32 explicit roots in [lakefile.toml](lakefile.toml) cover every
+target. Its 33 explicit roots in [lakefile.toml](lakefile.toml) cover every
 checked-in file under `AlgebraicGroupsTest/`. Additive's twenty original
 examples are persistent private declarations: they are compiled but do not
 extend the public API. The native Artin--Schreier test also uses named private
@@ -741,9 +776,9 @@ normal-form projections and the smoothness/domain/connectedness APIs. It is a
 focused regression, not an audit of every generated declaration, a source
 correspondence decision, or a release-acceptance check.
 
-The checked-in tree contains 133 Lean source files: 101 production files,
-including the aggregate, and 32 regression files. The aggregate and all 32
-explicit test roots reach all 133 local modules. There are no shipped tests
+The checked-in tree contains 135 Lean source files: 102 production files,
+including the aggregate, and 33 regression files. The aggregate and all 33
+explicit test roots reach all 135 local modules. There are no shipped tests
 outside the declared default targets. Source reachability alone establishes neither a
 successful build, complete transitive axiom audit or release acceptance.
 The predecessor accepted 130-module main graph has a successful actual both-default-target
@@ -751,14 +786,31 @@ build (native job 533, 3,468 jobs) and a complete private-inclusive transitive
 axiom audit (3,268 module-origin declarations, including 944 private-prefix
 declarations; only the three allowed axioms). These checks covered the
 predecessor's unchanged Lean, build, dependency and checker inputs in its
-documentation-only release preparation; they do not certify this 133-module
-transfer. Native job 682 independently built the new graph (3,471 jobs) and
+documentation-only release preparation; they do not certify the later
+133-module coordinate/group transfer. Native job 682 independently built that
+133-module graph (3,471 jobs) and
 audited all 3,404 module-origin declarations, including 955 private-named
 declarations, with only the three allowed axioms. Of its 150 recorded file
-tuples, only the four documentation/metadata files change in this preparation;
-all Lean, toolchain, build, dependency and checker inputs remain unchanged.
-These computational checks and destination code acceptance do not themselves
-establish release acceptance or publication.
+tuples, only four documentation/metadata files changed in its preparation;
+its Lean, toolchain, build, dependency and checker inputs remained unchanged.
+That predecessor is now separately released. The accepted 135-module geometry
+graph changes the Lean/import/root inputs; neither predecessor job nor the
+isolated origin's focused check establishes its destination computation.
+Native job 718 independently built both default targets (3,473 jobs) and
+audited all 135 modules and 3,419 actual-origin declarations, including 956
+private-named declarations, using only the three allowed axioms. Independent
+exact-destination transfer review and maintainer code acceptance are complete;
+separate independent release acceptance and publication remain open.
+Documentation and metadata changes here do not alter the checked Lean, build,
+dependency or checker inputs.
+
+The new unitriangular geometry client checks 21 ordinary-import examples:
+the affine-space isomorphism over the base and both actual pullbacks, inferred
+regularity and relative integrality at the zero ring, absolute integrality only
+over domains, and field dimensions at ranks `0`, `1`, `2`, `3`. It is the 33rd
+persistent root. Its compilation is covered by native job 718; the selected
+twelve geometry metadata rows are not the complete fifteen-declaration actual
+geometry census, which includes generated and private declarations.
 
 The GL(V) regression adds 25 named private clients for arbitrary-module
 coefficient change, transported tensor order, finite-basis matrices and
@@ -799,7 +851,9 @@ source-only review. The separately accepted 125-module PR183 predecessor has
 its own applicable native job 530 and independent affected review; the earlier
 130-module union has applicable native job 533 and fresh affected review.
 Native job 477 covered only the earlier 121-module predecessor at its inputs.
-Neither main integration nor these checks accepts the new release candidate.
+Those prior checks did not themselves establish release acceptance; that
+predecessor was subsequently released separately. They do not replace native
+job 718 or independent review of the accepted geometry transfer.
 
 The finite GL/SL geometric-integrality client checks ranks zero, one and two,
 including the zero base; the dimension client checks those ranks, `ZMod 2`
@@ -899,7 +953,7 @@ All regression modules are now selected by the default build; separate direct
 invocations are unnecessary merely to include previously unregistered sources.
 The selected configuration must pass the actual default build on the pinned
 official dependency graph; exact-version results are recorded separately.
-Generated, revision-bound API documentation for this 133-module snapshot is not
+Generated, revision-bound API documentation for this 135-module candidate is not
 supplied; earlier generated snapshots have not been regenerated. The README and
 source docstrings provide the reader documentation. Their claims
 require independent inspection; fresh expensive documentation generation is not
@@ -963,6 +1017,16 @@ replaces, individual project contribution roles:
   followed by Lattice's code acceptance. Lattice prepared this documentation-only
   release-readiness update. These agent roles are not human review, and origin,
   destination and release review remain distinct.
+
+- A later original Formalization Worker B execution authored the unitriangular
+  affine-geometry producer and 21-example client; a distinct Formalization Worker
+  A execution independently reviewed the isolated mathematical proof and API.
+  A separate Worker B execution transferred the original bodies and examples
+  with only their public imports changed. A fresh Worker A execution independently
+  reviewed the exact destination transfer, followed by Lattice's code acceptance
+  and protected integration. The present documentation-only release preparation
+  is by a further Worker B execution; isolated, destination and release reviews
+  are distinct. No human review or geometry-release acceptance is asserted.
 
 - Lattice developed and integrated group-object, group-scheme and algebraic
   infrastructure, including earlier source-repository research later adapted
@@ -1030,7 +1094,8 @@ replaces, individual project contribution roles:
   and owner code acceptance now cover the exact combined destination snapshot;
   its separate independent release acceptance and publication completed at
   `28a1288c1eae8c7230f89c0b165415304fbd0f98`. That completed predecessor release
-  does not accept the upper-unitriangular successor release.
+  did not itself accept the separately completed coordinate/group successor
+  release, and neither release publishes the present geometry contribution.
 - Separate Worker B executions authored the split-kernel product and finite
   determinant-product producers and their ordinary-import clients. A Worker B
   execution prepared their import/namespace normalization for this library;

@@ -6,7 +6,7 @@ The current Lean version is `v4.34.0-rc2`, with mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5`. The project dependencies use
 official published GitHub release commits listed in the README and manifest.
 The GitHub repositories are currently private and require authorized access.
-The checked-in tree includes 133 modules with 32 regression roots selected by the
+The checked-in tree includes 135 modules with 33 regression roots selected by the
 no-target default build. Build and audit requirements are described below;
 exact-version checks and release decisions are recorded separately.
 
@@ -26,9 +26,9 @@ compiling the selected library sources. An existing successful build may be
 reused when Lean, source and build/dependency inputs are unchanged; a
 documentation-only change does not require another build.
 
-The default targets are the production aggregate and all 32 registered regression
-roots, reaching all 133 local Lean modules: 101 production files including the
-aggregate, and 32 test files. Every checked-in Lean file declares the module system;
+The default targets are the production aggregate and all 33 registered regression
+roots, reaching all 135 local Lean modules: 102 production files including the
+aggregate, and 33 test files. Every checked-in Lean file declares the module system;
 the default build checks all regression examples, including anonymous examples.
 The axiom audit covers every retained named, private and generated compiled
 declaration; a module may contain checked examples without retaining constants.
@@ -51,21 +51,51 @@ Native job 682 (2026-09-28) successfully built both configured default targets
 (3,471 jobs) and audited all 133 modules: 3,404 module-origin declarations,
 including 955 private-named declarations, with only the three allowed axioms.
 Independent destination review and maintainer code acceptance cover exact
-snapshot `7ad131de3c5a7696df678e944aaa20c1defbb397`. This documentation-only
-preparation changes four of its 150 recorded file tuples, all documentation or
+snapshot `7ad131de3c5a7696df678e944aaa20c1defbb397`. Its documentation-only
+preparation changed four of its 150 recorded file tuples, all documentation or
 metadata. All Lean, toolchain, build, dependency and checker inputs and all
-twelve resolved packages remain unchanged; this is not release acceptance.
+twelve resolved packages remained unchanged; that predecessor subsequently received
+separate release acceptance and verified private GitHub publication. The later
+geometry transfer added a producer, client, aggregate import and 33rd test root.
+Neither job 682 nor the isolated geometry check certifies those changed inputs.
+Native job 718 (2026-09-28, exact accepted main
+`31492d5a182c21f40af029121718ceca8085568a`) successfully fetched the
+matching mathlib cache, built both configured default targets (3,473 jobs),
+and audited all 135 modules and 3,419 actual-origin declarations, including
+956 private-named declarations, with only the three allowed axioms. The fifteen
+actual geometry declarations include generated and private names; the twelve
+selected metadata rows are not its complete audit. Independent non-author
+transfer review and maintainer code acceptance/protected main integration are
+complete. The preceding official published release has coordinate/group but
+not geometry; independent geometry-release review, protected release acceptance
+and publication remain pending. These documentation-only corrections preserve
+the exact checked Lean, build, dependency and checker inputs, not the original
+whole-153-file input digest.
 
 Start a downstream client with `import AlgebraicGroups`, or use a focused import
 such as `AlgebraicGroups.GroupScheme.Additive` or
 `AlgebraicGroups.GroupScheme.Vector` or
 `AlgebraicGroups.GroupScheme.Unitriangular`. Its ordinary-import client
-`AlgebraicGroupsTest.Unitriangular` is one of the 32 explicit test roots;
-the [user guide](../AlgebraicGroups/GroupScheme/Unitriangular/README.md)
-describes its precise hypotheses and boundaries. After a successful matching
-cache fetch, `lake build AlgebraicGroupsTest.Unitriangular` selects the
-focused client; `lake build` selects both default targets. These are
-reproduction commands, not a claim of a new successful test run.
+`AlgebraicGroupsTest.Unitriangular` is one of the original 32 test roots;
+the [group guide](../AlgebraicGroups/GroupScheme/Unitriangular/README.md)
+describes its precise hypotheses and boundaries. The new focused import
+`AlgebraicGroups.GroupScheme.UnitriangularGeometry` and its ordinary-import
+21-example client `AlgebraicGroupsTest.UnitriangularGeometry` expose the
+underlying affine-space iso, relative smoothness/integrality and field-only
+numeric dimensions; see the [geometry guide](../AlgebraicGroups/GroupScheme/UnitriangularGeometry/README.md).
+After a successful matching cache fetch, reproduce the focused clients and
+both default targets with:
+
+```sh
+lake exe cache get
+lake build AlgebraicGroupsTest.Unitriangular
+lake build AlgebraicGroupsTest.UnitriangularGeometry
+lake build
+```
+
+These commands are reproduction guidance; native job 718 supplies applicable
+destination build and audit evidence for the unchanged computational inputs.
+That evidence does not by itself accept or publish this geometry release.
 Representative clients are in `AlgebraicGroupsTest/`. Some generated auxiliary
 names have changed during the native-module migration; use the authored APIs
 described in the README.

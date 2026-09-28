@@ -48,6 +48,7 @@ public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLine
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLineBaseChange
 public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import AlgebraicGroups.GroupScheme.Unitriangular
+public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation
@@ -95,6 +96,7 @@ public import AlgebraicGroups.Scheme.Smooth
 public import AlgebraicGroups.Topology.KrullDimension
 
 /-!
-The aggregate exposes the finite upper-unitriangular Hopf quotient and its
-affine group scheme alongside the general- and special-linear constructions.
+The aggregate exposes the finite upper-unitriangular Hopf quotient, affine
+group scheme and underlying affine geometry alongside the general- and
+special-linear constructions.
 -/

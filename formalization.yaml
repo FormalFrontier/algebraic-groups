@@ -5,7 +5,8 @@ project:
   description: >-
     Reusable algebraic-group and group-scheme constructions, functors of points,
     coordinate Hopf algebras, components, reduction, smoothness, quotient-sheaf
-    interfaces, finite upper-unitriangular Hopf quotients and group schemes,
+    interfaces, finite upper-unitriangular Hopf quotients, group schemes and
+    the geometry of their underlying schemes,
     and supporting commutative-algebra and scheme theory.
   authors:
     - Formal Frontier Agents
@@ -111,9 +112,23 @@ status:
     equality on its finite index type and allows distinct universes.
     Complete source formalization is not claimed. No diagonal or full triangular
     group scheme, positive-rank or nonzero-ring assumption, or base-ring-change
-    naturality is added by the upper-unitriangular construction. Its destination
-    build, complete transitive standard-axiom audit, independent non-author review
-    and maintainer code acceptance are complete; release decisions are separate.
+    naturality is added by the upper-unitriangular construction. The accepted
+    geometry code identifies the underlying unitriangular scheme with affine space
+    over the base and proves pullback readbacks, coordinate smoothness and finite
+    presentation, relative smoothness and geometric integrality over every
+    commutative ring (including the zero ring), absolute integrality under
+    IsDomain and numeric ring/scheme dimensions under Field. This is not an
+    additive group-scheme isomorphism, an unconditional absolute integrality
+    or numeric dimension result, nor a base-change/nilpotence/Lie theory.
+    The coordinate/group predecessor's destination build, complete transitive
+    standard-axiom audit, independent non-author review and maintainer code
+    acceptance are complete, as is its separate official publication. The
+    geometry transfer's 135-module both-target build and complete actual-origin
+    private/generated-inclusive standard-axiom audit succeeded in native job 718.
+    Independent destination review and maintainer code acceptance/protected main
+    integration cover commit 31492d5a182c21f40af029121718ceca8085568a.
+    Its separate independent release review and official geometry publication
+    remain pending; no source-coverage decision follows from this transfer.
   main_results:
     - declaration: UnitriangularCoordinateRing.ideal_isHopfIdeal
       file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
@@ -147,9 +162,33 @@ status:
       file: AlgebraicGroups/GroupScheme/Unitriangular.lean
     - declaration: AlgebraicGeometry.unitriangularInclusion_point
       file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularUnderlyingAffineSpaceIso
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularUnderlyingAffineSpaceIso_preimage_variable
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularUnderlyingAffineSpaceIso_preimage_inverse
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularCoordinateRing_standardSmooth
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularCoordinateRing_finitePresentation
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupUnderlyingScheme_smooth
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupUnderlyingScheme_geometricallyIntegral
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupUnderlyingScheme_isIntegral
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.card_strictUpperPair
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularCoordinateRing_ringKrullDim
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupUnderlyingScheme_topologicalKrullDim
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin
+      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
 
 review:
-  status: independently agent-reviewed and code-accepted; release review separate
+  status: geometry code agent-reviewed and accepted on main; release review pending
   notes: >-
     The library uses independent non-author agent mathematical and API review.
     The predecessor's 121 Lean modules and 27 persistent regression roots have
@@ -194,11 +233,29 @@ review:
     3404 module-origin declarations, including 955 private-named declarations,
     permitting only propext, Classical.choice and Quot.sound. Fresh independent
     destination review and maintainer code acceptance cover exact snapshot
-    7ad131de3c5a7696df678e944aaa20c1defbb397. This preparation changes four of its
+    7ad131de3c5a7696df678e944aaa20c1defbb397. Its preparation changed four of its
     150 recorded file tuples, all documentation or metadata; all Lean, toolchain,
     build, dependency and checker inputs and twelve resolved packages remain
     unchanged. At preparation, independent release review, protected release
-    acceptance and publication remain pending; no source coverage is upgraded.
+    acceptance and publication were then pending; that predecessor has since
+    been released and verified on the official private GitHub main. The new
+    geometry producer and 21 ordinary-import examples have an independently
+    reviewed isolated origin, distinct from their subsequent destination review.
+    Native job 718 on 2026-09-28 successfully fetched the matching mathlib cache,
+    built both default targets (3473 jobs) and completed the full transitive
+    standard-three axiom audit for all 135 modules: 3419 actual-origin
+    declarations including 956 private-named, with no additional axioms.
+    Geometry has 15 actual declarations, including generated and private names;
+    its twelve selected rows do not exhaust that census. Fresh author-distinct
+    destination transfer review and owner code acceptance/protected integration
+    cover exact main commit 31492d5a182c21f40af029121718ceca8085568a.
+    The preceding official private GitHub release
+    20939506447f61a3f383cc67e76802fd4a2fbb75 has coordinate/group but
+    not geometry. Only documentation and metadata change in this preparation;
+    checked Lean, build, dependency and checker inputs remain identical, though
+    the old whole-153-file input digest does not describe the updated documents.
+    Independent release review, protected release acceptance and verified
+    geometry publication remain pending. No source coverage is upgraded.
 
 acknowledgements: >-
   Lattice supplied earlier research, reusable mathematical implementations and
@@ -229,4 +286,11 @@ acknowledgements: >-
   execution prepared this destination transfer. Another independent Worker A
   execution supplied destination review, followed by Lattice's code acceptance
   and documentation-only release-readiness preparation. These agent roles are
-  not human review or release acceptance.
+  not human review or release acceptance. A separate original Worker B execution
+  authored the new unitriangular geometry producer and client; a distinct Worker A
+  execution independently reviewed their isolated proof bodies. A separate
+  Worker B execution transferred those bodies and examples into the destination;
+  another Worker A execution independently reviewed the exact transfer, followed
+  by Lattice's code acceptance/protected integration. A further Worker B execution
+  prepared the documentation-only geometry-release candidate. These steps are
+  distinct from still-pending independent release acceptance and publication.
