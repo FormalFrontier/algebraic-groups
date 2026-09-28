@@ -12,13 +12,18 @@ The complete private/generated-inclusive audit permitted only the standard
 three axioms. See [current build guidance](../../../docs/BUILDING.md);
 exact release acceptance/publication are recorded separately.
 Sharpness has since reached verified official P7
-`f49141f0cd92a101d587a344eb3e2bd5bf4331d8`. The new native point-group
-lower-central result is accepted on development main
-`d3c455d9adac06b5a873828ea7de57d5501c42f4` after separate original
-native job 865 (143 modules, 37 test roots, 13 packages and 3,634 audited
-module-origin declarations, including 1,128 private-named origins) and fresh
-independent code review. Its own release review/acceptance/publication remain
-pending; this geometry guide does not assert a scheme-level lower central series.
+`f49141f0cd92a101d587a344eb3e2bd5bf4331d8`. The native point-group
+lower-central result subsequently reached official P8
+`441817ab159b20bb7c9c855b05d49abfa3d85c92`, after its original job
+865 on the older 143-module graph. Development main
+`a77d4e4d19f6dc366eb9a40f16503f5855421cf3` additionally includes
+positive-stage generation, exact commutators and native derived series:
+original run 895 built both targets and audited all 3,679 module-origin
+pairs across 145 total Lean modules (107 production, 38 tests), including
+1,168 private-named and all generated origins under only the standard three
+axioms. Fresh independent destination review and maintainer code acceptance
+are complete. This addition's own release review/acceptance/publication remain
+pending; this geometry guide asserts no scheme-level point-group series.
 The original guide below is retained verbatim as a dated snapshot: its
 G/Q-publication-pending wording records the earlier preparation, not the
 current release status. This geometry's statements and proofs do not change.

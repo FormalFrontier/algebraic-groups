@@ -1,3 +1,53 @@
+# Generation and derived-series transfer: current build guidance (2026-09-28)
+
+The separately accepted lower-central series L is on main and internal
+release I8 `164f0310a4f641cc1d698a14b333082bbfcfe474`, and at verified
+official published P8 `441817ab159b20bb7c9c855b05d49abfa3d85c92`.
+Original native jobs 865 and 885 checked its unchanged 143 **total** Lean
+files (106 production including the aggregate, 37 tests/registered roots)
+and 13 whole resolved packages, with a matching cache fetched before builds
+and complete transitive standard-three axioms including private/generated
+origins. Those are dated **old L** checks, not evidence for the changed
+generation producer/client or new derived-series producer/client.
+
+The accepted destination has 145 **total** Lean files (107 production including
+the aggregate, 38 tests and 38 literal test roots), 95 aggregate public imports,
+70 selected main-result objects, and the same 13 complete ordered manifest
+packages. Original native run 895 on exact accepted/protected-integrated main
+`a77d4e4d19f6dc366eb9a40f16503f5855421cf3` fetched the matching cache,
+built both default targets (3,871 jobs), and completed the current-input
+transitive standard-axiom audit: 3,679 module-origin pairs, 3,661 distinct
+names, 1,168 private-named origins, all generated origins and zero rejects.
+Only `propext`, `Classical.choice` and `Quot.sound` occurred. The changed L
+producer/client contributed 37/24 audited origins and derived 13/20. Fresh
+author-distinct destination review and maintainer code acceptance are complete;
+separate fresh release review/acceptance, protected promotion and verified
+publication remain pending. Old jobs 865/885 and isolated donor checks 61/33
+do not certify this 145-module destination. The original static plan counted
+143 as production; the dated correction was 143 total → 145 total (107
+production/38 tests). Documentary changes preserve checked Lean, build,
+dependency and checker inputs, not the whole-shipping-file digest.
+
+The toolchain remains Lean `v4.34.0-rc2` with pinned mathlib
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`, published
+general-linear-groups `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`
+and scheme-properties `6b204a3e49f022e51d78a9f93e77513b99a87e00`.
+For authorized reproduction, fetch the matching cache before either default
+target; these commands are instructions, not a claim of a new run for this
+documentary successor:
+
+```sh
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+See the [generation guide](../AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries/README.md)
+and [derived guide](../AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md)
+for focused imports. The prior release-readiness snapshot and earlier resource
+history below are preserved as dated evidence, not current checks.
+
+## Dated lower-central I8 release-readiness snapshot (before P8 publication)
+
 # Lower-central-series transfer: current build guidance (2026-09-28)
 
 The native lower-central-series producer and ordinary-import client were

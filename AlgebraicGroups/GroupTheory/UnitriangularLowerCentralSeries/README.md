@@ -21,6 +21,10 @@ for *every* `t`, including `n = 0,1`, late stages, and the zero ring.
   `hd : j.val = i.val + d + 1`.
 - `elementary_mem_superdiagonalSubgroup n R i j hij a r hr`:
   `E_ij(a)` lies in `F_r` whenever `hr : i.val + r ≤ j.val`.
+- `superdiagonalSubgroup_le_of_elementary_mem n R d hd H hroot`:
+  for `hd : 1 ≤ d`, any subgroup `H` containing every `E_ij(a)` at
+  distance **at least** `d` contains `F_d`. Neither normality of `H` nor
+  nontriviality of `R` is required; one exact-distance diagonal is not enough.
 - `lowerCentralSeries_eq_superdiagonalSubgroup n R t`: `γ_t = F_(t+1)`.
 
 ```lean
@@ -43,18 +47,21 @@ using `⁅E_ik(a), E_kj(1)⁆ = E_ij(a)` in that order. The filtration's
 commutator bound proves `γ_t ≤ F_(t+1)`.
 
 For `1 ≤ r`, take an **ordered list product** of elementary roots at each
-`r`-superdiagonal coordinate of `x ∈ F_r`. Each factor is in `γ_(r-1)`;
+`r`-superdiagonal coordinate of `x ∈ F_r`. If `d ≤ r` and an arbitrary
+subgroup `H` contains all roots at distances at least `d`, each factor is
+in `H`. In particular, the appropriate roots also lie in `γ_(r-1)`;
 their images under the public coordinate homomorphism add to the complete
 coordinate family of `x`. Products of those native elements need not commute.
 The difference `p⁻¹*x` belongs to the exact kernel `F_(r+1)` *inside* `F_r`.
-Descending from `F_n = ⊥` recovers `F_r ≤ γ_(r-1)`; this also handles empty
-coordinate sets. The construction uses neither division nor a chosen
+Descending from `F_n = ⊥` proves the arbitrary-subgroup generation criterion;
+applying it to the actual lower central series recovers `F_r ≤ γ_(r-1)`.
+This also handles empty coordinate sets. The construction uses neither division nor a chosen
 homomorphic section of the coordinate quotient. This is a native point-group
 equality, not a group-scheme quotient or an unconditional exact-class theorem.
 
 `AlgebraicGroupsTest.UnitriangularLowerCentralSeries` checks these APIs by
-ordinary import over generic rings, dimensions `0,1,3,4`, early and late
-stages, arbitrary coefficients, characteristic-two `ZMod 2`, nonreduced
+ordinary import over generic rings and arbitrary subgroups, dimensions `0,1,3,4`,
+symbolic positive, early and late stages, arbitrary coefficients, characteristic-two `ZMod 2`, nonreduced
 `ZMod 4`, and the zero ring `ZMod 1`. To check the focused producer and client
 from the repository root with the pinned toolchain and manifest, successfully
 fetch the matching mathlib cache first:
@@ -66,13 +73,42 @@ LAKE_JOBS=2 lake build AlgebraicGroups.GroupTheory.UnitriangularLowerCentralSeri
 
 These are reproduction instructions, **not** a new build or axiom audit.
 The aggregate and both default targets passed original native job 865 on the
-accepted destination graph: 143 modules, 37 test roots and 13 whole resolved
+earlier accepted H destination graph: 143 total Lean files (106 production,
+37 tests), 37 test roots and 13 whole resolved
 packages. After matching-cache retrieval, that run built both targets
 (3,869 jobs) and audited all 3,634 module-origin declarations (3,616 distinct
 names), including 1,128 private-named and all generated origins. Only
 `propext`, `Classical.choice` and `Quot.sound` occurred; zero were rejected.
+That job did not check the later generation refactor or derived-series graph;
+their original native destination run 895 is recorded below.
 
 ## Provenance and status
+
+The preceding L equality reached accepted main I8
+`164f0310a4f641cc1d698a14b333082bbfcfe474` and separately verified
+official published P8 `441817ab159b20bb7c9c855b05d49abfa3d85c92`.
+On that released parent, the generation extraction and dependent derived-series
+module were initially **unbuilt, unaudited, unreviewed and unaccepted** at
+the dated pre-H transfer stage. Original native run 895 then fetched the
+matching official cache, built both targets (3,871 jobs), and audited all
+3,679 module-origin pairs across 145 total Lean modules (107 production,
+38 tests), including 1,168 private-named and all generated origins; only
+`propext`, `Classical.choice` and `Quot.sound` occurred. Fresh independent
+destination review and Lattice's acceptance/protected integration cover
+development main `a77d4e4d19f6dc366eb9a40f16503f5855421cf3`. This
+addition's own fresh release review, acceptance, protected promotion and
+verified publication remain pending; source correspondence is a different
+decision. The generation proof-only
+refactor comes from isolated incubator donor `b91db48ba6ac8dc2593fd3e478daed05657e7f37`
+by worker-a Task `hive-request-a86e0cfca75b354d4aca0f4c932f1991ca9e682a`
+(UID `7c231766-d3e8-4c77-a695-2887fa2be307`), independently reviewed at
+`3b5837720234d3a01674dfd165dcbfd17afea2e8` and accepted in isolation
+by Lattice at incubator issue #143/comment 59651. This native transfer is by
+worker-a Task `hive-request-4d4e96a0baa3d9b23aa444ac8cd732106652fd12`
+(UID `8b645e93-000d-4103-b452-2e97301c3880`). The prior history below
+is retained as a dated I8 release-readiness snapshot, not current status.
+
+### Dated I8 release-readiness history
 
 The mathematical plan was written by worker-b Task
 `hive-request-08edbb8fbdc5bb5e32379b4a69af04dfac86f02d` (UID

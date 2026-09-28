@@ -1,17 +1,23 @@
-# Algebraic groups: lower central series and group-scheme APIs
+# Algebraic groups: native series and group-scheme APIs
 
 Reusable source-independent Lean results for algebraic groups, group schemes
 and native matrix point groups, licensed under [Apache-2.0](LICENSE). The library
 includes the **exact nilpotency class** of native finite unitriangular point
 groups alongside their central filtration, successive quotients and underlying
-scheme geometry. Sharpness is published at verified official P7
-`f49141f0cd92a101d587a344eb3e2bd5bf4331d8` (internal accepted I7
-`28a4dd05b2f2f2c1aae5e2161338b953b454b762`). The all-stage native
-lower-central-series identification is accepted on development main at
-`d3c455d9adac06b5a873828ea7de57d5501c42f4`, after its own successful
-destination build, complete standard-axiom audit and independent code review.
-This documentary snapshot proposes L's separate reviewed release; neither
-release acceptance nor official L publication is claimed. Dependencies retain
+scheme geometry. Sharpness was published at verified official P7
+`f49141f0cd92a101d587a344eb3e2bd5bf4331d8`. The separately
+reviewed all-stage native lower-central result is now also published at
+verified official P8 `441817ab159b20bb7c9c855b05d49abfa3d85c92`
+(accepted internal I8 `164f0310a4f641cc1d698a14b333082bbfcfe474`).
+Development main `a77d4e4d19f6dc366eb9a40f16503f5855421cf3` additionally
+integrates positive-stage elementary generation, exact commutators and the
+native derived series. Original native run 895 built both default targets and
+completed the private/generated-inclusive transitive standard-three axiom
+audit on this 145-module destination graph. Fresh independent destination
+review and maintainer code acceptance/protected integration are complete.
+Its **own release review, acceptance and verified publication are pending**;
+official P8 does not contain these additions. Isolated donor checks and the
+old L release were not substituted for run 895. Dependencies retain
 their own authors, licenses and mathematical contributions. Source interpretation
 and coverage remain separate from library acceptance.
 
@@ -49,6 +55,13 @@ and coverage remain separate from library acceptance.
   both in the actual series and the filtration. This is a point-group equality,
   not a group-scheme quotient or an unconditional sharp-class statement. See
   the [lower-central-series guide](AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries/README.md).
+- **Generation and derived series (accepted on development main).** A positive
+  stage `F_d` lies in any subgroup containing every elementary root at distance
+  at least `d`, without normality or ring nontriviality. For positive `r,s`,
+  `⁅F_r,F_s⁆ = F_(r+s)`, and the native derived series is `F_(2^t)` for every
+  `t`, over all commutative rings. Over nontrivial rings, `F_d = ⊥ ↔ n ≤ d`
+  for positive `d`, and the derived series stops at `t` exactly when
+  `n ≤ 2^t`. See the [derived-series guide](AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md).
 
 ### Using the exact-class API
 
@@ -111,9 +124,51 @@ targets and a complete transitive standard-three audit including private and
 generated declarations in original native job 865. Fresh independent review
 and Lattice's acceptance cover the exact destination code. Isolated donor
 evidence and the earlier 141-module sharpness checks alone did not certify it;
-separate L release review, acceptance and publication remain pending.
+separate L release review, acceptance and publication were still pending
+at this historical L-only readiness checkpoint; I8/P8 subsequently completed them.
+
+### Using the generation and derived-series APIs
+
+`Matrix.UnitriangularGroup.superdiagonalSubgroup_le_of_elementary_mem` handles
+an arbitrary subgroup and **all** roots at distance at least a positive stage;
+the derived-series module uses it rather than duplicating the elimination.
+Import `AlgebraicGroups.GroupTheory.UnitriangularDerivedSeries` for the native
+positive-stage commutator equality, all-stage derived-series equality and
+the two `[Nontrivial R]` stopping criteria. The positive-stage hypotheses
+and weak bounds `n ≤ d`, `n ≤ 2^t` cannot be omitted. The ordinary-import
+clients include dimension zero/one, zero-ring and a genuine zero-index
+commutator counterexample. The [lower-central guide](AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries/README.md)
+and [derived guide](AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md)
+document their independent hypotheses and imports. The accepted destination
+has 145 **total** Lean files (107 production including the aggregate,
+38 tests), 38 explicit test roots and the unchanged 13 whole packages;
+original native run 895 checked this actual graph, not an estimated one.
 
 ### Verification and release context (2026-09-28)
+
+Old L passed original native job 865 and later native job 885 on the unchanged
+143-total-Lean/37-test/13-package I8 inputs, followed by separate reviewed
+main, internal and official P8 publication. The generation/derived union
+changed its producer, client, aggregate import and test roots. Original native
+run 895 on exact accepted main `a77d4e4d19f6dc366eb9a40f16503f5855421cf3`
+fetched the matching official cache, built both default targets (3,871 jobs)
+and audited all 3,679 module-origin pairs (3,661 distinct names) across 145
+total Lean modules, including 1,168 private-named and all generated origins.
+Only `propext`, `Classical.choice` and `Quot.sound` occurred; zero origins were
+rejected. Its current lower-central producer/client contributed 37/24 origins,
+and the new derived producer/client 13/20. Fresh author-distinct destination
+review and Lattice's acceptance/protected integration cover this exact commit;
+this documentary successor preserves its Lean, build, dependency and checker
+inputs but changes the whole-shipping-file digest. Separate fresh release
+review, maintainer acceptance, protected promotion and verified private GitHub
+publication remain pending. Old jobs 865/885 and isolated donor checks 61/33
+apply only to their own inputs, not this native 145-module graph.
+The original plan `903d2bb62568b92bafdb0d2bf0523499c952f0ef`
+miscounted 143 old files as production; the dated correction is 143 total →
+145 total (107 production/38 tests) on accepted main.
+The unchanged plan and all dated predecessor evidence remain retained.
+
+#### Dated pre-P8 L release-readiness snapshot
 
 The transferred sharpness contribution passed independent destination review
 and native job 843 on `172234b1ae20be037a781f0a105ae88dfbe3e856`, then

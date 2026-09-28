@@ -53,6 +53,7 @@ public import AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration
 public import AlgebraicGroups.GroupTheory.UnitriangularSuperdiagonalQuotients
 public import AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass
 public import AlgebraicGroups.GroupTheory.UnitriangularLowerCentralSeries
+public import AlgebraicGroups.GroupTheory.UnitriangularDerivedSeries
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation
@@ -102,7 +103,7 @@ public import AlgebraicGroups.Topology.KrullDimension
 /-!
 The aggregate exposes the finite upper-unitriangular Hopf quotient, affine
 group scheme and underlying affine geometry, native central filtration,
-successive quotients, exact nilpotency class under nontriviality and the
-all-stage lower-central-series identification alongside the general- and
-special-linear constructions.
+successive quotients, exact nilpotency class under nontriviality, the
+all-stage lower-central-series identification and the derived series
+alongside the general- and special-linear constructions.
 -/

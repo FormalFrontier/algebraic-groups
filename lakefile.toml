@@ -60,4 +60,5 @@ roots = [
   "AlgebraicGroupsTest.UnitriangularSuperdiagonalQuotients",
   "AlgebraicGroupsTest.UnitriangularNilpotencyClass",
   "AlgebraicGroupsTest.UnitriangularLowerCentralSeries",
+  "AlgebraicGroupsTest.UnitriangularDerivedSeries",
 ]

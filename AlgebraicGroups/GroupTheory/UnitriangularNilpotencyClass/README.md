@@ -72,8 +72,16 @@ the complete transitive audit covered 3,634 module-origin declarations, includin
 1,128 private-named and all generated origins, under only the standard three
 axioms. Fresh independent exact-H destination review and Lattice's code
 acceptance/protected integration cover
-`d3c455d9adac06b5a873828ea7de57d5501c42f4`; L's own reviewed release
-and verified publication remain pending. Sharpness is published
-at official P7 `f49141f0cd92a101d587a344eb3e2bd5bf4331d8`;
-the older filtration/quotient P6 does not contain it. See
+`d3c455d9adac06b5a873828ea7de57d5501c42f4`. L was subsequently
+published at official P8 `441817ab159b20bb7c9c855b05d49abfa3d85c92`.
+Original native run 895 built both targets and audited all 3,679 actual
+module-origin pairs (including 1,168 private-named and all generated origins)
+across 145 **total** Lean modules (107 production, 38 tests) on accepted
+development main `a77d4e4d19f6dc366eb9a40f16503f5855421cf3`, allowing
+only the standard three axioms. Fresh independent destination review and
+maintainer code acceptance/protected integration are complete for its
+generation/derived addition; that addition's own release review, acceptance
+and verified publication remain pending. Sharpness is published at official
+P7 `f49141f0cd92a101d587a344eb3e2bd5bf4331d8`; the older
+filtration/quotient P6 does not contain it. See
 [build guidance](../../../docs/BUILDING.md).

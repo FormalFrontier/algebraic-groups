@@ -9,8 +9,9 @@ project:
     the geometry of their underlying schemes, central filtrations and successive
     quotients of their native point groups, exact nilpotency classes of finite
     native unitriangular groups over nontrivial commutative rings, the
-    all-stage lower central series of native unitriangular groups over any
-    commutative ring, and
+    all-stage lower central series and positive-stage elementary generation
+    of native unitriangular groups, exact positive-stage commutators and their
+    native derived series over any commutative ring, and
     supporting commutative-algebra and scheme theory.
   authors:
     - Formal Frontier Agents
@@ -73,6 +74,35 @@ automation:
 
 status:
   scope: >-
+    Current 2026-09-28 development main a77d4e4d19f6dc366eb9a40f16503f5855421cf3
+    integrates the arbitrary-subgroup positive-stage generation criterion (all
+    elementary roots at distances at least d, without normality or Nontrivial),
+    positive-stage commutator equality and native derivedSeries U t = F_(2^t)
+    over every CommRing. Numerical stopping equivalences use Nontrivial and
+    weak n ≤ d / n ≤ 2^t, with positive d for general stages. Original native
+    run 895 built both default targets and audited the complete 145-total-Lean
+    graph, including private and generated origins, under the standard three
+    axioms. Fresh independent destination review and maintainer code acceptance
+    with protected main integration are complete. This contribution's separate
+    fresh release review, release acceptance, protected promotion and verified
+    publication are pending; official P8 contains old L, not these additions.
+    No group-scheme or source-coverage assertion follows. The complete previous
+    2026-09-28 pre-H scope scalar follows as dated, superseded lifecycle history:
+    Released predecessor: the all-stage native lower-central series is on
+    accepted main/internal I8 164f0310a4f641cc1d698a14b333082bbfcfe474
+    and verified official published P8
+    441817ab159b20bb7c9c855b05d49abfa3d85c92. This new sole-I8-child
+    destination candidate additionally offers arbitrary-subgroup elementary
+    generation at all distances at least any positive stage (without normality
+    or ring nontriviality), exact positive-stage filtration commutators, the
+    actual derived series at powers of two over every commutative ring, and
+    numerical stopping criteria with weak n ≤ d / n ≤ 2^t bounds under the
+    respective positive-stage/nontrivial-ring hypotheses. This changed graph
+    is unbuilt, unaudited, unreviewed, unaccepted and unreleased; old native
+    jobs 865/885 and isolated donor61/33 are not its computation. No source
+    coverage or group-scheme quotient is asserted. The following complete
+    2026-09-28 I8 pre-publication scope and predecessor snapshots are retained
+    as dated history, not current release or new-graph status.
     Current 2026-09-28 accepted development-main scope: for every n,t and
     R : Type with CommRing R, including zero rings, the native point-group
     lower central stage gamma_t equals F_(t+1); two elementary membership
@@ -325,16 +355,73 @@ status:
       file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
     - declaration: Matrix.UnitriangularGroup.elementary_mem_superdiagonalSubgroup
       file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_le_of_elementary_mem
+      file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
     - declaration: Matrix.UnitriangularGroup.lowerCentralSeries_eq_superdiagonalSubgroup
       file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_commutator_eq
+      file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
+    - declaration: Matrix.UnitriangularGroup.derivedSeries_eq_superdiagonalSubgroup
+      file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
+    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_eq_bot_iff
+      file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
+    - declaration: Matrix.UnitriangularGroup.derivedSeries_eq_bot_iff
+      file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
 
 review:
   status: >-
+    Current 2026-09-28 destination code at main
+    a77d4e4d19f6dc366eb9a40f16503f5855421cf3 passed original native
+    run 895 and fresh author-distinct worker-b exact-H APPROVED review;
+    Lattice separately accepted and protected-integrated the code. Its own
+    fresh release review and acceptance, protected promotion and verified
+    public publication have not occurred. The complete previous pre-H status
+    scalar follows as dated 2026-09-28 superseded candidate history:
+    Released L is independently reviewed and published at verified P8;
+    generation/derived is an unbuilt, unaudited, unreviewed and unaccepted
+    new destination candidate, with its own review and release pending.
+    Earlier status (dated, superseded by I8/P8 and this new candidate):
     K published at P7; L destination code accepted at H after independent
     review and original native job 865; separate L release review, acceptance
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    Current 2026-09-28 H a77d4e4d19f6dc366eb9a40f16503f5855421cf3
+    (tree 5357dd2546f73f0e0a13e4477e06eb7af1e3323f) has original
+    native run 895: official matching cache, both default targets (3871
+    jobs), 145 TOTAL Lean modules (107 production, 38 tests), 38 registered
+    roots, 13 whole packages and 3679 audited module-origin pairs / 3661
+    distinct names / 1168 private-named origins, all generated and zero
+    rejected under propext, Classical.choice and Quot.sound. Current L
+    producer/client have 37/24 audited origins, derived producer/client 13/20.
+    Fresh worker-b Task hive-request-43725274357485ac375ee304b0615e1ec5da17db
+    (UID 4bbf1a02-a802-4295-b538-9a27e1df5d55) independently reviewed
+    exact H; Lattice accepted and protected-integrated it on 2026-09-28.
+    This documentary successor preserves Lean, build, dependency and checker
+    inputs, not the whole-file digest. Original L jobs 865/885 and isolated
+    donor checks 61/33 retain their own dated input scopes. Fresh release
+    review, owner release acceptance, protected promotion and verified
+    publication remain pending. The complete previous pre-H notes scalar
+    follows as dated 2026-09-28 superseded lifecycle history:
+    Isolated generation donor b91db48ba6ac8dc2593fd3e478daed05657e7f37
+    by worker-a Task hive-request-a86e0cfca75b354d4aca0f4c932f1991ca9e682a
+    UID 7c231766-d3e8-4c77-a695-2887fa2be307 was independently reviewed at
+    3b5837720234d3a01674dfd165dcbfd17afea2e8 and accepted in isolation
+    at incubator issue 143/comment 59651. Dependent derived donor
+    53c9acf8fb655040d42a859c65eb13fb96f0a9eb by worker-a Task
+    hive-request-5137edd150f61b7bf52376ee42728a3b848587b3 UID
+    302c66a3-a11e-4979-acf1-445bf61de036 was independently reviewed at
+    c6f711e5cd1990e36ef8d9455bcace9aa2cbce16 and accepted in isolation
+    at incubator issue 143/comment 59794. Current native transfer author is
+    worker-a Task hive-request-4d4e96a0baa3d9b23aa444ac8cd732106652fd12
+    UID 8b645e93-000d-4103-b452-2e97301c3880. Lattice's issue 198/comment
+    59949 corrects the earlier plan's production-file count: 143 total on
+    released I8 to projected 145 total, 107 production/38 test files.
+    Original native jobs 865 and 885 apply to released L's unchanged 143
+    total files/37 tests, not the changed generation/derived graph.
+    Independent current-input destination review, complete native checks,
+    owner acceptance and separate verified release remain pending. Earlier
+    L-only review notes and their dated histories follow unmodified.
     Current 2026-09-28 destination status: worker-b Task
     hive-request-1f399c450c61323388c22fc0f190b0cadcfab7f1 (UID
     4401c6a6-9b48-4e5b-a181-f271b75e5f0f) independently reviewed exact
@@ -477,6 +564,17 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  On 2026-09-28 worker-a Task
+  hive-request-378e697ebd74972792fe95fa7493101b31f2bd15 (UID
+  12340ede-4fe0-46c1-9926-e34abb8d822e) prepared this documentary
+  generation/derived release successor. The original native transfer was by
+  worker-a Task hive-request-4d4e96a0baa3d9b23aa444ac8cd732106652fd12
+  (UID 8b645e93-000d-4103-b452-2e97301c3880); independent worker-b Task
+  hive-request-43725274357485ac375ee304b0615e1ec5da17db (UID
+  4bbf1a02-a802-4295-b538-9a27e1df5d55) reviewed exact destination H.
+  Separate release review and acceptance/publication remain pending. The
+  complete previous acknowledgement scalar follows as dated 2026-09-28
+  historical contribution and earlier-release preparation credit:
   On 2026-09-28 worker-a Task
   hive-request-3fe85aa2c78b4291aa1825698f3a8b1f841b5f31 (UID
   7d7dfc62-78cf-47f5-af8b-34031fd4b38f) prepared this bounded

@@ -3,15 +3,20 @@
 The group-scheme construction below was published in an earlier official
 release, and the subsequent sharpness result is published at official P7
 `f49141f0cd92a101d587a344eb3e2bd5bf4331d8`. The separate native
-point-group lower-central equality is accepted on development main
-`d3c455d9adac06b5a873828ea7de57d5501c42f4`, after original native job
-865 built both default targets and audited all 3,634 actual module-origin
-declarations across 143 Lean modules, including 1,128 private-named origins
-and all generated origins under only the standard three axioms. Fresh
-independent destination review and maintainer code acceptance are complete;
-separate L release review, acceptance and publication remain pending. The
-final paragraph below describes this group-scheme module's earlier
-documentation-only preparation, not the status of the current L candidate.
+point-group lower-central equality, checked in original native job 865 on
+the then-143-module graph, was published at official P8
+`441817ab159b20bb7c9c855b05d49abfa3d85c92`. Development main
+`a77d4e4d19f6dc366eb9a40f16503f5855421cf3` additionally integrates
+positive-stage generation, exact commutators and native derived series:
+original native run 895 checked both default targets and all 3,679 audited
+module-origin pairs across 145 total Lean modules (107 production, 38 tests),
+including 1,168 private-named and all generated origins under only the
+standard three axioms. Fresh independent destination review and maintainer
+code acceptance/protected integration are complete; this contribution's own
+release review, acceptance and publication remain pending. These native
+point-group results assert no new group-scheme constructions. The final
+paragraph below describes this group-scheme module's earlier preparation,
+not the current release status.
 
 ---
 

@@ -13,13 +13,17 @@ private/generated-inclusive standard-three audit passed; see
 [current build guidance](../../../docs/BUILDING.md). The G/Q release and
 sharpness P7 have since been independently accepted and published; their
 release decisions are distinct from accepted-code evidence. The native
-point-group lower-central equality is separately
-accepted on development main `d3c455d9adac06b5a873828ea7de57d5501c42f4`
-after original native job 865 built both default targets and audited all
-3,634 actual module-origin declarations across 143 modules/37 test roots/13
-packages, including 1,128 private-named origins under only the standard
-three axioms. Its separate release review, acceptance and publication remain
-pending. The original guide below (including its then-pending G/Q publication) is
+point-group lower-central equality was separately published at official P8
+`441817ab159b20bb7c9c855b05d49abfa3d85c92` after original native job
+865 checked its older 143-module graph. Development main
+`a77d4e4d19f6dc366eb9a40f16503f5855421cf3` adds positive-stage
+generation, exact commutators and the native derived series: original run 895
+built both targets and audited 3,679 module-origin pairs across 145 **total**
+Lean modules (107 production, 38 tests), including 1,168 private-named and
+all generated origins under only the standard three axioms. Fresh independent
+destination review and maintainer code acceptance are complete; the new
+addition's own release review, acceptance and publication remain pending.
+The original guide below (including its then-pending G/Q publication) is
 preserved as dated history, not a description of current release status.
 
 ---

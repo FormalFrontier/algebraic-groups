@@ -82,19 +82,6 @@ private def coordinateElementary (r : ℕ) (hr : 1 ≤ r)
       ((x.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2),
     elementary_mem_superdiagonalSubgroup n R _ _ _ _ r (by exact le_of_eq ij.2.symm)⟩
 
-private theorem coordinateElementary_mem_lowerCentralSeries
-    (r : ℕ) (hr : 1 ≤ r) (x : superdiagonalSubgroup n R r)
-    (ij : superdiagonalIndex n r) :
-    (coordinateElementary n R r hr x ij).1 ∈
-      (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries
-        (r - 1) := by
-  have hij : ij.1.1 < ij.1.2 := Fin.lt_def.mpr (by have := ij.2; omega)
-  change elementary n R ij.1.1 ij.1.2 hij
-    ((x.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2) ∈
-      (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries (r - 1)
-  exact elementary_mem_lowerCentralSeries_of_distance n R _ _ hij _ (r - 1)
-    (by have := ij.2; omega)
-
 private theorem coordinateElementary_apply (r : ℕ) (hr : 1 ≤ r)
     (x : superdiagonalSubgroup n R r) (ij kl : superdiagonalIndex n r) :
     Multiplicative.toAdd
@@ -127,20 +114,23 @@ private noncomputable def coordinateProduct (r : ℕ) (hr : 1 ≤ r)
   (((Finset.univ : Finset (superdiagonalIndex n r)).toList).map
     (coordinateElementary n R r hr x)).prod
 
-private theorem coordinateProduct_mem_lowerCentralSeries (r : ℕ) (hr : 1 ≤ r)
+private theorem coordinateProduct_mem_of_elementary_mem (d : ℕ)
+    (H : Subgroup (Matrix.UnitriangularGroup (Fin n) R))
+    (hroot : ∀ (i j : Fin n) (hij : i < j) (a : R),
+      i.val + d ≤ j.val → elementary n R i j hij a ∈ H)
+    (r : ℕ) (hr : 1 ≤ r) (hdr : d ≤ r)
     (x : superdiagonalSubgroup n R r) :
-    (coordinateProduct n R r hr x).1 ∈
-      (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries
-        (r - 1) := by
+    (coordinateProduct n R r hr x).1 ∈ H := by
   have hlist (l : List (superdiagonalIndex n r)) :
-      ((l.map (coordinateElementary n R r hr x)).prod).1 ∈
-        (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries
-          (r - 1) := by
+      ((l.map (coordinateElementary n R r hr x)).prod).1 ∈ H := by
     induction l with
     | nil => exact Subgroup.one_mem _
     | cons ij l ih =>
+        have hij : ij.1.1 < ij.1.2 := Fin.lt_def.mpr (by have := ij.2; omega)
+        have hfactor : (coordinateElementary n R r hr x ij).1 ∈ H :=
+          hroot ij.1.1 ij.1.2 hij _ (by have := ij.2; omega)
         simpa only [List.map_cons, List.prod_cons, Subgroup.coe_mul] using
-          (Subgroup.mul_mem _ (coordinateElementary_mem_lowerCentralSeries n R r hr x ij) ih)
+          (Subgroup.mul_mem _ hfactor ih)
   exact hlist _
 
 private theorem coordinateProduct_apply (r : ℕ) (hr : 1 ≤ r)
@@ -169,63 +159,61 @@ private theorem coordinateProduct_apply (r : ℕ) (hr : 1 ≤ r)
     simp [coeff]
   exact (hlist _).trans hsum
 
+/-- A positive superdiagonal stage lies in any subgroup containing all elementary
+roots at every distance at least that stage. No normality or ring nontriviality is needed. -/
+theorem superdiagonalSubgroup_le_of_elementary_mem (d : ℕ) (hd : 1 ≤ d)
+    (H : Subgroup (Matrix.UnitriangularGroup (Fin n) R))
+    (hroot : ∀ (i j : Fin n) (hij : i < j) (a : R),
+      i.val + d ≤ j.val → elementary n R i j hij a ∈ H) :
+    superdiagonalSubgroup n R d ≤ H := by
+  have hdown (r : ℕ) (hrn : r ≤ n) :
+      d ≤ r → superdiagonalSubgroup n R r ≤ H := by
+    apply Nat.decreasingInduction (n := n)
+      (motive := fun r _ => d ≤ r → superdiagonalSubgroup n R r ≤ H)
+    · intro r hr ih hdr
+      have hpos : 1 ≤ r := by omega
+      intro g hg
+      let x : superdiagonalSubgroup n R r := ⟨g, hg⟩
+      let p := coordinateProduct n R r hpos x
+      have hphi : superdiagonalCoordinateHom n R r hpos p =
+          superdiagonalCoordinateHom n R r hpos x := by
+        apply Multiplicative.toAdd.injective
+        funext ij
+        simpa only [superdiagonalCoordinateHom_apply] using
+          coordinateProduct_apply n R r hpos x ij
+      have hker : p⁻¹ * x ∈ (superdiagonalCoordinateHom n R r hpos).ker := by
+        change superdiagonalCoordinateHom n R r hpos (p⁻¹ * x) = 1
+        rw [map_mul, map_inv, hphi, inv_mul_cancel]
+      have hq : (p⁻¹ * x).1 ∈ superdiagonalSubgroup n R (r + 1) := by
+        rw [superdiagonalCoordinateHom_ker n R r hpos] at hker
+        exact hker
+      have hp := coordinateProduct_mem_of_elementary_mem n R d H hroot r hpos
+        hdr x
+      have hrecover : p.1 * (p⁻¹ * x).1 = g := by
+        change p.1 * (p.1⁻¹ * g) = g
+        group
+      rw [← hrecover]
+      exact Subgroup.mul_mem _ hp (ih (by omega) hq)
+    · intro _
+      rw [superdiagonalSubgroup_end]
+      exact bot_le
+    · exact hrn
+  by_cases hdn : d ≤ n
+  · exact hdown d hdn le_rfl
+  · exact (superdiagonalSubgroup_antitone n R (by omega : n ≤ d)).trans
+      (by rw [superdiagonalSubgroup_end]; exact bot_le)
+
 /-- The actual lower central series is exactly the superdiagonal filtration. -/
 theorem lowerCentralSeries_eq_superdiagonalSubgroup (t : ℕ) :
     (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries t =
       superdiagonalSubgroup n R (t + 1) := by
   apply le_antisymm (lowerCentralSeries_le_superdiagonalSubgroup n R t)
-  have hdown (r : ℕ) (hrn : r ≤ n) :
-      superdiagonalSubgroup n R r ≤
-        (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries
-          (r - 1) := by
-    apply Nat.decreasingInduction (n := n)
-      (motive := fun r _ => superdiagonalSubgroup n R r ≤
-        (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries
-          (r - 1))
-    · intro r hr ih
-      by_cases hr0 : r = 0
-      · subst r
-        rw [superdiagonalSubgroup_zero]
-        exact le_top
-      · have hpos : 1 ≤ r := by omega
-        have hnext : superdiagonalSubgroup n R (r + 1) ≤
-            (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries r := by
-          simpa only [show r + 1 - 1 = r by omega] using ih
-        intro g hg
-        let x : superdiagonalSubgroup n R r := ⟨g, hg⟩
-        let p := coordinateProduct n R r hpos x
-        have hphi : superdiagonalCoordinateHom n R r hpos p =
-            superdiagonalCoordinateHom n R r hpos x := by
-          apply Multiplicative.toAdd.injective
-          funext ij
-          simpa only [superdiagonalCoordinateHom_apply] using
-            coordinateProduct_apply n R r hpos x ij
-        have hker : p⁻¹ * x ∈ (superdiagonalCoordinateHom n R r hpos).ker := by
-          change superdiagonalCoordinateHom n R r hpos (p⁻¹ * x) = 1
-          rw [map_mul, map_inv, hphi, inv_mul_cancel]
-        have hq : (p⁻¹ * x).1 ∈ superdiagonalSubgroup n R (r + 1) := by
-          rw [superdiagonalCoordinateHom_ker n R r hpos] at hker
-          exact hker
-        have hq' : (p⁻¹ * x).1 ∈
-            (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries
-              (r - 1) :=
-          (Subgroup.lowerCentralSeries_antitone
-            (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R))
-            (by omega : r - 1 ≤ r))
-            (hnext hq)
-        have hp := coordinateProduct_mem_lowerCentralSeries n R r hpos x
-        have hrecover : p.1 * (p⁻¹ * x).1 = g := by
-          change p.1 * (p.1⁻¹ * g) = g
-          group
-        rw [← hrecover]
-        exact Subgroup.mul_mem _ hp hq'
-    · rw [superdiagonalSubgroup_end]
-      exact bot_le
-    · exact hrn
-  by_cases ht : t + 1 ≤ n
-  · simpa only [show t + 1 - 1 = t by omega] using hdown (t + 1) ht
-  · have hn : n ≤ t + 1 := by omega
-    exact (superdiagonalSubgroup_antitone n R hn).trans
-      (by rw [superdiagonalSubgroup_end]; exact bot_le)
+  apply superdiagonalSubgroup_le_of_elementary_mem n R (t + 1) (by omega)
+  intro i j hij a hdistance
+  have hroot := elementary_mem_lowerCentralSeries_of_distance n R i j hij a
+    (j.val - i.val - 1) (by omega : j.val = i.val + (j.val - i.val - 1) + 1)
+  exact (Subgroup.lowerCentralSeries_antitone
+    (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R))
+    (by omega : t ≤ j.val - i.val - 1)) hroot
 
 end Matrix.UnitriangularGroup
