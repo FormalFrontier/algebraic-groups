@@ -1,12 +1,19 @@
-# Algebraic groups: unitriangular sharpness and group-scheme APIs
+# Algebraic groups: lower central series and group-scheme APIs
 
 Reusable source-independent Lean results for algebraic groups, group schemes
 and native matrix point groups, licensed under [Apache-2.0](LICENSE). The library
 includes the **exact nilpotency class** of native finite unitriangular point
 groups alongside their central filtration, successive quotients and underlying
-scheme geometry. Dependencies retain their own authors, licenses and mathematical
-contributions. Source interpretation and coverage remain separate from library
-acceptance.
+scheme geometry. Sharpness is published at verified official P7
+`f49141f0cd92a101d587a344eb3e2bd5bf4331d8` (internal accepted I7
+`28a4dd05b2f2f2c1aae5e2161338b953b454b762`). The all-stage native
+lower-central-series identification is accepted on development main at
+`d3c455d9adac06b5a873828ea7de57d5501c42f4`, after its own successful
+destination build, complete standard-axiom audit and independent code review.
+This documentary snapshot proposes L's separate reviewed release; neither
+release acceptance nor official L publication is claimed. Dependencies retain
+their own authors, licenses and mathematical contributions. Source interpretation
+and coverage remain separate from library acceptance.
 
 ## Headline results
 
@@ -34,6 +41,14 @@ acceptance.
   provide the lower bound, using the elementary commutator supplied by the
   separately maintained general-linear-groups dependency. The statement includes
   dimensions zero and one and imposes no field, domain or reducedness assumption.
+- **Actual lower central series (accepted native point-group result).** For
+  all `n,t : ℕ`, `R : Type` and `[CommRing R]`, the native series
+  `γ_t = (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries t`
+  equals the superdiagonal stage `F_(t+1)` in every dimension and at every
+  stage, including the zero ring. Elementary-root membership is available
+  both in the actual series and the filtration. This is a point-group equality,
+  not a group-scheme quotient or an unconditional sharp-class statement. See
+  the [lower-central-series guide](AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries/README.md).
 
 ### Using the exact-class API
 
@@ -66,8 +81,37 @@ Frontier Agents, with separate independent origin review. This transfer
 retains their proofs and credits; the general-linear-groups library retains
 its own authorship, mathematical contribution and license. Neither origin
 review nor the earlier published 139-module graph's checks alone verify the
-changed graph. No all-stage lower-central-series identification, subgroup-scheme
-quotient or unconditional nontrivial class is asserted.
+changed graph. The sharpness module alone does not identify all lower-central
+stages; the new module below does. Neither asserts a subgroup-scheme quotient
+or an unconditional nontrivial class.
+
+### Using the new lower-central-series API
+
+The accepted theorem
+`Matrix.UnitriangularGroup.lowerCentralSeries_eq_superdiagonalSubgroup n R t`
+identifies `γ_t = F_(t+1)` for every `n,t : ℕ`, `R : Type` and `[CommRing R]`,
+with no nontriviality, field or dimension restriction. Its two elementary
+membership theorems precede the equality in the
+[focused guide](AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries/README.md).
+
+```lean
+import AlgebraicGroups.GroupTheory.UnitriangularLowerCentralSeries
+
+example (R : Type) [CommRing R] :
+    (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin 4) R)).lowerCentralSeries 1 =
+      Matrix.UnitriangularGroup.superdiagonalSubgroup 4 R 2 :=
+  Matrix.UnitriangularGroup.lowerCentralSeries_eq_superdiagonalSubgroup 4 R 1
+```
+
+The isolated incubator proof and ordinary-import client were reviewed and
+accepted on their original inputs. Their producer's two public imports and
+the client's ordinary import/namespace are retargeted without proof changes.
+The actual 143-module, 37-test-root, 13-package destination passed both default
+targets and a complete transitive standard-three audit including private and
+generated declarations in original native job 865. Fresh independent review
+and Lattice's acceptance cover the exact destination code. Isolated donor
+evidence and the earlier 141-module sharpness checks alone did not certify it;
+separate L release review, acceptance and publication remain pending.
 
 ### Verification and release context (2026-09-28)
 
@@ -77,14 +121,26 @@ was accepted and integrated. That run checked both default targets, all 141
 local Lean modules and 36 regression roots with the complete 13-package graph.
 Its transitive audit covered 3585 module-origin declarations, including 1082
 private-named origins and generated declarations, with only `propext`,
-`Classical.choice` and `Quot.sound`. This documentation-only preparation keeps
-all of those Lean, build and dependency inputs unchanged. See
-[build guidance](docs/BUILDING.md) for commands and evidence scope.
+`Classical.choice` and `Quot.sound`. The documentation-only I7 preparation
+kept those computational inputs unchanged; official P7
+`f49141f0cd92a101d587a344eb3e2bd5bf4331d8` publishes that reviewed
+sharpness result. The subsequent L addition changed the graph: original native
+job 865 on accepted main `d3c455d9adac06b5a873828ea7de57d5501c42f4`
+fetched the matching cache, built both default targets (3,869 jobs), and
+audited 3,634 module-origin declarations across all 143 Lean modules and 37
+registered test roots, including 1,128 private-named origins and all generated
+origins. The 3,616 distinct name strings must not replace the 3,634 audited
+module-origin pairs. Only `propext`, `Classical.choice` and `Quot.sound` occurred;
+no origin was rejected. Fresh independent destination review and maintainer
+code acceptance/protected main integration are complete. This documentation-only
+preparation preserves the checked Lean, build, dependency and checker inputs,
+not the prior whole-165-file digest. L's separate release review, acceptance,
+protected promotion and exact private GitHub publication are still pending.
+See [build guidance](docs/BUILDING.md) for reproduction and evidence scope.
 
 Geometry and filtration/quotient APIs were already published in official
 release `38b7ebdcb38bd0d1b3c9a72e266162718f4647c2`; that earlier release does
-not contain the sharpness additions. Exact release acceptance and publication
-are recorded separately from the accepted-code and build evidence above.
+not contain sharpness, whereas P7 does. Neither release contains L.
 Use `lake exe cache get` successfully before any build with the pinned
 Lean `v4.34.0-rc2` toolchain, then `LAKE_JOBS=2 lake build` for both defaults.
 

@@ -8,7 +8,9 @@ project:
     interfaces, finite upper-unitriangular Hopf quotients, group schemes and
     the geometry of their underlying schemes, central filtrations and successive
     quotients of their native point groups, exact nilpotency classes of finite
-    native unitriangular groups over nontrivial commutative rings, and
+    native unitriangular groups over nontrivial commutative rings, the
+    all-stage lower central series of native unitriangular groups over any
+    commutative ring, and
     supporting commutative-algebra and scheme theory.
   authors:
     - Formal Frontier Agents
@@ -71,16 +73,44 @@ automation:
 
 status:
   scope: >-
-    The library includes the native finite-unitriangular elementary unit,
+    Current 2026-09-28 accepted development-main scope: for every n,t and
+    R : Type with CommRing R, including zero rings, the native point-group
+    lower central stage gamma_t equals F_(t+1); two elementary membership
+    results are available. This is not a scheme quotient, generation or
+    derived-series API, an unconditional exact-class claim, or source coverage.
+    Accepted main d3c455d9adac06b5a873828ea7de57d5501c42f4 passed original
+    native job 865 on both default targets: 143 Lean modules, 37 test roots,
+    13 resolved whole packages, 3634 actual module-origin declarations,
+    including 1128 private-named origins and all generated origins, and only
+    the three allowed axioms. Independent destination review and maintainer
+    code acceptance/protected integration are complete. Official published P7
+    f49141f0cd92a101d587a344eb3e2bd5bf4331d8 contains sharpness but not
+    this result. Separate L release review, acceptance, protected promotion and
+    verified GitHub publication remain pending. The entire prior scope history
+    follows, including candidate-time L claims from 2026-09-28 before native
+    job 865 and code acceptance; those superseded claims are not current status.
+    This preparatory sole-I7-child L transfer identifies the actual native
+    lower central series gamma_t with the superdiagonal stage F_(t+1) for all
+    n, t and R : Type with CommRing R, including zero rings, and supplies two
+    elementary membership results. It asserts no group-scheme quotient or
+    source coverage. Accepted I7 28a4dd05b2f2f2c1aae5e2161338b953b454b762
+    and its sharpness result are published at verified official P7
+    f49141f0cd92a101d587a344eb3e2bd5bf4331d8; this L union is unbuilt,
+    unaudited, unreviewed, unaccepted and unreleased. The projected 143 Lean
+    modules, 37 test roots and 13 packages are scope counts, not check results.
+    Earlier G/Q are published at P6
+    38b7ebdcb38bd0d1b3c9a72e266162718f4647c2. The prior accepted I7
+    sharpness-only scope: the library includes the native finite-unitriangular
+    elementary unit,
     its general-linear/matrix images and ordered commutator, the exact class
     n-1 under Nontrivial R, and class zero under Subsingleton R, for all n.
-    It does not identify every lower central stage or establish a subgroup
-    scheme or source coverage. Earlier G/Q point-group results are officially
+    That sharpness-only module does not identify every lower central stage or
+    establish a subgroup scheme or source coverage. Earlier G/Q point-group results are officially
     published at 38b7ebdcb38bd0d1b3c9a72e266162718f4647c2; the
     GLG-dependent sharpness graph passed native job 843 and independent
     destination review at 172234b1ae20be037a781f0a105ae88dfbe3e856,
     followed by maintainer acceptance and integration on 2026-09-28.
-    Exact release acceptance and publication are recorded separately.
+    Its exact release acceptance and publication are recorded separately at P7.
     The history below describes
     the prior destination snapshot, including its then-pending G/Q publication.
     Reusable coordinate and functor-of-points APIs for additive, multiplicative,
@@ -291,10 +321,53 @@ status:
       file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
     - declaration: Matrix.UnitriangularGroup.nilpotencyClass_eq_zero_of_subsingleton
       file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
+    - declaration: Matrix.UnitriangularGroup.elementary_mem_lowerCentralSeries_of_distance
+      file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
+    - declaration: Matrix.UnitriangularGroup.elementary_mem_superdiagonalSubgroup
+      file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
+    - declaration: Matrix.UnitriangularGroup.lowerCentralSeries_eq_superdiagonalSubgroup
+      file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
 
 review:
-  status: sharpness destination build, standard-axiom audit and independent review accepted at the recorded revision; release decisions recorded separately
+  status: >-
+    K published at P7; L destination code accepted at H after independent
+    review and original native job 865; separate L release review, acceptance
+    and publication pending. Previous 2026-09-28 pre-check status (retained
+    verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    Current 2026-09-28 destination status: worker-b Task
+    hive-request-1f399c450c61323388c22fc0f190b0cadcfab7f1 (UID
+    4401c6a6-9b48-4e5b-a181-f271b75e5f0f) independently reviewed exact
+    H d3c455d9adac06b5a873828ea7de57d5501c42f4. Lattice accepted and
+    protected-integrated H. Original native job 865 succeeded on its 165-file
+    destination, including matching-cache retrieval, both default targets
+    (3869 build jobs), complete transitive actual-origin audit of 3634
+    module-origin pairs / 3616 distinct names / 1128 private-named origins,
+    all generated declarations, zero rejects and only propext,
+    Classical.choice and Quot.sound. Producer 35 and client 14 origins are
+    included. The present documentary changes preserve every checked Lean,
+    build, dependency and checker input, not the earlier whole-file digest.
+    P7 publication is complete; the new L release remains subject to fresh
+    independent release review, owner acceptance, protected promotion and
+    verified private GitHub publication. The complete previous review-notes
+    scalar follows as dated 2026-09-28 pre-check and prior-release history;
+    its then-unbuilt/unreviewed statements were superseded by original native
+    job 865 and H's code acceptance, not silently deleted.
+    Current L static transfer is the sole child of accepted I7
+    28a4dd05b2f2f2c1aae5e2161338b953b454b762, true tree
+    0ada25d9d82701a9fec7b380e400d858fb2b050f. The sharpness-only I7
+    reached verified official P7 f49141f0cd92a101d587a344eb3e2bd5bf4331d8
+    after independent reviewed release; its older P6 predecessor was already
+    published. The L producer/client preserve isolated incubator-accepted proof
+    bodies by import/namespace retargeting, but that original 49-origin evidence
+    and C's native job 843 on 141 Lean modules/36 roots do not check the new
+    projected 143-module, 37-root, 13-package destination union. L needs an
+    actual both-default-target build, complete transitive standard-three axiom
+    audit including private/generated origins, fresh independent candidate
+    review, maintainer acceptance and its own reviewed release/publication.
+    No source-coverage decision or shared-incubator conversion is asserted.
+    Earlier I7 sharpness-only verification history follows without upgrading
+    its computational evidence to this changed L graph.
     Verification context dated 2026-09-28. G/Q publication completed at official P6
     38b7ebdcb38bd0d1b3c9a72e266162718f4647c2. The added sharpness
     producer and ordinary-import client retain the incubator-accepted proofs
@@ -306,9 +379,10 @@ review:
     module-origin declarations, including 1082 private-named origins and all
     generated origins; only propext, Classical.choice and Quot.sound occurred.
     Fresh independent destination review 4661 approved that revision, followed
-    by maintainer acceptance and integration. This documentation-only release
-    preparation retains all computational inputs. Separate exact release
-    decisions and verified publication are not implied by these code checks.
+    by maintainer acceptance and integration. The documentation-only I7 release
+    preparation retained all C computational inputs. Separate exact release
+    decisions and verified publication were not implied by those code checks;
+    official P7 records their subsequent completion.
     Prior 139-module native job 811 and isolated donor review apply to their
     exact older inputs and are not substitutes for the destination result. The prior
     state and evidence are preserved in the rest of this notes history.
@@ -403,6 +477,21 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  On 2026-09-28 worker-a Task
+  hive-request-3fe85aa2c78b4291aa1825698f3a8b1f841b5f31 (UID
+  7d7dfc62-78cf-47f5-af8b-34031fd4b38f) prepared this bounded
+  documentary L release candidate. This is author preparation, not independent
+  release review, owner release acceptance or verified publication. The
+  original lower-central-series plan, proofs, donor review and transfer retain
+  the distinct worker-b/worker-a Task credits in the lower-central guide.
+  Independent worker-b Task
+  hive-request-1f399c450c61323388c22fc0f190b0cadcfab7f1 (UID
+  4401c6a6-9b48-4e5b-a181-f271b75e5f0f) reviewed the exact H
+  destination candidate; Lattice accepted its code and protected-integrated
+  H. The complete previous acknowledgement scalar follows as dated
+  2026-09-28 historical origin and release-preparation credit; its pending
+  contributor/status phrases describe earlier stages rather than current L
+  release acceptance.
   The original sharpness producer and client were authored by Worker B Task
   hive-request-ab5c4c6678d82359fa32ccfaa517a4425fcf39ce (UID
   ba69c483-3f91-493e-a0c4-340c651e95b2), and independently reviewed in

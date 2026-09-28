@@ -46,9 +46,11 @@ lake exe cache get
 LAKE_JOBS=2 lake build AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass AlgebraicGroupsTest.UnitriangularNilpotencyClass
 ```
 
-This is a point-group class result, not an identification of every lower
-central stage with the superdiagonal filtration or a quotient/group-scheme
-theorem. The original proof and client were authored by Formal Frontier Agents
+This K-only module is a point-group class result; the separate accepted
+[lower-central-series module](../UnitriangularLowerCentralSeries/README.md)
+now identifies every lower central stage with its superdiagonal filtration
+stage. Neither module asserts a quotient/group-scheme theorem. The original
+proof and client were authored by Formal Frontier Agents
 in the incubator, reviewed independently there, and transferred here with only
 module-import and client-namespace substitutions. The official GLG dependency
 retains its own authorship and license.
@@ -61,7 +63,17 @@ integration. That run checked both default targets and the complete 141-module,
 transitive audit enumerated 3585 module-origin declarations, including 1082
 private-named origins and all generated origins, permitting only `propext`,
 `Classical.choice` and `Quot.sound`. It includes this producer's 31 origins and
-the regression client's 12. The current documentation-only preparation changes
-none of those computational inputs. Exact release acceptance and publication
-are recorded separately; the older published filtration/quotient release does
-not contain this sharpness result. See [build guidance](../../../docs/BUILDING.md).
+the regression client's 12. The documentation-only I7 preparation at
+`28a4dd05b2f2f2c1aae5e2161338b953b454b762` changed none of those
+computational inputs; the subsequent lower-central-series producer and client
+change the graph and have their own original native job 865 destination checks:
+both default targets built on 143 modules/37 regression roots/13 packages;
+the complete transitive audit covered 3,634 module-origin declarations, including
+1,128 private-named and all generated origins, under only the standard three
+axioms. Fresh independent exact-H destination review and Lattice's code
+acceptance/protected integration cover
+`d3c455d9adac06b5a873828ea7de57d5501c42f4`; L's own reviewed release
+and verified publication remain pending. Sharpness is published
+at official P7 `f49141f0cd92a101d587a344eb3e2bd5bf4331d8`;
+the older filtration/quotient P6 does not contain it. See
+[build guidance](../../../docs/BUILDING.md).

@@ -1,41 +1,67 @@
-# Current build and dependency guidance (2026-09-28)
+# Lower-central-series transfer: current build guidance (2026-09-28)
 
-The accepted native unitriangular sharpness transfer adds the official
-`general-linear-groups` GitHub dependency at
+The native lower-central-series producer and ordinary-import client were
+accepted on development main `d3c455d9adac06b5a873828ea7de57d5501c42f4`
+with sole released I7 parent
+`28a4dd05b2f2f2c1aae5e2161338b953b454b762`.
+I7's sharpness result is published at verified official P7
+`f49141f0cd92a101d587a344eb3e2bd5bf4331d8`; the L result is **not yet
+separately released or published**. Its actual graph has 143 Lean modules, 37
+persistent regression roots and 13 resolved whole packages.
+Original native job 865 (2026-09-28) fetched the matching mathlib cache,
+verified readiness, built both default targets (3,869 jobs) and completed the
+actual-graph transitive audit: 3,634 module-origin pairs, 3,616 distinct name
+strings, 1,128 private-named origins, all generated origins and zero rejects.
+Only `propext`, `Classical.choice` and `Quot.sound` occurred. Its 35 producer
+and 14 client origins are included. Fresh independent exact-H destination
+review and Lattice's code acceptance/protected main integration are complete.
+The project retains the official `general-linear-groups` GitHub dependency at
 `ad7c50a0523441116537fb1d6e3c8d2a665af1fc` to pinned mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5` and scheme-properties
-`6b204a3e49f022e51d78a9f93e77513b99a87e00`. With Lean `v4.34.0-rc2`,
-the project selects 141 Lean modules, including 36 persistent regression
-roots, across 13 resolved packages. To reproduce the build, successfully
-fetch the matching cache before building both declared defaults:
+`6b204a3e49f022e51d78a9f93e77513b99a87e00` and Lean `v4.34.0-rc2`.
+To check the changed graph, successfully fetch the matching mathlib cache
+before building both default targets (`AlgebraicGroups` and `AlgebraicGroupsTest`):
 
 ```sh
 lake exe cache get
 LAKE_JOBS=2 lake build
 ```
 
-Native job 843 succeeded on `172234b1ae20be037a781f0a105ae88dfbe3e856`
-with this exact graph: the matching cache was fetched before both default
-targets (`AlgebraicGroups` and `AlgebraicGroupsTest`) were built. All 141
-local modules and 36 test roots were checked. The complete transitive audit
+If cache retrieval fails, diagnose it rather than rebuilding mathlib from
+source. This documentary L release candidate reuses the original successful
+native job 865: its Lean sources, both default targets, toolchain, resolved
+dependencies and checker inputs are unchanged. The whole-165-file input digest
+changes with the documents and is not reused. Separate fresh exact-release
+review, maintainer release acceptance, protected promotion and verified GitHub
+publication remain pending. The
+[lower-central-series guide](../AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries/README.md)
+gives the focused import and regression client. At the original L transfer's
+pre-check preparation on 2026-09-28, its projected counts were not successful
+checks, and destination build, audit, review and acceptance were still pending;
+native 865 and the subsequent acceptance supersede that candidate-time status.
+
+Native job 843 succeeded on predecessor C
+`172234b1ae20be037a781f0a105ae88dfbe3e856`: the matching cache was
+fetched before both default targets were built. All 141 local modules and 36
+test roots were checked. The complete transitive audit
 enumerated 3585 module-origin declarations, including 1082 private-named origins
 and all generated origins, and rejected none: only `propext`, `Classical.choice`
 and `Quot.sound` occurred. Different modules can reuse a declaration name;
 there were 3567 distinct name strings, not 3567 audited module-origin pairs.
 Fresh independent destination review and maintainer acceptance followed.
-The present documentation changes preserve all Lean, build, toolchain and
-dependency inputs, so that successful evidence remains applicable without
-another proof build or audit. Release acceptance and publication are distinct
-decisions recorded against their exact revisions.
+The documentation-only I7 release preparation preserved all C computational
+inputs, and the sharpness result reached official P7. The present L producer,
+client, aggregate import and explicit test root change those inputs: neither
+job 843 nor its 141-module scope certifies the projected 143-module L union.
 
 G/Q are already published at official commit
 `38b7ebdcb38bd0d1b3c9a72e266162718f4647c2`; their native job 811
 certifies its earlier **139-module, 35-root, 12-package** graph only.
-The new [sharpness guide](../AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass/README.md)
+The [sharpness guide](../AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass/README.md)
 and ordinary-import `AlgebraicGroupsTest.UnitriangularNilpotencyClass` client
 describe the additions. The remainder of this guide is the unmodified dated
 I6 build/resource snapshot: its then-pending G/Q publication, counts,
-measurements and job references are historical, not the current graph's checks.
+measurements and job references are historical, not the L graph's checks.
 
 ---
 

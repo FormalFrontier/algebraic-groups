@@ -10,9 +10,16 @@ with its direct official `general-linear-groups` dependency.
 The [sharpness guide](../UnitriangularNilpotencyClass/README.md) describes
 the separate native class result. Both default builds and the complete
 private/generated-inclusive standard-three audit passed; see
-[current build guidance](../../../docs/BUILDING.md). Exact release
-acceptance/publication are recorded separately from that accepted-code evidence. The complete
-original guide below (including its then-pending G/Q publication) is
+[current build guidance](../../../docs/BUILDING.md). The G/Q release and
+sharpness P7 have since been independently accepted and published; their
+release decisions are distinct from accepted-code evidence. The native
+point-group lower-central equality is separately
+accepted on development main `d3c455d9adac06b5a873828ea7de57d5501c42f4`
+after original native job 865 built both default targets and audited all
+3,634 actual module-origin declarations across 143 modules/37 test roots/13
+packages, including 1,128 private-named origins under only the standard
+three axioms. Its separate release review, acceptance and publication remain
+pending. The original guide below (including its then-pending G/Q publication) is
 preserved as dated history, not a description of current release status.
 
 ---

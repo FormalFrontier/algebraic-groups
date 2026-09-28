@@ -10,9 +10,16 @@ graph, which additionally imports official `general-linear-groups`.
 The [sharpness guide](../UnitriangularNilpotencyClass/README.md) describes
 the exact class over nontrivial rings. Both default builds and the complete
 private/generated-inclusive standard-three audit passed; see
-[current build guidance](../../../docs/BUILDING.md). Exact release
-acceptance/publication remain separate from that accepted-code evidence. The entire
-original guide below, including then-pending publication language, is
+[current build guidance](../../../docs/BUILDING.md). The G/Q release and
+sharpness P7 have since been independently accepted and published; their
+release decisions are distinct from accepted-code evidence. The all-stage
+native point-group lower-central equality is separately
+accepted on development main `d3c455d9adac06b5a873828ea7de57d5501c42f4`:
+original native job 865 checked both targets and all 143 modules/37 roots/13
+packages, including all 3,634 audited module-origin declarations and 1,128
+private-named origins under only the standard three axioms. Its own release
+review, acceptance and publication remain pending. The original guide below,
+including then-pending publication language, is
 retained as dated history, not as the current lifecycle report.
 
 ---

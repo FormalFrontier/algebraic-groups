@@ -11,6 +11,14 @@ that older 139-module G/Q graph. The accepted sharpness transfer at
 The complete private/generated-inclusive audit permitted only the standard
 three axioms. See [current build guidance](../../../docs/BUILDING.md);
 exact release acceptance/publication are recorded separately.
+Sharpness has since reached verified official P7
+`f49141f0cd92a101d587a344eb3e2bd5bf4331d8`. The new native point-group
+lower-central result is accepted on development main
+`d3c455d9adac06b5a873828ea7de57d5501c42f4` after separate original
+native job 865 (143 modules, 37 test roots, 13 packages and 3,634 audited
+module-origin declarations, including 1,128 private-named origins) and fresh
+independent code review. Its own release review/acceptance/publication remain
+pending; this geometry guide does not assert a scheme-level lower central series.
 The original guide below is retained verbatim as a dated snapshot: its
 G/Q-publication-pending wording records the earlier preparation, not the
 current release status. This geometry's statements and proofs do not change.
