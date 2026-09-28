@@ -10,6 +10,7 @@ public import AlgebraicGroups.Algebra.SymmetricAlgebra
 public import AlgebraicGroups.Algebra.SymmetricAlgebraPoints
 public import AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal
 public import AlgebraicGroups.Algebra.SpecialLinearCoordinateRing
+public import AlgebraicGroups.Algebra.UnitriangularCoordinateRing
 public import AlgebraicGroups.Algebra.MonoidAlgebraPrimitive
 public import AlgebraicGroups.Category.Extensive
 public import AlgebraicGroups.Category.EquivalenceRelation
@@ -46,6 +47,7 @@ public import AlgebraicGroups.GroupScheme.FiniteTypePoints
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLine
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLineBaseChange
 public import AlgebraicGroups.GroupScheme.GeneralLinear
+public import AlgebraicGroups.GroupScheme.Unitriangular
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation
@@ -91,3 +93,8 @@ public import AlgebraicGroups.Scheme.JointlySchemeTheoreticallyDominant
 public import AlgebraicGroups.Scheme.Reduction
 public import AlgebraicGroups.Scheme.Smooth
 public import AlgebraicGroups.Topology.KrullDimension
+
+/-!
+The aggregate exposes the finite upper-unitriangular Hopf quotient and its
+affine group scheme alongside the general- and special-linear constructions.
+-/

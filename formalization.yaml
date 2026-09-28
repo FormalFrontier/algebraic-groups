@@ -5,7 +5,8 @@ project:
   description: >-
     Reusable algebraic-group and group-scheme constructions, functors of points,
     coordinate Hopf algebras, components, reduction, smoothness, quotient-sheaf
-    interfaces and supporting commutative-algebra and scheme theory.
+    interfaces, finite upper-unitriangular Hopf quotients and group schemes,
+    and supporting commutative-algebra and scheme theory.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -61,7 +62,10 @@ status:
   scope: >-
     Reusable coordinate and functor-of-points APIs for additive, multiplicative,
     vector, finite-matrix general-linear and other explicitly constructed group
-    schemes; the finite general-linear determinant character to the multiplicative
+    schemes; the finite upper-unitriangular Hopf quotient, its free strict-upper
+    polynomial presentation, finite-type affine group scheme, closed inclusion
+    into GL and multiplicatively natural functor of points, including empty
+    indices and zero rings; the finite general-linear determinant character to the multiplicative
     group; arbitrary-module automorphism functors and their chosen-finite-basis
     representation by the existing general-linear scheme; conditional component,
     reduction, smoothness and quotient-sheaf interfaces; and supporting algebra
@@ -105,10 +109,47 @@ status:
     N squared minus one for SL, including the separate rank-zero case. A generic
     multivariate-polynomial rational-point height result needs no decidable
     equality on its finite index type and allows distinct universes.
-    Complete source formalization is not claimed.
+    Complete source formalization is not claimed. No diagonal or full triangular
+    group scheme, positive-rank or nonzero-ring assumption, or base-ring-change
+    naturality is added by the upper-unitriangular construction. Its destination
+    build, complete transitive standard-axiom audit, independent non-author review
+    and maintainer code acceptance are complete; release decisions are separate.
+  main_results:
+    - declaration: UnitriangularCoordinateRing.ideal_isHopfIdeal
+      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
+    - declaration: UnitriangularCoordinateRing.coordinatePolynomialEquiv
+      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
+    - declaration: UnitriangularCoordinateRing.polynomialFreeEquiv
+      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
+    - declaration: UnitriangularCoordinateRing.freeEquiv
+      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
+    - declaration: UnitriangularCoordinateRing.freeEquiv_variable
+      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
+    - declaration: UnitriangularCoordinateRing.finiteType
+      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
+    - declaration: Matrix.unitriangularSubgroup
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: Matrix.UnitriangularGroup.map
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupScheme
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularInclusion
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularInclusion_isClosedImmersion
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupMulEquivAlgHom
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupMulEquivPoints
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupPointsIso
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularFromGL_natural
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularInclusion_point
+      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
 
 review:
-  status: agent-reviewed
+  status: independently agent-reviewed and code-accepted; release review separate
   notes: >-
     The library uses independent non-author agent mathematical and API review.
     The predecessor's 121 Lean modules and 27 persistent regression roots have
@@ -140,9 +181,24 @@ review:
     Exact-version review, check evidence and release decisions are recorded
     separately. Independent documentation, metadata, complete artifact/history
     and rights review and protected release acceptance remain pending; this
-    candidate is unpublished. Incubator origin, development review and schema
+    candidate was then unpublished. Incubator origin, development review and schema
     validity do not establish release acceptance, source coverage, human review
     or source-author endorsement.
+    Those release-preparation statements describe the predecessor's dated
+    historical state, not the status of the now-published predecessor snapshot.
+    The newly transferred upper-unitriangular proof bodies and ordinary-import
+    client have distinct agent origin and affected-assembly reviews, but neither
+    those reviews nor the predecessor's native job 533 certify this changed
+    destination graph. Native job 682 on 2026-09-28 successfully built both
+    configured default targets (3471 jobs) and audited all 133 modules and
+    3404 module-origin declarations, including 955 private-named declarations,
+    permitting only propext, Classical.choice and Quot.sound. Fresh independent
+    destination review and maintainer code acceptance cover exact snapshot
+    7ad131de3c5a7696df678e944aaa20c1defbb397. This preparation changes four of its
+    150 recorded file tuples, all documentation or metadata; all Lean, toolchain,
+    build, dependency and checker inputs and twelve resolved packages remain
+    unchanged. At preparation, independent release review, protected release
+    acceptance and publication remain pending; no source coverage is upgraded.
 
 acknowledgements: >-
   Lattice supplied earlier research, reusable mathematical implementations and
@@ -166,3 +222,11 @@ acknowledgements: >-
   predecessor/contribution examples.
   External mathematical sources, formalization libraries and tools retain their
   separate contributor credit and applicable licenses and notices.
+  An original Worker B execution authored the upper-unitriangular proof bodies
+  and client, with a distinct Worker A isolated-proof reviewer. A separate
+  Worker B execution assembled their original registration, independently
+  reviewed for affected API by another Worker A execution. A further Worker B
+  execution prepared this destination transfer. Another independent Worker A
+  execution supplied destination review, followed by Lattice's code acceptance
+  and documentation-only release-readiness preparation. These agent roles are
+  not human review or release acceptance.

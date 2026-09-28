@@ -47,6 +47,7 @@ roots = [
   "AlgebraicGroupsTest.SplitKernelProduct",
   "AlgebraicGroupsTest.SplitKernelSemidirect",
   "AlgebraicGroupsTest.TargetCopy",
+  "AlgebraicGroupsTest.Unitriangular",
   "AlgebraicGroupsTest.Vector",
   "AlgebraicGroupsTest.VectorProduct",
 ]

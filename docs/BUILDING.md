@@ -6,7 +6,7 @@ The current Lean version is `v4.34.0-rc2`, with mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5`. The project dependencies use
 official published GitHub release commits listed in the README and manifest.
 The GitHub repositories are currently private and require authorized access.
-The checked-in tree includes 130 modules with 31 regression roots selected by the
+The checked-in tree includes 133 modules with 32 regression roots selected by the
 no-target default build. Build and audit requirements are described below;
 exact-version checks and release decisions are recorded separately.
 
@@ -26,9 +26,9 @@ compiling the selected library sources. An existing successful build may be
 reused when Lean, source and build/dependency inputs are unchanged; a
 documentation-only change does not require another build.
 
-The default targets are the production aggregate and all 31 registered regression
-roots, reaching all 130 local Lean modules: 99 production files including the
-aggregate, and 31 test files. Every checked-in Lean file declares the module system;
+The default targets are the production aggregate and all 32 registered regression
+roots, reaching all 133 local Lean modules: 101 production files including the
+aggregate, and 32 test files. Every checked-in Lean file declares the module system;
 the default build checks all regression examples, including anonymous examples.
 The axiom audit covers every retained named, private and generated compiled
 declaration; a module may contain checked examples without retaining constants.
@@ -42,17 +42,33 @@ axiom audit covering repository declarations, including private declarations and
 dependencies reached from them, using ordinary `#print axioms` or
 `Lean.collectAxioms`. Only `propext`, `Classical.choice` and `Quot.sound` are
 allowed; `sorryAx` and every additional axiom fail. A source grep is insufficient.
-Native job 533 completed this private-inclusive audit for all 130 modules and
+Native job 533 completed this private-inclusive audit for its 130 modules and
 3,268 module-origin declarations (944 private-prefix), using only those allowed
-axioms. Its exact checked Lean, build, dependency and checker inputs remain
-unchanged in the documentation-only release candidate; release acceptance and
-publication remain separate.
+axioms. Its exact checked Lean, build, dependency and checker inputs were
+unchanged in the predecessor's documentation-only release preparation. The
+additional producers, aggregate imports and test root changed the graph.
+Native job 682 (2026-09-28) successfully built both configured default targets
+(3,471 jobs) and audited all 133 modules: 3,404 module-origin declarations,
+including 955 private-named declarations, with only the three allowed axioms.
+Independent destination review and maintainer code acceptance cover exact
+snapshot `7ad131de3c5a7696df678e944aaa20c1defbb397`. This documentation-only
+preparation changes four of its 150 recorded file tuples, all documentation or
+metadata. All Lean, toolchain, build, dependency and checker inputs and all
+twelve resolved packages remain unchanged; this is not release acceptance.
 
 Start a downstream client with `import AlgebraicGroups`, or use a focused import
 such as `AlgebraicGroups.GroupScheme.Additive` or
-`AlgebraicGroups.GroupScheme.Vector`. Representative clients are in
-`AlgebraicGroupsTest/`. Some generated auxiliary names have changed during the
-native-module migration; use the authored APIs described in the README.
+`AlgebraicGroups.GroupScheme.Vector` or
+`AlgebraicGroups.GroupScheme.Unitriangular`. Its ordinary-import client
+`AlgebraicGroupsTest.Unitriangular` is one of the 32 explicit test roots;
+the [user guide](../AlgebraicGroups/GroupScheme/Unitriangular/README.md)
+describes its precise hypotheses and boundaries. After a successful matching
+cache fetch, `lake build AlgebraicGroupsTest.Unitriangular` selects the
+focused client; `lake build` selects both default targets. These are
+reproduction commands, not a claim of a new successful test run.
+Representative clients are in `AlgebraicGroupsTest/`. Some generated auxiliary
+names have changed during the native-module migration; use the authored APIs
+described in the README.
 
 ## Measured development baseline
 

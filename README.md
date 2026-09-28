@@ -17,19 +17,27 @@ corresponding source-metadata repositories.
 
 The results below describe the library's mathematical scope, with explicit
 hypotheses and exclusions. They do not assert complete formalization of a book
-or a general quotient-effectivity theorem. All 130 checked-in Lean files declare
-the module system, and all 31 regression files are persistent default-build
+or a general quotient-effectivity theorem. All 133 checked-in Lean files declare
+the module system, and all 32 regression files are persistent default-build
 roots. Release verification requires applicable pinned-graph module builds,
 the actual no-target default build and a complete transitive
 axiom audit, including private declarations, allowing only `propext`,
 `Classical.choice` and `Quot.sound`. Build success and metadata schema validity
 alone do not establish independent release acceptance or publication.
-The accepted main snapshot `aa9e9326ac1673549825f0defaf32714120dd71c`
+The predecessor main snapshot `aa9e9326ac1673549825f0defaf32714120dd71c`
 has an applicable successful native default build and complete standard-axiom
-audit of all 130 modules (job 533, 2026-09-27). Its 125-module semidirect
-predecessor has its own successful native job 530. This documentation-only
-release preparation preserves those checked Lean and dependency inputs; the
-new release candidate is **not yet independently accepted or published**.
+audit of its 130 modules (job 533, 2026-09-27). Its 125-module semidirect
+predecessor has its own successful native job 530. That predecessor's
+documentation-only release preparation preserved those checked inputs. The
+upper-unitriangular destination snapshot
+`7ad131de3c5a7696df678e944aaa20c1defbb397` has its own successful native job 682
+(2026-09-28): both configured default targets, all 133 modules and a complete
+transitive standard-axiom audit of 3,404 declarations, including 955 private-named
+declarations. Independent non-author destination review and maintainer code
+acceptance are complete. At this release's preparation, independent release
+review, protected release acceptance and publication are still separate pending
+decisions; this preparation changes documentation and metadata only, preserving
+all Lean, toolchain, build, dependency and checker inputs.
 
 The public mathematical interfaces retain their intended hypotheses and scope.
 Compiler-generated proof and simplifier auxiliary names and types can change
@@ -123,6 +131,30 @@ The vector migration similarly makes the generated
 helper private. Its type and stored proof are unchanged, but its old ordinary
 name is unavailable. Use the authored locally-of-finite-type instance/API
 instead of this compiler-generated auxiliary; no compatibility alias is added.
+
+## Upper-unitriangular group scheme
+
+For a finite linearly ordered type `n` over a commutative ring `K`, the
+`UnitriangularCoordinateRing` API gives the Hopf quotient of the localized GL
+coordinate algebra and its free strict-upper-polynomial presentation. The
+actual `AlgebraicGeometry.unitriangularGroupScheme K n` is affine of finite
+type; `unitriangularInclusion K n` is a closed immersion into GL.
+`unitriangularGroupMulEquivPoints K n R` identifies its points over a
+commutative `K`-algebra `R` multiplicatively with
+`Matrix.UnitriangularGroup n R`, including empty and singleton indices and
+the zero ring. The `Fin 3` multiplication has a genuine cross term; this is
+not a diagonal or arbitrary triangular group scheme, and no field or
+positive-rank hypothesis is imposed.
+
+Use `import AlgebraicGroups` or the focused
+`import AlgebraicGroups.GroupScheme.Unitriangular`. The ordinary-import
+ten-example client is `AlgebraicGroupsTest.Unitriangular`; see the
+[upper-unitriangular guide](AlgebraicGroups/GroupScheme/Unitriangular/README.md)
+for presentation maps, points, naturality and precise limits. Native job 682
+and distinct independent destination review support maintainer code acceptance
+of this graph. The predecessor's checks were not substituted for the changed
+graph's own successful both-target build and complete private-inclusive
+transitive standard-axiom audit. Release decisions remain separately recorded.
 
 ## Current results
 
@@ -700,7 +732,7 @@ default build and checking every shipped file. These measurements are not a
 timing guarantee or a cold-build benchmark for the final graph.
 
 The default build selects the production aggregate and the `AlgebraicGroupsTest`
-target. Its 31 explicit roots in [lakefile.toml](lakefile.toml) cover every
+target. Its 32 explicit roots in [lakefile.toml](lakefile.toml) cover every
 checked-in file under `AlgebraicGroupsTest/`. Additive's twenty original
 examples are persistent private declarations: they are compiled but do not
 extend the public API. The native Artin--Schreier test also uses named private
@@ -709,17 +741,24 @@ normal-form projections and the smoothness/domain/connectedness APIs. It is a
 focused regression, not an audit of every generated declaration, a source
 correspondence decision, or a release-acceptance check.
 
-The checked-in tree contains 130 Lean source files: 99 production files,
-including the aggregate, and 31 regression files. The aggregate and all 31
-explicit test roots reach all 130 local modules. There are no shipped tests
+The checked-in tree contains 133 Lean source files: 101 production files,
+including the aggregate, and 32 regression files. The aggregate and all 32
+explicit test roots reach all 133 local modules. There are no shipped tests
 outside the declared default targets. Source reachability alone establishes neither a
 successful build, complete transitive axiom audit or release acceptance.
-The accepted 130-module main graph has a successful actual both-default-target
+The predecessor accepted 130-module main graph has a successful actual both-default-target
 build (native job 533, 3,468 jobs) and a complete private-inclusive transitive
 axiom audit (3,268 module-origin declarations, including 944 private-prefix
-declarations; only the three allowed axioms). These checks apply to unchanged
-Lean, build, dependency and checker inputs in this documentation-only candidate;
-they do not establish release acceptance.
+declarations; only the three allowed axioms). These checks covered the
+predecessor's unchanged Lean, build, dependency and checker inputs in its
+documentation-only release preparation; they do not certify this 133-module
+transfer. Native job 682 independently built the new graph (3,471 jobs) and
+audited all 3,404 module-origin declarations, including 955 private-named
+declarations, with only the three allowed axioms. Of its 150 recorded file
+tuples, only the four documentation/metadata files change in this preparation;
+all Lean, toolchain, build, dependency and checker inputs remain unchanged.
+These computational checks and destination code acceptance do not themselves
+establish release acceptance or publication.
 
 The GL(V) regression adds 25 named private clients for arbitrary-module
 coefficient change, transported tensor order, finite-basis matrices and
@@ -757,7 +796,7 @@ permutation example. The determinant-conjugation client checks every-algebra
 points and opposite row/column pivot scaling over `ZMod 5`. Both are
 persistent ordinary-import roots. The original transfer has independent
 source-only review. The separately accepted 125-module PR183 predecessor has
-its own applicable native job 530 and independent affected review; this
+its own applicable native job 530 and independent affected review; the earlier
 130-module union has applicable native job 533 and fresh affected review.
 Native job 477 covered only the earlier 121-module predecessor at its inputs.
 Neither main integration nor these checks accepts the new release candidate.
@@ -767,7 +806,8 @@ including the zero base; the dimension client checks those ranks, `ZMod 2`
 and distinct universes without a decidable-equality assumption on the index.
 Both are persistent ordinary-import roots. Their original source-only transfer
 has independent review; the accepted 130-module assembly has applicable native
-job 533 and fresh affected review. This does not accept or publish its release.
+job 533 and fresh affected review. That predecessor was separately released at
+`28a1288c1eae8c7230f89c0b165415304fbd0f98`; this is not approval of the new release.
 
 The native MatrixEndBaseChange test has named private ordinary-import clients
 for tensor order, wrapper projections and addition, transported scalar action,
@@ -859,7 +899,7 @@ All regression modules are now selected by the default build; separate direct
 invocations are unnecessary merely to include previously unregistered sources.
 The selected configuration must pass the actual default build on the pinned
 official dependency graph; exact-version results are recorded separately.
-Generated, revision-bound API documentation for this 130-module snapshot is not
+Generated, revision-bound API documentation for this 133-module snapshot is not
 supplied; earlier generated snapshots have not been regenerated. The README and
 source docstrings provide the reader documentation. Their claims
 require independent inspection; fresh expensive documentation generation is not
@@ -911,6 +951,18 @@ to redistribute their text. No source book or scan is bundled here.
 
 The collective credit **Formal Frontier Agents** supplements, rather than
 replaces, individual project contribution roles:
+
+- An original Formalization Worker B execution implemented the upper-unitriangular
+  coordinate algebra, group scheme and ordinary-import examples; a distinct
+  Formalization Worker A execution independently reviewed the isolated proof
+  bodies. A separate Formalization Worker B execution assembled the original
+  modules with other library work, and a distinct Formalization Worker A
+  execution reviewed that assembly's affected API. Another Formalization
+  Worker B execution prepared this destination transfer. A further independent
+  Formalization Worker A execution reviewed the exact destination candidate,
+  followed by Lattice's code acceptance. Lattice prepared this documentation-only
+  release-readiness update. These agent roles are not human review, and origin,
+  destination and release review remain distinct.
 
 - Lattice developed and integrated group-object, group-scheme and algebraic
   infrastructure, including earlier source-repository research later adapted
@@ -976,7 +1028,9 @@ replaces, individual project contribution roles:
   source-only transfer at `ca1a807ac2b00959fd9c6c496d48700c2f5a92c8`,
   not the combined assembly. Native job 533, fresh independent affected review
   and owner code acceptance now cover the exact combined destination snapshot;
-  independent release acceptance and publication remain outstanding.
+  its separate independent release acceptance and publication completed at
+  `28a1288c1eae8c7230f89c0b165415304fbd0f98`. That completed predecessor release
+  does not accept the upper-unitriangular successor release.
 - Separate Worker B executions authored the split-kernel product and finite
   determinant-product producers and their ordinary-import clients. A Worker B
   execution prepared their import/namespace normalization for this library;
