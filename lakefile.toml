@@ -32,6 +32,7 @@ roots = [
   "AlgebraicGroupsTest.DiagonalProduct",
   "AlgebraicGroupsTest.UpperTriangular",
   "AlgebraicGroupsTest.UpperTriangularScheme",
+  "AlgebraicGroupsTest.GroupScheme.UpperTriangularSplitKernel",
   "AlgebraicGroupsTest.AlgebraicallyClosedCommonZero",
   "AlgebraicGroupsTest.GeneralLinearDeterminant",
   "AlgebraicGroupsTest.GeneralLinearDeterminantProduct",

@@ -3,6 +3,41 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    This source-independent library includes an upper-triangular projection
+    with diagonal section and the actual unitriangular scheme-theoretic
+    identity fiber over every commutative K and finite linearly ordered n:
+    coordinate pushout and scheme, over-base and group-scheme pullbacks,
+    closed inclusion, GL compatibility and all-algebra point formulas.
+    The separately published finite diagonal G_m product and earlier
+    triangular, unitriangular and common-zero APIs are also available.
+    The complete W description follows as dated 2026-09-29 history;
+    its candidate lifecycle language is not a current publication label:
+    This library implements upper-triangular diagonal splitting with genuine
+    U identity-fiber pullbacks over any commutative ring and finite ordered
+    index, a finite diagonal G_m categorical product and published predecessors.
+    Original split C fd4b61f91e94c2608875d606fb69e80d1c247d3d passed
+    native 1063/review 4917; product code A ad5bff948f563bb9df49825f55dfcc8fcace8130
+    has separate native 1058/review 4912. These do not establish combined-tree
+    checks, fresh review, acceptance or publication. The 2026-09-29 static
+    renewal performed no computation. Historical N preparation text and the
+    complete D scalar (including shared B only once) follow below:
+    Dated 2026-09-29 prospective split-kernel and diagonal-product union:
+    the unchanged original split producer and client expose the section of
+    T to D, the genuine identity-fiber pullbacks identifying U, its closed
+    inclusion and all-commutative-algebra native point formulas. This static
+    combination is UNCHECKED, UNREVIEWED, UNACCEPTED and UNRELEASED.
+    Original split C fd4b61f91e94c2608875d606fb69e80d1c247d3d passed
+    native1063 and independent exact-C review4917, neither of which checks
+    this union. Frozen product release-readiness parent B
+    9b2a5db2a4bceb6c7146d9cb2ba8e0eb36ed1411 is itself UNACCEPTED and
+    UNRELEASED despite the earlier accepted product code at protected main
+    ad5bff948f563bb9df49825f55dfcc8fcace8130. B's pending release
+    process is separate and any material change needs union rework. The
+    complete preceding product-readiness description follows unchanged as
+    dated pre-union history; its then-current phrases do not confer union
+    acceptance or product publication:
+    Dated D scalar starts unchanged next and includes shared B exactly
+    once; N's B-next marker records N's earlier layout, not a second B:
     This snapshot provides the literal finite categorical product of G_m
     as a diagonal group scheme for every CommRing K and same-universe finite
     decidable n. Genuine Hopf projections, arbitrary-test-scheme universality,
@@ -130,6 +165,15 @@ automation:
         Formal Frontier AI agents used Lean and Lake with pinned mathlib and
         separately attributed non-author agent development review.
   notes: >-
+    Formalization is AI-assisted; agent review is not human mathematical
+    review or source-author endorsement. This documentary update did not
+    run Lean, Lake, cache fetches, audits or CI. The complete W notes follow
+    unchanged as dated 2026-09-29 candidate history:
+    Dated 2026-09-29 static repaired-parent renewal performed no Lean,
+    Lake, cache fetch, build, audit, schema or CI computation. Original
+    split 1063 and product 1058 concern separate trees, not this union.
+    AI-assisted work and agent review do not imply human mathematical review.
+    The complete D automation.notes follows as dated history, including B once:
     The product proofs and client are unchanged from integrated code C;
     original native1058 and independent code review4912 are prior evidence.
     This static documentary repair performed no Lean, Lake, cache, build,
@@ -158,6 +202,40 @@ automation:
 
 status:
   scope: >-
+    The reusable interface includes the T-to-D diagonal section, the actual
+    scheme-theoretic U identity fiber via coordinate pushout and scheme,
+    over-base and group-scheme pullbacks, closed inclusion and all-algebra
+    point formulas for commutative K and finite linearly ordered n. The
+    finite diagonal G_m product and earlier published APIs remain available;
+    this does not assert a represented semidirect law, U normality in GL,
+    arbitrary-base scheme change, dimension/smoothness or source coverage.
+    The complete W scope follows unchanged as dated 2026-09-29 history:
+    This snapshot includes the all-commutative-ring, finite-ordered-index
+    T to D splitting with genuine coordinate pushout, scheme/Over/Grp U identity-
+    fiber pullbacks, closed inclusion and every-algebra point formulas, plus the
+    finite categorical diagonal G_m product and published predecessors.
+    No represented semidirect law, U-normality in GL, arbitrary-base change,
+    smoothness/dimension or source coverage is claimed. Original C native 1063/
+    review 4917 and product A native 1058/review 4912 apply to separate inputs.
+    Historical N text and full D scope follow; all lifecycle labels under them
+    are dated snapshots and B appears exactly once in the D suffix:
+    Dated 2026-09-29 STATIC prospective union on sole frozen parent
+    9b2a5db2a4bceb6c7146d9cb2ba8e0eb36ed1411: the original split
+    kernel's exact producer/client extend the accepted diagonal-product code
+    with 17 complete selected declaration/file pairs after 141 whole inherited
+    pairs, plus one public import and one explicit test root. For any CommRing
+    K and finite linearly ordered n, the diagonal section splits T to D and
+    U is its scheme-theoretic identity fiber, with genuine CommRingCat pushout,
+    scheme/Over/Grp pullbacks, closed inclusion and every-algebra point
+    formulas. This new 13-package combination has NO union build, transitive
+    standard-three audit, fresh review, acceptance, integration or release.
+    Frozen B remains UNACCEPTED/UNRELEASED even though product code A is
+    accepted; its review/publication and any rework are independent of this
+    static union. Original split native1063/review4917 apply only to C, not
+    this combination. No represented semidirect or source coverage is claimed.
+    The complete prior B scope follows unchanged as dated pre-union history:
+    Dated D scalar starts unchanged next and includes shared B exactly
+    once; N's B-next marker records N's earlier layout, not a second B:
     This snapshot implements the literal finite categorical diagonal G_m
     product over every CommRing K and same-universe finite decidable n, with
     genuine Hopf projections, arbitrary-test-scheme universality, both
@@ -793,9 +871,67 @@ status:
       file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
     - declaration: AlgebraicGeometry.diagonalGroupSchemeFin0IsTerminal
       file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalCoordinateMap
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalSectionCoordinateMap
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularUnitriangularCoordinateMap
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalProjection
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalSection
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.unitriangularToUpperTriangular
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonal_section
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.unitriangularToUpperTriangular_isClosedImmersion
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.unitriangularToUpperTriangular_inclusion
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalSection_inclusion
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalSquare_isPushout
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalSquare_isPullback
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalSquare_isPullback_over
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalSquare_isPullback_group
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalProjection_point
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalSection_point
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.unitriangularToUpperTriangular_point
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
 
 review:
   status: >-
+    A fresh independent exact-W agent code review on PR245 (approval 4953)
+    found no static mathematical objection. It is distinct from any release
+    review, human review, source decision or publication. The complete W
+    review status follows unchanged as dated 2026-09-29 candidate history:
+    Original split C passed native 1063's cache-first both-target,
+    private-inclusive standard-three audit and exact-C review 4917; integrated
+    product code A has separate native 1058 and code review 4912. Neither is a
+    combined-tree result or fresh verdict. The 2026-09-29 static renewal did
+    not perform checks or owner acceptance. Historical N status and complete
+    D scalar follow, including B once; their lifecycle labels are dated:
+    Dated 2026-09-29 prospective split/product combination is STATIC,
+    UNCHECKED, UNREVIEWED and UNACCEPTED. Original C split native1063 passed
+    cache-first both-default-target build and private/generated-inclusive
+    standard-three audit on its own tree, and independent exact-C review4917
+    approved C; neither establishes a final-union check or review. The sole
+    frozen product-release-readiness parent B is UNACCEPTED and UNRELEASED;
+    its pending independent review/native context and any material change
+    require separate owner reconciliation/rework. Fresh applicable union
+    evidence and independent exact-union review, then separate maintainer
+    acceptance/integration and own reviewed verified publication, remain
+    future steps. The complete B review-status scalar follows unchanged as
+    dated pre-union history, not a union approval or B release outcome:
+    Dated D scalar starts unchanged next and includes shared B exactly
+    once; N's B-next marker records N's earlier layout, not a second B:
     Original native1058 checked the integrated product code C with a
     matching-cache both-default-target build and complete transitive
     standard-three axiom audit, including private/generated declarations;
@@ -937,6 +1073,18 @@ review:
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    Exact-W static reviewer: worker-b Hive Task
+    hive-request-687a919701527139db32c6a6406479396778259a
+    (UID e04f51f5-038f-4f16-9a5d-fea3818f50fb). Earlier C1063/C4917
+    and product-code 1058/4912 apply to separate graphs; they do not
+    substitute for exact-W computation. Agent review is not human review or
+    source-author endorsement. The complete W notes follow unchanged as
+    dated 2026-09-29 candidate history:
+    Original split review 4917 and product code review 4912 concern
+    separate trees, not this combined snapshot. The static 2026-09-29 renewal
+    did not audit, approve, publish or decide source coverage. Agent reviews
+    do not imply human mathematical review or source-author endorsement.
+    Complete D review.notes follows as dated history, including B once:
     The original product donor, selection mapper, transfer workers and
     independent agent reviewers retain their full attribution below.
     Independent worker-b code approval4912 applies to integrated code C;
@@ -1238,6 +1386,35 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  Documentary release-packet preparation: worker-a Hive Task
+  hive-request-49845d7ef733e0db5264dd6b9f5bf1403091dd21
+  (UID 80455d15-ba46-4034-9475-bfebf29d4b53), not a mathematical
+  author, independent reviewer or accepting maintainer. The complete
+  W acknowledgements follow unchanged as dated 2026-09-29 history,
+  retaining original donor, mapper, transfer and reviewer credit:
+  Dated 2026-09-29 static repaired-parent split-kernel renewer:
+  worker-a Hive Task hive-request-4858ca079644447900997ac218698753e3e37f5b
+  (UID 9dafa64c-e479-4135-a48e-c670d90d0eaa), not the mathematical
+  author, independent reviewer or accepting maintainer. N's distinct donor,
+  mapper, transfer, reviewer and frozen-B renewer credits follow, then the
+  complete D credit scalar including B exactly once; lifecycle claims below
+  are dated historical snapshots:
+  Dated 2026-09-29 static split/product union-renewal author is worker-b
+  Hive Task hive-request-e99d1ea83bdaf0ed69b40e167a4e6b8bf8cec52f
+  (UID e8aa361b-0375-4638-b258-2168f3a2fb73), not its mathematical
+  author, independent reviewer or accepting maintainer. Original split
+  donor worker-b 8a894f4a (UID 22e1595e-13f2-4d64-9e28-503288271bc8),
+  planner worker-a 390d93e2, donor reviewer worker-a 51ab92c8 (UID
+  dc3a8b31-7303-481f-bcbb-e24e63d73c85), destination transfer worker-b
+  5430a7ea (UID 24b28e74-2a89-4f66-b3a4-9276fb2d4525), and independent
+  exact-C reviewer worker-a 39f2edfb (UID
+  6587a53b-0b26-42ea-b1d2-c4b43c42542c) retain their distinct roles
+  and full attribution in the new guide and complete historical records.
+  The complete prior B acknowledgement scalar follows unchanged as dated
+  pre-union history; neither its product-review credits nor original split
+  reviews supply a fresh combined-candidate review:
+  Dated D scalar starts unchanged next and includes shared B exactly
+  once; N's B-next marker records N's earlier layout, not a second B:
   Credit for this publication-stable documentation repair: worker-a Task
   hive-request-5c5aa9fcdc8beb86d672619762e985bab330a7ee (UID
   7135e83f-65e3-4979-898f-09e59e4c49e7). Original donor, mapper,

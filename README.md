@@ -1,3 +1,188 @@
+# Algebraic groups
+
+Reusable algebraic-group and group-scheme APIs over commutative bases include
+upper-triangular groups and their diagonal/unitriangular structures, finite
+diagonal products, and earlier unitriangular and common-zero results. The
+mathematical interfaces stand independently of any particular source.
+
+## Headline results
+
+- **Diagonal splitting and its scheme-theoretic kernel.** For every commutative
+  ring `K` and finite linearly ordered index type `n`, the projection of the
+  upper-triangular group scheme `T` to the diagonal group scheme `D` has a
+  section. The closed unitriangular subgroup scheme `U` is the *actual identity
+  fiber*: a coordinate-ring pushout induces pullbacks of schemes, schemes over
+  `Spec K`, and group schemes. Projection, section and inclusion agree with
+  native formulas on points over every commutative `K`-algebra. See the
+  [producer](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean),
+  [ordinary-import client](AlgebraicGroupsTest/GroupScheme/UpperTriangularSplitKernel.lean)
+  and [split-kernel guide](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md).
+- **Finite diagonal group-scheme product.** For any commutative `K` and
+  same-universe finite decidable index `n`, `D` is the literal categorical
+  product of copies of `Gₘ` in group schemes over `Spec K`. Its Hopf
+  projections and universal property work for arbitrary test schemes, and
+  the empty-index case is terminal. This result already has its own published
+  release. See the [producer](AlgebraicGroups/GroupScheme/DiagonalProduct.lean),
+  [ordinary-import client](AlgebraicGroupsTest/DiagonalProduct.lean) and
+  [product guide](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md).
+- **Earlier APIs.** The [native upper-triangular groups](AlgebraicGroups/GroupTheory/UpperTriangular/README.md),
+  [represented upper-triangular subgroup](AlgebraicGroups/GroupScheme/UpperTriangular/README.md),
+  [diagonal group scheme](AlgebraicGroups/GroupScheme/Diagonal/README.md),
+  [unitriangular series](AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md),
+  [unitriangular exponent bounds](AlgebraicGroups/GroupTheory/UnitriangularExponent/README.md)
+  and [common-zero theorem](AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md)
+  remain available under the hypotheses in their respective guides.
+
+The split-kernel construction requires no field, nonempty-index,
+reducedness, flatness or injectivity hypothesis. It does **not** assert a
+represented semidirect law, normality of `U` in GL, arbitrary-base scheme
+change, dimension/smoothness or source-specific coverage.
+
+## Use and build
+
+Import `AlgebraicGroups` or the focused producer module above. From the
+project root, install the pinned Lean toolchain and **successfully fetch the
+matching mathlib cache before building both default targets**:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+The [build guide](docs/BUILDING.md) gives the exact dependencies and optional
+focused producer/client commands. Build-checked ordinary-import examples live
+in `AlgebraicGroupsTest`. The project uses Apache-2.0; retain distinct
+third-party attributions and licenses from the pinned dependencies.
+
+## Dated frozen-W README (complete 2026-09-29 historical snapshot)
+
+The entire preceding README follows unchanged. All nested “current”,
+“pending”, “unchecked” and publication-status wording belongs to its dated
+pre-release preparation, not to the current headline or a later publication.
+
+---
+
+# Algebraic groups: upper-triangular split kernels and diagonal products
+
+This library offers a source-independent upper-triangular diagonal splitting,
+a finite categorical diagonal-group-scheme product, and the previously
+published common-zero, native and represented upper-triangular, diagonal and
+unitriangular results. Follow each linked module's hypotheses for reuse.
+
+## Mathematical results
+
+- **Upper-triangular diagonal split kernel.** For any commutative ring `K` and
+  finite linearly ordered index `n`, the diagonal projection from the
+  upper-triangular group scheme `T` to the diagonal group scheme `D` has a
+  section, and the closed unitriangular group scheme `U` is its genuine
+  scheme-theoretic identity fiber. A coordinate-ring pushout and pullbacks
+  in schemes, schemes over `Spec K`, and group schemes give the splitting;
+  the projection, section, closed inclusion and GL-compatibility maps agree
+  with native formulas on all commutative `K`-algebras. See the
+  [split-kernel guide](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md),
+  [producer](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean) and
+  [ordinary-import client](AlgebraicGroupsTest/GroupScheme/UpperTriangularSplitKernel.lean).
+- **Finite diagonal product.** For any commutative ring `K` and same-universe
+  finite decidable index `n`, the diagonal group scheme is the literal finite
+  categorical product of `Gₘ`, with genuine Hopf projections, arbitrary-test-
+  scheme universality and empty-index terminality, including zero and
+  nonreduced rings. See the [product guide](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md),
+  [producer](AlgebraicGroups/GroupScheme/DiagonalProduct.lean) and
+  [ordinary-import client](AlgebraicGroupsTest/DiagonalProduct.lean).
+- **Previously published mathematics.** See the [native triangular](AlgebraicGroups/GroupTheory/UpperTriangular/README.md),
+  [represented triangular](AlgebraicGroups/GroupScheme/UpperTriangular/README.md),
+  [diagonal](AlgebraicGroups/GroupScheme/Diagonal/README.md),
+  [common-zero](AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md),
+  [derived-series](AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md)
+  and [exponent](AlgebraicGroups/GroupTheory/UnitriangularExponent/README.md)
+  guides.
+
+**Past evidence and limits.** Original split candidate
+`fd4b61f91e94c2608875d606fb69e80d1c247d3d` passed native 1063's
+cache-first both-default-target build and transitive private-inclusive
+standard-three axiom audit and independent exact-C review 4917. The unchanged
+integrated diagonal-product code `ad5bff948f563bb9df49825f55dfcc8fcace8130`
+has original native 1058 and independent code review 4912. Those different-
+tree checks do not establish a combined-tree build, axiom audit, fresh final
+review, owner acceptance or publication. No represented semidirect law,
+normality of `U` in GL, arbitrary-base scheme change, dimension/smoothness
+or source-specific correspondence is asserted. The 2026-09-29 static renewal
+performed no new computation. Its renewer is worker-a Hive Task
+`hive-request-4858ca079644447900997ac218698753e3e37f5b` (UID
+`9dafa64c-e479-4135-a48e-c670d90d0eaa`), distinct from the original
+mathematical authors, reviewers and accepting maintainer.
+
+## Dated frozen-B union preparation (N's complete unique introduction, 2026-09-29)
+
+The following entire introduction was added by N on frozen B. Its “current”
+labels and prospective decisions are dated history, not present lifecycle
+claims. N's marker promising B as the next whole body records N's earlier
+layout; in this combined history B appears exactly once, nested inside the
+complete repaired-product D body after its own added introduction.
+
+---
+
+# Algebraic groups: diagonal products and upper-triangular split kernels
+
+## Current prospective union (2026-09-29)
+
+- **Upper-triangular diagonal split kernel — static, unchecked union.** Over
+  any commutative base ring and finite linearly ordered index, the diagonal
+  group-scheme projection `T ⟶ D` admits a section, while the closed
+  unitriangular group scheme `U` is its genuine scheme-theoretic identity
+  fiber. A coordinate-ring pushout and pullbacks in schemes, over `Spec K`,
+  and in group schemes establish this beyond field-valued points; the
+  every-algebra point formulas agree with the native diagonal, section and
+  inclusion. See the [split-kernel guide](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md),
+  [producer](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean) and
+  [ordinary-import client](AlgebraicGroupsTest/GroupScheme/UpperTriangularSplitKernel.lean).
+- **Accepted diagonal product code; its later release preparation pending.**
+  The protected-main product code `ad5bff948f563bb9df49825f55dfcc8fcace8130`
+  is accepted and integrated, not officially published. The four-document
+  readiness snapshot `9b2a5db2a4bceb6c7146d9cb2ba8e0eb36ed1411` used
+  here as a frozen *prospective* parent is itself **unaccepted and unreleased**;
+  its independent release review, native context and publication remain
+  separate. Its product API represents the literal finite categorical product
+  of `Gₘ`, including arbitrary test schemes and the empty index. See the
+  [product guide](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md).
+- **Published predecessors remain published.** The native U-first triangular
+  splitting, represented triangular and diagonal group schemes, common-zero
+  results and earlier unitriangular results remain discoverable in the complete
+  dated predecessor README below and their linked guides.
+
+The original split candidate `fd4b61f91e94c2608875d606fb69e80d1c247d3d`
+passed native run 1063 and independent review 4917 **on its original tree**.
+This newly assembled combined tree has **no** applicable both-default-target
+build, complete transitive axiom audit or fresh exact-union review, and is
+**not accepted, integrated or released**. It inherits neither old split checks
+nor readiness acceptance; a changed or rejected prospective product parent
+requires rework. No represented semidirect product, arbitrary-base scheme
+change, dimension/smoothness or source-coverage decision is asserted.
+
+Static renewal author: worker-b Hive Task
+`hive-request-e99d1ea83bdaf0ed69b40e167a4e6b8bf8cec52f` (UID
+`e8aa361b-0375-4638-b258-2168f3a2fb73`); the original mathematical,
+transfer and review credits remain in the split-kernel guide and the complete
+dated predecessor history below.
+
+## Dated frozen-B README (complete release-readiness history, 2026-09-29)
+
+The entire previous README follows unchanged. Its leading “current” product
+and lifecycle labels describe the earlier frozen readiness document; they do
+not approve this prospective union, settle B's pending review, or publish the
+product. The earlier dated predecessor sections within B remain intact.
+
+---
+
+## Dated repaired-product README (complete D body, 2026-09-29)
+
+The entire repaired-product README follows unchanged. Its 2026-09-29
+snapshot and nested “current” preparation labels are historical; its full B
+suffix is retained once, preserving every earlier attribution and correction.
+
+---
+
 # Algebraic groups: common zeros, diagonal products and upper-triangular groups
 
 This snapshot provides source-independent finite diagonal-group-scheme products

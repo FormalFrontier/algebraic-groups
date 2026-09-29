@@ -1,3 +1,152 @@
+# Building algebraic-groups
+
+The two Lake default targets are `AlgebraicGroups` and `AlgebraicGroupsTest`.
+Use the repository-pinned Lean toolchain and resolved 13-package manifest.
+The direct dependencies are mathlib
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`, general-linear-groups
+`ad7c50a0523441116537fb1d6e3c8d2a665af1fc` and scheme-properties
+`6b204a3e49f022e51d78a9f93e77513b99a87e00`, at their declared GitHub
+URLs. The manifest has six total root fields, including `packages`.
+
+From the project root, successfully fetch the **matching precompiled mathlib
+cache before building** both default targets:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+After that successful matching-cache fetch, optional focused builds for the
+[split-kernel producer](../AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean)
+and [ordinary-import client](../AlgebraicGroupsTest/GroupScheme/UpperTriangularSplitKernel.lean)
+are:
+
+```sh
+LAKE_JOBS=2 lake build AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel
+LAKE_JOBS=2 lake build AlgebraicGroupsTest.GroupScheme.UpperTriangularSplitKernel
+```
+
+The [split-kernel guide](../AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md)
+and [diagonal-product guide](../AlgebraicGroups/GroupScheme/DiagonalProduct/README.md)
+describe their hypotheses and public APIs. The isolated donor's old
+evidence collector is neither a shipping dependency nor a build step.
+
+## Dated frozen-W BUILDING.md (complete 2026-09-29 historical snapshot)
+
+The complete preceding build guide follows unchanged. Its nested “current”
+and lifecycle wording describes dated earlier candidate stages; old C1063
+and donor103-origin commands do not establish checks of this shipping tree.
+
+---
+
+# Building the diagonal product and upper-triangular split kernel
+
+The diagonal-product producer/client and upper-triangular split-kernel
+producer/client are in this pinned Lake project. Install its Lean toolchain,
+successfully fetch the matching precompiled mathlib cache from the project
+root **before** building both default targets:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+The direct GitHub dependencies remain mathlib
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`, general-linear-groups
+`ad7c50a0523441116537fb1d6e3c8d2a665af1fc`, and scheme-properties
+`6b204a3e49f022e51d78a9f93e77513b99a87e00`, with the resolved
+13-package manifest. Only after a successful matching cache fetch, optional
+focused builds may target the two split-kernel modules:
+
+```sh
+LAKE_JOBS=2 lake build AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel
+LAKE_JOBS=2 lake build AlgebraicGroupsTest.GroupScheme.UpperTriangularSplitKernel
+```
+
+These are reproduction instructions, not commands this 2026-09-29 static
+renewal executed. Original split native run 1063 and independent review 4917
+apply to original C; original product native 1058 and review 4912 apply to
+integrated product code. Neither prior result verifies this combined shipping
+tree or settles its later owner decisions. The isolated donor's 103-origin
+collector is evidence-only and is not a shipping module or build step. The
+13-package manifest has **six total** root fields, including `packages`.
+Static renewer: worker-a Hive Task
+`hive-request-4858ca079644447900997ac218698753e3e37f5b` (UID
+`9dafa64c-e479-4135-a48e-c670d90d0eaa`).
+
+## Dated frozen-B build preparation (N's complete unique introduction, 2026-09-29)
+
+The following entire N preparation introduction is historical. Its “current”
+and pending-status language refers to frozen B and N at that date, not the
+later state of this combined tree. Its promise of B as the next whole guide
+reflects N's old layout: the sole complete B body is nested inside D below.
+
+---
+
+# Building the prospective triangular split kernel and diagonal product
+
+## Current prospective-union reproduction (2026-09-29; no new checks run)
+
+This static candidate adds the original, byte-identical
+`AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel` producer and
+`AlgebraicGroupsTest.GroupScheme.UpperTriangularSplitKernel` ordinary-import
+client to the frozen product-release-readiness snapshot
+`9b2a5db2a4bceb6c7146d9cb2ba8e0eb36ed1411`. The product *code* at
+protected main `ad5bff948f563bb9df49825f55dfcc8fcace8130` is accepted,
+but the frozen documentary parent remains **unaccepted and unreleased**.
+The new union is **static, unchecked, unreviewed and unaccepted**. The
+original split candidate's native run 1063, complete private/generated-inclusive
+standard-three axiom audit and independent review 4917 verify its **different
+tree**, not this union; product native 1058 verifies its own exact inputs.
+Neither donor evidence nor historical product-readiness language is a union
+check. Future changes to B can require reassembly.
+
+For a later **authorized** check using the pinned Lean toolchain and unchanged
+13-package/six-total-root-field manifest, first successfully fetch the matching
+precompiled mathlib cache, then build **both default targets** from the project
+root:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+Only after the matching cache fetch, optionally reproduce the new focused
+producer and client:
+
+```sh
+LAKE_JOBS=2 lake build AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel
+LAKE_JOBS=2 lake build AlgebraicGroupsTest.GroupScheme.UpperTriangularSplitKernel
+```
+
+These are instructions, **not** commands executed on this combination.
+The original isolated donor's focused 103-origin collector lives only in its
+separate evidence, not in this shipping tree or the donor's shipping code.
+A complete private/generated-inclusive transitive standard-three audit and
+fresh independent review of the **final union** remain distinct required
+steps before any maintainer acceptance, integration and own reviewed release;
+the pending product release has its own independent chain. No source coverage
+or represented semidirect conclusion follows.
+
+## Dated frozen-B BUILDING.md (complete release-readiness history, 2026-09-29)
+
+The entire previous guide follows unchanged. Its leading reproduction and
+pending-product statements describe B's original preparation, not a new
+union computation, union acceptance or product publication.
+
+---
+
+## Dated repaired-product build guide (complete D body, 2026-09-29)
+
+The entire repaired-product build guide follows unchanged. Its snapshot and
+nested “current” lifecycle statements are historical; its full B suffix
+appears exactly once after D's original added introduction.
+
+---
+
 # Building the finite diagonal-group-scheme product
 
 This project includes the literal finite categorical product of `Gₘ` for
