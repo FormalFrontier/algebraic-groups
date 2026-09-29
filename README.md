@@ -1,5 +1,93 @@
 # Algebraic groups
 
+## Headline results
+
+- **Represented U-first upper-triangular coordinates.** For any commutative
+  ring `K` and same-universe finite linearly ordered index type `n`, the
+  unitriangular scheme `U`, diagonal scheme `D` and upper-triangular scheme
+  `T` over `Spec K` admit a categorical isomorphism of underlying schemes
+  `U ⊗ D ≅ T` in `Over (Spec K)`. Its forward arrow is `i(u)e(d)`; its inverse
+  recovers the diagonal by projection and the unitriangular factor by right
+  (column) normalization. The represented diagonal action on the actual
+  scheme-theoretic identity fiber sends the `(i,j)` entry of `u` to
+  `d_i * u_ij * d_j⁻¹`. For arbitrary test schemes, multiplication in these
+  coordinates is `(u,d)*(u',d') = (u*α(d,u'), d*d')`: the categorical product
+  does **not** carry the canonical direct-product group law under this iso.
+  Point readbacks hold over every commutative `K`-algebra, including zero and
+  nonreduced rings; empty indices and noninjective coefficient maps need no
+  exception. Import
+  `AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct`; see its
+  [producer](AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean),
+  [ordinary-import client](AlgebraicGroupsTest/GroupScheme/UpperTriangularSchemeProduct.lean)
+  and [mathematical guide](AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md).
+- **Split identity fiber and finite diagonal product.** The diagonal
+  projection `T ⟶ D` has a section, and the closed unitriangular subgroup
+  identifies with its *scheme-theoretic* identity fiber. See the
+  [split producer](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean)
+  and [split guide](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md).
+  For finite decidable same-universe `n`, `D` is the categorical product of
+  copies of `Gₘ` over `Spec K`, including the empty-index terminal case;
+  see the [diagonal-product guide](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md).
+  Earlier [native triangular](AlgebraicGroups/GroupTheory/UpperTriangular/README.md),
+  [represented triangular](AlgebraicGroups/GroupScheme/UpperTriangular/README.md),
+  [unitriangular](AlgebraicGroups/GroupScheme/Unitriangular/README.md) and
+  [common-zero](AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md)
+  interfaces remain available under their documented hypotheses.
+
+These results are over the fixed base `Spec K`; they assert neither a global
+transported group-object instance, arbitrary-base change, normality of `U` in
+`GL`, geometry beyond the stated constructions, nor source-specific coverage.
+
+## Use and build
+
+Import `AlgebraicGroups` or the focused producer above. From the project root,
+install the repository-pinned Lean toolchain, successfully fetch the matching
+precompiled mathlib cache and build **both** default targets:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build AlgebraicGroups AlgebraicGroupsTest
+```
+
+The [building guide](docs/BUILDING.md) lists the exact declared dependencies
+and optional focused targets. Private research and evidence are not library-use
+dependencies. This documentation introduction is by worker-a Hive Task
+`hive-request-5b09e086919b2a86fb5230d5fd2ee02ac1f4e585` (UID
+`e8705205-8984-46ec-9e40-00d34c8821b3`), **not** a new mathematical
+author or reviewer; the dated original credit and complete preceding README
+follow unchanged.
+
+## Historical preceding README (complete P snapshot, 2026-09-29)
+
+The entire preceding document follows byte-for-byte. Its descriptions of
+earlier candidate stages and their lifecycle are dated historical evidence;
+the current import and reproduction instructions are above.
+
+# Algebraic groups: represented upper-triangular U-first products and diagonal actions
+
+## Headline results
+
+For any commutative ring `K` and finite linearly ordered `n`, the represented
+unitriangular kernel `U`, diagonal group scheme `D`, and upper-triangular group
+scheme `T` over fixed `Spec K` admit an underlying-scheme U-first isomorphism
+`U ⊗ D ≅ T`, with forward arrow `i(u)e(d)`. The diagonal section acts on
+the actual scheme-theoretic kernel by represented conjugation; an arbitrary-test
+diagram realizes the twisted multiplication, not a direct-product group law.
+Zero and nonreduced rings, empty indices and noninjective coefficient maps
+remain within the stated hypotheses. See the [U-first guide](AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md),
+[producer](AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean),
+[ordinary-import client](AlgebraicGroupsTest/GroupScheme/UpperTriangularSchemeProduct.lean),
+[split-kernel guide](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md),
+and [diagonal-product guide](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md).
+
+## Historical preceding README (complete W snapshot, 2026-09-29)
+
+The entire preceding document follows unchanged; its dated candidate and
+publication-status descriptions belong to their respective earlier snapshots.
+
+# Algebraic groups
+
 Reusable algebraic-group and group-scheme APIs over commutative bases include
 upper-triangular groups and their diagonal/unitriangular structures, finite
 diagonal products, and earlier unitriangular and common-zero results. The

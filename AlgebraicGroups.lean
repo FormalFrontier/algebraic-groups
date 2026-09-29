@@ -55,6 +55,7 @@ public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
 public import AlgebraicGroups.GroupTheory.UpperTriangular
 public import AlgebraicGroups.GroupScheme.UpperTriangular
 public import AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel
+public import AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct
 public import AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration
 public import AlgebraicGroups.GroupTheory.UnitriangularSuperdiagonalQuotients
 public import AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass

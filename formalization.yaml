@@ -3,6 +3,27 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    For any commutative K and same-universe finite linearly ordered n, the
+    represented upper-triangular scheme T over Spec K has a categorical
+    underlying-scheme U-first product U x D with diagonal scheme D and its
+    actual unitriangular identity fiber U. The forward map is i(u)e(d);
+    its inverse uses the diagonal projection and right normalization.
+    Represented diagonal conjugation gives arbitrary-test twisted multiplication
+    (u,d)*(u',d')=(u*alpha(d,u'),d*d'), not a canonical direct-product group law.
+    All commutative K-algebra points, including zero/nonreduced rings, and
+    empty indices and noninjective coefficient maps are within scope.
+    The split identity-fiber, finite diagonal G_m product and earlier
+    triangular, unitriangular and common-zero APIs remain available.
+    The complete preceding P description follows unchanged as dated
+    2026-09-29 historical evidence:
+    Represented upper-triangular group schemes over fixed Spec K admit a
+    categorical U-first coordinate isomorphism and a diagonal conjugation
+    action on their actual unitriangular kernel. The forward arrow is i(u)e(d),
+    and arbitrary-test multiplication is twisted by the represented action;
+    no direct-product group law or arbitrary-base change is asserted.
+    Original isolated U-first evidence belongs to its donor graph, not to
+    this destination. The entire preceding W description follows unchanged
+    as a dated 2026-09-29 historical snapshot:
     This source-independent library includes an upper-triangular projection
     with diagonal section and the actual unitriangular scheme-theoretic
     identity fiber over every commutative K and finite linearly ordered n:
@@ -165,6 +186,20 @@ automation:
         Formal Frontier AI agents used Lean and Lake with pinned mathlib and
         separately attributed non-author agent development review.
   notes: >-
+    Formalization is AI-assisted using pinned Lean, mathlib and official
+    project dependencies; reproducible build and proof-integrity evidence
+    belongs to its exact candidate and graph. The isolated donor's focused
+    85-origin standard-three audit applies only to that isolated graph;
+    earlier split/product checks likewise have their own scopes.
+    Independent agent code review is not a human mathematical review or
+    source-author endorsement. The entire P automation history follows
+    unchanged as a dated 2026-09-29 snapshot:
+    The original isolated represented-product C passed its focused build and
+    full private-inclusive 85-origin standard-three audit on its own graph.
+    The 2026-09-29 destination transfer is static: no Lean, Lake, cache fetch,
+    build, audit, schema or CI was performed for the changed union. Agent
+    development and independent review are not human mathematical review.
+    The complete preceding W notes follow unchanged as dated history:
     Formalization is AI-assisted; agent review is not human mathematical
     review or source-author endorsement. This documentary update did not
     run Lean, Lake, cache fetches, audits or CI. The complete W notes follow
@@ -202,6 +237,27 @@ automation:
 
 status:
   scope: >-
+    For every commutative K and finite linearly ordered same-universe n,
+    over fixed Spec K, U x D is categorically isomorphic as an underlying
+    scheme to T via (u,d) |-> i(u)e(d); the inverse recovers the diagonal
+    and right-normalized unitriangular factor. The represented diagonal
+    conjugation action gives the arbitrary-test twisted multiplication
+    (u,d)*(u',d')=(u*alpha(d,u'),d*d'). Every commutative K-algebra point,
+    including zero/nonreduced rings, empty indices and noninjective maps,
+    has the native entrywise readback d_i*u_ij*d_j^-1 for the action.
+    There is no canonical direct-product group law, global transported
+    group-object instance, arbitrary-base change, GL-normality, geometry
+    or source-specific coverage conclusion. Complete preceding P scope
+    follows unchanged as dated 2026-09-29 history:
+    For any commutative K and finite linearly ordered n, the represented
+    unitriangular, diagonal and upper-triangular group schemes over fixed
+    Spec K have a U-first categorical isomorphism, inverse/diagonal
+    readbacks, a represented conjugation action and an arbitrary-test twisted
+    multiplication diagram. Zero and nonreduced rings, empty indices and
+    noninjective coefficient maps are included; no global transported
+    group-object law, GL-normality, arbitrary-base change, smoothness,
+    dimension or source-specific coverage is claimed. The complete preceding
+    W scope follows unchanged as dated 2026-09-29 history:
     The reusable interface includes the T-to-D diagonal section, the actual
     scheme-theoretic U identity fiber via coordinate pushout and scheme,
     over-base and group-scheme pullbacks, closed inclusion and all-algebra
@@ -905,9 +961,60 @@ status:
       file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
     - declaration: AlgebraicGeometry.unitriangularToUpperTriangular_point
       file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: AlgebraicGeometry.upperTriangularSection_over
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalConj
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalConj_lift_comp_inclusion
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularSectionFirstIso
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularCoordinateChange
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso_hom
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso_hom_comp_diagonal
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso_inv_comp_snd
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso_inv_fst_comp_inclusion
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso_mul_lift
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstTwistedMul
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstTwistedMul_comp_hom
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularDiagonalConj_point
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso_point
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso_inv_point
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso_inv_fst_point
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.upperTriangularUFirstIso_inv_snd_point
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
 
 review:
   status: >-
+    Independent worker-b agent code review 4979 on 2026-09-29 approved the
+    exact P represented-product candidate as a static mathematical/API/
+    provenance verdict. It does not itself establish a matching-cache-first
+    destination build, complete private-inclusive standard-axiom audit,
+    human mathematical review, source-author endorsement, maintainer
+    acceptance or reviewed release. Computation and lifecycle evidence
+    remain separately bound to their exact revisions. The entire P review
+    status follows unchanged as dated 2026-09-29 history:
+    Original represented-product C has a completed isolated author check,
+    fresh agent review and separate owner acceptance; its graph and producer
+    differ from this destination union. Earlier split/product checks also
+    apply only to their respective trees. The 2026-09-29 static transfer is
+    not a new destination build, full private-inclusive audit or fresh union
+    review. The complete preceding W review status follows unchanged as
+    dated historical evidence, not an approval of this transfer:
     A fresh independent exact-W agent code review on PR245 (approval 4953)
     found no static mathematical objection. It is distinct from any release
     review, human review, source decision or publication. The complete W
@@ -1073,6 +1180,25 @@ review:
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    Static exact-P reviewer: worker-b Hive Task
+    hive-request-5186ffa0cc57c5b0a78f71c7cf9553af92e82e06
+    (UID 1eaec47f-e234-4d83-80b1-f8e82cbeb924), separate from the
+    original mathematical author and packaging author. Documentation
+    preparation: worker-a Hive Task
+    hive-request-5b09e086919b2a86fb5230d5fd2ee02ac1f4e585
+    (UID e8705205-8984-46ec-9e40-00d34c8821b3), not mathematical
+    authorship or an independent review of this new documentation.
+    The entire preceding P review notes follow unchanged as dated history:
+    Original isolated C author worker-b Task
+    hive-request-11a837cffae2a0d3e1de1e4e3f0444427ad7a828, plan author
+    worker-b Task hive-request-5d589562fb7692f86ca72de5d84c264091553738,
+    fresh reviewer worker-a Task
+    hive-request-aa13d3eca9bdf0ad5f1f9c49d27e7ecd9e923da0 and static
+    mapper worker-b Task hive-request-f56766f9697db772d9e397c3b7ae12298bb65652
+    retain separate roles. Worker-a Task
+    hive-request-16662b4a0160f02f68b640e62104e2ff35408ba0 transfers
+    bytes, not proofs or a fresh verdict. The complete preceding W review
+    notes follow unchanged as dated historical evidence:
     Exact-W static reviewer: worker-b Hive Task
     hive-request-687a919701527139db32c6a6406479396778259a
     (UID e04f51f5-038f-4f16-9a5d-fea3818f50fb). Earlier C1063/C4917
@@ -1386,6 +1512,35 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  Documentary readiness preparation on 2026-09-29: worker-a Hive Task
+  hive-request-5b09e086919b2a86fb5230d5fd2ee02ac1f4e585 (UID
+  e8705205-8984-46ec-9e40-00d34c8821b3), not a mathematical author,
+  independent reviewer or accepting maintainer. Independent exact-P static
+  agent code reviewer on 2026-09-29: worker-b Hive Task
+  hive-request-5186ffa0cc57c5b0a78f71c7cf9553af92e82e06 (UID
+  1eaec47f-e234-4d83-80b1-f8e82cbeb924), not a native check or human
+  endorsement. All original contributors retain their full credit in the
+  complete preceding P acknowledgement history, which follows unchanged:
+  Dated 2026-09-29 static, unaccepted-R readiness-parent packaging by
+  worker-a Hive Task hive-request-8db66af43a2c3ea5dc61b5025c74454fdf4f8659
+  (UID 6633591c-b068-4958-b141-59c66ba1859a): transferred
+  existing bytes only, not mathematical authorship or destination review.
+  Dated 2026-09-29 represented U-first static transfer: worker-a Hive Task
+  hive-request-16662b4a0160f02f68b640e62104e2ff35408ba0 (UID
+  e0fab456-6fa3-450a-9345-5229c475857d), not the mathematical author,
+  independent reviewer or accepting maintainer. Original C author worker-b
+  hive-request-11a837cffae2a0d3e1de1e4e3f0444427ad7a828 (UID
+  b67820b5-a408-4e53-bab5-e7af661d2353), planner worker-b
+  hive-request-5d589562fb7692f86ca72de5d84c264091553738 (UID
+  bc5f6113-fa14-4f56-ba9c-ac7639e154ca), reviewer worker-a
+  hive-request-aa13d3eca9bdf0ad5f1f9c49d27e7ecd9e923da0 (UID
+  a2611c06-0dd9-4a21-bb29-ae5bf1acdeb7) and static mapper worker-b
+  hive-request-f56766f9697db772d9e397c3b7ae12298bb65652 (UID
+  58fed302-a059-4c18-ba9b-dec2f890d65e) retain distinct credit.
+  Existing split, generic-product, prerequisite and prior destination author
+  and reviewer histories remain complete below. Agent review is not human
+  mathematical review or source-author endorsement. The complete preceding
+  W acknowledgements follow unchanged as dated historical credit:
   Documentary release-packet preparation: worker-a Hive Task
   hive-request-49845d7ef733e0db5264dd6b9f5bf1403091dd21
   (UID 80455d15-ba46-4034-9475-bfebf29d4b53), not a mathematical

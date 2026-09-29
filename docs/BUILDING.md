@@ -1,5 +1,75 @@
 # Building algebraic-groups
 
+The default Lake targets are `AlgebraicGroups` and `AlgebraicGroupsTest`; the
+second includes the explicitly rooted represented-product ordinary-import
+client. The pinned toolchain is Lean `leanprover/lean4:v4.34.0-rc2`. The
+resolved manifest has 13 packages and six total root fields; direct GitHub
+requirements are mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`,
+general-linear-groups `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`
+and scheme-properties `6b204a3e49f022e51d78a9f93e77513b99a87e00`.
+From this project root, install the pinned toolchain and **successfully fetch
+the matching precompiled mathlib cache before building both default targets**:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build AlgebraicGroups AlgebraicGroupsTest
+```
+
+For optional focused producer/client builds in the same checkout, first
+successfully fetch the matching cache as well:
+
+```sh
+lake exe cache get
+LAKE_JOBS=2 lake build AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct
+LAKE_JOBS=2 lake build AlgebraicGroupsTest.GroupScheme.UpperTriangularSchemeProduct
+```
+
+See the [represented-product guide](../AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md),
+[split guide](../AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md)
+and [diagonal-product guide](../AlgebraicGroups/GroupScheme/DiagonalProduct/README.md).
+Private research, evidence collectors and dated isolated-donor imports are
+not needed for ordinary use or either default build. These are reproduction
+instructions, not a claim about a particular check run.
+
+## Historical preceding BUILDING.md (complete P snapshot, 2026-09-29)
+
+The entire preceding document follows byte-for-byte. Its older status and
+donor commands belong to their dated checkouts; the shipping commands are above.
+
+# Building the represented U-first product and its prerequisites
+
+Install the repository-pinned toolchain and, from this project's root, fetch
+the matching precompiled mathlib cache **successfully before** either build.
+Build both default targets, which include the represented-product producer and
+its explicitly rooted ordinary-import client:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+After a successful matching cache fetch, optional focused targets are:
+
+```sh
+LAKE_JOBS=2 lake build AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct
+LAKE_JOBS=2 lake build AlgebraicGroupsTest.GroupScheme.UpperTriangularSchemeProduct
+```
+
+These are reproduction instructions, **not executed for this static transfer**.
+The isolated donor's earlier focused build/private-inclusive standard-three
+audit and the earlier split/product results apply only to their original inputs;
+none establishes a destination check or review of this transferred union.
+The pinned 13-package graph and three official direct dependencies remain fixed.
+
+## Historical preceding build guide (complete W snapshot, 2026-09-29)
+
+The entire preceding guide follows unchanged; historical commands and status
+descriptions refer to their dated predecessors, not to a new union pass.
+
+# Building algebraic-groups
+
 The two Lake default targets are `AlgebraicGroups` and `AlgebraicGroupsTest`.
 Use the repository-pinned Lean toolchain and resolved 13-package manifest.
 The direct dependencies are mathlib
