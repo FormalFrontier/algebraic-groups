@@ -5,6 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
+public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
+public import AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension
 public import AlgebraicGroups.Algebra.TensorProduct.Pi
 public import AlgebraicGroups.Algebra.Smooth
 public import AlgebraicGroups.Algebra.SymmetricAlgebra
@@ -49,6 +51,7 @@ public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLine
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLineBaseChange
 public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import AlgebraicGroups.GroupScheme.Diagonal
+public import AlgebraicGroups.GroupScheme.DiagonalDimension
 public import AlgebraicGroups.GroupScheme.DiagonalProduct
 public import AlgebraicGroups.GroupScheme.Unitriangular
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry

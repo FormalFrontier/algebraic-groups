@@ -3,6 +3,27 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    Reusable polynomial coordinate elimination after localization over any
+    commutative ring, supplied-point finite polynomial localization dimension
+    over any field, and the native finite diagonal Hopf quotient presentation
+    and ring/underlying-scheme dimension. The equivalences include erased-zero
+    denominators and trivial base rings; the dimension theorems require a
+    field and finite indices, including empty indices. Earlier represented
+    triangular and unitriangular APIs remain available under their stated
+    hypotheses. Source-specific correspondence is separate from library use.
+    The complete preceding description follows as dated 2026-09-29
+    pre-release preparation history, not a current lifecycle label:
+    Prospective native finite diagonal dimension transfer: generic polynomial
+    coordinate elimination commutes with localization over arbitrary commutative
+    rings, including erased-zero denominators and zero rings. For any field and
+    finite variable type, a supplied nonvanishing field-valued evaluation
+    witnesses full dimension of a polynomial localization. Applied to the
+    actual diagonal Hopf quotient of GL, the native diagonal ring and underlying
+    affine scheme have dimension card of the finite decidable index set over
+    every field, including finite fields and empty index types. This candidate
+    is not yet independently destination-reviewed, integrated or released;
+    source-specific correspondence is outside the library. The complete
+    preceding description follows unchanged as dated 2026-09-29 history:
     For any commutative K and same-universe finite linearly ordered n, the
     represented upper-triangular scheme T over Spec K has a categorical
     underlying-scheme U-first product U x D with diagonal scheme D and its
@@ -186,6 +207,25 @@ automation:
         Formal Frontier AI agents used Lean and Lake with pinned mathlib and
         separately attributed non-author agent development review.
   notes: >-
+    AI-assisted formalization uses the pinned Lean toolchain and exact official
+    dependency graph. Successfully fetch the matching mathlib cache before
+    building both AlgebraicGroups and AlgebraicGroupsTest. Applicable proof
+    evidence includes all actual private/generated module-origin declarations
+    and their transitive axioms, allowing only propext, Classical.choice and
+    Quot.sound. Evidence is revision-specific; donor or earlier-graph checks
+    are not transferred to changed inputs. Independent agent review is not
+    human mathematical review or source-author endorsement. The complete
+    preceding automation notes are dated 2026-09-29 preparation history;
+    their pending stages describe those earlier snapshots:
+    The native finite diagonal candidate uses the existing official
+    MvPolynomial.height_ker_eval without copying its already-identical donor
+    proof. Its three transferred producer/client pairs require matching-cache-
+    first focused builds and complete private/generated-inclusive transitive
+    standard-three checks on the actual destination graph. Those checks and
+    exact evidence, if completed, belong to the separately published candidate
+    report; donor checks and earlier graph evidence do not establish them.
+    Owner-managed full native both-default-root CI and destination review are
+    separate pending stages. The preceding automation history follows unchanged:
     Formalization is AI-assisted using pinned Lean, mathlib and official
     project dependencies; reproducible build and proof-integrity evidence
     belongs to its exact candidate and graph. The isolated donor's focused
@@ -237,6 +277,27 @@ automation:
 
 status:
   scope: >-
+    The localized-coordinate quotient equivalence is valid over arbitrary
+    commutative rings and variable sets. The finite polynomial localization
+    dimension theorem requires an explicitly supplied nonvanishing field-valued
+    point; a nonzero polynomial over a finite field need not supply that point.
+    This limitation does not assert failure of the general dimension formula
+    for a nonzero denominator. The native diagonal determinant has the required
+    identity point over every field, giving ring and underlying Spec dimension
+    equal to the cardinality of the finite decidable index type, even if empty.
+    No native upper-triangular, general-product, arbitrary-base or zero-ring
+    dimension theorem, or source-coverage decision, is asserted. The complete
+    preceding scope is dated 2026-09-29 preparation history:
+    Prospective transfer of generic localized-coordinate quotient equivalence
+    for arbitrary CommRing bases and variable sets, including erased-zero and
+    zero-ring cases; independently importable supplied-point finite polynomial
+    localization dimension over fields, including finite fields; actual native
+    diagonal Hopf quotient presentation, both diagonal-entry directions,
+    determinant evaluation at one, and native ring/Spec dimension for any field
+    and finite decidable matrix index, including the empty type. This is not a
+    dimension theorem for T, G_m, arbitrary products, arbitrary bases, the
+    zero ring, or any source-coverage determination. The full preceding scope
+    follows unchanged as dated 2026-09-29 history:
     For every commutative K and finite linearly ordered same-universe n,
     over fixed Spec K, U x D is categorically isomorphic as an underlying
     scheme to T via (u,d) |-> i(u)e(d); the inverse recovers the diagonal
@@ -645,6 +706,34 @@ status:
     release acceptance and verified point-group publication remain pending;
     the published geometry predecessor does not contain these point-group additions.
   main_results:
+    - declaration: MvPolynomial.eraseCoordinates
+      file: AlgebraicGroups/Algebra/LocalizedCoordinateQuotient.lean
+    - declaration: MvPolynomial.localizedCoordinateIdeal
+      file: AlgebraicGroups/Algebra/LocalizedCoordinateQuotient.lean
+    - declaration: MvPolynomial.quotient_killed
+      file: AlgebraicGroups/Algebra/LocalizedCoordinateQuotient.lean
+    - declaration: MvPolynomial.localizedCoordinateQuotientEquiv
+      file: AlgebraicGroups/Algebra/LocalizedCoordinateQuotient.lean
+    - declaration: MvPolynomial.localizedCoordinateQuotientEquiv_algebraMap
+      file: AlgebraicGroups/Algebra/LocalizedCoordinateQuotient.lean
+    - declaration: MvPolynomial.localizedCoordinateQuotientEquiv_symm_algebraMap
+      file: AlgebraicGroups/Algebra/LocalizedCoordinateQuotient.lean
+    - declaration: MvPolynomial.ringKrullDim_localizationAway_of_eval_ne_zero
+      file: AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension.lean
+    - declaration: DiagonalCoordinateRing.ideal_eq_localizedCoordinateIdeal
+      file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
+    - declaration: DiagonalCoordinateRing.localizedPolynomialEquiv
+      file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
+    - declaration: DiagonalCoordinateRing.localizedPolynomialEquiv_diagonal
+      file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
+    - declaration: DiagonalCoordinateRing.localizedPolynomialEquiv_symm_diagonal
+      file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
+    - declaration: DiagonalCoordinateRing.erasedDeterminant_eval_one
+      file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
+    - declaration: AlgebraicGeometry.diagonalCoordinateRing_ringKrullDim
+      file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
+    - declaration: AlgebraicGeometry.diagonalGroupUnderlyingScheme_topologicalKrullDim
+      file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
     - declaration: UnitriangularCoordinateRing.ideal_isHopfIdeal
       file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
     - declaration: UnitriangularCoordinateRing.coordinatePolynomialEquiv
@@ -1000,6 +1089,17 @@ status:
 
 review:
   status: >-
+    Independent mathematical/API/provenance review, computational checks,
+    maintainer acceptance, integration and release publication are distinct
+    revision-bound decisions recorded with their exact artifacts. This field
+    is not itself a review vote or acceptance record. The complete preceding
+    review status is retained as dated 2026-09-29 preparation history; its
+    prospective, unchecked and unreleased labels refer to those snapshots:
+    The native finite diagonal transfer on the changed destination graph is
+    a prospective candidate, not a reviewed, accepted, integrated or released
+    result. Isolated donor acceptance and checks do not constitute destination
+    code review or owner-managed native both-default-root CI. The complete
+    preceding review status follows unchanged as dated history:
     Independent worker-b agent code review 4979 on 2026-09-29 approved the
     exact P represented-product candidate as a static mathematical/API/
     provenance verdict. It does not itself establish a matching-cache-first
@@ -1180,6 +1280,14 @@ review:
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    Native-diagonal destination review and its affected provenance/wording
+    correction have separate exact-candidate records. The mathematical donor,
+    transfer author, fresh reviewers and accepting maintainer have distinct
+    roles. Original native1172 evidence binds only its C7338a9ff candidate;
+    subsequent candidates need applicable evidence and independent review.
+    No new proof computation or independent approval is claimed by this
+    documentary preparation. The complete preceding review notes follow as
+    dated 2026-09-29 history, preserving their original identities and scopes:
     Static exact-P reviewer: worker-b Hive Task
     hive-request-5186ffa0cc57c5b0a78f71c7cf9553af92e82e06
     (UID 1eaec47f-e234-4d83-80b1-f8e82cbeb924), separate from the
@@ -1512,6 +1620,25 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  Lattice prepared the two collective Apache/Authors headers and precise
+  finite-field supplied-point documentation, then these publication-stable
+  metadata prefixes on 2026-09-29. This is documentary maintenance, not new
+  mathematical authorship or independent review. The complete preceding
+  acknowledgements follow unchanged, preserving all original contributor roles:
+  Native finite diagonal transfer by worker-b Hive Task
+  hive-request-fcba5de2156e94caaa20b8f76927d94fafa664b5 (UID
+  398d3fce-ddf6-476c-b853-6ae3b5aedc07), not original mathematical
+  authorship or an independent destination review. Original generic coordinate
+  elimination author: worker-b Task
+  hive-request-520f29e82163efb4f4ddbccb0c6ef699f521388c (UID
+  91f310e5-3f5f-4bfd-aaed-66ac3b2f27ac). Original supplied-point
+  dimension author: worker-a Task
+  hive-request-b8a51a3e802d9245c7f88247e16ea856434e8ed1 (UID
+  2f98f270-e360-4e0a-8041-75262ff8563d). Original native diagonal
+  author: worker-b Task hive-request-f3dedc0cfeb6957b7bedb0438841fa88e3f8c9a9
+  (UID 7cbb0509-4fad-4c4d-92e6-0dbab86e164e). Original donor review and
+  assembly histories remain in the private owning record, distinct from
+  destination acceptance. The full preceding acknowledgements follow unchanged:
   Documentary readiness preparation on 2026-09-29: worker-a Hive Task
   hive-request-5b09e086919b2a86fb5230d5fd2ee02ac1f4e585 (UID
   e8705205-8984-46ec-9e40-00d34c8821b3), not a mathematical author,

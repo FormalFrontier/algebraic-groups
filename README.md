@@ -2,6 +2,25 @@
 
 ## Headline results
 
+- **Coordinate elimination and finite diagonal dimension.** For any commutative
+  ring, `MvPolynomial.localizedCoordinateQuotientEquiv` identifies a polynomial
+  localization modulo eliminated coordinates with localization at the erased
+  polynomial, even if that polynomial erases to zero or the base ring is trivial.
+  Over any field and finite variable type, the independent theorem
+  `MvPolynomial.ringKrullDim_localizationAway_of_eval_ne_zero` gives dimension
+  `Fintype.card σ` when a *supplied* field-valued point does not annihilate the
+  denominator; a nonzero denominator alone need not supply that nonvanishing
+  field-valued point over a finite field. This limitation concerns the supplied-point
+  hypothesis, not the general full-dimension formula for a nonzero denominator.
+  Applying both APIs to the **actual** finite diagonal Hopf quotient,
+  `DiagonalCoordinateRing.localizedPolynomialEquiv` identifies both directions
+  of its retained coordinates, and
+  `AlgebraicGeometry.diagonalGroupUnderlyingScheme_topologicalKrullDim` gives
+  dimension `Fintype.card ι` for every field and finite decidable `ι`, including
+  empty indices. Use the independent [elimination guide](AlgebraicGroups/Algebra/LocalizedCoordinateQuotient/README.md),
+  [localization-dimension guide](AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension/README.md)
+  and [native diagonal guide](AlgebraicGroups/GroupScheme/DiagonalDimension/README.md),
+  with their focused producer modules and `AlgebraicGroupsTest` ordinary clients.
 - **Represented U-first upper-triangular coordinates.** For any commutative
   ring `K` and same-universe finite linearly ordered index type `n`, the
   unitriangular scheme `U`, diagonal scheme `D` and upper-triangular scheme
