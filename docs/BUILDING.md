@@ -1,4 +1,54 @@
-# Generation and derived-series transfer: current build guidance (2026-09-28)
+# Native unitriangular exponent transfer: build guidance (2026-09-29)
+
+The parent I9 `771a5ab485be5aaa0f5f2c553f8b7b2cc3766605` has 168
+shipping leaves, 145 total Lean files (107 production including the aggregate,
+38 tests), 38 literal test roots, 95 aggregate imports, 70 selected result
+objects and 13 whole ordered manifest packages. This candidate has 171 leaves,
+147 Lean files (108 production, 39 tests), 39 literal roots, 96 aggregate
+imports and 75 selected objects, with the **same** 13 whole packages and pins.
+The new module/client are accepted and protected-integrated at development
+main `45d4c5ddfcd491f298c4c968561d2e2eccf82e06`.
+
+Original native runs 895 and 912 certify the preceding generation/derived
+contribution on its unchanged computational inputs; its own reviewed release
+completed at internal I9 and verified official P9
+`8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827`. The accepted isolated
+exponent donor has separate focused checks; they are not substitutes for
+this destination graph. Original native job 932 on the exact accepted main
+fetched 8,892 matching mathlib cache files, verified readiness without a build,
+then built both default targets (3,873 jobs). Its complete private/generated-
+inclusive transitive audit covered all 3,700 module-origin pairs (3,681 names;
+1,181 private-named origins), including the exponent producer's 19 and
+ordinary-import client's 2; only `propext`, `Classical.choice` and `Quot.sound`
+occurred, with zero rejects. Fresh author-distinct destination review and
+Lattice's separate code acceptance/protected integration completed. This
+contribution's own independent release review, acceptance, protected
+promotions and verified private GitHub publication remain outstanding;
+official P9 does not contain exponent. The commands below are reproduction
+instructions, not a new build:
+
+```sh
+lake exe cache get
+lake build AlgebraicGroups.GroupTheory.UnitriangularExponent
+lake build AlgebraicGroupsTest.UnitriangularExponent
+LAKE_JOBS=2 lake build
+```
+
+Lean remains `v4.34.0-rc2`, mathlib
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`, official
+general-linear-groups `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`
+and scheme-properties `6b204a3e49f022e51d78a9f93e77513b99a87e00`.
+See the [exponent guide](../AlgebraicGroups/GroupTheory/UnitriangularExponent/README.md)
+for the mathematical API and edge cases.
+
+## Dated 2026-09-28 pre-P9 generation/derived snapshot (historical)
+
+The preserved text below describes the prior release-readiness state. Its
+“pending” statements were true for that dated snapshot and were superseded
+by the completed I9/P9 release; its job counts remain scoped to their old
+inputs, not this new 147-module graph.
+
+### Generation and derived-series transfer: build guidance (2026-09-28)
 
 The separately accepted lower-central series L is on main and internal
 release I8 `164f0310a4f641cc1d698a14b333082bbfcfe474`, and at verified

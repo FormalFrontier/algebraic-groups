@@ -1,5 +1,12 @@
 # Exact class of finite unitriangular point groups
 
+**Lifecycle update (2026-09-29).** The generation/derived results described
+below are published at official P9 `8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827`.
+Accepted main `45d4c5ddfcd491f298c4c968561d2e2eccf82e06` also includes
+the independently reviewed native exponent transfer, checked by original
+destination job 932; its own release remains pending. Older graph counts and
+pending statuses below describe their dated inputs, not this 147-module graph.
+
 Import `AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass` for the native
 `Matrix.UnitriangularGroup (Fin n) R`, with `n : ℕ`, `R : Type` and `[CommRing R]`.
 The index and coefficient types share a universe in this native provider. This

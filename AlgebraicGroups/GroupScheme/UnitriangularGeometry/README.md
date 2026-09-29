@@ -1,4 +1,14 @@
-# Current publication and verification context (2026-09-28)
+# Current publication and verification context (2026-09-29)
+
+Official P9 `8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827` includes the
+generation/derived results described below. Accepted development main
+`45d4c5ddfcd491f298c4c968561d2e2eccf82e06` additionally includes
+the native point-group exponent transfer, checked in original destination
+job 932 and independently reviewed; its own release is still pending.
+The 2026-09-28 context below is dated history, not a current count or
+publication status. No new scheme-level result follows from exponent.
+
+## Dated publication context (2026-09-28; historical)
 
 This geometry is published at official release
 `183bbbcebf0693df849ad6f5781df4c97d33364f`; the later native

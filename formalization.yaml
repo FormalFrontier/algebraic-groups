@@ -11,7 +11,9 @@ project:
     native unitriangular groups over nontrivial commutative rings, the
     all-stage lower central series and positive-stage elementary generation
     of native unitriangular groups, exact positive-stage commutators and their
-    native derived series over any commutative ring, and
+    native derived series over any commutative ring, generic strictly
+    upper-triangular matrix nilpotence and sharp prime-power exponent bounds
+    for native finite unitriangular point groups, and
     supporting commutative-algebra and scheme theory.
   authors:
     - Formal Frontier Agents
@@ -74,6 +76,33 @@ automation:
 
 status:
   scope: >-
+    Current 2026-09-29 accepted main
+    45d4c5ddfcd491f298c4c968561d2e2eccf82e06 includes the native
+    unitriangular exponent transfer. Original destination native job 932
+    built both targets and completed a private/generated-inclusive transitive
+    standard-three audit on 147 total Lean modules (108 production, 39 tests);
+    fresh worker-b exact-code review and Lattice's separate acceptance/protected
+    integration are complete. Its own release review/acceptance, protected
+    promotions and verified private GitHub publication remain pending. Official
+    P9 8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827 includes the preceding
+    generation/derived results, not exponent. No every-element maximal order,
+    numerical exponent equality, group-scheme exponent, diagonal theorem or
+    source-coverage decision is claimed. The complete prior pre-integration
+    2026-09-29 scope scalar follows as dated, superseded lifecycle history:
+    Current 2026-09-29 I9/P9 releases the preceding generation/derived
+    contribution. New exponent transfer adds generic upper-triangular
+    zero-diagonal N^card = 0, a prime-power native unitriangular bound under
+    explicit (p:R)=0 and weak n <= p^t, a positive q<n witness without a
+    characteristic assumption, and the sharp universal-power/exponent-divisibility
+    equivalences with Nontrivial R. It is only a candidate: the accepted
+    isolated donor's focused cache-first builds/complete standard-three audit
+    and independent review do not verify this 147-module destination union.
+    New-graph native checks, fresh exact-destination review, maintainer
+    acceptance/integration and own reviewed release remain pending. No
+    all-elements maximal-order, scheme or source-coverage claim follows.
+    The complete 2026-09-28 pre-P9 scope scalar follows as dated, superseded
+    lifecycle history; its generation/derived release-pending text is not
+    current status:
     Current 2026-09-28 development main a77d4e4d19f6dc366eb9a40f16503f5855421cf3
     integrates the arbitrary-subgroup positive-stage generation criterion (all
     elementary roots at distances at least d, without normality or Nontrivial),
@@ -367,9 +396,35 @@ status:
       file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
     - declaration: Matrix.UnitriangularGroup.derivedSeries_eq_bot_iff
       file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
+    - declaration: Matrix.pow_card_eq_zero_of_upperTriangular_diag_zero
+      file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
+    - declaration: Matrix.UnitriangularGroup.pow_prime_pow_eq_one
+      file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
+    - declaration: Matrix.UnitriangularGroup.exists_pow_ne_one_of_pos_lt
+      file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
+    - declaration: Matrix.UnitriangularGroup.forall_pow_prime_pow_eq_one_iff
+      file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
+    - declaration: Matrix.UnitriangularGroup.exponent_dvd_prime_pow_iff
+      file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
 
 review:
   status: >-
+    Current 2026-09-29 exponent code is accepted and protected-integrated at
+    45d4c5ddfcd491f298c4c968561d2e2eccf82e06. Fresh author-distinct
+    worker-b exact-code APPROVED review 4774 and original destination native
+    job 932's cache-first successful both-target build and complete transitive
+    standard-three audit apply. Independent consolidated release review, owner
+    release acceptance, protected promotions and verified private GitHub
+    publication remain pending; original code review is not release approval.
+    The complete pre-integration 2026-09-29 status scalar follows as dated,
+    superseded lifecycle history:
+    Current 2026-09-29 exponent destination transfer is unbuilt, unaudited,
+    unreviewed, unaccepted, unintegrated and unreleased. The original isolated
+    donor passed its focused standard-three checks and independent worker-b
+    review and Lattice accepted only that isolated code. The preceding
+    generation/derived contribution completed its separate I9/P9 release.
+    The complete 2026-09-28 pre-P9 status scalar follows as dated lifecycle
+    history; its release-pending statements are superseded:
     Current 2026-09-28 destination code at main
     a77d4e4d19f6dc366eb9a40f16503f5855421cf3 passed original native
     run 895 and fresh author-distinct worker-b exact-H APPROVED review;
@@ -386,6 +441,41 @@ review:
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    Current 2026-09-29 destination review is by worker-b Task
+    hive-request-cca37fd56496938e743a795f5e0c4437da7e1a46 (UID
+    449865e3-164c-48fa-9984-3f66c772f898), distinct from the original
+    worker-a author and transfer. Native job 932 on accepted H
+    45d4c5ddfcd491f298c4c968561d2e2eccf82e06 fetched the matching
+    cache, built both default targets (3873 jobs) and audited 3700 origin pairs,
+    3681 distinct names and 1181 private-named origins across 147 total Lean
+    modules (108 production, 39 tests), all generated included and rejected0;
+    only propext, Classical.choice and Quot.sound occurred. It verified this
+    destination graph, not isolated donor21 or earlier runs895/912. Lattice
+    separately accepted/protected-integrated the reviewed code. This document
+    update preserves its Lean/build/pin/checker inputs, not the whole shipping
+    digest. Its own independent release review/acceptance and verified
+    publication remain pending. The complete earlier 2026-09-29 pre-integration
+    notes scalar follows as dated, superseded lifecycle history:
+    Current 2026-09-29 transfer: isolated incubator donor
+    1c71300ddd73ed428c8268c8ff2e4f16a67a134a, sole accepted parent
+    5f493b0606b9961f052a89569f08c5962ae7c0ae, was authored by
+    worker-a Task hive-request-6697261957705b5abcfeb5a713d5eccb32862d84
+    (UID e8368f27-f82b-4b70-bace-14dcd33d9ac2), independently reviewed
+    by worker-b Task hive-request-385475f9c731526890b911886a758b3b8b1795ac
+    (UID e7141ac7-cc41-4165-9cdd-339d5b685836) and accepted in isolation
+    by Lattice. The new native transfer is by worker-a Task
+    hive-request-2d88e4cc16946512f4d88a8bb09e16456c4ff5c1
+    (UID 2ec7daea-21c2-47e7-b328-a24a4956ab4e), based solely on
+    released I9 771a5ab485be5aaa0f5f2c553f8b7b2cc3766605 with verified
+    official P9 8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827. Original
+    donor21 private/generated-inclusive origins passed scoped standard-three
+    checks, not destination checks. Native both-target current-graph build and
+    complete transitive audit including private/generated declarations, fresh
+    author-distinct destination review, separate acceptance and release remain
+    outstanding. Earlier native runs 895/912 cover the preceding unchanged
+    graph, not this transfer. The complete 2026-09-28 pre-P9 notes scalar
+    follows as dated historical evidence; its release-pending phrases are
+    superseded by I9/P9 publication:
     Current 2026-09-28 H a77d4e4d19f6dc366eb9a40f16503f5855421cf3
     (tree 5357dd2546f73f0e0a13e4477e06eb7af1e3323f) has original
     native run 895: official matching cache, both default targets (3871
@@ -564,6 +654,31 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  On 2026-09-29 worker-a Task
+  hive-request-bba7de9a57c7bb5762f49449e85c53ea5bd9e370 (UID
+  a61157f1-2a86-4729-a099-c70066ae2502) prepared this documentary release
+  candidate; this is not independent release review or owner acceptance.
+  Fresh exact-destination code review was by worker-b Task
+  hive-request-cca37fd56496938e743a795f5e0c4437da7e1a46 (UID
+  449865e3-164c-48fa-9984-3f66c772f898), followed by Lattice's separate
+  code acceptance/protected integration. The complete earlier 2026-09-29
+  pre-integration acknowledgements scalar follows unchanged as dated history:
+  On 2026-09-29 worker-a Task
+  hive-request-2d88e4cc16946512f4d88a8bb09e16456c4ff5c1 (UID
+  2ec7daea-21c2-47e7-b328-a24a4956ab4e) transferred native exponent
+  statements while preserving original proof bodies. Original isolated
+  producer/client author worker-a Task
+  hive-request-6697261957705b5abcfeb5a713d5eccb32862d84 (UID
+  e8368f27-f82b-4b70-bace-14dcd33d9ac2), static planner worker-a Task
+  hive-request-889376cf6feebfa6b7c376730a80835602410a2a (UID
+  7f433e69-c1a2-4674-9746-8eac749c1675), and independently approving
+  isolated reviewer worker-b Task
+  hive-request-385475f9c731526890b911886a758b3b8b1795ac (UID
+  e7141ac7-cc41-4165-9cdd-339d5b685836) retain distinct credit.
+  Original mathematical approval is not a fresh destination review.
+  The complete preceding acknowledgements scalar follows unchanged as dated
+  2026-09-28/pre-P9 contributor and lifecycle history; its pending release
+  wording is superseded by the separately completed I9/P9 release:
   On 2026-09-28 worker-a Task
   hive-request-378e697ebd74972792fe95fa7493101b31f2bd15 (UID
   12340ede-4fe0-46c1-9926-e34abb8d822e) prepared this documentary

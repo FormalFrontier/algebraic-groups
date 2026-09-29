@@ -78,6 +78,13 @@ contributed 37/24 origins and this derived producer/client 13/20.
 
 ## Provenance and lifecycle
 
+**Lifecycle update (2026-09-29).** This generation/derived contribution is
+published at official P9 `8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827`.
+Accepted main `45d4c5ddfcd491f298c4c968561d2e2eccf82e06` also includes
+the independently reviewed native exponent transfer, checked by original
+destination job 932; its own release remains pending. Older pending language
+and counts below describe their dated inputs, not this 147-module graph.
+
 The source-independent mathematical plan `4d68d0b71cb850413414f902f06537f6031625ad`
 was authored by worker-a Task
 `hive-request-d4930d3cf37bb1dda33c5fddfaa4eb0d854981f1` (UID

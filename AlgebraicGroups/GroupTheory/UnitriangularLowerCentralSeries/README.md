@@ -84,6 +84,13 @@ their original native destination run 895 is recorded below.
 
 ## Provenance and status
 
+**Lifecycle update (2026-09-29).** The generation/derived addition below is
+published at official P9 `8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827`.
+Accepted main `45d4c5ddfcd491f298c4c968561d2e2eccf82e06` also includes
+the independently reviewed native exponent transfer, checked by original
+destination job 932; its own release remains pending. Older pending language
+and counts below describe their dated inputs, not this 147-module graph.
+
 The preceding L equality reached accepted main I8
 `164f0310a4f641cc1d698a14b333082bbfcfe474` and separately verified
 official published P8 `441817ab159b20bb7c9c855b05d49abfa3d85c92`.

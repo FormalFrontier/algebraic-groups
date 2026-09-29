@@ -1,4 +1,93 @@
-# Algebraic groups: native series and group-scheme APIs
+# Algebraic groups: native exponents, series and group-scheme APIs
+
+The reusable native matrix point-group library now includes a **reviewed,
+accepted and integrated**
+prime-power exponent API for `Matrix.UnitriangularGroup (Fin n) R` alongside its
+released generation and derived-series results. With prime `p`, `(p : R) = 0`
+and `n ≤ p ^ t`, every native element satisfies `g ^ (p ^ t) = 1`. Over a
+nontrivial commutative ring, the converse holds for the uniform assertion and
+for divisibility of the group exponent; a characteristic-independent witness
+shows `g ^ q ≠ 1` for some `g` when `0 < q < n`. The generic matrix theorem
+also gives `N ^ Fintype.card ι = 0` for strictly upper-triangular `N`, even on
+empty indices. See the
+[exponent guide](AlgebraicGroups/GroupTheory/UnitriangularExponent/README.md),
+focused `AlgebraicGroups.GroupTheory.UnitriangularExponent` import and
+`AlgebraicGroupsTest.UnitriangularExponent` ordinary-import client.
+
+**Current integration status (2026-09-29).** Accepted development main
+`45d4c5ddfcd491f298c4c968561d2e2eccf82e06` includes the exponent
+transfer. Its original native job 932 fetched the matching mathlib cache,
+built both default targets (3,873 jobs) and audited all 3,700 module-origin
+pairs across 147 **total** Lean modules (108 production, 39 tests), including
+1,181 private-named and all generated origins; only `propext`,
+`Classical.choice` and `Quot.sound` occurred, with zero rejects. Fresh
+author-distinct worker-b destination review and Lattice's separate code
+acceptance/protected integration are complete. This contribution's own
+independent release review, acceptance, protected promotions and verified
+private GitHub publication are **pending**. I9
+`771a5ab485be5aaa0f5f2c553f8b7b2cc3766605` and verified official P9
+`8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827` already publish the preceding
+generation/derived contribution, **not** the new exponent transfer. The
+transfer preserves the separately reviewed and maintainer-accepted isolated
+donor's proof bytes and clients. Donor checks and old native runs 895/912
+cover their original inputs, not the 147-module graph audited by job 932.
+The destination pins remain Lean `v4.34.0-rc2`, mathlib
+`83abb3e776bdefcbc447a1e44d0debe4010039e5` and official
+general-linear-groups `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`.
+The original exponent proofs and client are by Formal Frontier Agents,
+worker-a Task `hive-request-6697261957705b5abcfeb5a713d5eccb32862d84`
+(UID `e8368f27-f82b-4b70-bace-14dcd33d9ac2`), independently reviewed
+in isolation by worker-b Task `hive-request-385475f9c731526890b911886a758b3b8b1795ac`
+(UID `e7141ac7-cc41-4165-9cdd-339d5b685836`); this static transfer is
+by worker-a Task `hive-request-2d88e4cc16946512f4d88a8bb09e16456c4ff5c1`
+(UID `2ec7daea-21c2-47e7-b328-a24a4956ab4e`). This is source-independent
+mathematics, not a group-scheme theorem or a source-coverage claim. Fresh
+destination review is by worker-b Task
+`hive-request-cca37fd56496938e743a795f5e0c4437da7e1a46` (UID
+`449865e3-164c-48fa-9984-3f66c772f898`); this documentary release
+preparation is by worker-a Task
+`hive-request-bba7de9a57c7bb5762f49449e85c53ea5bd9e370` (UID
+`a61157f1-2a86-4729-a099-c70066ae2502`). Neither is the independent
+review or acceptance of this proposed release.
+
+## Headline results
+
+- **Prime-power exponent bounds and sharpness for native unitriangular groups.**
+  For `n, p, t : ℕ` and `[CommRing R]`, if `Nat.Prime p`, `(p : R) = 0`
+  and `n ≤ p ^ t`, every `g : Matrix.UnitriangularGroup (Fin n) R`
+  satisfies `g ^ (p ^ t) = 1`, including at `n = 0` and over the zero
+  ring. With `[Nontrivial R]` as well, both the uniform-power assertion
+  and `Monoid.exponent (Matrix.UnitriangularGroup (Fin n) R) ∣ p ^ t`
+  hold **if and only if** `n ≤ p ^ t`. Over any nontrivial commutative
+  ring, `0 < q < n` yields a characteristic-independent witness `g` with
+  `g ^ q ≠ 1`. These are native point-group results, not claims that
+  every element has maximal order, a separate numerical formula for the
+  group exponent, or a group-scheme exponent. See the
+  [producer](AlgebraicGroups/GroupTheory/UnitriangularExponent.lean) for
+  `Matrix.UnitriangularGroup.pow_prime_pow_eq_one`,
+  `Matrix.UnitriangularGroup.forall_pow_prime_pow_eq_one_iff`,
+  `Matrix.UnitriangularGroup.exponent_dvd_prime_pow_iff` and
+  `Matrix.UnitriangularGroup.exists_pow_ne_one_of_pos_lt`, with the
+  [exponent guide](AlgebraicGroups/GroupTheory/UnitriangularExponent/README.md)
+  and [ordinary-import client](AlgebraicGroupsTest/UnitriangularExponent.lean).
+- **Finite-index triangular nilpotence.** For a finite linearly ordered
+  index type `ι` over `[CommRing R]`, any upper-triangular matrix `N`
+  with zero diagonal satisfies `N ^ Fintype.card ι = 0`, even when `ι`
+  is empty or `R` is the zero ring. See
+  `Matrix.pow_card_eq_zero_of_upperTriangular_diag_zero` in the same
+  [producer](AlgebraicGroups/GroupTheory/UnitriangularExponent.lean).
+
+For the already shipped series and underlying-scheme results, see the
+[derived-series](AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md)
+and [geometry](AlgebraicGroups/GroupScheme/UnitriangularGeometry/README.md) guides.
+
+## Dated 2026-09-28 pre-P9 README snapshot (historical)
+
+The preserved snapshot below describes the generation/derived contribution
+before its own I9/P9 release; its “pending” wording is dated history and does
+not override the current 2026-09-29 status above.
+
+### Algebraic groups: native series and group-scheme APIs
 
 Reusable source-independent Lean results for algebraic groups, group schemes
 and native matrix point groups, licensed under [Apache-2.0](LICENSE). The library

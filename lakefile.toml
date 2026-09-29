@@ -61,4 +61,5 @@ roots = [
   "AlgebraicGroupsTest.UnitriangularNilpotencyClass",
   "AlgebraicGroupsTest.UnitriangularLowerCentralSeries",
   "AlgebraicGroupsTest.UnitriangularDerivedSeries",
+  "AlgebraicGroupsTest.UnitriangularExponent",
 ]
