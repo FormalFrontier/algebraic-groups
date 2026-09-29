@@ -3,6 +3,20 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    Accepted and protected-integrated upper-triangular code at main
+    8640f487fa1296f0ce34fb29fdf86f146fe6f1ba passed original native
+    run 1031 and independent code review 4881. This documentary release
+    preparation retains its checked computational inputs; final release review,
+    acceptance and verified publication remain pending. The complete earlier
+    description below is the dated pre-run/pre-integration snapshot:
+    Dated 2026-09-29 static combined upper-triangular destination candidate:
+    native finite upper-triangular matrix groups admit a U-first split by
+    diagonal units, and a closed finite-type upper-triangular subgroup scheme
+    of GL has fixed-base natural native points over arbitrary commutative
+    algebras. This newly assembled code is not destination-built, audited,
+    independently reviewed, integrated or released. Previously published
+    common-zero results remain intact. Earlier description follows:
+
     Reusable algebraic-group and group-scheme constructions, functors of points,
     coordinate Hopf algebras, components, reduction, smoothness, quotient-sheaf
     interfaces, finite upper-unitriangular Hopf quotients, group schemes and
@@ -78,6 +92,38 @@ automation:
 
 status:
   scope: >-
+    Current 2026-09-29: exact main
+    8640f487fa1296f0ce34fb29fdf86f146fe6f1ba (tree
+    166bd8c5617483816f165454459b22265fff3322) is the accepted,
+    protected-integrated native and represented upper-triangular contribution
+    on the 13-package destination. Original native run 1031 successfully
+    built both default targets and transitively audited 4037 actual origin
+    pairs across all 158 Lean modules, including private and generated
+    declarations, under only propext, Classical.choice and Quot.sound. Fresh
+    exact-H code review 4881 and separate maintainer acceptance preceded
+    integration. This five-document preparation preserves all 181 outside
+    shipping tuples, all 127 ordered result objects, four complete inherited
+    scalar histories, all 13 whole packages and all SIX root fields, including
+    fixedToolchain. The original whole-file input digest is not the digest of
+    this documentary candidate, though all computational inputs are unchanged.
+    Verified common-zero official P 6c7f4a5a38881573fd2bb735fc3dab1de53b83bf
+    remains current; final consolidated release review, required native
+    context, owner release acceptance, protected stages and verified private
+    GitHub publication of this successor remain pending. Product-of-G_m
+    scheme, represented split-kernel/semidirect, arbitrary-base change and
+    source-specific correspondence/coverage are outside this contribution.
+    The complete earlier scope scalar follows as dated pre-run-1031,
+    pre-review-4881 and pre-integration history:
+    Dated 2026-09-29 combined native/represented upper-triangular candidate:
+    assembly on accepted main I cb9fec27155722c2749aa03471ed40c73d3e1276
+    follows verified common-zero publication at official private GitHub P
+    6c7f4a5a38881573fd2bb735fc3dab1de53b83bf. Both original donors passed
+    isolated checks/review on a different graph, but no destination both-default-
+    target build, private-inclusive transitive standard-three audit, fresh
+    independent destination review, maintainer acceptance, integration or T
+    release has occurred for this candidate. No source-specific coverage is
+    claimed. The complete earlier scope histories follow unchanged:
+
     Dated 2026-09-29 accepted-code release-readiness snapshot: the three
     finite-family MvPolynomial common-zero bounds and ordinary-import client
     are protected-integrated on accepted main V
@@ -525,9 +571,105 @@ status:
       file: AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero.lean
     - declaration: MvPolynomial.exists_nonzero_common_zero_of_isHomogeneous
       file: AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero.lean
+    - declaration: Matrix.upperTriangularSubgroup
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.map
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.isUnit_entry
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.diagonal
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.diagonalSection
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UnitriangularGroup.inUpperTriangular
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.range_unitriangular
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.kernelEquiv
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.diagonalAction
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.diagonalAction_apply
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.unipotentPart
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.unipotentPart_apply
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.semidirEquiv
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.semidirEquiv_mul_formula
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.semidirMap
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.diagonal_map
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.semidirEquiv_map
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: Matrix.UpperTriangularGroup.semidirEquiv_symm_map
+      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
+    - declaration: UpperTriangularCoordinateRing.CoordinateRing
+      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
+    - declaration: UpperTriangularCoordinateRing.ideal
+      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
+    - declaration: UpperTriangularCoordinateRing.quotient
+      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
+    - declaration: UpperTriangularCoordinateRing.quotient_lower
+      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
+    - declaration: UpperTriangularCoordinateRing.universal
+      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
+    - declaration: UpperTriangularCoordinateRing.universal_detInverse
+      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
+    - declaration: UpperTriangularCoordinateRing.ideal_isHopfIdeal
+      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
+    - declaration: UpperTriangularCoordinateRing.finiteType
+      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
+    - declaration: AlgebraicGeometry.upperTriangularGroupScheme
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularInclusion
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularInclusion_isClosedImmersion
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularToGL
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularFromGL
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularGroupMulEquivAlgHom
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularGroupMulEquivPoints
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularInclusion_point
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularToGL_natural
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularFromGL_natural
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.upperTriangularGroupPointsIso
+      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
 
 review:
   status: >-
+    Current 2026-09-29 exact-H destination: original native run 1031
+    succeeded on the full 13-package graph, both default targets and all 158
+    modules, with 4037 private/generated-inclusive actual transitive origin
+    pairs and only propext, Classical.choice, Quot.sound. Fresh author-distinct
+    worker-b review 4881 approved exact
+    8640f487fa1296f0ce34fb29fdf86f146fe6f1ba; Lattice separately
+    accepted and protected-integrated this code. Applicable original
+    computational evidence is reused across these five documentary edits;
+    their full shipping-file input digest changes. Code approval is NOT the
+    independent consolidated review or owner acceptance of this release
+    candidate. Required native context, protected release stages and verified
+    private publication remain pending. The complete preceding review-status
+    scalar is dated before run 1031, review 4881 and main integration:
+    Dated 2026-09-29 combined native/represented destination candidate:
+    original native and represented isolated proofs have separate fresh
+    author-distinct reviews and maintainer isolated acceptances; the former
+    native-only destination packet has a scoped independent static review.
+    None applies as fresh review, destination build or acceptance of this
+    12-path candidate on the now published common-zero graph. Fresh exact
+    candidate review and applicable destination computation remain pending.
+    The complete earlier review histories follow unchanged:
+
     Dated 2026-09-29 accepted-code snapshot: fresh author-distinct worker-a
     review 4851 approved exact final V
     021cbd4ed92bc55704f401533846731a73079a8f after the earlier
@@ -609,6 +751,18 @@ review:
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    Current combined-destination assembly author: worker-a Task
+    hive-request-c9d5208b8cc04a1a8dab4d6946521d464abd124e (UID
+    78af2598-68a4-40b9-b731-bf0f6bff88da), distinct from the original
+    native and represented proof authors. Fresh independent exact-H code
+    reviewer: worker-b Task
+    hive-request-40fe1261db7cfb594192b5d69ac19fc5f96cc605 (UID
+    b624313e-c952-46ef-b8a9-e7a5285379a0); Lattice made the separate
+    code-acceptance/integration decision. Documentary release preparation:
+    worker-a Task hive-request-d750315d14734904a6d83067321dccf773ef91b3
+    (UID d5aad1e2-5c4f-4a81-b7ee-7bbab31c8cae), not a reviewer or
+    release decision maker. Complete earlier review notes and provenance follow
+    unchanged as dated preceding lifecycle history:
     Original common-zero producer and nine-check client: Formal Frontier
     Agents, worker-a, with independent isolated worker-b review. The unchanged
     point-height helper is by a separate worker-b and was independently
@@ -861,6 +1015,45 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  Current 2026-09-29 lifecycle: worker-a Task
+  hive-request-d750315d14734904a6d83067321dccf773ef91b3 (UID
+  d5aad1e2-5c4f-4a81-b7ee-7bbab31c8cae) prepared only the five documentary
+  release-readiness files. Worker-a Task
+  hive-request-c9d5208b8cc04a1a8dab4d6946521d464abd124e (UID
+  78af2598-68a4-40b9-b731-bf0f6bff88da) assembled the combined
+  destination; fresh worker-b Task
+  hive-request-40fe1261db7cfb594192b5d69ac19fc5f96cc605 (UID
+  b624313e-c952-46ef-b8a9-e7a5285379a0) reviewed exact H, and Lattice
+  separately accepted and protected-integrated it. Original donor and
+  predecessor contributor credits are retained in the complete earlier
+  acknowledgement scalar below, dated before native run 1031, review 4881
+  and integration. Neither this preparation nor code acceptance is final
+  release review, owner release acceptance, verified publication or source
+  formalization:
+  Dated 2026-09-29 combined transfer assembly: worker-a Hive Task
+  hive-request-c9d5208b8cc04a1a8dab4d6946521d464abd124e (UID
+  78af2598-68a4-40b9-b731-bf0f6bff88da) transported the unchanged
+  native and represented proofs, clients and credits into this static
+  destination candidate; this is not original mathematical authorship.
+  Original isolated native author was worker-a Task
+  hive-request-25f51b74b10b8dad373582505576ba2ee692138e (UID
+  e1fa8608-993f-4c79-92e6-2d46a0ecda49), independently reviewed by
+  worker-b Task hive-request-48ae663a907928d79698d7d71bc33d72d954db33
+  (UID cc2aa9a6-ab6e-47b1-96f7-2c1b1a314e27). Original isolated
+  represented author was worker-b Task
+  hive-request-85aefe5c15f83c43ba1ac6693f00c894245c5e44 (UID
+  94c69b0a-c947-46f2-89ac-267ece213dcd), independently reviewed by
+  worker-a Task hive-request-c9f8eed25bddee19290f4aa9e04eb7469cf46d42
+  (UID 849f424b-8e95-4211-8f12-46d2f852286d). The earlier native-only
+  transfer was worker-a Task hive-request-4a6283117df2506e6bc05448db523ad686a78e1d
+  (UID 0f55a7c3-f8f1-4ba1-bd94-d97109e0991f), statically reviewed by
+  worker-b Task hive-request-d557ebc3f6a4baeb31eaffe7c9eebef682c54317
+  (UID eb3e7852-2f1a-43e3-a5af-e41af0dfcec7). Separate worker-b Task
+  hive-request-e7a3437e4b31bd824cf5c092c4c72f5b271c5bc4 (UID
+  69768a6c-4544-489a-9efa-ae301d608e1d) prepared the combined map.
+  Lattice owns subsequent destination review, acceptance and integration;
+  all earlier acknowledgements follow unchanged:
+
   Formalization Worker B, Hive Task
   hive-request-b6d77e9fe5b65dfc011c1e30f62a860c4faedd52 (UID
   39c8fbf0-4cb3-4b68-af8f-757892e3c16c), prepared the dated common-zero

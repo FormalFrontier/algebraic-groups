@@ -1,3 +1,61 @@
+# Algebraic groups: common zeros and upper-triangular groups
+
+## Headline results
+
+- **Native upper-triangular groups and their split diagonal.** For finite
+  linearly ordered `ι` and any commutative ring `R`, the subgroup
+  `Matrix.UpperTriangularGroup ι R` of native matrix GL projects onto its
+  diagonal units. Its actual unitriangular kernel supplies the **U-first**
+  multiplicative equivalence `U ⋊[diagonalAction] D ≃* T`, natural under all
+  coefficient ring maps; the U coordinate normalizes columns, not rows. See
+  the [native guide](AlgebraicGroups/GroupTheory/UpperTriangular/README.md)
+  and [ordinary-import client](AlgebraicGroupsTest/UpperTriangular.lean).
+- **Closed upper-triangular subgroup scheme.** The determinant-localized GL
+  coordinate Hopf algebra modulo entries strictly below the diagonal gives
+  a finite-type closed affine group subscheme of GL. Its group-valued points
+  are naturally equivalent to native upper-triangular matrices over every
+  commutative algebra at a fixed base. See the
+  [scheme guide](AlgebraicGroups/GroupScheme/UpperTriangular/README.md),
+  [coordinate producer](AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean)
+  and [ordinary-import client](AlgebraicGroupsTest/UpperTriangularScheme.lean).
+- **Published finite-family common-zero bounds.** Over algebraically closed
+  fields, fewer polynomial equations than variables cannot isolate a unique
+  common zero; positive-degree homogeneous families under that bound have
+  nonzero common zeros. See the
+  [common-zero guide](AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md).
+- **Published diagonal and unitriangular results.** The native diagonal GL
+  subgroup has a closed finite-type group scheme with fixed-base natural
+  points; finite native unitriangular groups have sharp nilpotency-class,
+  lower/derived-series and prime-power exponent results under their stated
+  hypotheses. See the [diagonal](AlgebraicGroups/GroupScheme/Diagonal/README.md),
+  [derived-series](AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md)
+  and [exponent](AlgebraicGroups/GroupTheory/UnitriangularExponent/README.md)
+  guides for the exact statements and ordinary-import clients.
+
+The two new upper-triangular APIs include empty indices, zero and nonreduced
+rings and noninjective coefficient maps. Only the **native** group has the
+diagonal/kernel/semidirect splitting here; no represented splitting, finite
+product-of-`Gₘ` scheme equivalence or arbitrary-base scheme-change theorem is
+claimed. The exact new code at protected main `8640f487fa1296f0ce34fb29fdf86f146fe6f1ba`
+passed original native run 1031 (both default targets; all 158 modules and
+4,037 private/generated-inclusive transitive standard-three origins), fresh
+independent code review 4881, separate maintainer acceptance and integration
+on 2026-09-29. This documentary release candidate retains those checked
+computational inputs but changes the whole-shipping digest. **Final independent
+release review, release acceptance, protected promotions and verified private
+GitHub publication remain pending**; the preceding common-zero official release
+is not replaced by a proposed candidate. No source coverage is inferred.
+
+## Dated predecessor README (complete historical text)
+
+The entire README preceding this assembly follows unchanged, including its
+then-current common-zero headline and dated pending-release statements. Those
+statements describe their earlier checkpoints, before the separately verified
+common-zero publication; they are not a claim that this new candidate passed
+the predecessor's checks.
+
+---
+
 # Algebraic groups: common zeros, diagonal schemes and native exponent bounds
 
 ## Headline results

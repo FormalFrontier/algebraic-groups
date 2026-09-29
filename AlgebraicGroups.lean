@@ -51,6 +51,8 @@ public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import AlgebraicGroups.GroupScheme.Diagonal
 public import AlgebraicGroups.GroupScheme.Unitriangular
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
+public import AlgebraicGroups.GroupTheory.UpperTriangular
+public import AlgebraicGroups.GroupScheme.UpperTriangular
 public import AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration
 public import AlgebraicGroups.GroupTheory.UnitriangularSuperdiagonalQuotients
 public import AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass

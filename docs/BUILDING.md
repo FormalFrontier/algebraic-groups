@@ -1,3 +1,60 @@
+# Building the accepted upper-triangular code and preceding results
+
+## Current destination instructions and evidence (2026-09-29; accepted code)
+
+The aggregate `AlgebraicGroups` imports both the native upper-triangular
+producer and the represented upper-triangular closed-group-scheme producer.
+The `AlgebraicGroupsTest` default target includes their separate
+ordinary-import clients. With the repository-pinned Lean toolchain, first
+fetch the matching precompiled mathlib cache; only **after it succeeds** build
+both default targets from the project root:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+Optional focused targets, after the same cache fetch, are
+`AlgebraicGroups.GroupTheory.UpperTriangular`,
+`AlgebraicGroupsTest.UpperTriangular`,
+`AlgebraicGroups.Algebra.UpperTriangularCoordinateRing`,
+`AlgebraicGroups.GroupScheme.UpperTriangular` and
+`AlgebraicGroupsTest.UpperTriangularScheme`. The resolved 13-package graph
+retains mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, official
+general-linear-groups `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`
+and scheme-properties `6b204a3e49f022e51d78a9f93e77513b99a87e00`.
+
+These commands are reproduction instructions, **not a new check on this
+documentation-only release candidate**. Original native run 1031 on exact
+protected main `8640f487fa1296f0ce34fb29fdf86f146fe6f1ba` fetched the
+matching mathlib cache and successfully built both default targets (3,888
+jobs). Its complete transitive private/generated-inclusive standard-three
+audit covered all 158 Lean modules (115 production and 43 tests), 4,037 actual
+origin pairs (4,018 distinct names, including 1,288 private-named origins),
+and admitted only `propext`, `Classical.choice` and `Quot.sound`. Fresh
+author-distinct destination code review 4881 approved exact H; Lattice
+separately accepted it and integrated it into protected main. The five
+documentary changes here preserve every Lean, build, toolchain, dependency,
+default target and checker input, so that original computation remains
+applicable; its **whole-file input digest does not** describe these new docs.
+The isolated native and represented donors had separate focused builds and
+private/generated-inclusive standard-three audits on a different 26-package
+graph (137 and 97 origins); those are historical and not destination checks.
+The represented collector remains with its separate evidence child. Common-zero
+publication has its own applicable checks, not substitutes for run 1031. Final
+consolidated release review, applicable required native context, owner release
+acceptance, protected stages and verified private GitHub publication remain
+separate and pending. No new build or audit is asserted for this preparation.
+
+## Dated predecessor building guide (complete historical text)
+
+The complete pre-assembly guide follows unchanged. Its older common-zero
+release-pending statements describe earlier checkpoints rather than the
+separately completed official publication; no older run checks these additions.
+
+---
+
 # Common-zero build guidance
 
 ## Accepted-code readiness (2026-09-29; own release pending)
