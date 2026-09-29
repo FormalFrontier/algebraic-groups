@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
 public import AlgebraicGroups.Algebra.TensorProduct.Pi
 public import AlgebraicGroups.Algebra.Smooth
 public import AlgebraicGroups.Algebra.SymmetricAlgebra

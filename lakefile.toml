@@ -29,6 +29,7 @@ roots = [
   "AlgebraicGroupsTest.FiniteConstantPoints",
   "AlgebraicGroupsTest.GeneralLinear",
   "AlgebraicGroupsTest.Diagonal",
+  "AlgebraicGroupsTest.AlgebraicallyClosedCommonZero",
   "AlgebraicGroupsTest.GeneralLinearDeterminant",
   "AlgebraicGroupsTest.GeneralLinearDeterminantProduct",
   "AlgebraicGroupsTest.GeneralLinearDeterminantConjugation",

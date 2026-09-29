@@ -15,7 +15,8 @@ project:
     upper-triangular matrix nilpotence and sharp prime-power exponent bounds
     for native finite unitriangular point groups, a finite diagonal GL subgroup
     and closed finite-type affine group scheme with fixed-base natural points, and
-    supporting commutative-algebra and scheme theory.
+    common-zero bounds for finite polynomial families over algebraically closed
+    fields, and supporting commutative-algebra and scheme theory.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -77,6 +78,48 @@ automation:
 
 status:
   scope: >-
+    Dated 2026-09-29 accepted-code release-readiness snapshot: the three
+    finite-family MvPolynomial common-zero bounds and ordinary-import client
+    are protected-integrated on accepted main V
+    021cbd4ed92bc55704f401533846731a73079a8f, tree
+    0e9dcaf625161287c6423a76808a2ee741da195c. Original H native run
+    993's matching-cache both-default-target build and complete transitive
+    standard-three audit of 3803 origins including 1197 private origins
+    apply to the unchanged computational graph, not changed documentary
+    whole-file digests. Exact-V native run 1004, job 1005, and required Lean
+    CI context succeeded. Fresh independent review 4851 approved exact V;
+    Beacon separately accepted and protected-integrated its code. This
+    contribution's separately reviewed release acceptance and verified
+    official publication are still pending as of this snapshot, distinct
+    from the previously published diagonal P11. Source-specific
+    correspondence and coverage are not established here. The following
+    post-review-correction and original-transfer statuses are dated history:
+    Dated 2026-09-29 post-review correction: original destination H
+    94172e62b759894bd8d821a253aa3f08f68f58c2 passed native run 993's
+    cache-first both-default-target build and complete private/generated-inclusive
+    standard-three audit. Reviews 4837 on H and 4843 on README-corrected U
+    requested documentary corrections, not mathematical changes. Final-revision
+    approval, applicable native required checks, maintainer acceptance/integration
+    and separately reviewed verified release are not inferred. No source coverage
+    is claimed. The following original actual-I11 scope, including its pending
+    check/review language, is retained as the pre-run-993/pre-review-4837 snapshot:
+    Current 2026-09-29 common-zero destination candidate on accepted main I11
+    e794bded47a4e36f830edc163f7b62892314f4cf, tree
+    5cd4fbd40aea2297eaef40c75354896d107686d1: three source-independent
+    MvPolynomial common-zero bounds use the unchanged existing point-height
+    helper. Its diagonal predecessor is separately accepted and verified
+    officially published at P11 56c759fc12152a447e36249ee50218ce473d93ca
+    with that same tree; the exponent was previously published at P10.
+    This candidate has 179 shipping leaves, 153 Lean files, 98 public aggregate
+    imports, 41 ordinary test roots, 90 selected results and the same 13
+    whole resolved packages. Original isolated common-zero proofs have scoped
+    cache-first build, complete transitive standard-three audit and independent
+    acceptance, not a new graph build or audit. Current-destination both-root
+    build, private/generated-inclusive audit, independent exact-candidate
+    review, responsible-maintainer acceptance/integration, separate reviewed
+    official release and source correspondence remain open. The complete
+    preceding diagonal scope is retained as dated pre-P11 history; its
+    diagonal-publication-pending statements are superseded:
     Current 2026-09-29 accepted and protected-integrated diagonal development
     code is main a41c1bc85ed06b0901ab50e86ccc438caff3adf9 (tree
     93646af0eb43065216ef70178946effebcc0830d), sole I10 parent
@@ -476,9 +519,41 @@ status:
       file: AlgebraicGroups/GroupScheme/Diagonal.lean
     - declaration: AlgebraicGeometry.diagonalGroupUnitsEquivPoints
       file: AlgebraicGroups/GroupScheme/Diagonal.lean
+    - declaration: MvPolynomial.card_le_card_of_unique_common_zero
+      file: AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero.lean
+    - declaration: MvPolynomial.exists_common_zero_ne
+      file: AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero.lean
+    - declaration: MvPolynomial.exists_nonzero_common_zero_of_isHomogeneous
+      file: AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero.lean
 
 review:
   status: >-
+    Dated 2026-09-29 accepted-code snapshot: fresh author-distinct worker-a
+    review 4851 approved exact final V
+    021cbd4ed92bc55704f401533846731a73079a8f after the earlier
+    documentary requests in reviews 4837 (H) and 4843 (U). Exact-V native
+    run 1004 and required Lean CI context succeeded; Beacon separately
+    accepted and protected-integrated V into main. This is code acceptance,
+    not independent review or acceptance of this subsequent documentary
+    release candidate, protected release promotion or official publication.
+    All following earlier correction and pending-review accounts are dated
+    historical snapshots, not current absence-of-review claims:
+    Dated 2026-09-29 post-review correction: destination reviews 4837 (H) and
+    4843 (README-corrected U) exist and requested documentary corrections;
+    neither approves the final revision. Original destination native run 993
+    succeeded, with unchanged computational evidence applicable but not its
+    whole-documentary input digest. Final approval, required native context,
+    maintainer acceptance/integration and separate release remain distinct.
+    The following original no-destination-check/review status is historical,
+    preceding run 993 and review 4837, not a current evidence-absence claim:
+    This 2026-09-29 actual-I11 common-zero candidate has not yet received a
+    destination both-root build, complete private/generated-inclusive axiom
+    audit, fresh independent destination review, owner acceptance/integration
+    or separately reviewed official release/publication. Original isolated
+    code has independent approval and scoped standard-three evidence only.
+    The diagonal predecessor completed its separate official P11 publication;
+    the following pre-P11 review status is retained as dated history, not a
+    current release or common-zero acceptance claim:
     Current diagonal code at a41c1bc85ed06b0901ab50e86ccc438caff3adf9
     passed original current-13-package cache-first native job 972's both-
     default-target build and complete private/generated-inclusive transitive
@@ -534,6 +609,12 @@ review:
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    Original common-zero producer and nine-check client: Formal Frontier
+    Agents, worker-a, with independent isolated worker-b review. The unchanged
+    point-height helper is by a separate worker-b and was independently
+    reviewed. The frozen-I10 static packaging and this actual-I11 transfer are
+    distinct worker-b executions; neither is a fresh independent destination
+    review. The previous diagonal review notes follow as dated pre-P11 history:
     On 2026-09-29 worker-a Task
     hive-request-1fcd312e5ebc2e61f0d251a7a85ba94e9cc6c2ef (UID
     c45ab90d-e32c-4280-b4e4-cddaa40f9dd1) prepared this documentary
@@ -780,6 +861,37 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  Formalization Worker B, Hive Task
+  hive-request-b6d77e9fe5b65dfc011c1e30f62a860c4faedd52 (UID
+  39c8fbf0-4cb3-4b68-af8f-757892e3c16c), prepared the dated common-zero
+  release-readiness documentation, not the mathematical proofs, an
+  independent review, maintainer release acceptance or publication. Fresh
+  final-V independent reviewer was worker-a Task
+  hive-request-1a7d69aaa7e19c57cc644e39181990ddd8ea0a89 (UID
+  414d5082-10ea-4def-b4a1-e3cc29093ca9); the original transfer author
+  was worker-b Task hive-request-4b2bdbebb9f2f7fc57005a1edb381cad3bf34db8
+  (UID 126b3b72-e471-493c-8844-cd6deb3a1952). Their respective review,
+  transfer and documentary-release roles do not replace the separate
+  original mathematical authorship, helper credit or predecessor credits.
+  The complete earlier post-review-correction and original contributor
+  accounts follow as dated historical snapshots:
+  Beacon prepared this dated documentary correction, not the mathematical
+  proofs or an independent review. Destination review 4837 was by fresh worker-a
+  Task hive-request-3bec1dac7ac0c2602d42b6f53c21a87917a9d98f, UID
+  75ef0b9b-c8f5-42cc-8e92-0a2c4103f25e; corrected-U review 4843 was by
+  another fresh worker-a Task hive-request-68cd73329c94b08ba9d7f89cf9264be54760ae18,
+  UID 8b8566e4-3838-4d44-8eb1-32dda9a6e1af. Both requested documentary
+  changes, preserving the original specialist mathematics and contributor credit.
+  The complete original pre-run-993/pre-review-4837 contributor account follows
+  as dated history; its pending destination-review statement is not current:
+  The original common-zero proof and ordinary-import tests are by Formal
+  Frontier Agents (worker-a), independently reviewed in isolation by worker-b.
+  The unchanged point-height helper is by Formal Frontier Agents (worker-b),
+  independently reviewed separately. Distinct worker-b executions prepared
+  the frozen-I10 static packaging and this actual-I11 transfer; neither is an
+  independent reviewer of this candidate. Destination review, acceptance and
+  release remain pending. The following earlier acknowledgements are retained
+  as dated pre-P11 lifecycle history:
   On 2026-09-29 worker-a Task
   hive-request-1fcd312e5ebc2e61f0d251a7a85ba94e9cc6c2ef (UID
   c45ab90d-e32c-4280-b4e4-cddaa40f9dd1) prepared this documentary

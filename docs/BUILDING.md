@@ -1,4 +1,90 @@
-# Accepted diagonal code on published exponent: build guidance (2026-09-29)
+# Common-zero build guidance
+
+## Accepted-code readiness (2026-09-29; own release pending)
+
+Protected-integrated main V `021cbd4ed92bc55704f401533846731a73079a8f`
+(tree `0e9dcaf625161287c6423a76808a2ee741da195c`) contains the common-zero
+producer and ordinary-import client. Original H native run 993 fetched and
+verified the matching mathlib cache before both default targets (3,881 jobs),
+then audited all 3,803 declaration origins across 153 Lean modules, including
+1,197 private origins and generated declarations, with only `propext`,
+`Classical.choice` and `Quot.sound`. The H-to-V differences are the root README,
+common-zero guide, this build guide and metadata prose. The 153 Lean files, both
+default roots, 98 aggregate imports, 41 test roots, 13 whole resolved package
+objects, pins and checker inputs remain fixed. This is reuse of applicable
+computational evidence, **not** equality of documentary whole-file digests.
+Exact-V native run 1004 (job 1005) and its required Lean CI context also
+succeeded. Fresh exact-V independent review 4851 and separate maintainer code
+acceptance preceded protected main integration; this dated readiness snapshot
+does not assert separate release acceptance, publication or source coverage.
+The commands and all earlier stage-specific guidance below remain historical
+or reproducibility guidance, not observations of a new build here.
+
+## Post-review correction snapshot (2026-09-29, before final-V approval)
+
+At the 2026-09-29 post-review correction, original common-zero destination H
+`94172e62b759894bd8d821a253aa3f08f68f58c2` had passed native run 993:
+matching cache fetched and verified before both-default-target build (3,881 jobs),
+153 modules and 3,803 actual declaration origins including 1,197 private origins
+audited transitively with only `propext`, `Classical.choice` and `Quot.sound`.
+That evidence applies to unchanged computational inputs, not the changed
+documentary whole-file digest. Reviews 4837 (H) and 4843 (README-corrected U)
+requested documentary corrections; final-revision approval, native required
+checks, maintainer acceptance/integration and separate verified release are not
+inferred here. The commands below remain reproduction instructions.
+
+## Original preparation snapshot (2026-09-29, before run 993 and review 4837)
+
+The initial preparation and pending-check wording below is historical. Later
+build/review evidence is described above; no original check or finding is erased.
+
+### Common-zero candidate on published diagonal: build guidance (2026-09-29)
+
+Accepted main I11 `e794bded47a4e36f830edc163f7b62892314f4cf`
+(tree `5cd4fbd40aea2297eaef40c75354896d107686d1`) matches the verified
+official diagonal P11 `56c759fc12152a447e36249ee50218ce473d93ca` by
+tree; the separately published exponent P10 remains its predecessor. I11 has
+176 shipping leaves, 151 Lean files, 97 aggregate imports, 40 explicit test
+roots, 87 selected metadata results and 13 resolved packages. This proposed
+common-zero contribution adds one producer, one ordinary-import client and
+one guide: 179 leaves, 153 Lean files, 98 imports, 41 test roots and 90
+selected results, retaining all 13 whole package objects and all pins.
+
+The isolated common-zero producer and nine-check client had a cache-first
+scoped build and a transitive standard-three axiom audit covering all three
+public and three private/generated producer origins and all nine named
+private client origins. That evidence and original diagonal job 972 do not
+certify this new combined graph. No destination Lean/Lake/cache/build or axiom
+check was run to prepare this candidate. Its ordinary PR must obtain a
+successful both-default-target build and complete private/generated-inclusive
+transitive standard-three axiom audit on its actual graph; independent review,
+maintainer acceptance/integration and separate official release follow.
+
+For an authorized destination build, first install the pinned Lean toolchain
+and **successfully fetch** the matching mathlib cache before any build:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+The unchanged pins are Lean `v4.34.0-rc2`, mathlib
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`, official scheme-properties
+`6b204a3e49f022e51d78a9f93e77513b99a87e00` and official
+general-linear-groups `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`.
+The two new focused targets, if needed **after** that cache fetch, are
+`AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero` and
+`AlgebraicGroupsTest.AlgebraicallyClosedCommonZero`. These are reproduction
+instructions, not observations of a new run. See the [common-zero API guide](../AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md).
+
+## Dated pre-P11 diagonal release-preparation guidance (historical)
+
+The following accepted-code record predates diagonal P11 publication. Its
+pending diagonal release statements are history; job 972 checked its original
+I10-to-diagonal graph, not the proposed common-zero addition.
+
+### Accepted diagonal code on published exponent: build guidance (2026-09-29)
 
 The diagonal code at accepted and protected-integrated main
 `a41c1bc85ed06b0901ab50e86ccc438caff3adf9` (tree
