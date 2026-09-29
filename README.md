@@ -1,3 +1,142 @@
+# Algebraic groups: common zeros, diagonal products and upper-triangular groups
+
+This snapshot provides source-independent finite diagonal-group-scheme products
+alongside previously published common-zero, native and represented
+upper-triangular, diagonal, and unitriangular results. The mathematical APIs
+and hypotheses, not a changing publication status, determine its scope.
+
+## Headline results in this snapshot
+
+- **Finite categorical product of diagonal group schemes.** For every
+  commutative ring `K` and same-universe finite decidable index `n`,
+  `diagonalGroupScheme K n` is isomorphic to the literal product of copies of
+  `Gₘ` in `Grp (Over (Spec (.of K)))`. Genuine Hopf projections and
+  global-sections universality for arbitrary test schemes establish both
+  projection triangles and empty-index terminality, including zero and
+  nonreduced rings. See the [product guide](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md),
+  [producer](AlgebraicGroups/GroupScheme/DiagonalProduct.lean) and
+  [ordinary-import client](AlgebraicGroupsTest/DiagonalProduct.lean).
+- **Previously published native and represented upper-triangular results.**
+  Native upper-triangular matrices split U-first over any commutative ring
+  with finite linearly ordered index; the represented closed finite-type
+  upper-triangular subgroup of GL and the native diagonal subgroup scheme
+  have fixed-base natural native points. See the [native](AlgebraicGroups/GroupTheory/UpperTriangular/README.md),
+  [represented](AlgebraicGroups/GroupScheme/UpperTriangular/README.md) and
+  [diagonal](AlgebraicGroups/GroupScheme/Diagonal/README.md) guides.
+- **Previously published common-zero and unitriangular results.** Under the
+  hypotheses in their guides: [common zeros](AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md),
+  [derived series](AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md)
+  and [exponents](AlgebraicGroups/GroupTheory/UnitriangularExponent/README.md).
+
+**Evidence and limits (2026-09-29).** The unchanged product code integrated at
+`ad5bff948f563bb9df49825f55dfcc8fcace8130` has original native run 1058's
+matching-cache build and transitive standard-axiom evidence, independent
+code review 4912, and separate maintainer code acceptance and integration.
+Those are past code-level facts, not a new whole-document fingerprint or a
+claim of review, required native success, owner acceptance or publication
+for this repaired snapshot. No represented split-kernel or semidirect product,
+smoothness/dimension theorem, arbitrary-base scheme change or source-specific
+correspondence/coverage follows from the product result. Publication events
+and decisions are tracked separately by the responsible maintainer.
+
+## Dated preparation snapshot — 2026-09-29, before publication-status repair; all lifecycle statements below are historical
+
+The complete preceding README follows unchanged. Every nested “current” label,
+release-pending statement and then-current review/check status below describes
+its dated preparation stage, not the present scope or publication status.
+
+---
+
+# Algebraic groups: common zeros, diagonal products and upper-triangular groups
+
+## Headline results
+
+- **Accepted finite product of diagonal group schemes (release pending).** For
+  every commutative ring `K` and same-universe finite decidable index `n`,
+  `diagonalGroupScheme K n` is isomorphic to the **literal categorical product**
+  of copies of `Gₘ` in `Grp (Over (Spec (.of K)))`. Genuine Hopf projections
+  and the global-sections universal property work for arbitrary test schemes;
+  both projection triangles and empty-index terminality hold, including over
+  zero and nonreduced rings. See the [product guide](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md),
+  [producer](AlgebraicGroups/GroupScheme/DiagonalProduct.lean) and
+  [ordinary-import client](AlgebraicGroupsTest/DiagonalProduct.lean).
+- **Published native upper-triangular splitting.** For a finite linearly
+  ordered index and any commutative ring, native upper-triangular matrices
+  split U-first into their unitriangular kernel and diagonal units, naturally
+  under coefficient ring maps. See the [native guide](AlgebraicGroups/GroupTheory/UpperTriangular/README.md).
+- **Published represented upper-triangular group and diagonal scheme.** The
+  closed finite-type upper-triangular subgroup scheme of GL has fixed-base
+  natural native points; the native diagonal subgroup also has a closed
+  finite-type group scheme with fixed-base natural points. See the
+  [upper-triangular scheme guide](AlgebraicGroups/GroupScheme/UpperTriangular/README.md)
+  and [diagonal scheme guide](AlgebraicGroups/GroupScheme/Diagonal/README.md).
+- **Published common-zero and unitriangular results.** Over algebraically
+  closed fields, a finite polynomial family with fewer equations than
+  variables cannot isolate a unique common zero, with a nonzero common zero
+  for positive-degree homogeneous families under that bound. Native finite
+  unitriangular groups have sharp nilpotency-class, lower/derived-series and
+  prime-power exponent results under the hypotheses in the
+  [common-zero](AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md),
+  [derived-series](AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md)
+  and [exponent](AlgebraicGroups/GroupTheory/UnitriangularExponent/README.md) guides.
+
+**Current lifecycle (2026-09-29).** The diagonal-product code at protected main
+`ad5bff948f563bb9df49825f55dfcc8fcace8130` passed original native run 1058's
+cache-first both-default-target build and complete private/generated-inclusive
+standard-three axiom audit on its exact computational inputs. Fresh independent
+destination review 4912 approved it; the maintainer separately accepted and
+integrated the code. This four-document preparation changes whole-file digests,
+not those checked Lean, dependency or checker inputs. The product is **not yet
+released**: required native context for the prepared candidate, consolidated
+independent final release review, owner release acceptance, protected release
+stages and verified private GitHub publication remain separate and pending.
+The native/represented upper-triangular predecessor is already published at
+official `7ea3256fedfc2baeb1e36590c1293aafbaede682`; it is not the product
+release. No represented split-kernel or semidirect product, dimension/smoothness,
+arbitrary-base scheme change or source-specific correspondence/coverage is claimed.
+
+## Dated predecessor README (complete pre-1058/pre-integration C history, 2026-09-29)
+
+The complete earlier README follows unchanged. Its then-current unchecked,
+unreviewed and unaccepted product labels are historical; the current lifecycle
+and published predecessor results are stated above.
+
+---
+
+# Algebraic groups: common zeros and upper-triangular groups
+
+## Headline results
+
+- **Finite diagonal-group-scheme product — static unchecked candidate.** For
+  every commutative ring `K` and same-universe finite decidable index `n`,
+  `diagonalGroupScheme K n` is isomorphic to the **literal categorical product**
+  of copies of `Gₘ` in `Grp (Over (Spec (.of K)))`. Genuine Hopf-algebra
+  projections and a universal fan work for *arbitrary* test schemes, not only
+  affine points. See the [producer](AlgebraicGroups/GroupScheme/DiagonalProduct.lean),
+  [ordinary-import client](AlgebraicGroupsTest/DiagonalProduct.lean) and
+  [guide](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md). This exact-R
+  candidate has **no destination build, axiom audit, fresh review, acceptance,
+  integration or product release**; the isolated donor's checks apply to its
+  different graph. No source-specific Milne correspondence or coverage follows.
+- **Published native and represented upper-triangular results.** The native
+  upper-triangular group splits U-first over any commutative ring; the closed
+  upper-triangular subgroup scheme of GL has fixed-base natural native points.
+  Accepted AG main/release-prep R `14cd731a7a934709e28945ba1f22cedac59c3438`
+  matches verified official Q `7ea3256fedfc2baeb1e36590c1293aafbaede682`
+  in shipping tree. Its own native run 1031, independent reviews, acceptance
+  and publication are **complete**, not outstanding product prerequisites.
+  See the [native guide](AlgebraicGroups/GroupTheory/UpperTriangular/README.md)
+  and [scheme guide](AlgebraicGroups/GroupScheme/UpperTriangular/README.md).
+
+## Dated predecessor README (complete R history, 2026-09-29)
+
+The entire released-R README below is preserved without alteration. Its then-
+current headline excludes the finite product and its upper-triangular release
+status says publication is pending; both statements are **historical** and do
+not describe the current candidate or the subsequently verified publication.
+
+---
+
 # Algebraic groups: common zeros and upper-triangular groups
 
 ## Headline results

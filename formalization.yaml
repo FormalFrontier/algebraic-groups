@@ -3,6 +3,49 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    This snapshot provides the literal finite categorical product of G_m
+    as a diagonal group scheme for every CommRing K and same-universe finite
+    decidable n. Genuine Hopf projections, arbitrary-test-scheme universality,
+    both triangles and empty-index terminality include zero and nonreduced
+    rings. Previously published common-zero, native and represented
+    upper-triangular, diagonal and unitriangular results remain available.
+    Original native1058, independent code review4912 and separate code
+    acceptance/integration concern the unchanged integrated code C; no new
+    whole-document fingerprint, final review, native result, release or
+    source-correspondence decision is claimed for this repair.
+    Dated preparation snapshot - 2026-09-29, before publication-status repair;
+    ALL LIFECYCLE STATEMENTS FROM THIS POINT ARE HISTORICAL. The entire
+    original description follows unchanged:
+    Current 2026-09-29 accepted, protected-integrated but UNRELEASED
+    diagonal-group-scheme product: for every CommRing K and same-universe finite
+    decidable n, the literal finite categorical product of G_m is established
+    using genuine Hopf projections and all-test-scheme global-sections
+    universality, including both triangles, the empty index, and zero and
+    nonreduced rings. Exact code C ad5bff948f563bb9df49825f55dfcc8fcace8130
+    passed original native run 1058's matching-cache both-default-target build
+    and full private/generated-inclusive standard-three axiom audit, fresh
+    independent destination review 4912 and separate owner code acceptance
+    and protected integration. The earlier native and represented
+    upper-triangular results are published at official
+    7ea3256fedfc2baeb1e36590c1293aafbaede682, not this product. Four
+    documentary changes have a different whole-shipping digest; final release
+    review, required native context, owner release acceptance, protected
+    stages and verified private GitHub publication remain pending. No
+    represented split-kernel/semidirect, smoothness/dimension, arbitrary-base
+    scheme-change or source-specific correspondence/coverage is asserted.
+    The complete prior description follows unchanged as dated
+    pre-run-1058/pre-review-4912/pre-code-integration history:
+    Current 2026-09-29: a static, unchecked destination candidate on accepted
+    released AG R 14cd731a7a934709e28945ba1f22cedac59c3438 adds the literal
+    finite diagonal-group-scheme product of G_m over arbitrary CommRing K and
+    its genuine Hopf projections, all-test-scheme universal fan and empty-index
+    terminal clients. The native and represented upper-triangular predecessor
+    is already published at verified official Q
+    7ea3256fedfc2baeb1e36590c1293aafbaede682 with the same shipping tree;
+    it is not waiting on the old release preparation. This product has no
+    destination build, audit, review, acceptance, integration, publication or
+    source-specific Milne correspondence/coverage. The entire prior
+    description follows unchanged as dated pre-Q/pre-product history:
     Accepted and protected-integrated upper-triangular code at main
     8640f487fa1296f0ce34fb29fdf86f146fe6f1ba passed original native
     run 1031 and independent code review 4881. This documentary release
@@ -87,11 +130,88 @@ automation:
         Formal Frontier AI agents used Lean and Lake with pinned mathlib and
         separately attributed non-author agent development review.
   notes: >-
+    The product proofs and client are unchanged from integrated code C;
+    original native1058 and independent code review4912 are prior evidence.
+    This static documentary repair performed no Lean, Lake, cache, build,
+    audit, schema or CI execution. AI-assisted development and credited
+    agent reviews do not assert human mathematical review or endorsement.
+    Dated preparation snapshot - 2026-09-29, before publication-status repair;
+    ALL LIFECYCLE STATEMENTS FROM THIS POINT ARE HISTORICAL. The entire
+    original automation.notes follows unchanged:
+    Current 2026-09-29: documentary-only release preparation by worker-a
+    Task hive-request-df628ef0224e41ee05de6c5fb0fa3383edbfa869
+    (UID 339d6fd8-a642-479d-ae0f-dda35ff8542e) follows exact-C original
+    native run 1058, fresh independent worker-b destination review 4912,
+    separate owner acceptance and protected integration. The four documents
+    change whole-file digests, not Lean/build/dependency/checker inputs; this
+    preparation runs no Lean/Lake/cache/build/audit/schema/CI itself. Earlier
+    notes follow unchanged as dated pre-1058/pre-code-integration history:
+    Current product assembly: unchanged donor Lean proofs and ordinary-import
+    client were transferred from C 8841bc36c35c7ef93f128e38a36a25e9e23daa7d
+    to actual released R 14cd731a7a934709e28945ba1f22cedac59c3438 by
+    worker-a Task hive-request-1ee0fb205d496a73f85e290bff57073a6b93f242
+    (UID f8cc5208-58cf-4d04-aecc-e9a541fddee1). This assembly performed no
+    Lean/Lake/cache/build/audit/CI or new product review. Earlier notes follow
+    unchanged as dated pre-Q/pre-product history:
     AI-assisted development under human project direction. No human mathematical
     review, model identity, elapsed-time total or expenditure is asserted.
 
 status:
   scope: >-
+    This snapshot implements the literal finite categorical diagonal G_m
+    product over every CommRing K and same-universe finite decidable n, with
+    genuine Hopf projections, arbitrary-test-scheme universality, both
+    triangles and empty-index terminality over zero and nonreduced rings.
+    The original integrated code C passed native1058 and independent
+    review4912 and received separate owner code acceptance; the preceding
+    native and represented upper-triangular results were published earlier.
+    No represented splitting, dimension/smoothness, arbitrary-base scheme
+    change or source-specific correspondence/coverage is claimed. These
+    prior code facts are not a new documentary-candidate check or release.
+    Dated preparation snapshot - 2026-09-29, before publication-status repair;
+    ALL LIFECYCLE STATEMENTS FROM THIS POINT ARE HISTORICAL. The entire
+    original status.scope follows unchanged:
+    Current 2026-09-29 exact-C product code
+    ad5bff948f563bb9df49825f55dfcc8fcace8130 (tree
+    e99013948ef708653f7e1e6ada87326ac0368eb0) is accepted and
+    protected-integrated on the released upper-triangular parent
+    14cd731a7a934709e28945ba1f22cedac59c3438. For every CommRing K and
+    same-universe finite decidable n, the genuine Hopf projections and
+    universal fan on arbitrary test schemes exhibit the diagonal group
+    scheme as the literal finite categorical product of G_m in
+    Grp(Over(Spec K)), with both projection triangles, empty-index
+    terminality, and zero/nonreduced cases. Original native1058 and fresh
+    independent review4912 precede separate owner code acceptance and
+    integration. All 141 ordered full result objects and 185 outside the
+    four-document shipping tuples remain intact, as do the 13 resolved
+    packages and six manifest root fields. The released native/represented
+    upper-triangular predecessor is officially published at
+    7ea3256fedfc2baeb1e36590c1293aafbaede682. This new product is
+    UNRELEASED: final consolidated release review, required native context,
+    owner release acceptance, protected promotion and verified private
+    publication remain pending. No represented splitting, smoothness,
+    dimension, arbitrary-base scheme change or source correspondence/coverage
+    follows. The entire earlier scope follows unchanged as dated
+    pre-native-1058/pre-review-4912/pre-code-integration history:
+    Current 2026-09-29 static unchecked sole-R product transfer: accepted and
+    released AG R 14cd731a7a934709e28945ba1f22cedac59c3438 (tree
+    86d5e92730279411b7dd3d7b60f3f49c4c5320fe) matches verified official
+    Q 7ea3256fedfc2baeb1e36590c1293aafbaede682 in shipping tree. The
+    native and represented upper-triangular results are already published;
+    their own native run 1031, review, acceptance and publication are finished.
+    Fourteen proposed complete product declaration/file pairs extend all 127
+    inherited ordered objects. For CommRing K and a finite decidable
+    same-universe index, genuine Hopf projections and the all-test-scheme
+    universal fan identify the diagonal group scheme with the literal finite
+    categorical product of G_m; PEmpty/Fin0 are terminal. This new
+    13-package destination candidate has no product build, private-inclusive
+    axiom audit, independent review, code acceptance, integration or official
+    release. Donor evidence 1174100793ec42be33a3e9c00445918ba1857506
+    applies only to its distinct 26-package graph. No source-specific Milne
+    correspondence/coverage, represented split-kernel or arbitrary-base
+    scheme-change theorem is inferred. The entire earlier scope follows
+    unchanged as dated pre-Q/pre-product history, including its then-pending
+    upper-triangular publication and then-absent product:
     Current 2026-09-29: exact main
     8640f487fa1296f0ce34fb29fdf86f146fe6f1ba (tree
     166bd8c5617483816f165454459b22265fff3322) is the accepted,
@@ -645,9 +765,75 @@ status:
       file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
     - declaration: AlgebraicGeometry.upperTriangularGroupPointsIso
       file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
+    - declaration: AlgebraicGeometry.diagonalGroupProjectionCoordinateMap
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupProjectionBialgHom
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupProjection
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupProjection_point
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupHomUnits
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.multiplicativeGroupHomUnits
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupProjection_globalUnit
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupProductFan_forget_isLimit
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupProductFan_isLimit
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupSchemeProductIso
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupSchemeProductIso_hom_π
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupSchemeProductIso_inv_projection
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupSchemeEmptyIsTerminal
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+    - declaration: AlgebraicGeometry.diagonalGroupSchemeFin0IsTerminal
+      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
 
 review:
   status: >-
+    Original native1058 checked the integrated product code C with a
+    matching-cache both-default-target build and complete transitive
+    standard-three axiom audit, including private/generated declarations;
+    fresh independent worker-b review4912 approved that code. Lattice
+    separately accepted and integrated it. Neither original code evidence
+    nor the limited internal approvals4931/4932 constitutes approval of
+    this four-document repair or publication; public review4930 requested
+    correction of the former release-pending introductions. No new whole-
+    snapshot build, final independent review or release is claimed here.
+    Dated preparation snapshot - 2026-09-29, before publication-status repair;
+    ALL LIFECYCLE STATEMENTS FROM THIS POINT ARE HISTORICAL. The entire
+    original review.status follows unchanged:
+    Current 2026-09-29 exact-C destination code
+    ad5bff948f563bb9df49825f55dfcc8fcace8130 passed original native
+    run 1058: cache-first both-default-target build and complete transitive
+    standard-three audit over 160 modules, 4079 origin pairs including 1297
+    private origins. Fresh independent worker-b destination review 4912
+    APPROVED this exact code; Lattice separately accepted and protected-
+    integrated it. The four documentary changes do not preserve original
+    whole-shipping-file digests; no new build or audit is asserted. Required
+    native context, consolidated independent final release review, owner
+    release acceptance, protected release stages and verified private
+    GitHub publication of the product remain pending. The complete earlier
+    review.status follows unchanged as dated pre-1058/pre-4912 and
+    pre-code-integration history:
+    Current 2026-09-29 product-on-released-R candidate is STATIC UNCHECKED
+    and unreviewed at destination. The isolated donor was independently
+    reviewed and accepted at incubator182/61645, but its focused build and
+    standard-three axiom audit on a different 26-package graph do not verify
+    this destination. R's completed native run 1031 and independently reviewed
+    upper-triangular publication do not check the added product. Lattice
+    must obtain the new both-default-target build and complete transitive
+    standard-three axiom audit including private/generated declarations,
+    fresh author-distinct exact-candidate mathematical/API/provenance review,
+    separate owner acceptance/protected integration and reviewed official
+    release verified on GitHub. The entire earlier review.status follows
+    unchanged as dated pre-Q/pre-product history, including its then-pending
+    upper-triangular publication:
     Current 2026-09-29 exact-H destination: original native run 1031
     succeeded on the full 13-package graph, both default targets and all 158
     modules, with 4037 private/generated-inclusive actual transitive origin
@@ -751,6 +937,43 @@ review:
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    The original product donor, selection mapper, transfer workers and
+    independent agent reviewers retain their full attribution below.
+    Independent worker-b code approval4912 applies to integrated code C;
+    former preparation's limited internal approvals4931/4932 and public
+    REQUEST_CHANGES4930 do not approve this replacement documentation.
+    Agent review is not human mathematical review, source-author endorsement
+    or an independent release verdict on this repair.
+    Dated preparation snapshot - 2026-09-29, before publication-status repair;
+    ALL LIFECYCLE STATEMENTS FROM THIS POINT ARE HISTORICAL. The entire
+    original review.notes follows unchanged:
+    Current 2026-09-29 exact-C destination review: fresh worker-b Task
+    hive-request-f3ed2d56e64cee367473bd214ef56cc2b7309857
+    (UID 6ec4256e-2cda-4d7f-80e3-95ab945e1340), native approval 4912,
+    is independent of released-parent transfer worker-a Task
+    hive-request-1ee0fb205d496a73f85e290bff57073a6b93f242
+    (UID f8cc5208-58cf-4d04-aecc-e9a541fddee1). Lattice separately
+    accepted and integrated code, not this final release candidate.
+    Documentary readiness author worker-a Task
+    hive-request-df628ef0224e41ee05de6c5fb0fa3383edbfa869
+    (UID 339d6fd8-a642-479d-ae0f-dda35ff8542e) is not an independent
+    release reviewer. Complete earlier review.notes follows unchanged as
+    dated pre-4912/pre-code-integration history:
+    Product donor author: worker-a Task
+    hive-request-1eaf7759cab2877f525c118df8dfcc2cf02c5ecf (UID
+    24f5b359-e14d-4180-86e0-da0f1ae1315b), independent donor reviewer:
+    worker-b Task hive-request-898d867f547ca4b701b12773b4c51c94231975cb
+    (UID 5be2102f-b518-49ad-93e8-95474aa48bb6), exact review
+    91d600d99ea9d70195b32697a0518ccbc03a8e0e. Destination map:
+    worker-a Task hive-request-51140fa5920c4d93115eb0da62f20bd36c2266bc
+    (UID 5d1ab42e-5c0a-4618-b3b9-a6ae72cf5ce4). Earlier sole-I transfer:
+    worker-a Task hive-request-77855aa4697d890d8d4aaed8292f047886da599b
+    (UID 9f032fe9-7431-43bc-b798-a6f1f5668416), fully owner-intaken at
+    incubator182/63498 but never accepted as destination code. Sole-R
+    assembly: worker-a Task hive-request-1ee0fb205d496a73f85e290bff57073a6b93f242
+    (UID f8cc5208-58cf-4d04-aecc-e9a541fddee1), not a product reviewer.
+    Existing independent credits and full earlier review.notes follow
+    unchanged as dated pre-Q/pre-product history:
     Current combined-destination assembly author: worker-a Task
     hive-request-c9d5208b8cc04a1a8dab4d6946521d464abd124e (UID
     78af2598-68a4-40b9-b731-bf0f6bff88da), distinct from the original
@@ -1015,6 +1238,51 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  Credit for this publication-stable documentation repair: worker-a Task
+  hive-request-5c5aa9fcdc8beb86d672619762e985bab330a7ee (UID
+  7135e83f-65e3-4979-898f-09e59e4c49e7). Original donor, mapper,
+  transfer, preparer and independent code-review agent credits remain
+  complete below. AI-assisted work is not human mathematical review,
+  source-author endorsement or a source-coverage claim.
+  Dated preparation snapshot - 2026-09-29, before publication-status repair;
+  ALL LIFECYCLE STATEMENTS FROM THIS POINT ARE HISTORICAL. The entire
+  original acknowledgements follows unchanged:
+  Current 2026-09-29 four-document release preparation: worker-a Task
+  hive-request-df628ef0224e41ee05de6c5fb0fa3383edbfa869 (UID
+  339d6fd8-a642-479d-ae0f-dda35ff8542e). The unchanged product proofs
+  and client were authored by worker-a Task
+  hive-request-1eaf7759cab2877f525c118df8dfcc2cf02c5ecf (UID
+  24f5b359-e14d-4180-86e0-da0f1ae1315b). Sole released-parent transfer
+  worker-a Task hive-request-1ee0fb205d496a73f85e290bff57073a6b93f242
+  (UID f8cc5208-58cf-4d04-aecc-e9a541fddee1) was distinctly reviewed
+  by fresh worker-b Task hive-request-f3ed2d56e64cee367473bd214ef56cc2b7309857
+  (UID 6ec4256e-2cda-4d7f-80e3-95ab945e1340), approval 4912; Lattice
+  separately accepted and integrated exact code C. The original donor,
+  mapper, prior transfer and every older contributor retain their complete
+  credits in the unchanged predecessor acknowledgements below. This is
+  neither human mathematical review, final release acceptance/publication,
+  source-author endorsement nor source-specific coverage. The entire
+  predecessor acknowledgements scalar follows unchanged as dated
+  pre-run-1058/pre-review-4912/pre-integration history:
+  Current 2026-09-29 product-on-released-R assembly: worker-a Task
+  hive-request-1ee0fb205d496a73f85e290bff57073a6b93f242 (UID
+  f8cc5208-58cf-4d04-aecc-e9a541fddee1). Donor proofs/client by worker-a
+  Task hive-request-1eaf7759cab2877f525c118df8dfcc2cf02c5ecf (UID
+  24f5b359-e14d-4180-86e0-da0f1ae1315b), independently reviewed by
+  worker-b Task hive-request-898d867f547ca4b701b12773b4c51c94231975cb
+  (UID 5be2102f-b518-49ad-93e8-95474aa48bb6), accepted in isolation by
+  Lattice at incubator182/61645. Product selection by worker-a Task
+  hive-request-51140fa5920c4d93115eb0da62f20bd36c2266bc (UID
+  5d1ab42e-5c0a-4618-b3b9-a6ae72cf5ce4). Prior static-I transfer by
+  worker-a Task hive-request-77855aa4697d890d8d4aaed8292f047886da599b
+  (UID 9f032fe9-7431-43bc-b798-a6f1f5668416) remains published on its
+  own branches, not silently accepted or replaced. Responsible maintainer
+  Lattice owns the next destination checks/review/integration/publication.
+  Native and represented upper-triangular predecessor results are already
+  reviewed and published at Q, with separate original credits. No human
+  mathematical review, source-author endorsement, destination product
+  acceptance or source coverage is asserted. The entire earlier
+  acknowledgements follows unchanged as dated pre-Q/pre-product history:
   Current 2026-09-29 lifecycle: worker-a Task
   hive-request-d750315d14734904a6d83067321dccf773ef91b3 (UID
   d5aad1e2-5c4f-4a81-b7ee-7bbab31c8cae) prepared only the five documentary

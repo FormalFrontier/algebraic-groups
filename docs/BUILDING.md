@@ -1,3 +1,134 @@
+# Building the finite diagonal-group-scheme product
+
+This project includes the literal finite categorical product of `Gₘ` for
+every commutative ring and same-universe finite decidable index, with genuine
+Hopf projections and an arbitrary-test-scheme universal property. The
+producer is `AlgebraicGroups.GroupScheme.DiagonalProduct`; the ordinary-import
+client is `AlgebraicGroupsTest.DiagonalProduct`. These instructions apply to
+the pinned project checkout, regardless of its publication stage.
+
+Install the pinned Lean toolchain, then successfully fetch the matching
+precompiled mathlib cache from the project root **before** building both
+default targets:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+The unchanged official GitHub dependency pins are mathlib
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`, general-linear-groups
+`ad7c50a0523441116537fb1d6e3c8d2a665af1fc`, and scheme-properties
+`6b204a3e49f022e51d78a9f93e77513b99a87e00`. After the cache fetch,
+the producer and ordinary-import client may also be built as focused targets.
+These commands are reproduction instructions, **not** execution performed
+for this documentary repair. Original native run 1058 successfully built
+both default targets and audited the integrated code at
+`ad5bff948f563bb9df49825f55dfcc8fcace8130`, with independent code
+review 4912; its original whole-file input fingerprint does not identify
+this four-document snapshot. No new required native result, whole-snapshot
+review or publication outcome is asserted here.
+
+## Dated preparation snapshot — 2026-09-29, before publication-status repair; all lifecycle statements below are historical
+
+The complete preceding build guide follows unchanged. Its nested “current”
+instructions and release/check-status assertions record earlier preparation
+stages, not the present publication status.
+
+---
+
+# Building the accepted diagonal product (2026-09-29; own release pending)
+
+The literal finite diagonal-group-scheme product at protected main
+`ad5bff948f563bb9df49825f55dfcc8fcace8130` is accepted and integrated,
+not yet released. Original native run 1058 on that exact code and pinned
+13-package graph fetched the matching mathlib cache, built both default
+targets (3,890 jobs; 160 Lean modules) and completed a transitive
+private/generated-inclusive standard-three axiom audit (4,079 origin pairs,
+including 1,297 private origins). Fresh independent exact-code review 4912
+approved it; the maintainer separately accepted and integrated it. The
+original whole-file input fingerprint does **not** identify this four-document
+preparation. All 185 non-documentary blobs, all 141 ordered metadata result
+objects, 101 production aggregate imports, 44 explicit test roots, both
+default targets, all 13 resolved packages and six manifest root fields,
+toolchain and checker inputs remain unchanged. The original isolated donor's
+different graph and the published upper-triangular run 1031 are not product
+destination checks.
+
+For reproduction on an authorized matching checkout, install the pinned Lean
+toolchain and successfully fetch the matching precompiled mathlib cache from
+the project root **before** building both default targets:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+The optional focused targets, after that cache fetch, are
+`AlgebraicGroups.GroupScheme.DiagonalProduct` and
+`AlgebraicGroupsTest.DiagonalProduct`. These are reproduction instructions,
+not a new build, axiom audit or test run on the documentary candidate. Its
+required native context, consolidated independent final release review,
+owner release acceptance, protected release stages and verified private
+GitHub publication remain pending. The prior native/represented
+upper-triangular release is complete; no source-coverage decision follows.
+
+## Dated predecessor BUILDING.md (complete pre-1058/pre-integration C history, 2026-09-29)
+
+The complete earlier guide follows unchanged. Its static unchecked product
+labels and pending destination checks describe the earlier C snapshot,
+not the accepted code or this unreleased documentary preparation.
+
+---
+
+# Diagonal-product destination guidance (2026-09-29; static unchecked candidate)
+
+Released AG R `14cd731a7a934709e28945ba1f22cedac59c3438`, tree
+`86d5e92730279411b7dd3d7b60f3f49c4c5320fe`, matches verified official
+Q `7ea3256fedfc2baeb1e36590c1293aafbaede682` in shipping tree. Its
+native and represented upper-triangular contribution completed its own
+reviewed publication. This **new product transfer** only adds the
+`AlgebraicGroups.GroupScheme.DiagonalProduct` aggregate import and explicit
+`AlgebraicGroupsTest.DiagonalProduct` ordinary-import root alongside Diagonal.
+It adds three leaves (189 total), two Lean files (160 total), one aggregate
+import (101 total), one test root (44 total) and 14 selected result pairs
+(141 total). All 181 outside-scope R blobs, both default targets, the entire
+13-package/six-root-field manifest, pinned Lean 4.34.0-rc2, mathlib
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`, official general-linear-groups
+`ad7c50a0523441116537fb1d6e3c8d2a665af1fc` and scheme-properties
+`6b204a3e49f022e51d78a9f93e77513b99a87e00` stay unchanged.
+
+For a **later authorized destination check**, install the pinned toolchain and
+successfully fetch the matching precompiled mathlib cache from this project
+root **before** building both default targets:
+
+```sh
+elan toolchain install leanprover/lean4:v4.34.0-rc2
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+Optional focused targets *after* that cache fetch are
+`AlgebraicGroups.GroupScheme.DiagonalProduct` and
+`AlgebraicGroupsTest.DiagonalProduct`. This is not a report of a product
+destination elaboration/build, private/generated-inclusive transitive
+standard-three axiom audit, independent exact-candidate mathematical/API/
+provenance review, Lattice's acceptance/integration, or reviewed official
+product publication. The original isolated donor's 26-package evidence is
+scoped to its original inputs; R's native run 1031 checks R's unchanged
+upper-triangular code, not the added product. No source correspondence or
+coverage is claimed.
+
+## Dated predecessor BUILDING.md (complete released-R history, 2026-09-29)
+
+The entire R building guide follows without alteration. Its pending
+upper-triangular publication and absence of product targets are historical;
+the current scope and lifecycle are stated above.
+
+---
+
 # Building the accepted upper-triangular code and preceding results
 
 ## Current destination instructions and evidence (2026-09-29; accepted code)
