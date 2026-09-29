@@ -13,7 +13,8 @@ project:
     of native unitriangular groups, exact positive-stage commutators and their
     native derived series over any commutative ring, generic strictly
     upper-triangular matrix nilpotence and sharp prime-power exponent bounds
-    for native finite unitriangular point groups, and
+    for native finite unitriangular point groups, a finite diagonal GL subgroup
+    and closed finite-type affine group scheme with fixed-base natural points, and
     supporting commutative-algebra and scheme theory.
   authors:
     - Formal Frontier Agents
@@ -76,6 +77,51 @@ automation:
 
 status:
   scope: >-
+    Current 2026-09-29 accepted and protected-integrated diagonal development
+    code is main a41c1bc85ed06b0901ab50e86ccc438caff3adf9 (tree
+    93646af0eb43065216ef70178946effebcc0830d), sole I10 parent
+    fe7a86c8ab5484ea60d4baaf0e5deae7cf12986e. Original native job 972
+    fetched the matching cache, built both default targets (3878 jobs) and
+    completed the transitive standard-three audit of 3788 module-origin pairs
+    on 151 Lean modules (111 production, 40 tests), including 1185
+    private-named origins and all generated origins. Fresh author-distinct
+    worker-b exact-code review, separate owner acceptance and protected
+    integration are complete. All 176 shipping leaves, 97 aggregate imports,
+    40 roots, 87 whole ordered selected results and 13 resolved packages remain;
+    this documentary update retains Lean/build/pin/checker inputs, not the
+    original whole-shipping digest. The exponent's verified official P10 is
+    34c5772fb8f00ca6012c0683091a0f93116ea618; no diagonal release,
+    final release review/acceptance, protected release promotions, verified
+    private publication or source-coverage decision is claimed. Native finite
+    diagonal GL units and an actual off-diagonal Hopf quotient yield the closed
+    finite-type affine group scheme with fixed-base natural group-valued points
+    on every commutative test algebra; empty indices, zero and nonreduced rings
+    are included, with no Field, Nontrivial or Nonempty condition. Finite-product
+    G_m/Laurent scheme equivalence, triangular or semidirect schemes,
+    smoothness, dimension and arbitrary base change remain outside this scope.
+    The complete earlier diagonal-candidate scope follows as dated pre-native972/
+    pre-acceptance history, not current lifecycle evidence; its inherited I10
+    scalar is still earlier pre-P10 history:
+    Static 2026-09-29 diagonal candidate on sole accepted, integrated I10
+    exponent release-preparation parent
+    fe7a86c8ab5484ea60d4baaf0e5deae7cf12986e, tree
+    8f6957f508f70e9042704eb2d1e9f5c6921feb99. The exponent's own
+    review, acceptance and verified private official P10 publication at
+    34c5772fb8f00ca6012c0683091a0f93116ea618 are complete. This
+    candidate adds the native finite diagonal GL subgroup,
+    actual off-diagonal Hopf quotient, finite-type closed affine group
+    scheme and fixed-base natural group-valued points on every commutative
+    test algebra. Empty indices, zero and nonreduced rings are included.
+    Its 176 leaves include 151 Lean files (111 production, 40 tests),
+    97 aggregate imports, 40 test roots and 87 selected main results, with
+    all 13 whole resolved packages unchanged. There is no current-union
+    build, standard-axiom audit, independent destination review, acceptance,
+    integration, official release or source-coverage decision. No finite
+    product-of-G_m/Laurent scheme equivalence, triangular or semidirect
+    scheme, smoothness, dimension or arbitrary-base-change result is claimed.
+    The entire inherited I10 scope scalar follows unchanged as dated
+    pre-diagonal history; its pending exponent-release statements are
+    superseded by P10 publication and are not current candidate evidence:
     Current 2026-09-29 accepted main
     45d4c5ddfcd491f298c4c968561d2e2eccf82e06 includes the native
     unitriangular exponent transfer. Original destination native job 932
@@ -406,9 +452,56 @@ status:
       file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
     - declaration: Matrix.UnitriangularGroup.exponent_dvd_prime_pow_iff
       file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
+    - declaration: Matrix.diagonalSubgroup
+      file: AlgebraicGroups/GroupTheory/Diagonal.lean
+    - declaration: Matrix.DiagonalGroup.unitsEquiv
+      file: AlgebraicGroups/GroupTheory/Diagonal.lean
+    - declaration: Matrix.DiagonalGroup.map
+      file: AlgebraicGroups/GroupTheory/Diagonal.lean
+    - declaration: DiagonalCoordinateRing.ideal_isHopfIdeal
+      file: AlgebraicGroups/Algebra/DiagonalCoordinateRing.lean
+    - declaration: DiagonalCoordinateRing.universal_detInverse
+      file: AlgebraicGroups/Algebra/DiagonalCoordinateRing.lean
+    - declaration: DiagonalCoordinateRing.finiteType
+      file: AlgebraicGroups/Algebra/DiagonalCoordinateRing.lean
+    - declaration: AlgebraicGeometry.diagonalGroupScheme
+      file: AlgebraicGroups/GroupScheme/Diagonal.lean
+    - declaration: AlgebraicGeometry.diagonalInclusion_isClosedImmersion
+      file: AlgebraicGroups/GroupScheme/Diagonal.lean
+    - declaration: AlgebraicGeometry.diagonalGroupMulEquivPoints
+      file: AlgebraicGroups/GroupScheme/Diagonal.lean
+    - declaration: AlgebraicGeometry.diagonalInclusion_point
+      file: AlgebraicGroups/GroupScheme/Diagonal.lean
+    - declaration: AlgebraicGeometry.diagonalGroupPointsIso
+      file: AlgebraicGroups/GroupScheme/Diagonal.lean
+    - declaration: AlgebraicGeometry.diagonalGroupUnitsEquivPoints
+      file: AlgebraicGroups/GroupScheme/Diagonal.lean
 
 review:
   status: >-
+    Current diagonal code at a41c1bc85ed06b0901ab50e86ccc438caff3adf9
+    passed original current-13-package cache-first native job 972's both-
+    default-target build and complete private/generated-inclusive transitive
+    standard-three audit. Fresh author-distinct worker-b review 4816 is exact-
+    head approved; Lattice separately accepted and protected-integrated the
+    code. This documentary successor preserves checked computational inputs
+    but changes the whole-shipping digest. Independent consolidated final
+    release review, owner release acceptance, protected promotions and verified
+    private GitHub publication remain pending; code review is not release
+    approval. Official exponent P10 is already published. The complete prior
+    pre-job972/pre-acceptance diagonal status follows as dated historical
+    evidence, not the current state:
+    This static diagonal union on accepted I10 is conditional and
+    unbuilt, unaudited, independently destination-unreviewed, unaccepted,
+    unintegrated and unpublished. Completed exponent review and applicable
+    I10 computation do not verify the changed diagonal graph; donor88 checked
+    the isolated 26-package donor, not this destination's 13-package graph.
+    Reviewed private exponent P10 is published. Arrange cache-first both-default-
+    target and private/generated-inclusive
+    transitive standard-three checks, fresh author-distinct destination
+    review and separate acceptance, integration and own reviewed release.
+    The full inherited I10 review-status scalar follows unchanged as dated
+    pre-diagonal history; its pending exponent release is superseded by P10:
     Current 2026-09-29 exponent code is accepted and protected-integrated at
     45d4c5ddfcd491f298c4c968561d2e2eccf82e06. Fresh author-distinct
     worker-b exact-code APPROVED review 4774 and original destination native
@@ -441,6 +534,39 @@ review:
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    On 2026-09-29 worker-a Task
+    hive-request-1fcd312e5ebc2e61f0d251a7a85ba94e9cc6c2ef (UID
+    c45ab90d-e32c-4280-b4e4-cddaa40f9dd1) prepared this documentary
+    own-release successor, without changing Lean or computational inputs.
+    Fresh exact-code destination review was by distinct worker-b Task
+    hive-request-e986dda8ce6686809cb658934a358e00f265238e (UID
+    e8e3bbff-8531-499e-b929-661d027b236b), followed by Lattice's
+    separate code acceptance and protected PR227 integration. Original native
+    job 972 on that exact 13-package graph supplied the applicable build and
+    complete transitive standard-three audit, not final release approval. The
+    complete earlier static-packaging review-notes scalar follows as dated
+    pre-native/pre-acceptance history:
+    Actual-I10 static packaging renewal (2026-09-29), not new proof
+    authorship, by worker-a Task
+    hive-request-4c2aa72f817d1a854aa18cc342a25137391a2cee, UID
+    d2aa0183-8046-4ed0-9c2c-b075eb666f8b. The prior frozen-R
+    renewal was by worker-a Task
+    hive-request-6a0633275f38c0ea64d428ae6904930b1cd3c8f3, UID
+    da300be7-8a50-41fa-880e-51c12ae312f6. The preceding sole-I9
+    transfer was by worker-a Task
+    hive-request-e7d91aa21c8d9f28be50a94bd662f9b5e5971fd2, UID
+    46e667a7-1d09-4aab-91f9-bfe27b57d150; original diagonal proof and
+    ordinary-import client author was worker-a Task
+    hive-request-25386fd8e578f7a1fd1a391d0547e995d3944f25, UID
+    eb3f1966-948e-4116-9fc4-f40697463287, and its independently
+    reviewing donor worker-b Task was
+    hive-request-f4f1a4daca8dc87de87ce04b24ea6217f64c8fb3, UID
+    3ce99032-e3f5-479e-9972-c00498c7bf6e. The four complete Lean
+    bodies are unchanged from that I9 transfer, while this packaging adds
+    one import/root and the same 12 selected declaration/file pairs after
+    all 75 inherited I10 pairs, without deleting exponent or histories.
+    The entire inherited I10 review-notes scalar and acknowledgements below
+    follow unchanged as dated pre-diagonal history, not union evidence:
     Current 2026-09-29 destination review is by worker-b Task
     hive-request-cca37fd56496938e743a795f5e0c4437da7e1a46 (UID
     449865e3-164c-48fa-9984-3f66c772f898), distinct from the original
@@ -654,6 +780,23 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  On 2026-09-29 worker-a Task
+  hive-request-1fcd312e5ebc2e61f0d251a7a85ba94e9cc6c2ef (UID
+  c45ab90d-e32c-4280-b4e4-cddaa40f9dd1) prepared this documentary
+  diagonal own-release candidate, not its Lean proofs, independent review,
+  release acceptance or publication. Original diagonal producer/client proof
+  author worker-a Task hive-request-25386fd8e578f7a1fd1a391d0547e995d3944f25
+  (UID eb3f1966-948e-4116-9fc4-f40697463287), independently reviewing
+  isolated worker-b Task hive-request-f4f1a4daca8dc87de87ce04b24ea6217f64c8fb3
+  (UID 3ce99032-e3f5-479e-9972-c00498c7bf6e), static transfer/renewal
+  authors worker-a Tasks hive-request-e7d91aa21c8d9f28be50a94bd662f9b5e5971fd2,
+  hive-request-6a0633275f38c0ea64d428ae6904930b1cd3c8f3 and
+  hive-request-4c2aa72f817d1a854aa18cc342a25137391a2cee retain distinct
+  credit. Fresh exact-development-code reviewer was worker-b Task
+  hive-request-e986dda8ce6686809cb658934a358e00f265238e (UID
+  e8e3bbff-8531-499e-b929-661d027b236b), followed by Lattice's separate
+  acceptance and protected integration. The complete prior acknowledgements
+  scalar follows as dated pre-acceptance history:
   On 2026-09-29 worker-a Task
   hive-request-bba7de9a57c7bb5762f49449e85c53ea5bd9e370 (UID
   a61157f1-2a86-4729-a099-c70066ae2502) prepared this documentary release

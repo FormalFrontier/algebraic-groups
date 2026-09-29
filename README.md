@@ -1,4 +1,123 @@
-# Algebraic groups: native exponents, series and group-scheme APIs
+# Algebraic groups: native diagonal, exponent and group-scheme APIs
+
+This source-independent library provides a native finite diagonal subgroup of
+matrix GL, equivalence with tuples of units, an actual off-diagonal Hopf
+quotient, a finite-type affine group scheme with closed GL inclusion, and a
+fixed-base group-valued natural point equivalence over all commutative
+algebras. Its index type may be empty; zero and nonreduced rings are covered.
+Import `AlgebraicGroups.GroupScheme.Diagonal` or the public aggregate
+`AlgebraicGroups`; the ordinary-import client is `AlgebraicGroupsTest.Diagonal`.
+See the [diagonal API guide](AlgebraicGroups/GroupScheme/Diagonal/README.md)
+for hypotheses, declarations, tests and limitations.
+
+**Accepted development code; own release pending (2026-09-29).** The diagonal
+contribution is independently reviewed, accepted and protected-integrated at
+main `a41c1bc85ed06b0901ab50e86ccc438caff3adf9` (tree
+`93646af0eb43065216ef70178946effebcc0830d`), the sole child of
+accepted exponent release-preparation I10
+`fe7a86c8ab5484ea60d4baaf0e5deae7cf12986e`. Original native job 972
+fetched the matching mathlib cache, built both default targets (3,878 jobs)
+and audited 3,788 module-origin pairs across all 151 Lean modules (111
+production, 40 tests), including 1,185 private-named origins and all generated
+origins; only `propext`, `Classical.choice` and `Quot.sound` occurred. Fresh
+author-distinct destination review and separate maintainer code acceptance
+followed. All 176 shipping leaves include 97 aggregate imports, 40 test roots,
+87 selected results and the same 13 resolved packages. This documentation-only
+release preparation retains those checked Lean/build/pin/checker inputs, not
+the original whole-shipping digest. The exponent's own official private P10
+`34c5772fb8f00ca6012c0683091a0f93116ea618` is verified and remains
+official until the diagonal successor is separately reviewed, accepted,
+protected-promoted and verified published. No diagonal release or source-coverage
+decision is claimed. See [docs/BUILDING.md](docs/BUILDING.md) for reproduction.
+
+## Headline results
+
+- **Native finite diagonal subgroup and closed group scheme (accepted code;
+  release pending).** For any finite decidable index type `ι` and commutative
+  base ring `K`, the literal diagonal subgroup of native
+  `Matrix.GeneralLinearGroup ι R` over each commutative `K`-algebra `R` is
+  multiplicatively equivalent to `ι → Rˣ`. Its off-diagonal Hopf quotient
+  gives a finite-type affine group scheme with closed inclusion in GL, whose
+  group of points is naturally that diagonal subgroup for **all** test algebras
+  at fixed base. Empty indices, zero rings and nonreduced test algebras are
+  included; invertibility requires a unit determinant, not merely a nonzero
+  one. See the [producer](AlgebraicGroups/GroupScheme/Diagonal.lean),
+  [guide](AlgebraicGroups/GroupScheme/Diagonal/README.md) and
+  [ordinary-import client](AlgebraicGroupsTest/Diagonal.lean). The unit-tuple
+  equivalence is not a finite-product G_m/Laurent **scheme** isomorphism;
+  triangular/semidirect schemes, smoothness, dimension, arbitrary base change
+  and source-specific coverage remain outside this result. The exact
+  development code is built, audited, independently reviewed, accepted and
+  integrated; final release review, release acceptance, protected promotions
+  and verified private publication remain pending.
+- **Prime-power exponent bounds and sharpness for native unitriangular groups.**
+  For `n, p, t : ℕ` and `[CommRing R]`, if `Nat.Prime p`, `(p : R) = 0`
+  and `n ≤ p ^ t`, every `g : Matrix.UnitriangularGroup (Fin n) R`
+  satisfies `g ^ (p ^ t) = 1`, including at `n = 0` and over the zero
+  ring. With `[Nontrivial R]` as well, both the uniform-power assertion
+  and `Monoid.exponent (Matrix.UnitriangularGroup (Fin n) R) ∣ p ^ t`
+  hold **if and only if** `n ≤ p ^ t`. Over any nontrivial commutative
+  ring, `0 < q < n` yields a characteristic-independent witness `g` with
+  `g ^ q ≠ 1`. These are native point-group results, not claims that
+  every element has maximal order, a separate numerical formula for the
+  group exponent, or a group-scheme exponent. See the
+  [producer](AlgebraicGroups/GroupTheory/UnitriangularExponent.lean) for
+  `Matrix.UnitriangularGroup.pow_prime_pow_eq_one`,
+  `Matrix.UnitriangularGroup.forall_pow_prime_pow_eq_one_iff`,
+  `Matrix.UnitriangularGroup.exponent_dvd_prime_pow_iff` and
+  `Matrix.UnitriangularGroup.exists_pow_ne_one_of_pos_lt`, with the
+  [exponent guide](AlgebraicGroups/GroupTheory/UnitriangularExponent/README.md)
+  and [ordinary-import client](AlgebraicGroupsTest/UnitriangularExponent.lean).
+- **Finite-index triangular nilpotence.** For a finite linearly ordered
+  index type `ι` over `[CommRing R]`, any upper-triangular matrix `N`
+  with zero diagonal satisfies `N ^ Fintype.card ι = 0`, even when `ι`
+  is empty or `R` is the zero ring. See
+  `Matrix.pow_card_eq_zero_of_upperTriangular_diag_zero` in the same
+  [producer](AlgebraicGroups/GroupTheory/UnitriangularExponent.lean).
+
+For the already shipped series and underlying-scheme results, see the
+[derived-series](AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries/README.md)
+and [geometry](AlgebraicGroups/GroupScheme/UnitriangularGeometry/README.md) guides.
+
+## Dated pre-P10 exponent and pre-diagonal-acceptance snapshot (historical)
+
+The complete earlier snapshot follows for attribution and status provenance.
+Its exponent-release-pending and diagonal-candidate/unverified statements are
+superseded by verified exponent P10 and accepted, native-checked diagonal main
+above; its mathematical exponent headline remains valid. Earlier dated
+snapshots within it refer only to their own recorded inputs and times.
+
+### Dated pre-native972 diagonal packaging status
+
+**Static diagonal candidate (2026-09-29).** This branch is the sole child of
+accepted, integrated exponent release-preparation I10
+`fe7a86c8ab5484ea60d4baaf0e5deae7cf12986e` (tree
+`8f6957f508f70e9042704eb2d1e9f5c6921feb99`). The exponent contribution
+has its own completed review, acceptance, integration and verified private
+official P10 `34c5772fb8f00ca6012c0683091a0f93116ea618`. This candidate
+preserves its complete producer/client, current headline, import, test root and
+five selected results, adding only diagonal packaging. The 176-leaf project
+has 151 Lean files (111 production including aggregate, 40 tests), 97 aggregate
+imports, 40 test roots, 87 selected results and the same 13 resolved packages.
+**No combined-graph build, transitive axiom audit, independent destination
+review, diagonal code acceptance, integration, diagonal release or source-
+coverage decision applies to this candidate.** The original diagonal donor's
+checks and exponent's applicable I10 evidence apply only to their own exact
+graphs, not this diagonal union. The responsible maintainer arranges fresh
+cache-first destination checks, independent review, separate acceptance and
+its own official release. A finite-product G_m/Laurent scheme equivalence,
+triangular/semidirect scheme, smoothness, dimension and arbitrary base-change
+are not claimed. Build prerequisites and commands are in
+[docs/BUILDING.md](docs/BUILDING.md).
+
+## Existing exponent headline and publication history (2026-09-29)
+
+The existing exponent mathematics and current headline remain in force below.
+The previous integration-status prose and older release-pending snapshots are
+dated history superseded by the completed P10 release; none describes the new
+diagonal candidate. All inherited I10 text is retained unchanged.
+
+### Algebraic groups: native exponents, series and group-scheme APIs (historical)
 
 The reusable native matrix point-group library now includes a **reviewed,
 accepted and integrated**
@@ -50,8 +169,24 @@ preparation is by worker-a Task
 `a61157f1-2a86-4729-a099-c70066ae2502`). Neither is the independent
 review or acceptance of this proposed release.
 
-## Headline results
+### Headline results in the historical pre-acceptance snapshot
 
+- **Native finite diagonal subgroup and closed group scheme (candidate).**
+  For any finite decidable index type `ι` and commutative base ring `K`, the
+  literal diagonal subgroup of native `Matrix.GeneralLinearGroup ι R` over
+  each commutative `K`-algebra `R` is multiplicatively equivalent to `ι → Rˣ`.
+  Its off-diagonal Hopf quotient gives a finite-type affine group scheme with
+  closed inclusion in GL, whose group of points is naturally that diagonal
+  subgroup for **all** test algebras at fixed base. Empty indices, zero rings
+  and nonreduced test algebras are included; invertibility requires a unit
+  determinant, not merely a nonzero one. See the
+  [producer](AlgebraicGroups/GroupScheme/Diagonal.lean),
+  [guide](AlgebraicGroups/GroupScheme/Diagonal/README.md) and
+  [ordinary-import client](AlgebraicGroupsTest/Diagonal.lean). The unit-tuple
+  equivalence is not a finite-product G_m/Laurent **scheme** isomorphism;
+  triangular/semidirect schemes, smoothness, dimension, arbitrary base change
+  and source-specific coverage remain outside this candidate. Destination
+  verification, review, acceptance and official release remain pending.
 - **Prime-power exponent bounds and sharpness for native unitriangular groups.**
   For `n, p, t : ℕ` and `[CommRing R]`, if `Nat.Prime p`, `(p : R) = 0`
   and `n ≤ p ^ t`, every `g : Matrix.UnitriangularGroup (Fin n) R`

@@ -1,3 +1,70 @@
+# Accepted diagonal code on published exponent: build guidance (2026-09-29)
+
+The diagonal code at accepted and protected-integrated main
+`a41c1bc85ed06b0901ab50e86ccc438caff3adf9` (tree
+`93646af0eb43065216ef70178946effebcc0830d`) is the sole child of
+accepted exponent release-preparation I10
+`fe7a86c8ab5484ea60d4baaf0e5deae7cf12986e` (tree
+`8f6957f508f70e9042704eb2d1e9f5c6921feb99`). Original native job 972
+successfully fetched the matching mathlib cache, built **both** default
+targets (3,878 jobs), and audited all 3,788 unique module-origin pairs
+(3,769 names, 1,185 private-named origins, including generated declarations)
+across all 151 Lean modules; transitive axioms are limited to `propext`,
+`Classical.choice` and `Quot.sound`. Fresh author-distinct exact-code review,
+separate maintainer acceptance and protected integration are complete. The
+exponent's own verified official private P10
+`34c5772fb8f00ca6012c0683091a0f93116ea618` remains official. The
+isolated diagonal donor's focused 26-package checks and I10's earlier evidence
+are not substitutes for this current 13-package native run.
+
+The accepted union has 176 leaves, 151 Lean files (111 production including
+aggregate, 40 tests), 97 public aggregate imports, 40 explicit test roots,
+87 selected results and unchanged 13 whole manifest packages. Lean is pinned
+to `v4.34.0-rc2`, mathlib to
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`, scheme-properties to
+`6b204a3e49f022e51d78a9f93e77513b99a87e00` and the published
+general-linear-groups dependency to
+`ad7c50a0523441116537fb1d6e3c8d2a665af1fc`. The commands below are
+reproduction instructions, not a new check. For an authorized build, install
+the pinned toolchain and **successfully** fetch its matching mathlib cache
+before building both default targets from the project root:
+
+```sh
+lake exe cache get
+LAKE_JOBS=2 lake build
+```
+
+The original native job 972 supplies the full current-graph audit, including
+private/generated transitive origins; this documentary successor preserves its
+Lean/build/dependency/checker inputs but changes the whole-shipping digest.
+Optional focused targets after the same cache fetch are
+`AlgebraicGroups.GroupScheme.Diagonal` and `AlgebraicGroupsTest.Diagonal`.
+Neither these instructions nor earlier donor, exponent or pre-exponent jobs
+constitute a new run. The [diagonal guide](../AlgebraicGroups/GroupScheme/Diagonal/README.md)
+records its mathematical scope; final independent release review, separate
+release acceptance, protected promotions and verified private publication
+remain pending, distinct from completed destination code review and acceptance.
+
+## Dated pre-native972 diagonal build snapshot (2026-09-29)
+
+The following initial status was written before original job 972, fresh
+destination review and separate code acceptance. It is historical, not current
+build guidance or evidence; the commands and pin history remain applicable.
+
+This sole-I10-child diagonal candidate is **not built or audited**. Its parent
+`fe7a86c8ab5484ea60d4baaf0e5deae7cf12986e` (tree
+`8f6957f508f70e9042704eb2d1e9f5c6921feb99`) is accepted, integrated
+exponent release-preparation, with reviewed and verified official private P10
+`34c5772fb8f00ca6012c0683091a0f93116ea618` already published. Existing
+exponent I10 evidence and the diagonal donor's focused 26-package checks do
+not certify this changed diagonal graph. Its own checks and review are next.
+
+## Dated pre-P10 exponent build snapshot (2026-09-29)
+
+The complete I10 guidance follows unchanged. Its 147-Lean count and
+exponent-release-pending statements describe the pre-P10 exponent graph,
+not the accepted 151-Lean diagonal graph or current publication state.
+
 # Native unitriangular exponent transfer: build guidance (2026-09-29)
 
 The parent I9 `771a5ab485be5aaa0f5f2c553f8b7b2cc3766605` has 168

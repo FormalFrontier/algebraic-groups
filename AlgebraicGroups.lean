@@ -47,6 +47,7 @@ public import AlgebraicGroups.GroupScheme.FiniteTypePoints
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLine
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLineBaseChange
 public import AlgebraicGroups.GroupScheme.GeneralLinear
+public import AlgebraicGroups.GroupScheme.Diagonal
 public import AlgebraicGroups.GroupScheme.Unitriangular
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
 public import AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration

@@ -28,6 +28,7 @@ roots = [
   "AlgebraicGroupsTest.ArtinSchreierTwistedLine",
   "AlgebraicGroupsTest.FiniteConstantPoints",
   "AlgebraicGroupsTest.GeneralLinear",
+  "AlgebraicGroupsTest.Diagonal",
   "AlgebraicGroupsTest.GeneralLinearDeterminant",
   "AlgebraicGroupsTest.GeneralLinearDeterminantProduct",
   "AlgebraicGroupsTest.GeneralLinearDeterminantConjugation",
