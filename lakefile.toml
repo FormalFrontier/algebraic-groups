@@ -38,6 +38,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.LocalizedCoordinateQuotient",
   "AlgebraicGroupsTest.Algebra.FinitePolynomialLocalizationDimension",
   "AlgebraicGroupsTest.Algebra.UnitriangularBaseChange",
+  "AlgebraicGroupsTest.Algebra.UnitriangularBaseChangeCoherence",
   "AlgebraicGroupsTest.GroupScheme.DiagonalDimension",
   "AlgebraicGroupsTest.GeneralLinearDeterminant",
   "AlgebraicGroupsTest.GeneralLinearDeterminantProduct",

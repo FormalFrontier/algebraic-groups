@@ -15,6 +15,7 @@ public import AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal
 public import AlgebraicGroups.Algebra.SpecialLinearCoordinateRing
 public import AlgebraicGroups.Algebra.UnitriangularCoordinateRing
 public import AlgebraicGroups.Algebra.UnitriangularBaseChange
+public import AlgebraicGroups.Algebra.UnitriangularBaseChangeCoherence
 public import AlgebraicGroups.Algebra.MonoidAlgebraPrimitive
 public import AlgebraicGroups.Category.Extensive
 public import AlgebraicGroups.Category.EquivalenceRelation

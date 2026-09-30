@@ -8,6 +8,10 @@
   to its quotient over `S`, including the zero ring and empty indices. Its
   presentation, coefficient and all-entry laws are in the
   [base-change guide](AlgebraicGroups/Algebra/UnitriangularBaseChange/README.md).
+- **Unitriangular base-change coherence.** The actual quotient comparison
+  agrees with the tensor unit along the identity and with tensor cancellation
+  along a commutative scalar tower, as equalities of algebra equivalences.
+  See the [coherence guide](AlgebraicGroups/Algebra/UnitriangularBaseChangeCoherence/README.md).
 - **Finite triangular geometry and native dimension.** Over any commutative
   ring, the native multiplicative, finite diagonal and finite upper-triangular
   schemes are smooth with geometrically integral *fibers* over `Spec K`; their

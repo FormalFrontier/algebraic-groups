@@ -3,6 +3,13 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    The actual unitriangular coordinate-algebra comparison now has identity
+    and scalar-tower coherence laws as equalities of algebra equivalences over
+    arbitrary commutative rings and finite linearly ordered indices. This
+    contribution's review, computation, maintainer acceptance, integration
+    and official publication are separate revision-bound decisions; this
+    description alone does not certify those decisions or source coverage.
+    The complete preceding description follows as dated 2026-09-30 history:
     The native unitriangular coordinate algebra commutes with extension of
     arbitrary commutative base rings for same-universe finite linearly ordered
     indices. Its S-algebra equivalence respects the polynomial presentation,
@@ -316,6 +323,13 @@ automation:
 
 status:
   scope: >-
+    The identity and scalar-tower coherence equations concern the actual
+    determinant-localized unitriangular coordinate quotient over arbitrary
+    commutative rings R, S, T, with all three algebra structures and
+    IsScalarTower R S T for the tower, and same-universe finite linearly
+    ordered indices. They add no flatness, injectivity, nontriviality or
+    nonemptiness, nor Hopf, scheme, point, general naturality or source coverage.
+    The complete previous scope follows as dated 2026-09-30 history:
     The new coordinate-algebra equivalence uses same-universe commutative
     rings R, S with an R-algebra structure on S and finite linearly ordered
     indices. It requires no flatness, injectivity, nontriviality or nonempty
@@ -821,6 +835,10 @@ status:
       file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
     - declaration: UnitriangularCoordinateRing.baseChange_symm_algebraMap
       file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_self
+      file: AlgebraicGroups/Algebra/UnitriangularBaseChangeCoherence.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_tower
+      file: AlgebraicGroups/Algebra/UnitriangularBaseChangeCoherence.lean
     - declaration: UnitriangularCoordinateRing.ideal_isHopfIdeal
       file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
     - declaration: UnitriangularCoordinateRing.coordinatePolynomialEquiv
@@ -1240,6 +1258,13 @@ status:
 
 review:
   status: >-
+    The coherence contribution requires independent mathematical, API and
+    provenance review plus applicable complete build and transitive
+    standard-axiom evidence, including private declarations. Donor evidence
+    does not automatically certify the destination. Maintainer acceptance,
+    integration and verified official publication remain separate
+    revision-bound decisions recorded with their exact evidence.
+    The complete preceding status follows as dated 2026-09-30 history:
     Mathematical/API/provenance review, complete build and transitive
     standard-axiom checks, maintainer acceptance, integration and publication
     are separate revision-bound decisions recorded with their exact evidence.
@@ -1800,6 +1825,11 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  The two coherence proofs and six client examples retain the authorship of
+  the original Worker B incubator contribution; this Worker B destination
+  preparation transfers them without new mathematical authorship or review.
+  Mathlib's tensor and scalar-extension APIs retain their own contributor
+  credit. Complete prior acknowledgements follow unchanged:
   Lattice prepared the publication-stable metadata prefixes on 2026-09-30.
   This is documentary maintenance, not additional mathematical authorship or
   independent review. All preceding acknowledgements follow unchanged as

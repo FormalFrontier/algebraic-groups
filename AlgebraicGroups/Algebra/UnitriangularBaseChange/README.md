@@ -22,8 +22,10 @@ polynomial representatives. `baseChange_tmul_one` and
 and lower entries. No flatness, injectivity, nontriviality or nonempty-index
 assumption is needed.
 
-This is an algebra comparison, not Hopf or scheme base change, tower coherence,
-geometry or a dimension statement. The [producer](../UnitriangularBaseChange.lean)
+This module alone proves an algebra comparison, not Hopf or scheme base change,
+geometry or a dimension statement. Identity and scalar-tower coherence for this
+comparison are in the separate [coherence module](../UnitriangularBaseChangeCoherence/README.md).
+The [producer](../UnitriangularBaseChange.lean)
 and [ordinary-import client](../../../AlgebraicGroupsTest/Algebra/UnitriangularBaseChange.lean)
 include `Fin 0`, `Fin 1`, lower entries and `ZMod 1` cases.
 
