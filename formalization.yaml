@@ -4,6 +4,18 @@ project:
   name: algebraic-groups
   description: >-
     Dated 2026-09-30 static preparation adds the native unitriangular
+    group-scheme identity and scalar-tower coherence APIs, with an actual
+    pulled-group Fin 2 inverse-coordinate client. Original proofs/client are
+    by worker-b Task hive-request-060cf9c4f55345280f96724efb23b870529b5dd3
+    (UID a59545aa-87cc-40a0-b35e-c980d68c912a); official-import adaptation
+    by worker-b Task hive-request-3e98325c49b66caef94ea71d0ab8e154a9a23c51
+    (UID c6a480de-e7b4-44f8-8106-17e6d759ecc7); destination preparation
+    by worker-b Task hive-request-83e761635ef9fb7b8563c64cbaa53c61a6eced8b
+    (UID 51aa9bf0-39a7-45b6-9dbd-6cf8bdf19217). The donor remains
+    unaccepted, and this transfer is not a destination computation, review,
+    acceptance, release or source-coverage decision. The previous description
+    follows unchanged as dated predecessor history:
+    Dated 2026-09-30 static preparation adds the native unitriangular
     group-object pullback iso, its forward-map/base-projection readbacks and
     an ordinary-import actual pulled-group Fin 3 product client. This is an
     unaccepted destination transfer by worker-b Task
@@ -1312,9 +1324,28 @@ status:
       file: AlgebraicGroups/GroupScheme/UnitriangularBaseChange.lean
     - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeIso_hom_over
       file: AlgebraicGroups/GroupScheme/UnitriangularBaseChange.lean
+    - declaration: AlgebraicGeometry.unitriangularBaseMap
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
+    - declaration: AlgebraicGeometry.unitriangularBaseMap_comp
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
+    - declaration: AlgebraicGeometry.unitriangularBaseMap_self
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeTowerIso
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeSelfIso
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeIso_self
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeIso_tower
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
 
 review:
   status: >-
+    Dated 2026-09-30 identity/tower transfer is static. The original donor
+    is unaccepted; no destination build, complete transitive private-inclusive
+    standard-three audit, fresh independent mathematical/API/provenance review,
+    acceptance, integration or release is established by this preparation.
+    The earlier review status follows unchanged as dated history:
     Dated 2026-09-30 scheme-base-change transfer is static, not an independent
     affected destination review or native both-root/private-generated-inclusive
     transitive standard-three check on this unchanged 13-package/3-direct graph.

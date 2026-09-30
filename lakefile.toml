@@ -41,6 +41,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.UnitriangularBaseChangeCoherence",
   "AlgebraicGroupsTest.Algebra.UnitriangularHopfBaseChange",
   "AlgebraicGroupsTest.GroupScheme.UnitriangularBaseChange",
+  "AlgebraicGroupsTest.GroupScheme.UnitriangularBaseChangeCoherence",
   "AlgebraicGroupsTest.GroupScheme.DiagonalDimension",
   "AlgebraicGroupsTest.GeneralLinearDeterminant",
   "AlgebraicGroupsTest.GeneralLinearDeterminantProduct",

@@ -2,6 +2,19 @@
 
 ## Headline results
 
+- **Unitriangular group-scheme identity and tower coherence.** The native
+  one-step base-change map agrees with the canonical pullback identity unit
+  and direct-to-iterated scalar-tower compositor. An ordinary-import `Fin 2`
+  client checks the inverse coordinate through both routes. See the
+  [standalone group-scheme coherence guide](docs/UnitriangularSchemeBaseChangeCoherence.md).
+  This 2026-09-30 static transfer prepares an unaccepted donor, not a
+  destination build, review, acceptance, release or source-coverage decision.
+  Original proofs/client: worker-b Task `hive-request-060cf9c4f55345280f96724efb23b870529b5dd3`
+  (UID `a59545aa-87cc-40a0-b35e-c980d68c912a`); official-import adaptation:
+  worker-b Task `hive-request-3e98325c49b66caef94ea71d0ab8e154a9a23c51`
+  (UID `c6a480de-e7b4-44f8-8106-17e6d759ecc7`); destination preparation:
+  worker-b Task `hive-request-83e761635ef9fb7b8563c64cbaa53c61a6eced8b`
+  (UID `51aa9bf0-39a7-45b6-9dbd-6cf8bdf19217`). Prior credits remain below.
 - **Native unitriangular group-scheme base change.** Over arbitrary same-universe
   commutative rings and finite linearly ordered indices, the actual pulled-back
   unitriangular group object is isomorphic to the group scheme over the new

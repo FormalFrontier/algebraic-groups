@@ -60,6 +60,7 @@ public import AlgebraicGroups.GroupScheme.DiagonalProduct
 public import AlgebraicGroups.GroupScheme.Unitriangular
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
 public import AlgebraicGroups.GroupScheme.UnitriangularBaseChange
+public import AlgebraicGroups.GroupScheme.UnitriangularBaseChangeCoherence
 public import AlgebraicGroups.GroupTheory.UpperTriangular
 public import AlgebraicGroups.GroupScheme.UpperTriangular
 public import AlgebraicGroups.GroupScheme.UpperTriangularDimension
