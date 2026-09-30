@@ -3,6 +3,18 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    Dated 2026-09-30 static preparation adds the native unitriangular
+    group-object pullback iso, its forward-map/base-projection readbacks and
+    an ordinary-import actual pulled-group Fin 3 product client. This is an
+    unaccepted destination transfer by worker-b Task
+    hive-request-26588c9f7acea2845592c20813ff60f338e95b0f (UID
+    ffd35190-20bc-44bb-82ec-489771fac380); original proof/client author
+    worker-b Task hive-request-c40cd5bb6871cfc2115117cb21f9d78a5aee869d
+    (UID 28adbb76-eddd-457f-afde-a58666e8d21f) retains mathematical credit.
+    The existing AG Hopf and mathlib contributors keep their distinct rights
+    and credit. This is not a new destination native check, review, acceptance,
+    release or source decision. Previous project description follows unchanged
+    as dated predecessor history:
     Canonical base change for the determinant-localized unitriangular Hopf
     quotient preserves the independently defined tensor and quotient counits,
     coproducts and antipodes, yielding a bialgebra equivalence over arbitrary
@@ -330,6 +342,15 @@ automation:
 
 status:
   scope: >-
+    Dated 2026-09-30 prospective transfer compares the actual native pullback
+    group object over Spec S with the unitriangular group scheme over S for
+    arbitrary same-universe commutative rings R, S, Algebra R S and finite
+    linearly ordered indices. The forward scheme map uses Spec of the inverse
+    bialgebra comparison; the base projection and actual Fin 3 native-group
+    product cross term are explicit. No all-morphism naturality, extra ring
+    hypotheses, source correspondence or coverage is claimed. The prior Hopf
+    scope follows unchanged as dated history, including its earlier exclusion
+    of scheme base change at that predecessor revision:
     The unitriangular Hopf comparison uses the actual determinant-localized
     quotient and its canonical tensor-product and quotient Hopf structures.
     For same-universe commutative rings R and S with Algebra R S and finite
@@ -1285,9 +1306,21 @@ status:
       file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
     - declaration: UnitriangularCoordinateRing.baseChange_antipode
       file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeIso
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChange.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeIso_hom_left
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChange.lean
+    - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeIso_hom_over
+      file: AlgebraicGroups/GroupScheme/UnitriangularBaseChange.lean
 
 review:
   status: >-
+    Dated 2026-09-30 scheme-base-change transfer is static, not an independent
+    affected destination review or native both-root/private-generated-inclusive
+    transitive standard-three check on this unchanged 13-package/3-direct graph.
+    The donor is unaccepted; Lattice owns reconciliation, review, computation,
+    acceptance, protected integration and subsequent publication separately.
+    Earlier Hopf destination-review wording follows unchanged as dated history:
     The 2026-09-30 Hopf destination preparation is static, not an independent
     destination review or a native build/complete private-generated-inclusive
     transitive standard-axiom check on this graph. Owner acceptance, protected

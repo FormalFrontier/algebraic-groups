@@ -2,6 +2,20 @@
 
 ## Headline results
 
+- **Native unitriangular group-scheme base change.** Over arbitrary same-universe
+  commutative rings and finite linearly ordered indices, the actual pulled-back
+  unitriangular group object is isomorphic to the group scheme over the new
+  base. The forward map and base projection have readbacks; an ordinary-import
+  `Fin 3` client retains the group-product cross term. See the
+  [standalone scheme base-change guide](docs/UnitriangularSchemeBaseChange.md).
+  This 2026-09-30 transfer from an unaccepted contribution is **static
+  preparation**, not a destination build, independent review, acceptance,
+  integration, release or source-coverage decision. Original proofs/client:
+  worker-b Task `hive-request-c40cd5bb6871cfc2115117cb21f9d78a5aee869d`
+  (UID `28adbb76-eddd-457f-afde-a58666e8d21f`); destination preparation:
+  worker-b Task `hive-request-26588c9f7acea2845592c20813ff60f338e95b0f`
+  (UID `ffd35190-20bc-44bb-82ec-489771fac380`). Existing AG Hopf and mathlib
+  contributors retain their prior credit. Prior results below are unchanged.
 - **Unitriangular coordinate-algebra base change.** For arbitrary commutative
   rings `R`, `S` with `[Algebra R S]` and finite linearly ordered `ι`, scalar
   extension of the actual unitriangular GL quotient is `S`-algebra equivalent
