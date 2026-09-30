@@ -3,6 +3,13 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    Canonical base change for the determinant-localized unitriangular Hopf
+    quotient preserves the independently defined tensor and quotient counits,
+    coproducts and antipodes, yielding a bialgebra equivalence over arbitrary
+    same-universe commutative rings and finite linearly ordered indices. This
+    2026-09-30 destination preparation is not its independent destination
+    review, native proof check, acceptance, integration or release. The
+    complete preceding description follows unchanged as dated history:
     The actual unitriangular coordinate-algebra comparison now has identity
     and scalar-tower coherence laws as equalities of algebra equivalences over
     arbitrary commutative rings and finite linearly ordered indices. This
@@ -323,6 +330,17 @@ automation:
 
 status:
   scope: >-
+    The unitriangular Hopf comparison uses the actual determinant-localized
+    quotient and its canonical tensor-product and quotient Hopf structures.
+    For same-universe commutative rings R and S with Algebra R S and finite
+    linearly ordered indices, the counit/comultiplication diagrams are
+    equalities of algebra homomorphisms; the bialgebra equivalence has the
+    existing baseChange map and its antipodes intertwine. The quotient-entry
+    coproduct formula works for any commutative ring and all matrix entries.
+    No flatness, injectivity, nontriviality, nonemptiness, transported
+    structure, HopfEquiv bundle, represented-point or scheme base change,
+    general naturality or source coverage is claimed. The complete preceding
+    scope follows unchanged as dated 2026-09-30 history:
     The identity and scalar-tower coherence equations concern the actual
     determinant-localized unitriangular coordinate quotient over arbitrary
     commutative rings R, S, T, with all three algebra structures and
@@ -1255,9 +1273,26 @@ status:
     - declaration: AlgebraicGeometry.upperTriangularGroupUnderlyingScheme_topologicalKrullDim
       file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
     - file: AlgebraicGroupsTest/GroupScheme/UpperTriangularDimension.lean
+    - declaration: UnitriangularCoordinateRing.comul_entry
+      file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_counit
+      file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_comul
+      file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChangeBialgEquiv
+      file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChangeBialgEquiv_apply
+      file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_antipode
+      file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
 
 review:
   status: >-
+    The 2026-09-30 Hopf destination preparation is static, not an independent
+    destination review or a native build/complete private-generated-inclusive
+    transitive standard-axiom check on this graph. Owner acceptance, protected
+    integration and a reviewed verified release remain separate decisions.
+    The complete preceding review status follows unchanged as dated history:
     The coherence contribution requires independent mathematical, API and
     provenance review plus applicable complete build and transitive
     standard-axiom evidence, including private declarations. Donor evidence
@@ -1825,6 +1860,14 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  The six new Hopf APIs and client preserve the original worker-b author
+  Task hive-request-78c2a643671d6c1e0e70abb05d4c3ec9060404a9
+  (UID 3a4662f7-43d7-46c9-ac4c-7699d613350e); worker-b destination
+  preparation Task hive-request-03a571a8b8bdba2d4590403388371e4eaf44874c
+  (UID dc004c13-f356-4a00-806e-317e5a3e34b3) adds no proof authorship.
+  Formal Frontier Agents, Lattice and Mathlib contributors retain their
+  previous respective credit. The complete preceding acknowledgements
+  follow unchanged as dated 2026-09-30 history:
   The two coherence proofs and six client examples retain the authorship of
   the original Worker B incubator contribution; this Worker B destination
   preparation transfers them without new mathematical authorship or review.

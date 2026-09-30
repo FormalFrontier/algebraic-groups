@@ -8,6 +8,13 @@
   to its quotient over `S`, including the zero ring and empty indices. Its
   presentation, coefficient and all-entry laws are in the
   [base-change guide](AlgebraicGroups/Algebra/UnitriangularBaseChange/README.md).
+- **Canonical unitriangular Hopf base change.** Over the same arbitrary
+  commutative base rings and finite linearly ordered indices, the algebra
+  comparison preserves the counit and coproduct of the independently given
+  tensor-product and quotient Hopf structures, hence gives a bialgebra
+  equivalence and intertwines their antipodes. The all-entry coproduct
+  formula and nonprimitive `Fin 3` client are in the
+  [Hopf base-change guide](AlgebraicGroups/Algebra/UnitriangularHopfBaseChange/README.md).
 - **Unitriangular base-change coherence.** The actual quotient comparison
   agrees with the tensor unit along the identity and with tensor cancellation
   along a commutative scalar tower, as equalities of algebra equivalences.
