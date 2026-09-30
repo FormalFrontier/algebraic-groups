@@ -72,4 +72,7 @@ roots = [
   "AlgebraicGroupsTest.UnitriangularLowerCentralSeries",
   "AlgebraicGroupsTest.UnitriangularDerivedSeries",
   "AlgebraicGroupsTest.UnitriangularExponent",
+  "AlgebraicGroupsTest.GroupScheme.FiniteTriangularGeometry",
+  "AlgebraicGroupsTest.LinearAlgebra.Matrix.UpperTriangularIndices",
+  "AlgebraicGroupsTest.GroupScheme.UpperTriangularDimension",
 ]

@@ -46,6 +46,7 @@ public import AlgebraicGroups.GroupScheme.CosetQuotient
 public import AlgebraicGroups.GroupScheme.Dimension
 public import AlgebraicGroups.GroupScheme.FiniteConstant
 public import AlgebraicGroups.GroupScheme.FiniteConstantPoints
+public import AlgebraicGroups.GroupScheme.FiniteTriangularGeometry
 public import AlgebraicGroups.GroupScheme.FiniteTypePoints
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLine
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLineBaseChange
@@ -57,8 +58,10 @@ public import AlgebraicGroups.GroupScheme.Unitriangular
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
 public import AlgebraicGroups.GroupTheory.UpperTriangular
 public import AlgebraicGroups.GroupScheme.UpperTriangular
+public import AlgebraicGroups.GroupScheme.UpperTriangularDimension
 public import AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel
 public import AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct
+public import AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices
 public import AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration
 public import AlgebraicGroups.GroupTheory.UnitriangularSuperdiagonalQuotients
 public import AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass

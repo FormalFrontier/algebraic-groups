@@ -3,6 +3,31 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    Reusable finite triangular geometry, index equivalences and native
+    coordinate-ring dimension. The structural morphisms of G_m, finite
+    diagonal and finite upper-triangular schemes are smooth with geometrically
+    integral fibers over any commutative ring; integral total spaces require
+    a domain base. Weakly upper pairs split into diagonal and strict pairs,
+    with finite cardinality card of the index type plus its choose-two count.
+    The native upper-triangular defining ideal equals the eliminated-coordinate
+    ideal, giving a localized polynomial presentation and both entry laws
+    over every commutative ring. The identity point gives native ring and
+    affine Spec dimension over every field, including finite fields and empty
+    indices. The complete preceding description follows as dated 2026-09-30
+    preparation history, not a current review, acceptance or publication label:
+    Prospective native finite triangular geometry and dimension addition:
+    smooth structural morphisms with geometrically integral fibers over any
+    commutative ring for G_m, finite diagonal and finite upper-triangular
+    underlying schemes; integral total spaces require a domain base.
+    Independently importable diagonal/strict/retained index equivalences and
+    finite card ι plus choose-two counts. The defining ideal of the native
+    upper-triangular quotient equals the eliminated-coordinate ideal. The
+    quotient has a localized polynomial presentation with forward and inverse entry laws over any
+    commutative ring, including the zero ring and empty indices. Its identity
+    point supplies native ring and affine Spec dimensions card ι plus choose
+    two over every field. This H-child addition is unreviewed and unaccepted;
+    it is not yet integrated or published. The preceding current description
+    follows as dated 2026-09-30 history before this prospective addition:
     Reusable polynomial coordinate elimination after localization over any
     commutative ring, supplied-point finite polynomial localization dimension
     over any field, and the native finite diagonal Hopf quotient presentation
@@ -277,6 +302,35 @@ automation:
 
 status:
   scope: >-
+    Relative smoothness and geometric integrality concern the actual structure
+    morphisms; total-scheme integrality additionally requires a domain base.
+    The triangular splitting used for geometry is an underlying-scheme
+    isomorphism, not a direct-product group law. Index equivalences require
+    only a linear order; cardinality additionally requires finite indices.
+    The native localized quotient presentation and forward/inverse entry laws
+    hold over arbitrary commutative rings, including zero rings and empty
+    indices. Native upper-triangular ring and affine Spec dimension equals
+    card of the finite ordered index type plus its choose-two count over any
+    field. No identity-stalk, generic product-dimension or arbitrary-base
+    dimension formula, or source-coverage decision, is asserted. The complete
+    preceding scope is retained as dated 2026-09-30 preparation history;
+    its donor and destination lifecycle labels refer to those earlier inputs:
+    Prospective H-child finite triangular contribution: relative smoothness and
+    geometrically integral fibers of native G_m, diagonal and upper-triangular
+    structural maps over any CommRing K; absolute integral total schemes only
+    over an IsDomain K. Finite ordered indices may be empty. Independently
+    importable upper-triangular index equivalences need only LinearOrder, with
+    Fintype additionally required for cardinality. The native quotient-ideal
+    equality, localized coordinate equivalence and both entry laws hold over
+    any CommRing K, including zero rings. The native ring and Spec dimension
+    formula requires Field K, including finite fields and empty indices.
+    No identity-stalk or generic product-dimension statement follows. S is
+    frozen but unaccepted; this destination candidate has not received its
+    own independent review, full configured native check, maintainer
+    acceptance, integration or official publication. Source coverage is
+    separately decided. The complete preceding scope follows as dated
+    2026-09-30 history; its then-current exclusion of native upper-triangular
+    dimension does not describe this prospective child:
     The localized-coordinate quotient equivalence is valid over arbitrary
     commutative rings and variable sets. The finite polynomial localization
     dimension theorem requires an explicitly supplied nonvanishing field-valued
@@ -1086,9 +1140,84 @@ status:
       file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
     - declaration: AlgebraicGeometry.upperTriangularUFirstIso_inv_snd_point
       file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
+    - declaration: AlgebraicGeometry.multiplicativeGroupUnderlyingScheme_smooth
+      file: AlgebraicGroups/GroupScheme/FiniteTriangularGeometry.lean
+    - declaration: AlgebraicGeometry.multiplicativeGroupUnderlyingScheme_geometricallyIntegral
+      file: AlgebraicGroups/GroupScheme/FiniteTriangularGeometry.lean
+    - declaration: AlgebraicGeometry.multiplicativeGroupUnderlyingScheme_isIntegral
+      file: AlgebraicGroups/GroupScheme/FiniteTriangularGeometry.lean
+    - declaration: AlgebraicGeometry.diagonalGroupUnderlyingScheme_smooth
+      file: AlgebraicGroups/GroupScheme/FiniteTriangularGeometry.lean
+    - declaration: AlgebraicGeometry.diagonalGroupUnderlyingScheme_geometricallyIntegral
+      file: AlgebraicGroups/GroupScheme/FiniteTriangularGeometry.lean
+    - declaration: AlgebraicGeometry.diagonalGroupUnderlyingScheme_isIntegral
+      file: AlgebraicGroups/GroupScheme/FiniteTriangularGeometry.lean
+    - declaration: AlgebraicGeometry.upperTriangularGroupUnderlyingScheme_smooth
+      file: AlgebraicGroups/GroupScheme/FiniteTriangularGeometry.lean
+    - declaration: AlgebraicGeometry.upperTriangularGroupUnderlyingScheme_geometricallyIntegral
+      file: AlgebraicGroups/GroupScheme/FiniteTriangularGeometry.lean
+    - declaration: AlgebraicGeometry.upperTriangularGroupUnderlyingScheme_isIntegral
+      file: AlgebraicGroups/GroupScheme/FiniteTriangularGeometry.lean
+    - declaration: Matrix.upperTriangularIndicesEquiv
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularIndicesEquiv_diagonal
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularIndicesEquiv_strict
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularIndicesEquiv_symm_inl
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularIndicesEquiv_symm_inr
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularIndicesEquiv_coordinates
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularRetainedEquiv
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularRetainedEquiv_val
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularRetainedEquiv_symm_val
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularRetainedIndicesEquiv
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularRetainedIndicesEquiv_symm_inl_val
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.upperTriangularRetainedIndicesEquiv_symm_inr_val
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.card_upperTriangularIndices
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: Matrix.card_upperTriangularRetainedIndices
+      file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - file: AlgebraicGroupsTest/LinearAlgebra/Matrix/UpperTriangularIndices.lean
+    - declaration: UpperTriangularCoordinateRing.retainedIndices
+      file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
+    - declaration: UpperTriangularCoordinateRing.ideal_eq_localizedCoordinateIdeal
+      file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
+    - declaration: UpperTriangularCoordinateRing.localizedPolynomialEquiv
+      file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
+    - declaration: UpperTriangularCoordinateRing.localizedPolynomialEquiv_entry
+      file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
+    - declaration: UpperTriangularCoordinateRing.localizedPolynomialEquiv_symm_entry
+      file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
+    - declaration: UpperTriangularCoordinateRing.erasedDeterminant_eval_one
+      file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
+    - declaration: AlgebraicGeometry.upperTriangularCoordinateRing_ringKrullDim
+      file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
+    - declaration: AlgebraicGeometry.upperTriangularGroupUnderlyingScheme_topologicalKrullDim
+      file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
+    - file: AlgebraicGroupsTest/GroupScheme/UpperTriangularDimension.lean
 
 review:
   status: >-
+    Independent mathematical/API/provenance review, computational checks,
+    maintainer acceptance, protected integration and official publication
+    remain separate revision-bound decisions. This field is not a review
+    vote or evidence of release. The complete preceding review status follows
+    as dated 2026-09-30 preparation history; its prospective and unchecked
+    labels describe those earlier snapshots:
+    The three new geometry/indices/native-dimension producers and ordinary
+    clients on this H-child are prospective. Frozen S donor static review
+    and native work do not establish destination review, build, transitive
+    axiom integrity, acceptance or release. The complete preceding review
+    status follows as dated 2026-09-30 history for the prior destination:
     Independent mathematical/API/provenance review, computational checks,
     maintainer acceptance, integration and release publication are distinct
     revision-bound decisions recorded with their exact artifacts. This field
@@ -1280,6 +1409,14 @@ review:
     and publication pending. Previous 2026-09-28 pre-check status (retained
     verbatim): K published at P7; L destination union unbuilt, unaudited, unreviewed and unaccepted
   notes: >-
+    Fresh worker-a Task hive-request-e882dc82b1c4595d825f87c390eaf3eb80d74d0e,
+    UID c0bfd841-cf28-40e4-9618-18672f0525d2, independently approved the
+    static mathematics, API and provenance of destination code
+    b142cf058315fe1d9276099c1b94167fb3359bd1. The reviewer is distinct from
+    transfer author worker-b and Lattice's defining-ideal prose correction.
+    That verdict does not supply full native checks, review this later
+    metadata preparation, or decide acceptance or official publication.
+    The complete preceding review notes follow unchanged as dated history:
     Native-diagonal destination review and its affected provenance/wording
     correction have separate exact-candidate records. The mathematical donor,
     transfer author, fresh reviewers and accepting maintainer have distinct
@@ -1620,6 +1757,15 @@ review:
     pending; no incubator conversion or source-coverage decision follows yet.
 
 acknowledgements: >-
+  Lattice prepared the publication-stable metadata prefixes on 2026-09-30.
+  This is documentary maintenance, not additional mathematical authorship or
+  independent review. All preceding acknowledgements follow unchanged as
+  dated contribution history, preserving the original authors and reviewers:
+  Lattice originated the stand-alone triangular indexing equivalences;
+  Formal Frontier agents developed the relative finite triangular geometry
+  and native upper-triangular dimension specialization. This prospective
+  transport preserves their credit without claiming new proof authorship,
+  review or publication. The complete preceding acknowledgements follow:
   Lattice prepared the two collective Apache/Authors headers and precise
   finite-field supplied-point documentation, then these publication-stable
   metadata prefixes on 2026-09-29. This is documentary maintenance, not new

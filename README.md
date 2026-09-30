@@ -2,6 +2,23 @@
 
 ## Headline results
 
+- **Finite triangular geometry and native dimension.** Over any commutative
+  ring, the native multiplicative, finite diagonal and finite upper-triangular
+  schemes are smooth with geometrically integral *fibers* over `Spec K`; their
+  total underlying schemes are integral when `K` is a domain. Empty index
+  types and zero rings are allowed for the relative assertions. Independently
+  importable diagonal/strict/retained-index equivalences split weakly ordered
+  pairs without finiteness and count finite pairs as `card ι + (card ι).choose 2`.
+  For the **actual native** upper-triangular GL quotient, both ideal inclusions
+  and the localized coordinate equivalence identify native retained entries
+  and polynomial variables in both directions over *any* commutative ring.
+  Its identity-determinant point gives native ring and affine `Spec` dimension
+  `card ι + (card ι).choose 2` over every field, including finite fields and
+  empty indices; no arbitrary-base or general product-dimension formula follows.
+  See the [geometry guide](AlgebraicGroups/GroupScheme/FiniteTriangularGeometry/README.md),
+  [indices guide](AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices/README.md)
+  and [native dimension guide](AlgebraicGroups/GroupScheme/UpperTriangularDimension/README.md),
+  each linking its focused producer and ordinary-import client.
 - **Coordinate elimination and finite diagonal dimension.** For any commutative
   ring, `MvPolynomial.localizedCoordinateQuotientEquiv` identifies a polynomial
   localization modulo eliminated coordinates with localization at the erased
@@ -53,9 +70,10 @@
   [common-zero](AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md)
   interfaces remain available under their documented hypotheses.
 
-These results are over the fixed base `Spec K`; they assert neither a global
-transported group-object instance, arbitrary-base change, normality of `U` in
-`GL`, geometry beyond the stated constructions, nor source-specific coverage.
+The represented-product assertions are over the fixed base `Spec K`; they assert
+neither a global transported group-object instance, arbitrary-base change,
+normality of `U` in `GL`, nor source-specific coverage. The finite triangular
+geometry and dimension above are separately scoped results.
 
 ## Use and build
 
