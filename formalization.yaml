@@ -3,6 +3,20 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
+    The native unitriangular coordinate algebra commutes with extension of
+    arbitrary commutative base rings for same-universe finite linearly ordered
+    indices. Its S-algebra equivalence respects the polynomial presentation,
+    coefficients and every native quotient entry in both directions, including
+    empty indices and zero rings. No Hopf, scheme or coherence result is asserted.
+    The complete preceding description follows unchanged as dated 2026-09-30
+    preparation history; its pending labels are historical, not current lifecycle
+    claims:
+    Prospective unitriangular coordinate-algebra scalar-extension equivalence
+    over arbitrary commutative base rings and finite linearly ordered indices,
+    with presentation, coefficient and all-entry laws. This destination
+    transfer awaits affected checks, independent review and maintainer
+    acceptance; it asserts neither Hopf/scheme base change nor source coverage.
+    The preceding accepted-base description follows unchanged:
     Reusable finite triangular geometry, index equivalences and native
     coordinate-ring dimension. The structural morphisms of G_m, finite
     diagonal and finite upper-triangular schemes are smooth with geometrically
@@ -302,6 +316,11 @@ automation:
 
 status:
   scope: >-
+    The new coordinate-algebra equivalence uses same-universe commutative
+    rings R, S with an R-algebra structure on S and finite linearly ordered
+    indices. It requires no flatness, injectivity, nontriviality or nonempty
+    index type, and asserts no Hopf, scheme, coherence, geometry, dimension or
+    source-coverage result. The preceding scope follows unchanged:
     Relative smoothness and geometric integrality concern the actual structure
     morphisms; total-scheme integrality additionally requires a domain base.
     The triangular splitting used for geometry is an underlying-scheme
@@ -788,6 +807,20 @@ status:
       file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
     - declaration: AlgebraicGeometry.diagonalGroupUnderlyingScheme_topologicalKrullDim
       file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
+    - declaration: UnitriangularCoordinateRing.baseChange
+      file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_presentation
+      file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_tmul_freeEquiv
+      file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_tmul_one
+      file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_tmul_entry
+      file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_symm_entry
+      file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
+    - declaration: UnitriangularCoordinateRing.baseChange_symm_algebraMap
+      file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
     - declaration: UnitriangularCoordinateRing.ideal_isHopfIdeal
       file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
     - declaration: UnitriangularCoordinateRing.coordinatePolynomialEquiv
@@ -1207,6 +1240,16 @@ status:
 
 review:
   status: >-
+    Mathematical/API/provenance review, complete build and transitive
+    standard-axiom checks, maintainer acceptance, integration and publication
+    are separate revision-bound decisions recorded with their exact evidence.
+    This metadata is not itself a review or computational certificate.
+    The complete preceding review field follows unchanged as dated 2026-09-30
+    preparation history, not a current lifecycle label:
+    The prospective base-change destination transfer has not been built,
+    axiom-audited, independently reviewed, accepted, integrated or published.
+    Donor review and predecessor checks do not verify this destination graph.
+    The preceding review field follows unchanged:
     Independent mathematical/API/provenance review, computational checks,
     maintainer acceptance, protected integration and official publication
     remain separate revision-bound decisions. This field is not a review

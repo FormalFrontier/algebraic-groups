@@ -2,6 +2,12 @@
 
 ## Headline results
 
+- **Unitriangular coordinate-algebra base change.** For arbitrary commutative
+  rings `R`, `S` with `[Algebra R S]` and finite linearly ordered `ι`, scalar
+  extension of the actual unitriangular GL quotient is `S`-algebra equivalent
+  to its quotient over `S`, including the zero ring and empty indices. Its
+  presentation, coefficient and all-entry laws are in the
+  [base-change guide](AlgebraicGroups/Algebra/UnitriangularBaseChange/README.md).
 - **Finite triangular geometry and native dimension.** Over any commutative
   ring, the native multiplicative, finite diagonal and finite upper-triangular
   schemes are smooth with geometrically integral *fibers* over `Spec K`; their
