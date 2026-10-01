@@ -62,7 +62,7 @@ scales its upper-right entry by the inverse `3`, while the row pivot scales
 it by `2`.
 
 The APIs reuse pinned mathlib and this library's determinant section, actual
-kernel, product and split-kernel constructions. Formalization Worker B authored
+kernel, product and split-kernel constructions. A Formal Frontier AI-agent contributor authored
 the original conjugation implementation and ordinary-import client. Exact origin
 and review records are maintained separately from this mathematical guide.
 
@@ -71,13 +71,11 @@ first, then run the two focused warning-fatal targets:
 
 ```sh
 lake exe cache get
-LEAN_NUM_THREADS=1 lake --wfail build AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation
-LEAN_NUM_THREADS=1 lake --wfail build AlgebraicGroupsTest.GeneralLinearDeterminantConjugation
+lake build AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation
+lake build AlgebraicGroupsTest.GeneralLinearDeterminantConjugation
 ```
 
-A focused build alone does not establish the complete destination check. The
-separately accepted 125-module destination predecessor passed the default build
-and private-inclusive standard-axiom audit (native job 530); the accepted
-130-module combined main graph passed both checks (native job 533), with fresh
-independent affected reviews. This documentation-only release candidate keeps
-those checked inputs but remains unaccepted and unpublished.
+
+For the pinned toolchain, matching mathlib cache and default-target commands,
+see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
+credit appears in [CREDITS](../../../CREDITS.md).

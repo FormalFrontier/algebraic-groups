@@ -43,28 +43,12 @@ toolchain and dependencies, first fetch the matching mathlib cache:
 
 ```sh
 lake exe cache get
-LEAN_NUM_THREADS=1 lake --wfail build AlgebraicGroups.GroupScheme.GeneralSpecialLinearGeometricIntegral
-LEAN_NUM_THREADS=1 lake --wfail build AlgebraicGroupsTest.GeneralSpecialLinearGeometricIntegral
+lake build AlgebraicGroups.GroupScheme.GeneralSpecialLinearGeometricIntegral
+lake build AlgebraicGroupsTest.GeneralSpecialLinearGeometricIntegral
 ```
 
-This original source-independent argument reuses mathlib's polynomial,
-localization, tensor and geometric-fiber APIs. The finite coordinate rings,
-true schemes and public normalization section are existing `AlgebraicGroups`
-results (original module authors: Formal Frontier Agents;
-the normalization-section contribution was by Worker A, Hive Task
-`hive-request-a5e6c90d8ec39f1e9fa69dab1ca73e6f793e8dfd`, UID
-`9d7acf51-7653-4b52-a05e-c0cd9d9599e0`).
-The unimplemented planning investigation was by Worker B, Hive Task
-`hive-request-4694e54904a86ba5cd23a09f174650df4ec77484`, UID
-`62aa584a-e574-4ca7-bf87-d5548e0cd712`. This implementation is by Worker B,
-Hive Task `hive-request-902e3e18b35d53eb4fd3b421954a339ef7741dd5`,
-UID `8c21821f-f9ac-4e4b-80b6-b1452edb4276` (2026-09-27). A distinct Worker B
-execution prepared the destination import and client-namespace transfer; it did
-not author these mathematical proofs. The original project contributions and
-this transfer are Apache-2.0 licensed. The incubator origin and original
-source-only transfer were independently reviewed. The combined 130-module
-destination graph is now accepted on main after fresh affected review and
-successful native job 533 default build and complete private-inclusive
-standard-axiom audit. The documentation-only release candidate retains those
-checked inputs but is unaccepted and unpublished. No source-coverage decision
-follows from the transfer.
+
+The argument uses mathlib polynomial, localization, tensor and geometric-fiber
+APIs and this library's previously defined finite coordinate rings and
+normalization section. Its original project contributors are credited in the
+[credits](../../../CREDITS.md). No source-coverage decision follows.

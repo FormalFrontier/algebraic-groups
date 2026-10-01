@@ -9,13 +9,6 @@ the aggregate `AlgebraicGroups` imports the group-scheme producer. See the
 [ordinary-import client](../../../AlgebraicGroupsTest/UpperTriangularScheme.lean),
 and [build guidance](../../../docs/BUILDING.md).
 
-**Accepted code (2026-09-29; own release pending).** This represented result
-and the separate native upper-triangular group are on protected main
-`8640f487fa1296f0ce34fb29fdf86f146fe6f1ba`. Original destination native
-run 1031, independent exact-H code review 4881, maintainer acceptance and
-protected main integration are complete. This documentary preparation does
-not assert final release review, acceptance or verified publication.
-
 For any finite linearly ordered index type `n`, including `Fin 0`, and any
 commutative `K`-algebra `R`, including zero and nonreduced rings, these results
 require no field, flatness, nontriviality, reducedness or injectivity premise.
@@ -68,71 +61,7 @@ semidirect splitting, diagonal projection/section, product-of-`Gₘ` scheme,
 smoothness, dimension, arbitrary-base change or source-specific coverage is
 claimed here.
 
-## Checking and credit
 
-To reproduce the accepted destination check when authorized, install the
-pinned Lean toolchain
-(`leanprover/lean4:v4.34.0-rc2`), successfully fetch the matching precompiled
-mathlib cache, and then build **both default targets** from the project root:
-
-```sh
-elan toolchain install leanprover/lean4:v4.34.0-rc2
-lake exe cache get
-LAKE_JOBS=2 lake build
-```
-
-Optional focused targets, after the same cache fetch, are
-`AlgebraicGroups.Algebra.UpperTriangularCoordinateRing`,
-`AlgebraicGroups.GroupScheme.UpperTriangular` and
-`AlgebraicGroupsTest.UpperTriangularScheme`. These remain reproduction
-instructions. Original native run 1031 on protected main
-`8640f487fa1296f0ce34fb29fdf86f146fe6f1ba` fetched the matching
-cache, successfully built both default targets (3,888 jobs) and audited all
-158 Lean modules and 4,037 actual origins transitively, including private
-and generated declarations, with only `propext`, `Classical.choice` and
-`Quot.sound`. Fresh author-distinct code review 4881 approved exact H, which
-Lattice separately accepted and integrated into protected main. This
-documentation-only preparation retains the original computational inputs,
-not its whole-shipping digest. Independent final release review, owner release
-acceptance, protected stages and verified private publication remain pending.
-The independently reviewed
-isolated donor had successful focused checks and a complete 97-origin
-private/generated-inclusive standard-three audit on a **different 26-package
-graph**. Its historical audit collector belongs to the donor's separate
-evidence child, not to its code-only commit or this shipping repository. This
-13-package destination has its own applicable original run 1031 and exact-H
-code review/acceptance, rather than relying on donor evidence.
-
-Formal Frontier Agents authored the original project proofs with AI
-assistance under human project direction. The represented quotient/scheme and
-client were authored by worker-b Task
-`hive-request-85aefe5c15f83c43ba1ac6693f00c894245c5e44` (UID
-`94c69b0a-c947-46f2-89ac-267ece213dcd`) and independently reviewed on
-the isolated donor by worker-a Task
-`hive-request-c9f8eed25bddee19290f4aa9e04eb7469cf46d42` (UID
-`849f424b-8e95-4211-8f12-46d2f852286d`). The distinct native proof author
-was worker-a Task `hive-request-25f51b74b10b8dad373582505576ba2ee692138e`
-(UID `e1fa8608-993f-4c79-92e6-2d46a0ecda49`), independently reviewed on
-its donor by worker-b Task `hive-request-48ae663a907928d79698d7d71bc33d72d954db33`
-(UID `cc2aa9a6-ab6e-47b1-96f7-2c1b1a314e27`). The earlier native-only
-destination transport was by worker-a Task
-`hive-request-4a6283117df2506e6bc05448db523ad686a78e1d` (UID
-`0f55a7c3-f8f1-4ba1-bd94-d97109e0991f`), statically reviewed by worker-b
-Task `hive-request-d557ebc3f6a4baeb31eaffe7c9eebef682c54317` (UID
-`eb3e7852-2f1a-43e3-a5af-e41af0dfcec7`). The combined transfer map was
-authored by worker-b Task `hive-request-e7a3437e4b31bd824cf5c092c4c72f5b271c5bc4`
-(UID `69768a6c-4544-489a-9efa-ae301d608e1d`). Current import/header/
-namespace-only combined destination assembly is by worker-a Task
-`hive-request-c9d5208b8cc04a1a8dab4d6946521d464abd124e` (UID
-`78af2598-68a4-40b9-b731-bf0f6bff88da`), not the original proof author
-or independent destination reviewer. Fresh exact-H reviewer was worker-b Task
-`hive-request-40fe1261db7cfb594192b5d69ac19fc5f96cc605` (UID
-`b624313e-c952-46ef-b8a9-e7a5285379a0`); this guide's documentary
-release preparation is by worker-a Task
-`hive-request-d750315d14734904a6d83067321dccf773ef91b3` (UID
-`d5aad1e2-5c4f-4a81-b7ee-7bbab31c8cae`), not original mathematical
-authorship or release approval. The root [LICENSE](../../../LICENSE)
-is Apache-2.0 for original project content; external dependencies retain
-their own credits and licenses. No copyright holder is inferred from this
-collective authorship label. Verified release/publication, source correspondence
-and source formalization are separate future decisions.
+For the pinned toolchain, matching mathlib cache and default-target commands,
+see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
+credit appears in [CREDITS](../../../CREDITS.md).

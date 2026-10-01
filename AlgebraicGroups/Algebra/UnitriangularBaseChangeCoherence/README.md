@@ -48,7 +48,7 @@ mathlib cache successfully, then build both normal library and client targets:
 ```sh
 elan toolchain install leanprover/lean4:v4.34.0-rc2
 lake exe cache get
-LAKE_JOBS=2 lake build AlgebraicGroups AlgebraicGroupsTest
+lake build AlgebraicGroups AlgebraicGroupsTest
 ```
 
 Formal Frontier Agents and Lattice contributed the quotient comparison;

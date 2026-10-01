@@ -47,7 +47,7 @@ instead presents `N ⊗ G` as `G ×_Q G` and does not supply this section-depend
 categories and do not replace this arbitrary-cartesian result. The abstract
 construction does not assume or prove determinant or smoothness; the separate
 `AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct` specializes it
-to the finite determinant. Formalization Worker B authored the original generic
+to the finite determinant. A Formal Frontier AI-agent contributor authored the original generic
 implementation; exact contribution and review records are maintained separately.
 
 ## Focused reproduction

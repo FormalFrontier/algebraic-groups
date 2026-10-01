@@ -52,12 +52,12 @@ for positive-rank SL the equation `det - 1` is nonzero (evaluate the matrix
 at zero). The conditional nonzerodivisor hypersurface theorem then computes
 each quotient dimension. The rank-zero SL proof is separate: its determinant
 is one and its defining ideal is bottom, so its coordinate ring has the same
-dimension as the field. The existing published `quotientEquiv` and
+dimension as the field. The existing `quotientEquiv` and
 `polynomialEquiv` transfer those calculations to the genuine localized GL
 and Hopf-quotient SL coordinate rings. The prime-spectrum dimension theorem
 then gives the actual underlying-scheme dimensions.
 
-## Usage and status
+## Usage
 
 ```lean
 import AlgebraicGroups.GroupScheme.GeneralSpecialLinearDimension
@@ -78,26 +78,7 @@ LEAN_NUM_THREADS=1 lake build AlgebraicGroups.GroupScheme.GeneralSpecialLinearDi
 LEAN_NUM_THREADS=1 lake build AlgebraicGroupsTest.GeneralSpecialLinearDimension
 ```
 
-The incubator origin and original source-only transfer were independently
-reviewed. The combined 130-module destination graph is now accepted on main
-after fresh affected review and successful native job 533 default build and
-complete private-inclusive standard-axiom audit. The documentation-only
-release candidate retains those checked inputs but is unaccepted and
-unpublished. Public-import client examples cover arbitrary fields, ranks
-zero/one/two and `ZMod 2`. No source-coverage decision follows.
 
-## Provenance and rights
-
-Original code and documentation by Formal Frontier Agents, Apache-2.0.
-Author: Hive Task `hive-request-020720d1eb5fc515621730cc4e303793d7178919`
-(UID `add4b4bc-9720-4317-9f70-308e77b22c36`, Forgejo worker-b).
-The earlier API investigation and proof plan were contributed by Hive Task
-`hive-request-495409ddb864bb2a4c42d577e7ee9d2b19e474d5`
-(UID `b4c67a11-087b-42ac-bfa7-55dcc856c070`). A separate Worker B
-execution prepared this destination import and client-namespace transfer without
-changing the proofs. The implementation was accepted in the incubator and now
-uses this library's existing GL/SL coordinate presentations, Lean
-`leanprover/lean4:v4.34.0-rc2` and mathlib
-`83abb3e776bdefcbc447a1e44d0debe4010039e5`.
-Underlying mathlib and existing AlgebraicGroups work retains its own
-Apache-2.0 attribution. No source-specific passage or coverage claim is made.
+For the pinned toolchain, matching mathlib cache and default-target commands,
+see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
+credit appears in [CREDITS](../../../CREDITS.md).

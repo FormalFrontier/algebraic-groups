@@ -1,43 +1,3 @@
-# Current publication and verification context (2026-09-29)
-
-Official P9 `8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827` includes the
-generation/derived results described below. Accepted development main
-`45d4c5ddfcd491f298c4c968561d2e2eccf82e06` additionally includes
-the native point-group exponent transfer, checked in original destination
-job 932 and independently reviewed; its own release is still pending.
-The 2026-09-28 context below is dated history, not a current count or
-publication status; the filtration statements themselves are unchanged.
-
-## Dated publication context (2026-09-28; historical)
-
-This central-filtration API and its successive-quotient companion are
-published in official release `38b7ebdcb38bd0d1b3c9a72e266162718f4647c2`.
-Native job 811 verified their earlier 139-module, 35-root, 12-package
-graph. The accepted sharpness transfer at
-`172234b1ae20be037a781f0a105ae88dfbe3e856` passed native job 843 and
-fresh independent destination review on the 141-module, 36-root, 13-package
-graph, which additionally imports official `general-linear-groups`.
-The [sharpness guide](../UnitriangularNilpotencyClass/README.md) describes
-the exact class over nontrivial rings. Both default builds and the complete
-private/generated-inclusive standard-three audit passed; see
-[current build guidance](../../../docs/BUILDING.md). The G/Q release and
-sharpness P7 have since been independently accepted and published; their
-release decisions are distinct from accepted-code evidence. The all-stage
-native point-group lower-central equality was separately published at official
-P8 `441817ab159b20bb7c9c855b05d49abfa3d85c92`, after original native
-job 865 checked its older 143-module graph. Development main
-`a77d4e4d19f6dc366eb9a40f16503f5855421cf3` adds positive-stage
-generation, exact commutators and the native derived series: original run 895
-built both targets and audited 3,679 module-origin pairs across 145 **total**
-Lean modules (107 production, 38 tests), including 1,168 private-named and
-all generated origins under only the standard three axioms. Fresh independent
-destination review and maintainer code acceptance are complete; the new
-addition's own release review, acceptance and publication remain pending.
-The original guide below, including then-pending publication language, is
-retained as dated history, not as the current lifecycle report.
-
----
-
 # Central filtration of unitriangular point groups
 
 Import `AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration` for the
@@ -96,16 +56,11 @@ the matching mathlib cache **before** any build:
 
 ```sh
 lake exe cache get
-LAKE_JOBS=2 lake build AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration AlgebraicGroupsTest.UnitriangularCentralFiltration
+lake build AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration AlgebraicGroupsTest.UnitriangularCentralFiltration
 ```
 
 This is a point-group filtration, not a construction of normal subgroup
-schemes, additive quotient group schemes, or scheme nilpotence. The original
-mathematical exposition, Lean implementation and independent isolated-code
-review were separate agent contributions; their source-specific provenance
-is recorded in the internal owning records, not needed to use this module.
-The destination transfer passed fresh independent review and the complete
-cache-first both-root native build/transitive standard-three audit, and was
-accepted at `535d623443808796af231ed5761f837c13934cdd`. The documentation-only
-release preparation preserves those computational inputs. Independent release
-acceptance and verified publication remain separate, still-pending steps.
+schemes, additive quotient group schemes, or scheme nilpotence.
+For the pinned toolchain, matching mathlib cache and default-target commands,
+see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
+credit appears in [CREDITS](../../../CREDITS.md).

@@ -53,16 +53,10 @@ default roots:
 ```sh
 elan toolchain install leanprover/lean4:v4.34.0-rc2
 lake exe cache get
-LAKE_JOBS=2 lake build AlgebraicGroups AlgebraicGroupsTest
+lake build AlgebraicGroups AlgebraicGroupsTest
 ```
 
-Formal Frontier Agents and Lattice retain the existing coordinate-algebra
-credit. The six comparison APIs, client and their proofs were authored by
-worker-b Hive Task `hive-request-78c2a643671d6c1e0e70abb05d4c3ec9060404a9`
-(UID `3a4662f7-43d7-46c9-ac4c-7699d613350e`); destination preparation
-was performed by worker-b Hive Task
-`hive-request-03a571a8b8bdba2d4590403388371e4eaf44874c`
-(UID `dc004c13-f356-4a00-806e-317e5a3e34b3`) without new proof authorship.
-The existing algebra comparison reuses mathlib's scalar-extension
-equivalence, contributed by Antoine Chambert-Loir; the canonical tensor
-and Hopf constructions retain their mathlib contributor credit.
+
+The comparison reuses mathlib's scalar-extension equivalence contributed
+by Antoine Chambert-Loir. See [credits](../../../CREDITS.md) for the distinct
+project and dependency contributions.

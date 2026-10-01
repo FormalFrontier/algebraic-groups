@@ -36,7 +36,7 @@ lake build AlgebraicGroupsTest.GeneralLinearDeterminantProduct
 ```
 
 The producer and its persistent ordinary-import client were originally authored
-by a separate Formalization Worker B execution. Exact contribution, review and
+by a separate Formal Frontier AI-agent contributor. Exact contribution, review and
 release decisions are recorded outside this shipping guide. The focused imports
 are also reached by the aggregate production import and the default-build test
 roots; build success alone is not release acceptance.

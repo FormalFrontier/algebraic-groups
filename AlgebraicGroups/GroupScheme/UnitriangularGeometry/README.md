@@ -1,45 +1,3 @@
-# Current publication and verification context (2026-09-29)
-
-Official P9 `8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827` includes the
-generation/derived results described below. Accepted development main
-`45d4c5ddfcd491f298c4c968561d2e2eccf82e06` additionally includes
-the native point-group exponent transfer, checked in original destination
-job 932 and independently reviewed; its own release is still pending.
-The 2026-09-28 context below is dated history, not a current count or
-publication status. No new scheme-level result follows from exponent.
-
-## Dated publication context (2026-09-28; historical)
-
-This geometry is published at official release
-`183bbbcebf0693df849ad6f5781df4c97d33364f`; the later native
-central-filtration and successive-quotient results are also published at
-`38b7ebdcb38bd0d1b3c9a72e266162718f4647c2`. Native job 811 checked
-that older 139-module G/Q graph. The accepted sharpness transfer at
-`172234b1ae20be037a781f0a105ae88dfbe3e856` additionally passed native job
-843 and fresh independent destination review on the 141-module, 36-root,
-13-package graph with its official `general-linear-groups` dependency.
-The complete private/generated-inclusive audit permitted only the standard
-three axioms. See [current build guidance](../../../docs/BUILDING.md);
-exact release acceptance/publication are recorded separately.
-Sharpness has since reached verified official P7
-`f49141f0cd92a101d587a344eb3e2bd5bf4331d8`. The native point-group
-lower-central result subsequently reached official P8
-`441817ab159b20bb7c9c855b05d49abfa3d85c92`, after its original job
-865 on the older 143-module graph. Development main
-`a77d4e4d19f6dc366eb9a40f16503f5855421cf3` additionally includes
-positive-stage generation, exact commutators and native derived series:
-original run 895 built both targets and audited all 3,679 module-origin
-pairs across 145 total Lean modules (107 production, 38 tests), including
-1,168 private-named and all generated origins under only the standard three
-axioms. Fresh independent destination review and maintainer code acceptance
-are complete. This addition's own release review/acceptance/publication remain
-pending; this geometry guide asserts no scheme-level point-group series.
-The original guide below is retained verbatim as a dated snapshot: its
-G/Q-publication-pending wording records the earlier preparation, not the
-current release status. This geometry's statements and proofs do not change.
-
----
-
 # Geometry of upper-unitriangular group schemes
 
 Import `AlgebraicGroups.GroupScheme.UnitriangularGeometry` (or the aggregate
@@ -111,23 +69,7 @@ lake build AlgebraicGroupsTest.UnitriangularGeometry
 lake build
 ```
 
-These are reproduction commands. Native job 718 (2026-09-28) successfully
-built both default targets and audited all actual declarations in the accepted
-135-module destination, including private and generated names, using only
-`propext`, `Classical.choice` and `Quot.sound`. Independent non-author transfer
-review and maintainer acceptance/protected main integration cover exact commit
-`31492d5a182c21f40af029121718ceca8085568a`. Separate independent geometry
-release acceptance and verified official publication subsequently completed on
-2026-09-28 at `183bbbcebf0693df849ad6f5781df4c97d33364f`, which includes these
-geometry results. Job 718 describes that earlier destination graph, not the
-later G/Q point-group additions. Native job 811 supplies the current complete
-139-module build and transitive standard-three audit, including the unchanged
-geometry implementation. The G/Q contribution's separate release acceptance and
-verified publication remain pending; they do not reopen geometry publication.
-These geometry APIs assert no source coverage, base-change theorem,
-triangular/diagonal decomposition, nilpotence or Lie theory.
-This original project development credits Formal Frontier Agents;
-the original Worker B producer/client author and distinct Worker A isolated
-reviewer are credited in the repository [README](../../../README.md). The
-isolated review alone does not certify the changed destination graph; the
-subsequent destination review and job 718 cover that distinct graph.
+
+For the pinned toolchain, matching mathlib cache and default-target commands,
+see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
+credit appears in [CREDITS](../../../CREDITS.md).

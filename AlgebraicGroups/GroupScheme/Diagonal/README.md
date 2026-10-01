@@ -50,64 +50,11 @@ tuples (`Fin 0`), one unit/G_m **points** (`Fin 1`), independent pair entries
 `DualNumber ℤ` with the nonzero square-zero parameter `ε` and diagonal unit
 `1 + ε`, inverse `1 - ε`. These tests are not restricted to geometric points.
 
-This accepted diagonal implementation, integrated at development main
-`a41c1bc85ed06b0901ab50e86ccc438caff3adf9` as sole child of I10, pins Lean
-`leanprover/lean4:v4.34.0-rc2`,
-mathlib `83abb3e776bdefcbc447a1e44d0debe4010039e5`, the independently
-released `general-linear-groups` dependency
-`ad7c50a0523441116537fb1d6e3c8d2a665af1fc`, and `scheme-properties`
-`6b204a3e49f022e51d78a9f93e77513b99a87e00`. The 13 whole resolved
-packages and exact dependency URLs are recorded in the repository's
-`lake-manifest.json` and `lakefile.toml`; this library has **no incubator
-dependency**. For an authorized verification from the pinned project root,
-fetch the matching mathlib cache *before* building either default target:
 
-```sh
-lake exe cache get
-LAKE_JOBS=2 lake build
-```
+A finite-product `Gₘ` **scheme** isomorphism is a distinct result in the
+[diagonal-product guide](../DiagonalProduct/README.md), not a consequence
+of the unit-tuple equivalence on points alone.
 
-Optional focused targets are `lake build AlgebraicGroups.GroupScheme.Diagonal`
-and `lake build AlgebraicGroupsTest.Diagonal`, after the same cache fetch.
-Original destination native job 972 fetched the matching cache, built both
-default targets (3,878 jobs) and audited all 3,788 actual module-origin pairs
-across 151 Lean modules (111 production, 40 tests), including 1,185
-private-named origins and all generated origins; transitive axioms were
-limited to `propext`, `Classical.choice` and `Quot.sound`. Fresh author-distinct
-destination review and separate maintainer code acceptance/protected integration are
-complete. The isolated donor's checks and exponent I10's completed checks
-and release do not substitute for this destination graph's original native
-check. Accepted exponent release-preparation I10
-`fe7a86c8ab5484ea60d4baaf0e5deae7cf12986e` is its sole parent, and
-official private P10 `34c5772fb8f00ca6012c0683091a0f93116ea618`
-is already published.
-The accepted 176-leaf union has 151 Lean files, 40 explicit test roots,
-97 public aggregate imports and 87 selected main-result objects; all 13
-resolved packages remain fixed. This documentation-only preparation retains
-the original job's Lean/build/pin/checker inputs but not its whole-shipping
-digest. Final independent release review, separate release acceptance,
-protected promotions and verified private GitHub publication remain pending.
-
-The original Lean proofs and client were authored by a Formal Frontier Worker A
-execution and independently reviewed by a distinct Worker B execution in the
-incubator; a later Worker A execution transferred them here without changing
-their proof bodies. A further, distinct Worker A execution, Task
-`hive-request-6a0633275f38c0ea64d428ae6904930b1cd3c8f3` (UID
-`da300be7-8a50-41fa-880e-51c12ae312f6`), prepared this conditional
-frozen-parent packaging, not new proofs or destination review.
-This sole-I10 renewal was later static packaging by worker-a Task
-`hive-request-4c2aa72f817d1a854aa18cc342a25137391a2cee` (UID
-`d2aa0183-8046-4ed0-9c2c-b075eb666f8b`). Fresh exact-destination review
-was by distinct worker-b Task
-`hive-request-e986dda8ce6686809cb658934a358e00f265238e` (UID
-`e8e3bbff-8531-499e-b929-661d027b236b`), followed by Lattice's code
-acceptance and protected integration. This documentary own-release preparation
-is by worker-a Task `hive-request-1fcd312e5ebc2e61f0d251a7a85ba94e9cc6c2ef`
-(UID `c45ab90d-e32c-4280-b4e4-cddaa40f9dd1`), not new mathematical work,
-final release review, release acceptance or publication.
-Published GL, mathlib and scheme-properties results retain
-their respective provenance and licenses. A finite-product G_m/Laurent
-**scheme** isomorphism, upper-triangular group scheme and split extension,
-dimension/smoothness, base change and any specific source-coverage judgment
-remain separate later work. In particular, the tuple-of-units **point**
-equivalence does not claim a product-of-schemes equivalence.
+For the pinned toolchain, matching mathlib cache and default-target commands,
+see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
+credit appears in [CREDITS](../../../CREDITS.md).

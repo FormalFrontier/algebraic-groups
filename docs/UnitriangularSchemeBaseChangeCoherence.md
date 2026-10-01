@@ -54,31 +54,7 @@ a general pseudofunctor, rational-map or `PartialIso` laws, or source-specific
 coverage. It builds on the separately documented
 [native one-step group-scheme comparison](UnitriangularSchemeBaseChange.md).
 
-This repository pins `leanprover/lean4:v4.34.0-rc2`, mathlib
-`83abb3e776bdefcbc447a1e44d0debe4010039e5`, Scheme Properties
-`6b204a3e49f022e51d78a9f93e77513b99a87e00`, and General Linear Groups
-`ad7c50a0523441116537fb1d6e3c8d2a665af1fc` (13 resolved packages,
-three direct requirements). From the repository root, a future authorized
-verifier installs the pinned toolchain and **successfully fetches the matching
-precompiled mathlib cache before any build**, then checks the producer and
-ordinary-import client:
 
-```sh
-elan toolchain install leanprover/lean4:v4.34.0-rc2
-lake exe cache get
-lake build AlgebraicGroups.GroupScheme.UnitriangularBaseChangeCoherence
-lake build AlgebraicGroupsTest.GroupScheme.UnitriangularBaseChangeCoherence
-```
-
-The destination preparation dated 2026-09-30 is static: it has not run those
-commands or established complete transitive standard-axiom evidence on this
-dependency graph. Original proofs and client: worker-b Task
-`hive-request-060cf9c4f55345280f96724efb23b870529b5dd3` (UID
-`a59545aa-87cc-40a0-b35e-c980d68c912a`). Official-import adaptation:
-worker-b Task `hive-request-3e98325c49b66caef94ea71d0ab8e154a9a23c51`
-(UID `c6a480de-e7b4-44f8-8106-17e6d759ecc7`). Destination static transfer:
-worker-b Task `hive-request-83e761635ef9fb7b8563c64cbaa53c61a6eced8b`
-(UID `51aa9bf0-39a7-45b6-9dbd-6cf8bdf19217`). The one-step, coordinate
-comparison and mathlib contributors retain their separate credit. Independent
-destination review, native verification, acceptance and publication are
-separate decisions; this guide claims none of them.
+For pinned dependencies, build and focused client commands, see the
+[build guide](BUILDING.md). Project and third-party contributor credit is in
+[credits](../CREDITS.md).

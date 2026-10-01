@@ -1,12 +1,5 @@
 # Exact class of finite unitriangular point groups
 
-**Lifecycle update (2026-09-29).** The generation/derived results described
-below are published at official P9 `8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827`.
-Accepted main `45d4c5ddfcd491f298c4c968561d2e2eccf82e06` also includes
-the independently reviewed native exponent transfer, checked by original
-destination job 932; its own release remains pending. Older graph counts and
-pending statuses below describe their dated inputs, not this 147-module graph.
-
 Import `AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass` for the native
 `Matrix.UnitriangularGroup (Fin n) R`, with `n : ℕ`, `R : Type` and `[CommRing R]`.
 The index and coefficient types share a universe in this native provider. This
@@ -50,45 +43,16 @@ matching mathlib cache before building the focused producer and client:
 
 ```sh
 lake exe cache get
-LAKE_JOBS=2 lake build AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass AlgebraicGroupsTest.UnitriangularNilpotencyClass
+lake build AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass AlgebraicGroupsTest.UnitriangularNilpotencyClass
 ```
 
-This K-only module is a point-group class result; the separate accepted
+This module is a point-group class result; the separate
 [lower-central-series module](../UnitriangularLowerCentralSeries/README.md)
 now identifies every lower central stage with its superdiagonal filtration
-stage. Neither module asserts a quotient/group-scheme theorem. The original
-proof and client were authored by Formal Frontier Agents
-in the incubator, reviewed independently there, and transferred here with only
-module-import and client-namespace substitutions. The official GLG dependency
-retains its own authorship and license.
+stage. Neither module asserts a quotient/group-scheme theorem. The original project proofs are credited to Formal Frontier Agents; the
+General Linear Groups dependency retains distinct contributors and license.
 
-On 2026-09-28, the transferred code at
-`172234b1ae20be037a781f0a105ae88dfbe3e856` passed fresh independent
-destination review and native job 843, followed by maintainer acceptance and
-integration. That run checked both default targets and the complete 141-module,
-36-root, 13-package graph after a successful matching-cache fetch. Its complete
-transitive audit enumerated 3585 module-origin declarations, including 1082
-private-named origins and all generated origins, permitting only `propext`,
-`Classical.choice` and `Quot.sound`. It includes this producer's 31 origins and
-the regression client's 12. The documentation-only I7 preparation at
-`28a4dd05b2f2f2c1aae5e2161338b953b454b762` changed none of those
-computational inputs; the subsequent lower-central-series producer and client
-change the graph and have their own original native job 865 destination checks:
-both default targets built on 143 modules/37 regression roots/13 packages;
-the complete transitive audit covered 3,634 module-origin declarations, including
-1,128 private-named and all generated origins, under only the standard three
-axioms. Fresh independent exact-H destination review and Lattice's code
-acceptance/protected integration cover
-`d3c455d9adac06b5a873828ea7de57d5501c42f4`. L was subsequently
-published at official P8 `441817ab159b20bb7c9c855b05d49abfa3d85c92`.
-Original native run 895 built both targets and audited all 3,679 actual
-module-origin pairs (including 1,168 private-named and all generated origins)
-across 145 **total** Lean modules (107 production, 38 tests) on accepted
-development main `a77d4e4d19f6dc366eb9a40f16503f5855421cf3`, allowing
-only the standard three axioms. Fresh independent destination review and
-maintainer code acceptance/protected integration are complete for its
-generation/derived addition; that addition's own release review, acceptance
-and verified publication remain pending. Sharpness is published at official
-P7 `f49141f0cd92a101d587a344eb3e2bd5bf4331d8`; the older
-filtration/quotient P6 does not contain it. See
-[build guidance](../../../docs/BUILDING.md).
+
+For the pinned toolchain, matching mathlib cache and default-target commands,
+see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
+credit appears in [CREDITS](../../../CREDITS.md).

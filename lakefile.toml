@@ -10,7 +10,7 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 [[require]]
 name = "scheme-properties"
 git = "https://github.com/FormalFrontier/scheme-properties.git"
-rev = "6b204a3e49f022e51d78a9f93e77513b99a87e00"
+rev = "c3ce429677a7c4a342b134a881f99cacfc62f71e"
 
 [[require]]
 name = "general-linear-groups"
@@ -80,4 +80,5 @@ roots = [
   "AlgebraicGroupsTest.GroupScheme.FiniteTriangularGeometry",
   "AlgebraicGroupsTest.LinearAlgebra.Matrix.UpperTriangularIndices",
   "AlgebraicGroupsTest.GroupScheme.UpperTriangularDimension",
+  "AlgebraicGroupsTest.FiniteTypePointsCoexistence",
 ]

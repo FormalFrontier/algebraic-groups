@@ -79,7 +79,7 @@ equivalence. Future clients may specialize these generic Hom readbacks
 without adding a second extension framework. Finite determinant, source
 correspondence and coverage are outside this module.
 
-Formalization Worker B authored the original conjugation and twisted-product
+A Formal Frontier AI-agent contributor authored the original conjugation and twisted-product
 implementation and its ordinary-import client. Exact origin and review records
 are maintained separately from this mathematical guide.
 
@@ -91,9 +91,7 @@ lake exe cache get
 lake build AlgebraicGroups.GroupObject.SplitKernelSemidirect AlgebraicGroupsTest.SplitKernelSemidirect
 ```
 
-A focused build alone is not a complete destination check. The separately
-accepted 125-module destination predecessor passed its actual default build
-and private-inclusive standard-axiom audit (native job 530); the accepted
-130-module combined main graph passed both checks (native job 533), with fresh
-independent affected reviews. This documentation-only release candidate keeps
-those checked inputs but remains unaccepted and unpublished.
+
+For the pinned toolchain, matching mathlib cache and default-target commands,
+see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
+credit appears in [CREDITS](../../../CREDITS.md).

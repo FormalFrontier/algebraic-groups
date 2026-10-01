@@ -42,12 +42,12 @@ The import publicly exposes the existing lower-central-series module
 Steinberg commutator (`UnitriangularNilpotencyClass`), the coordinate quotient
 (`UnitriangularSuperdiagonalQuotients`), and pinned mathlib's
 `Mathlib.GroupTheory.Solvable`. The earlier G upper bound proves
-`⁅F_r,F_s⁆ ≤ F_(r+s)`. For the reverse inclusion, the accepted L
+`⁅F_r,F_s⁆ ≤ F_(r+s)`. For the reverse inclusion, the lower-central-series
 `superdiagonalSubgroup_le_of_elementary_mem` reduces it to all roots
 `E_ij(a)` at distances at least `r+s`. Split each at `k=i+r`; then
 `E_ik(a) ∈ F_r`, `E_kj(1) ∈ F_s`, and the *ordered* native identity
 `⁅E_ik(a),E_kj(1)⁆ = E_ij(a)` places the root in the subgroup
-commutator. The generation criterion itself uses L's existing private
+commutator. The generation criterion itself uses an existing private
 ordered-coordinate elimination; this module neither accesses nor duplicates
 it. Induction on the native derived series uses its self-commutator successor
 and `2^t+2^t=2^(t+1)`. For nontrivial coefficients, L identifies
@@ -61,62 +61,10 @@ matching mathlib cache successfully before any authorized build:
 
 ```sh
 lake exe cache get
-LAKE_JOBS=2 lake build AlgebraicGroups.GroupTheory.UnitriangularDerivedSeries AlgebraicGroupsTest.UnitriangularDerivedSeries
+lake build AlgebraicGroups.GroupTheory.UnitriangularDerivedSeries AlgebraicGroupsTest.UnitriangularDerivedSeries
 ```
 
-These commands are reproduction instructions, not a claim of new checks for
-this documentary successor. The separately released old lower-central result
-passed its own earlier native checks; isolated donor generation and derived
-builds/audits apply only to their original incubator inputs. Original native
-run 895 on accepted destination main `a77d4e4d19f6dc366eb9a40f16503f5855421cf3`
-fetched the matching official cache, built both default targets (3,871 jobs)
-and audited 3,679 module-origin pairs (3,661 distinct names) across 145
-**total** Lean modules (107 production, 38 tests), including 1,168
-private-named and all generated origins. Only `propext`, `Classical.choice`
-and `Quot.sound` occurred; none were rejected. The current L producer/client
-contributed 37/24 origins and this derived producer/client 13/20.
-
-## Provenance and lifecycle
-
-**Lifecycle update (2026-09-29).** This generation/derived contribution is
-published at official P9 `8fdf180d3b56c6bfb4a5fe8c63204ad9a7abf827`.
-Accepted main `45d4c5ddfcd491f298c4c968561d2e2eccf82e06` also includes
-the independently reviewed native exponent transfer, checked by original
-destination job 932; its own release remains pending. Older pending language
-and counts below describe their dated inputs, not this 147-module graph.
-
-The source-independent mathematical plan `4d68d0b71cb850413414f902f06537f6031625ad`
-was authored by worker-a Task
-`hive-request-d4930d3cf37bb1dda33c5fddfaa4eb0d854981f1` (UID
-`3c5abd2b-8876-4221-8d0d-2537b002a180`) and independently reviewed by
-worker-b Task `hive-request-996d1a557865c692d24ab1f5e0b60b02f601e83c`
-(UID `c27c93c3-75a4-4a53-837c-640d8c64aa72`) at
-`443d93f6d6811fb56d7a206026705eef4045ee35`. The isolated
-L generation extraction `b91db48ba6ac8dc2593fd3e478daed05657e7f37`
-was authored by worker-a Task
-`hive-request-a86e0cfca75b354d4aca0f4c932f1991ca9e682a` (UID
-`7c231766-d3e8-4c77-a695-2887fa2be307`), independently reviewed at
-`3b5837720234d3a01674dfd165dcbfd17afea2e8`, and accepted in
-isolation by Lattice at incubator issue #143/comment 59651. The derived
-isolated donor `53c9acf8fb655040d42a859c65eb13fb96f0a9eb`, its sole
-child, was authored by worker-a Task
-`hive-request-5137edd150f61b7bf52376ee42728a3b848587b3` (UID
-`302c66a3-a11e-4979-acf1-445bf61de036`), independently reviewed at
-`c6f711e5cd1990e36ef8d9455bcace9aa2cbce16` and accepted in
-isolation by Lattice at incubator issue #143/comment 59794. The previous
-L result has separately completed its own reviewed release at accepted
-AlgebraicGroups I8 `164f0310a4f641cc1d698a14b333082bbfcfe474`
-and verified published P8 `441817ab159b20bb7c9c855b05d49abfa3d85c92`.
-Earlier L, G/Q/K and GeneralLinearGroups contributor credits remain distinct.
-
-This native transfer of the accepted isolated mathematics is by worker-a
-Task `hive-request-4d4e96a0baa3d9b23aa444ac8cd732106652fd12` (UID
-`8b645e93-000d-4103-b452-2e97301c3880`) on September 28, 2026.
-At its original transfer stage the new joint destination contribution was
-**unbuilt, unaudited, unreviewed, unaccepted and unreleased**; original native
-run 895, fresh author-distinct worker-b exact-H destination review and Lattice's
-separate acceptance/protected integration have since completed on
-`a77d4e4d19f6dc366eb9a40f16503f5855421cf3`. This contribution's own
-fresh release review, owner acceptance, protected promotion and verified
-publication are still pending. This standalone library makes no source-specific
-correspondence, coverage or group-scheme assertion.
+These commands are reproduction instructions. The library proof uses the
+separately maintained General Linear Groups dependency for the elementary
+commutator identity; its authorship and license remain distinct. See the
+[credits](../../../CREDITS.md) for project and external contributions.
