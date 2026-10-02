@@ -25,6 +25,16 @@ third-party and AI involvement.
   [closed-stage guide](AlgebraicGroups/GroupScheme/UnitriangularStages/README.md),
   [polynomial guide](AlgebraicGroups/Algebra/UnitriangularStagePolynomial/README.md)
   and [underlying affine-space guide](AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace/README.md).
+- **Normal stages and positive-stage coordinates.** Each closed stage is a
+  normal subgroup object over an arbitrary commutative base, with a genuine
+  over-scheme conjugation factor and all-algebra matrix-point readback. For
+  `1 ≤ r`, primitive `r`-th superdiagonal entries give a group-scheme map
+  `S_r → Gₐ^J`, zero on `S_(r+1)`; the successor is precisely its underlying
+  over-scheme pullback along the unit. This holds for zero rings and empty
+  index types, but does not assert a quotient or an additive-group splitting.
+  See the [normality](AlgebraicGroups/GroupScheme/UnitriangularStageNormality/README.md),
+  [coordinates](AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates/README.md)
+  and [kernel](AlgebraicGroups/GroupScheme/UnitriangularStageKernel/README.md) guides.
 - **Unitriangular group-scheme identity and tower coherence.** The native
   one-step base-change map agrees with the canonical pullback identity unit
   and direct-to-iterated scalar-tower compositor. An ordinary-import `Fin 2`
@@ -150,6 +160,9 @@ statements on generic rings and boundary cases. For a starting path, use
 [closed unitriangular stages](AlgebraicGroups/GroupScheme/UnitriangularStages/README.md),
 [stage polynomial coordinates](AlgebraicGroups/Algebra/UnitriangularStagePolynomial/README.md),
 [stage underlying affine space](AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace/README.md),
+[stage normality](AlgebraicGroups/GroupScheme/UnitriangularStageNormality/README.md),
+[positive-stage coordinates](AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates/README.md),
+[positive-stage kernel](AlgebraicGroups/GroupScheme/UnitriangularStageKernel/README.md),
 [represented upper-triangular products](AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md),
 [the split kernel](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md),
 [finite diagonal products](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md)

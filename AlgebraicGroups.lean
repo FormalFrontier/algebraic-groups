@@ -63,6 +63,11 @@ public import AlgebraicGroups.GroupScheme.Unitriangular
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
 public import AlgebraicGroups.GroupScheme.UnitriangularStages
 public import AlgebraicGroups.GroupScheme.UnitriangularStageAffineSpace
+public import AlgebraicGroups.Algebra.UnitriangularStageCoordinates
+public import AlgebraicGroups.Algebra.UnitriangularStageKernel
+public import AlgebraicGroups.GroupScheme.UnitriangularStageNormality
+public import AlgebraicGroups.GroupScheme.UnitriangularStageCoordinates
+public import AlgebraicGroups.GroupScheme.UnitriangularStageKernel
 public import AlgebraicGroups.GroupScheme.UnitriangularBaseChange
 public import AlgebraicGroups.GroupScheme.UnitriangularBaseChangeCoherence
 public import AlgebraicGroups.GroupTheory.UpperTriangular
@@ -126,8 +131,9 @@ public import AlgebraicGroups.Topology.KrullDimension
 /-!
 The aggregate exposes the finite upper-unitriangular Hopf quotient, affine
 group scheme and underlying affine geometry, native closed superdiagonal
-stage Hopf quotients and underlying affine-space presentations, central filtration,
-successive quotients, exact nilpotency class under nontriviality, the
+stage Hopf quotients and underlying affine-space presentations, stage normality,
+positive-stage additive coordinates and the underlying over-scheme kernel,
+central filtration, successive quotients, exact nilpotency class under nontriviality, the
 all-stage lower-central-series identification and the derived series
 and sharp prime-power exponent bounds for the native point group alongside
 the general- and special-linear constructions.

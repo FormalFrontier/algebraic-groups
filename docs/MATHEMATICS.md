@@ -92,6 +92,22 @@ passage correspondence is maintained separately.
   records the exact scope and boundary cases. Ordinary-import examples are
   registered under `AlgebraicGroupsTest/GroupScheme` and
   `AlgebraicGroupsTest/Algebra`.
+- `AlgebraicGeometry.unitriangularStageInclusion_normal K n r` gives native
+  normality of the closed stage for all `n,r` over any commutative ring.
+  `unitriangularStageConjugation` is an actual over-scheme conjugation factor,
+  with inclusion and all-algebra point equations; it is not a product-group
+  homomorphism. See the [normality guide](../AlgebraicGroups/GroupScheme/UnitriangularStageNormality/README.md).
+- For `1 ≤ r`, `AlgebraicGeometry.unitriangularStageCoordinateMap K n r hr`
+  is the genuine group-scheme map from the stage to the categorical product of
+  additive group schemes indexed by its `r`-th superdiagonal. Primitive
+  bialgebra coordinates give all-algebra point and naturality equations and
+  `unitriangularStageCoordinateMap_successor_zero`; there is no `r = 0` map.
+  See the [coordinates guide](../AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates/README.md).
+- `AlgebraicGeometry.unitriangularStageCoordinateMap_isPullback K n r hr`
+  identifies the positive-stage successor with the underlying over-scheme
+  fiber above the product's unit, using an ideal equality and universal
+  algebra/scheme factorization. It asserts neither a quotient nor a
+  group-homomorphic section. See the [kernel guide](../AlgebraicGroups/GroupScheme/UnitriangularStageKernel/README.md).
 
 ## General and special linear geometry
 

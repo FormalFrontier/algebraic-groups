@@ -30,6 +30,16 @@ integrator. The focused
 [affine-space](AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace/README.md)
 guides record their reusable mathematical interfaces.
 
+Formal Frontier Agents also developed stage normality, primitive positive-stage
+coordinates and the underlying over-scheme kernel pullback. Separate
+contributors researched the filtration, authored the normality, coordinate and
+kernel proofs, and independently reviewed their mathematics. Assembly and later
+integration do not transfer proof authorship or constitute human review. The
+[normality](AlgebraicGroups/GroupScheme/UnitriangularStageNormality/README.md),
+[coordinates](AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates/README.md)
+and [kernel](AlgebraicGroups/GroupScheme/UnitriangularStageKernel/README.md)
+guides give the respective mathematical interfaces.
+
 The proofs reuse mathlib and separately maintained project dependencies; their
 contributors and licenses remain distinct. In particular the determinant-section
 module retains Chris Birkbeck's authentic 2021 Apache-2.0 notice, and the

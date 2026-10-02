@@ -82,7 +82,10 @@ status:
     hypotheses described in their guides. Native closed superdiagonal stages
     have Hopf coordinate quotients, multiplicative points, a polynomial-algebra
     presentation and underlying over-scheme affine-space isomorphisms over
-    arbitrary commutative bases. Diagonal, triangular, GL and SL
+    arbitrary commutative bases. These stages are normal; positive stages have
+    primitive group-scheme coordinate projections whose successor is their
+    underlying over-scheme kernel, without a quotient or splitting claim.
+    Diagonal, triangular, GL and SL
     constructions include selected products, representations, finite
     geometry and dimension results. Unitriangular coordinate algebras and
     group schemes have base-change and identity/tower coherence comparisons.
@@ -214,6 +217,38 @@ status:
       file: AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace.lean
     - declaration: AlgebraicGeometry.unitriangularStageUnderlyingAffineSpaceIso_preimage_inverse
       file: AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace.lean
+    - declaration: AlgebraicGeometry.unitriangularStageConjugation
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageNormality.lean
+    - declaration: AlgebraicGeometry.unitriangularStageConjugation_inclusion
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageNormality.lean
+    - declaration: AlgebraicGeometry.unitriangularStageInclusion_normal
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageNormality.lean
+    - declaration: AlgebraicGeometry.unitriangularStageConjugation_point
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageNormality.lean
+    - declaration: UnitriangularStageCoordinateRing.coordinate_counit
+      file: AlgebraicGroups/Algebra/UnitriangularStageCoordinates.lean
+    - declaration: UnitriangularStageCoordinateRing.coordinate_comul
+      file: AlgebraicGroups/Algebra/UnitriangularStageCoordinates.lean
+    - declaration: UnitriangularStageCoordinateRing.coordinateBialgHom
+      file: AlgebraicGroups/Algebra/UnitriangularStageCoordinates.lean
+    - declaration: AlgebraicGeometry.unitriangularStageCoordinateMap
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates.lean
+    - declaration: AlgebraicGeometry.unitriangularStageCoordinateMap_point
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates.lean
+    - declaration: AlgebraicGeometry.unitriangularStageCoordinateMap_point_natural
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates.lean
+    - declaration: AlgebraicGeometry.unitriangularStageCoordinateMap_successor_zero
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates.lean
+    - declaration: UnitriangularStageCoordinateRing.coordinateBialgHom_toAlgHom
+      file: AlgebraicGroups/Algebra/UnitriangularStageKernel.lean
+    - declaration: UnitriangularStageCoordinateRing.ideal_succ_eq_sup
+      file: AlgebraicGroups/Algebra/UnitriangularStageKernel.lean
+    - declaration: UnitriangularStageCoordinateRing.existsUnique_comp_successor
+      file: AlgebraicGroups/Algebra/UnitriangularStageKernel.lean
+    - declaration: AlgebraicGeometry.unitriangularStageSuccessor_existsUnique_scheme
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageKernel.lean
+    - declaration: AlgebraicGeometry.unitriangularStageCoordinateMap_isPullback
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageKernel.lean
     - declaration: AlgebraicGeometry.unitriangularUnderlyingAffineSpaceIso
       file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
     - declaration: AlgebraicGeometry.unitriangularUnderlyingAffineSpaceIso_preimage_variable
