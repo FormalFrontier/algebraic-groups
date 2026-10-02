@@ -8,6 +8,16 @@ passage correspondence is maintained separately.
 
 ## Vector groups, matrix groups and functors
 
+- `AlgebraicGeometry.affineSpecHomOverEquiv` and
+  `additiveGroupHomOverEquiv` classify affine-target maps and additive
+  coordinates by global sections of *any* over-scheme over a commutative
+  ring. `additiveGroupAffineProductFan_isLimit` identifies the polynomial
+  affine scheme with the underlying *literal* categorical finite product of
+  additive group schemes. `additiveGroupProductUnderlyingSpecIso` preserves
+  actual projections and `additiveGroupProductUnderlyingAffineSpaceIso`
+  compares the underlying product with affine space, even for empty indices
+  and zero rings. These are underlying over-scheme, not group/Hopf, results;
+  see the [finite-product guide](../AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace/README.md).
 - `SymmetricAlgebra.linearMapMulEquivAlgHom` identifies linear maps into any
   commutative algebra with algebra maps out of a symmetric algebra under
   convolution. It works for arbitrary modules over a commutative ring; on
@@ -69,6 +79,18 @@ passage correspondence is maintained separately.
 
 ## Closed unitriangular stages
 
+- At positive stage `hr : 1 ≤ r`,
+  `unitriangularStageCoordinateMap_underlying_spec` equates the *whole*
+  underlying arrow with the scheme projection from surviving-coordinate
+  affine space onto the current superdiagonal. Its coordinate-ring pullback
+  goes from current-variable polynomials into the stage ring;
+  `stageProductCoordinatePullback_X` identifies the images of the generators.
+  In the opposite direction, `stageProductSectionPullback_higher` describes
+  the section's ring pullback, which sends higher variables to zero. The equality
+  `unitriangularStageCoordinateSectionOver_comp` gives a section of the
+  underlying arrow over `Spec K`, not a group-scheme section. Rank/empty
+  index and zero-ring edges are allowed. See the
+  [projection guide](../AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge/README.md).
 - `UnitriangularStageCoordinateRing.ideal K n r` kills exactly the strict-upper
   entries with `j.val < i.val + r`. Its genuine Hopf quotient
   `CoordinateRing K n r` represents the closed group scheme

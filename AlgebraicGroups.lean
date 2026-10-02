@@ -35,6 +35,7 @@ public import AlgebraicGroups.GroupObject.SplitKernelProduct
 public import AlgebraicGroups.GroupObject.SplitKernelSemidirect
 public import AlgebraicGroups.GroupObject.Translation
 public import AlgebraicGroups.GroupScheme.Additive
+public import AlgebraicGroups.GroupScheme.AdditiveProductAffineSpace
 public import AlgebraicGroups.GroupScheme.Vector
 public import AlgebraicGroups.GroupScheme.VectorProduct
 public import AlgebraicGroups.GroupScheme.MatrixEndAdditive
@@ -68,6 +69,7 @@ public import AlgebraicGroups.Algebra.UnitriangularStageKernel
 public import AlgebraicGroups.GroupScheme.UnitriangularStageNormality
 public import AlgebraicGroups.GroupScheme.UnitriangularStageCoordinates
 public import AlgebraicGroups.GroupScheme.UnitriangularStageKernel
+public import AlgebraicGroups.GroupScheme.UnitriangularStageProjectionBridge
 public import AlgebraicGroups.GroupScheme.UnitriangularBaseChange
 public import AlgebraicGroups.GroupScheme.UnitriangularBaseChangeCoherence
 public import AlgebraicGroups.GroupTheory.UpperTriangular

@@ -4,9 +4,7 @@ Reusable Lean definitions and theorems about matrix groups, affine group
 schemes and their coordinate algebras. This library is organized by mathematics,
 not by any one source. Its finite triangular and classical-group constructions
 build on mathlib and separately maintained project libraries. Results described
-below are present in this tree; documentation alone does not certify the
-independent review, complete proof audit or official publication of a successor
-release. Source-specific coverage is tracked outside this library.
+below are not a claim to formalize an entire mathematical source.
 
 Authors: Formal Frontier Agents. Original project contributions use
 [Apache-2.0](LICENSE); see [credits and references](CREDITS.md) for contributor,
@@ -14,6 +12,23 @@ third-party and AI involvement.
 
 ## Headline results
 
+- **Finite additive products over a ring.** For arbitrary commutative `K`
+  and finite `D`, the *underlying* over-scheme of the literal categorical
+  product of additive group schemes is affine `D`-space over `Spec K`.
+  The polynomial-spectrum comparison preserves genuine projections, and
+  its cone is limiting against every over-scheme, including nonaffine ones.
+  Empty indices and zero rings are included; no group/Hopf isomorphism is
+  asserted. See the [module](AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean)
+  and [finite-product guide](AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace/README.md).
+- **Positive-stage underlying projection and section.** For `1 ≤ r` over
+  any commutative base, the entire underlying stage-coordinate arrow is
+  identified with the scheme projection from the affine space of surviving coordinates
+  onto the current-superdiagonal coordinates. Its coordinate-ring pullback
+  runs oppositely, from current-variable polynomials into the stage ring.
+  Sending higher variables to zero defines the pullback of a section of
+  this underlying over-scheme arrow, **not** a group-scheme section.
+  See the [module](AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge.lean)
+  and [projection guide](AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge/README.md).
 - **Native closed unitriangular stages.** The actual quotient by forbidden
   strict-upper entries is a Hopf algebra over any commutative base, with
   closed stage and successor group-scheme arrows and multiplicative point
@@ -168,17 +183,16 @@ statements on generic rings and boundary cases. For a starting path, use
 [finite diagonal products](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md)
 and [native matrix groups](AlgebraicGroups/GroupTheory/UpperTriangular/README.md).
 For a broader survey of additional algebra, component and quotient APIs, see
-the [mathematical topic guide](docs/MATHEMATICS.md). These focused guides and
-the topic guide give declarations, proofs and limitations without requiring
-private preparation records.
+the [mathematical topic guide](docs/MATHEMATICS.md). The focused guides give
+declarations, proofs and limitations.
 
 ## Use and build
 
 The repository pins Lean `v4.34.0-rc2` and exact official GitHub dependencies in
 [lean-toolchain](lean-toolchain), [lakefile.toml](lakefile.toml) and
-[lake-manifest.json](lake-manifest.json). Access to separately maintained
-private dependencies may be needed until they are made public. At the project
-root, after installing the pinned toolchain, fetch the matching precompiled
+[lake-manifest.json](lake-manifest.json). Building requires access to the
+separately maintained dependencies. At the project root, install the pinned
+toolchain and fetch the matching precompiled
 mathlib cache successfully **before** building both targets:
 
 ```sh
@@ -188,7 +202,6 @@ lake build AlgebraicGroups AlgebraicGroupsTest
 ```
 
 See [building and focused targets](docs/BUILDING.md) for dependency and
-client details. This is a reproduction recipe, not a report of running it on
-this documentation candidate. Mathematical background and rights notices are
+client details. Mathematical background and rights notices are
 in [credits](CREDITS.md); [formalization.yaml](formalization.yaml) lists the
 metadata and result declarations for this tree.

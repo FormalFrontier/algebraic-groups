@@ -5,8 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.GroupScheme.Vector
-public import AlgebraicGroups.GroupScheme.Additive
-public import Mathlib.AlgebraicGeometry.AffineSpace
+public import AlgebraicGroups.GroupScheme.AffineHomOver
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
@@ -36,52 +35,12 @@ variable (K : Type u) [Field K]
   (V : Type u) [AddCommGroup V] [Module K V]
   (W : Type u) [AddCommGroup W] [Module K W]
 
-/-- Maps from an arbitrary scheme over `Spec K` to an affine `K`-scheme are
-algebra maps into its global sections; the source need not be affine. -/
-@[expose] def affineSpecHomOverEquiv (X : Over (Spec (.of K)))
-    (A : Type u) [CommRing A] [Algebra K A] :
-    (X ⟶ (algSpec (.of K)).obj (.op (CommAlgCat.of K A))) ≃
-      (A →ₐ[K] ((algΓ (.of K)).obj X).unop) where
-  toFun h := ((algΓAlgSpecAdjunction (.of K)).homEquiv X
-    (.op (CommAlgCat.of K A))).symm h |>.unop.hom
-  invFun h := (algΓAlgSpecAdjunction (.of K)).homEquiv X
-    (.op (CommAlgCat.of K A)) (CommAlgCat.ofHom h).op
-  left_inv h := by
-    simpa only [CommAlgCat.ofHom_hom, Quiver.Hom.op_unop] using
-      ((algΓAlgSpecAdjunction (.of K)).homEquiv X
-        (.op (CommAlgCat.of K A))).apply_symm_apply h
-  right_inv h := by
-    simp only [Quiver.Hom.unop_op, Equiv.symm_apply_apply, CommAlgCat.hom_ofHom]
-
-/-- Maps of affine targets act on global-section homomorphisms by precomposition. -/
-theorem affineSpecHomOverEquiv_comp (X : Over (Spec (.of K)))
-    (A B : Type u) [CommRing A] [Algebra K A] [CommRing B] [Algebra K B]
-    (f : B →ₐ[K] A)
-    (h : X ⟶ (algSpec (.of K)).obj (.op (CommAlgCat.of K A))) :
-    affineSpecHomOverEquiv K X B
-      (h ≫ (algSpec (.of K)).map (CommAlgCat.ofHom f).op) =
-      (affineSpecHomOverEquiv K X A h).comp f := by
-  apply AlgHom.ext
-  intro a
-  exact congrArg (fun k : (algΓ (.of K)).obj X ⟶
-      Opposite.op (CommAlgCat.of K B) ↦ k.unop.hom a)
-    ((algΓAlgSpecAdjunction (.of K)).homEquiv_naturality_right_symm h
-      (CommAlgCat.ofHom f).op)
-
 /-- Polynomial coordinates classify all maps to the underlying vector scheme. -/
 @[expose] def vectorGroupHomOverEquiv (X : Over (Spec (.of K))) :
     (X ⟶ (vectorGroupScheme K V).X) ≃
       (Module.Dual K V →ₗ[K] ((algΓ (.of K)).obj X).unop) :=
   (affineSpecHomOverEquiv K X (vectorGroupCoordinateRing K V)).trans
     (SymmetricAlgebra.lift.symm)
-
-/-- A map to the additive scheme is specified by one global section. -/
-@[expose] def additiveGroupHomOverEquiv (X : Over (Spec (.of K))) :
-    (X ⟶ (additiveGroupScheme K).X) ≃
-      ((algΓ (.of K)).obj X).unop :=
-  ((affineSpecHomOverEquiv K X (additiveGroupCoordinateRing K)).trans
-    SymmetricAlgebra.lift.symm).trans
-      (LinearMap.ringLmapEquivSelf K K ((algΓ (.of K)).obj X).unop).toEquiv
 
 /-- Pullback of polynomial coordinates as a morphism of bialgebras. -/
 @[expose] def vectorGroupCoordinateBialgHom (f : V →ₗ[K] W) :
@@ -245,16 +204,6 @@ theorem vectorGroupProjection_left {i : Type u}
           additiveGroupCoordinateRing K →ₐ[K] vectorGroupCoordinateRing K V)).toRingHom) :=
   rfl
 
-private theorem symmetricAlgebra_lift_symm_ι
-    (M : Type u) [AddCommMonoid M] [Module K M]
-    (A : Type u) [CommRing A] [Algebra K A]
-    (h : SymmetricAlgebra K M →ₐ[K] A) (m : M) :
-    (SymmetricAlgebra.lift.symm h) m = h (SymmetricAlgebra.ι K M m) := by
-  have eq := congrArg (fun f : SymmetricAlgebra K M →ₐ[K] A ↦
-    f (SymmetricAlgebra.ι K M m))
-      ((SymmetricAlgebra.lift (R := K) (M := M)).apply_symm_apply h)
-  simpa only [SymmetricAlgebra.lift_ι_apply] using eq
-
 /-- A projection reads off the corresponding dual-basis global coordinate, for
 maps from any scheme over the base (not only affine test schemes). -/
 theorem vectorGroupProjection_globalCoordinate {i : Type u}
@@ -277,7 +226,8 @@ theorem vectorGroupProjection_globalCoordinate {i : Type u}
         (affineSpecHomOverEquiv K X (vectorGroupCoordinateRing K V) h)) (b.coord j)
   erw [affineSpecHomOverEquiv_comp]
   rw [LinearMap.ringLmapEquivSelf_apply]
-  rw [symmetricAlgebra_lift_symm_ι K K, symmetricAlgebra_lift_symm_ι K (Module.Dual K V)]
+  rw [AffineHomOver.symmetricAlgebra_lift_symm_ι K K,
+    AffineHomOver.symmetricAlgebra_lift_symm_ι K (Module.Dual K V)]
   change (affineSpecHomOverEquiv K X (vectorGroupCoordinateRing K V) h)
       (vectorGroupProjectionBialgHom K V b j (additiveGroupCoordinate K)) = _
   rw [vectorGroupProjectionBialgHom_coordinate]

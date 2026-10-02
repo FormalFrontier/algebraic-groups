@@ -48,6 +48,8 @@ roots = [
   "AlgebraicGroupsTest.GroupScheme.UnitriangularStageNormality",
   "AlgebraicGroupsTest.GroupScheme.UnitriangularStageCoordinates",
   "AlgebraicGroupsTest.GroupScheme.UnitriangularStageKernel",
+  "AlgebraicGroupsTest.GroupScheme.AdditiveProductAffineSpace",
+  "AlgebraicGroupsTest.GroupScheme.UnitriangularStageProjectionBridge",
   "AlgebraicGroupsTest.GroupScheme.DiagonalDimension",
   "AlgebraicGroupsTest.GeneralLinearDeterminant",
   "AlgebraicGroupsTest.GeneralLinearDeterminantProduct",

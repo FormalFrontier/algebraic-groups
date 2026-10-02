@@ -7,11 +7,11 @@ project:
     algebraic group schemes and their coordinate algebras. The library covers
     unitriangular and upper-triangular groups, diagonal products, split
     kernels, closed unitriangular stages and their underlying affine-space
-    presentations, unitriangular scalar base change and coherence, and selected
+    presentations, finite additive products and positive-stage underlying
+    projections and sections, unitriangular scalar base change and coherence, and selected
     dimension and geometric results. Precise hypotheses and exclusions are
-    documented in README.md and the focused mathematical guides. Checked-in
-    APIs are not by themselves proof of an independently accepted successor
-    release or complete formalization of any cited source.
+    documented in README.md and the focused mathematical guides. This is not
+    a complete formalization of any cited source.
   authors:
     - Formal Frontier Agents
   license: Apache-2.0
@@ -29,8 +29,8 @@ sources:
     note: >-
       Mathematical background for algebraic groups and group schemes. This
       library is organized independently of the book and does not claim complete
-      coverage. Source text is not bundled and no source-author endorsement is
-      claimed. Exact passage correspondence remains outside this deliverable.
+      coverage. Source text is not reproduced and no source-author endorsement
+      is claimed.
   - title: Original algebraic-group and affine-localization constructions
     authors:
       - Formal Frontier Agents
@@ -39,8 +39,7 @@ sources:
     note: >-
       Original project proofs and adaptations of prior project research are
       implemented as reusable library APIs. Bibliographic and contributor
-      credits appear in CREDITS.md; source-specific correspondence is kept
-      separately. This entry is not third-party rights clearance.
+      credits appear in CREDITS.md. This entry is not third-party rights clearance.
 
 related_formalizations:
   - id: https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5
@@ -63,15 +62,9 @@ automation:
   methods:
     - method: agent
       tool_setup: >-
-        Formal Frontier AI agents used Lean and Lake with pinned mathlib and
-        separately attributed non-author agent development review.
+        Formal Frontier AI agents used Lean and Lake with pinned dependencies.
   notes: >-
-    AI agents used Lean and Lake with pinned dependencies, developed proofs
-    and ordinary-import clients, and participated in independent development
-    reviews. An agent review is not human mathematical review, source-author
-    endorsement, or a source-coverage decision. Successful applicable builds
-    and complete transitive standard-axiom checks must be recorded for the
-    exact release inputs; this metadata is not a verification receipt.
+    AI agents developed mathematical proofs and ordinary-import clients.
 
 status:
   scope: >-
@@ -84,19 +77,47 @@ status:
     presentation and underlying over-scheme affine-space isomorphisms over
     arbitrary commutative bases. These stages are normal; positive stages have
     primitive group-scheme coordinate projections whose successor is their
-    underlying over-scheme kernel, without a quotient or splitting claim.
+    underlying over-scheme kernel; the positive-stage projection has a
+    specified underlying over-scheme section, without a quotient or a
+    group-scheme splitting claim. The literal finite product of additive
+    group schemes has underlying polynomial affine space over arbitrary
+    commutative rings, preserving actual projections (including empty
+    indices and zero rings).
     Diagonal, triangular, GL and SL
     constructions include selected products, representations, finite
     geometry and dimension results. Unitriangular coordinate algebras and
     group schemes have base-change and identity/tower coherence comparisons.
-    The main_results entries below identify declarations and their files;
-    two entries point instead to focused test files. The library is not a
-    blanket arbitrary-base classification, full quotient-effectivity theory,
+    The library is not a blanket arbitrary-base classification or full
+    quotient-effectivity theory,
     or complete formalization of Milne's book. Read exact limitations with
-    each mathematical guide. Source-specific correspondence and coverage
-    belong to separate source repositories. Earlier public releases do not
-    automatically contain every declaration in this checkout.
+    each mathematical guide.
   main_results:
+    - declaration: AlgebraicGeometry.affineSpecHomOverEquiv
+      file: AlgebraicGroups/GroupScheme/AffineHomOver.lean
+    - declaration: AlgebraicGeometry.additiveGroupHomOverEquiv
+      file: AlgebraicGroups/GroupScheme/AffineHomOver.lean
+    - declaration: AlgebraicGeometry.additiveGroupAffineProductFan_isLimit
+      file: AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean
+    - declaration: AlgebraicGeometry.additiveGroupProductUnderlyingSpecIso
+      file: AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean
+    - declaration: AlgebraicGeometry.additiveGroupProductUnderlyingSpecIso_hom_projection
+      file: AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean
+    - declaration: AlgebraicGeometry.additiveGroupProductUnderlyingAffineSpaceIso
+      file: AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean
+    - declaration: AlgebraicGeometry.additiveGroupProductUnderlyingAffineSpaceIso_coordinate
+      file: AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean
+    - declaration: AlgebraicGeometry.stageProductCoordinatePullback_X
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge.lean
+    - declaration: AlgebraicGeometry.unitriangularStageCoordinateMap_underlying_spec
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge.lean
+    - declaration: AlgebraicGeometry.unitriangularStageCoordinateMap_underlying_affineSpace
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge.lean
+    - declaration: AlgebraicGeometry.stageProductSectionPullback_inclusion
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge.lean
+    - declaration: AlgebraicGeometry.stageProductSectionPullback_higher
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge.lean
+    - declaration: AlgebraicGeometry.unitriangularStageCoordinateSectionOver_comp
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge.lean
     - declaration: MvPolynomial.eraseCoordinates
       file: AlgebraicGroups/Algebra/LocalizedCoordinateQuotient.lean
     - declaration: MvPolynomial.localizedCoordinateIdeal
@@ -668,17 +689,11 @@ status:
 
 review:
   status: >-
-    Developed with AI agents. Accepted releases require independent AI-agent
-    mathematical, API, documentation and rights review, together with applicable
-    builds and complete transitive standard-axiom checks. Review, maintainer
-    acceptance and official publication are separate revision-specific decisions;
-    this metadata alone does not certify an arbitrary development commit.
+    AI-assisted development with independent agent review of individual
+    contributions; no human mathematical review is claimed.
   notes: >-
-    Where exact checking inputs remain unchanged, applicable prior build and
-    standard-axiom evidence may be reused under project policy. A new or
-    changed input requires its own applicable evidence. A schema-valid metadata
-    file is not a proof or source-coverage audit. See the public mathematical
-    scope, third-party credit and AI disclosure in README.md and CREDITS.md.
+    Mathematical scope and third-party credit appear in README.md and
+    CREDITS.md; this metadata does not assert complete source coverage.
 
 acknowledgements: >-
   The original formalization is credited collectively to Formal Frontier Agents.
@@ -689,6 +704,4 @@ acknowledgements: >-
   project dependencies retain their own licenses, authors and notices;
   Chris Birkbeck's determinant-section notice remains in the relevant module,
   and Antoine Chambert-Loir is credited for reused mathlib interfaces.
-  See CREDITS.md and the preserved contributor history for detail. Agent
-  development review does not imply human mathematical review, source-author
-  endorsement, official publication or source-coverage acceptance.
+  See CREDITS.md for mathematical background and contributor credit.
