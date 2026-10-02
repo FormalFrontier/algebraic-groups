@@ -14,6 +14,17 @@ third-party and AI involvement.
 
 ## Headline results
 
+- **Native closed unitriangular stages.** The actual quotient by forbidden
+  strict-upper entries is a Hopf algebra over any commutative base, with
+  closed stage and successor group-scheme arrows and multiplicative point
+  equivalences over every coefficient algebra. Its quotient is also a
+  polynomial `K`-algebra on surviving entries; the underlying scheme is
+  affine space *over* `Spec K`, without asserting an additive-group or Hopf
+  isomorphism. Rank-three/stage-two retains `(0,2)`, and zero rings, empty
+  ranks and exhausted stages are allowed. See the
+  [closed-stage guide](AlgebraicGroups/GroupScheme/UnitriangularStages/README.md),
+  [polynomial guide](AlgebraicGroups/Algebra/UnitriangularStagePolynomial/README.md)
+  and [underlying affine-space guide](AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace/README.md).
 - **Unitriangular group-scheme identity and tower coherence.** The native
   one-step base-change map agrees with the canonical pullback identity unit
   and direct-to-iterated scalar-tower compositor. An ordinary-import `Fin 2`
@@ -136,6 +147,9 @@ Ordinary-import clients under `AlgebraicGroupsTest` exercise representative
 statements on generic rings and boundary cases. For a starting path, use
 [unitriangular scheme base change](docs/UnitriangularSchemeBaseChange.md),
 [its identity/tower laws](docs/UnitriangularSchemeBaseChangeCoherence.md),
+[closed unitriangular stages](AlgebraicGroups/GroupScheme/UnitriangularStages/README.md),
+[stage polynomial coordinates](AlgebraicGroups/Algebra/UnitriangularStagePolynomial/README.md),
+[stage underlying affine space](AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace/README.md),
 [represented upper-triangular products](AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md),
 [the split kernel](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md),
 [finite diagonal products](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md)

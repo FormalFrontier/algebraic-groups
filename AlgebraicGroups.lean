@@ -14,6 +14,8 @@ public import AlgebraicGroups.Algebra.SymmetricAlgebraPoints
 public import AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal
 public import AlgebraicGroups.Algebra.SpecialLinearCoordinateRing
 public import AlgebraicGroups.Algebra.UnitriangularCoordinateRing
+public import AlgebraicGroups.Algebra.UnitriangularStageCoordinateRing
+public import AlgebraicGroups.Algebra.UnitriangularStagePolynomial
 public import AlgebraicGroups.Algebra.UnitriangularBaseChange
 public import AlgebraicGroups.Algebra.UnitriangularBaseChangeCoherence
 public import AlgebraicGroups.Algebra.UnitriangularHopfBaseChange
@@ -59,6 +61,8 @@ public import AlgebraicGroups.GroupScheme.DiagonalDimension
 public import AlgebraicGroups.GroupScheme.DiagonalProduct
 public import AlgebraicGroups.GroupScheme.Unitriangular
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
+public import AlgebraicGroups.GroupScheme.UnitriangularStages
+public import AlgebraicGroups.GroupScheme.UnitriangularStageAffineSpace
 public import AlgebraicGroups.GroupScheme.UnitriangularBaseChange
 public import AlgebraicGroups.GroupScheme.UnitriangularBaseChangeCoherence
 public import AlgebraicGroups.GroupTheory.UpperTriangular
@@ -121,7 +125,8 @@ public import AlgebraicGroups.Topology.KrullDimension
 
 /-!
 The aggregate exposes the finite upper-unitriangular Hopf quotient, affine
-group scheme and underlying affine geometry, native central filtration,
+group scheme and underlying affine geometry, native closed superdiagonal
+stage Hopf quotients and underlying affine-space presentations, central filtration,
 successive quotients, exact nilpotency class under nontriviality, the
 all-stage lower-central-series identification and the derived series
 and sharp prime-power exponent bounds for the native point group alongside

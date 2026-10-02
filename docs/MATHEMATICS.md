@@ -67,6 +67,32 @@ passage correspondence is maintained separately.
   APIs allow an empty basis and a zero test algebra. `Multiplicative` tags
   additive groups; none of these is the multiplicative End monoid or `GL(V)`.
 
+## Closed unitriangular stages
+
+- `UnitriangularStageCoordinateRing.ideal K n r` kills exactly the strict-upper
+  entries with `j.val < i.val + r`. Its genuine Hopf quotient
+  `CoordinateRing K n r` represents the closed group scheme
+  `AlgebraicGeometry.unitriangularStageScheme K n r` over `Spec K`.
+  `unitriangularStageSuccessor` embeds stage `r + 1` into stage `r` as a
+  group-object closed immersion, and `unitriangularStagePointsIso` compares
+  native matrix stages with represented group-valued points for every
+  commutative coefficient algebra. See the
+  [closed-stage guide](../AlgebraicGroups/GroupScheme/UnitriangularStages/README.md).
+- `UnitriangularStageCoordinateRing.polynomialEquiv K n r` presents that
+  *actual* stage quotient as `MvPolynomial (SurvivingPair n r) K`. Surviving
+  entries map to variables, forbidden entries to zero, and inverse variables
+  map back to quotient entries. This is a `K`-algebra equivalence, not a Hopf
+  equivalence; see the
+  [polynomial guide](../AlgebraicGroups/Algebra/UnitriangularStagePolynomial/README.md).
+- `AlgebraicGeometry.unitriangularStageUnderlyingAffineSpaceIso K n r`
+  identifies the underlying stage scheme with affine space on surviving
+  indices *over* `Spec K`, with forward and inverse `Spec.preimage` readbacks.
+  It is not an isomorphism with a product of additive group schemes. The
+  [affine-space guide](../AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace/README.md)
+  records the exact scope and boundary cases. Ordinary-import examples are
+  registered under `AlgebraicGroupsTest/GroupScheme` and
+  `AlgebraicGroupsTest/Algebra`.
+
 ## General and special linear geometry
 
 - `GeneralLinearCoordinateRing.CoordinateRing K n` is the determinant

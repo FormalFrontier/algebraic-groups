@@ -18,6 +18,18 @@ roles do not transfer mathematical authorship from the proof contributors to
 the integrators. The repository's history and preserved private origin records
 retain the more detailed contributor and reviewer mappings.
 
+Formal Frontier Agents developed the closed unitriangular-stage Hopf quotients,
+native stage schemes, polynomial coordinates and underlying affine-space
+comparisons. Distinct contributors carried out mathematical research, proof
+implementation, coefficient-law repairs and independent agent review. Lattice
+contributed mathematical planning, corrections, assembly and integration;
+these roles do not transfer the original contributors' proof authorship to the
+integrator. The focused
+[stage](AlgebraicGroups/GroupScheme/UnitriangularStages/README.md),
+[polynomial](AlgebraicGroups/Algebra/UnitriangularStagePolynomial/README.md) and
+[affine-space](AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace/README.md)
+guides record their reusable mathematical interfaces.
+
 The proofs reuse mathlib and separately maintained project dependencies; their
 contributors and licenses remain distinct. In particular the determinant-section
 module retains Chris Birkbeck's authentic 2021 Apache-2.0 notice, and the

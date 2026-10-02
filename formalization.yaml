@@ -6,7 +6,8 @@ project:
     Reusable Lean formalization of native matrix point groups, finite
     algebraic group schemes and their coordinate algebras. The library covers
     unitriangular and upper-triangular groups, diagonal products, split
-    kernels, unitriangular scalar base change and coherence, and selected
+    kernels, closed unitriangular stages and their underlying affine-space
+    presentations, unitriangular scalar base change and coherence, and selected
     dimension and geometric results. Precise hypotheses and exclusions are
     documented in README.md and the focused mathematical guides. Checked-in
     APIs are not by themselves proof of an independently accepted successor
@@ -78,7 +79,10 @@ status:
     coordinate-algebra definitions and results, with focused ordinary-import
     clients. Native unitriangular point groups have central, lower-central
     and derived series, superdiagonal quotient and exponent results with the
-    hypotheses described in their guides. Diagonal, triangular, GL and SL
+    hypotheses described in their guides. Native closed superdiagonal stages
+    have Hopf coordinate quotients, multiplicative points, a polynomial-algebra
+    presentation and underlying over-scheme affine-space isomorphisms over
+    arbitrary commutative bases. Diagonal, triangular, GL and SL
     constructions include selected products, representations, finite
     geometry and dimension results. Unitriangular coordinate algebras and
     group schemes have base-change and identity/tower coherence comparisons.
@@ -148,6 +152,28 @@ status:
       file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
     - declaration: UnitriangularCoordinateRing.finiteType
       file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
+    - declaration: UnitriangularStageCoordinateRing.ideal
+      file: AlgebraicGroups/Algebra/UnitriangularStageCoordinateRing.lean
+    - declaration: UnitriangularStageCoordinateRing.CoordinateRing
+      file: AlgebraicGroups/Algebra/UnitriangularStageCoordinateRing.lean
+    - declaration: UnitriangularStageCoordinateRing.mem_stage_iff
+      file: AlgebraicGroups/Algebra/UnitriangularStageCoordinateRing.lean
+    - declaration: UnitriangularStageCoordinateRing.ideal_isHopfIdeal_proof
+      file: AlgebraicGroups/Algebra/UnitriangularStageCoordinateRing.lean
+    - declaration: UnitriangularStageCoordinateRing.quotientBialgHom
+      file: AlgebraicGroups/Algebra/UnitriangularStageCoordinateRing.lean
+    - declaration: UnitriangularStageCoordinateRing.successor
+      file: AlgebraicGroups/Algebra/UnitriangularStageCoordinateRing.lean
+    - declaration: UnitriangularStageCoordinateRing.SurvivingPair
+      file: AlgebraicGroups/Algebra/UnitriangularStagePolynomial.lean
+    - declaration: UnitriangularStageCoordinateRing.polynomialEquiv
+      file: AlgebraicGroups/Algebra/UnitriangularStagePolynomial.lean
+    - declaration: UnitriangularStageCoordinateRing.polynomialEquiv_surviving
+      file: AlgebraicGroups/Algebra/UnitriangularStagePolynomial.lean
+    - declaration: UnitriangularStageCoordinateRing.polynomialEquiv_forbidden
+      file: AlgebraicGroups/Algebra/UnitriangularStagePolynomial.lean
+    - declaration: UnitriangularStageCoordinateRing.polynomialEquiv_symm_X
+      file: AlgebraicGroups/Algebra/UnitriangularStagePolynomial.lean
     - declaration: Matrix.unitriangularSubgroup
       file: AlgebraicGroups/GroupScheme/Unitriangular.lean
     - declaration: Matrix.UnitriangularGroup.map
@@ -168,6 +194,26 @@ status:
       file: AlgebraicGroups/GroupScheme/Unitriangular.lean
     - declaration: AlgebraicGeometry.unitriangularInclusion_point
       file: AlgebraicGroups/GroupScheme/Unitriangular.lean
+    - declaration: AlgebraicGeometry.unitriangularStageScheme
+      file: AlgebraicGroups/GroupScheme/UnitriangularStages.lean
+    - declaration: AlgebraicGeometry.unitriangularStageInclusion
+      file: AlgebraicGroups/GroupScheme/UnitriangularStages.lean
+    - declaration: AlgebraicGeometry.unitriangularStageInclusion_isClosedImmersion
+      file: AlgebraicGroups/GroupScheme/UnitriangularStages.lean
+    - declaration: AlgebraicGeometry.unitriangularStageSuccessor
+      file: AlgebraicGroups/GroupScheme/UnitriangularStages.lean
+    - declaration: AlgebraicGeometry.unitriangularStageSuccessor_isClosedImmersion
+      file: AlgebraicGroups/GroupScheme/UnitriangularStages.lean
+    - declaration: AlgebraicGeometry.unitriangularStagePointMulEquiv
+      file: AlgebraicGroups/GroupScheme/UnitriangularStages.lean
+    - declaration: AlgebraicGeometry.unitriangularStagePointsIso
+      file: AlgebraicGroups/GroupScheme/UnitriangularStages.lean
+    - declaration: AlgebraicGeometry.unitriangularStageUnderlyingAffineSpaceIso
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace.lean
+    - declaration: AlgebraicGeometry.unitriangularStageUnderlyingAffineSpaceIso_preimage_variable
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace.lean
+    - declaration: AlgebraicGeometry.unitriangularStageUnderlyingAffineSpaceIso_preimage_inverse
+      file: AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace.lean
     - declaration: AlgebraicGeometry.unitriangularUnderlyingAffineSpaceIso
       file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
     - declaration: AlgebraicGeometry.unitriangularUnderlyingAffineSpaceIso_preimage_variable
