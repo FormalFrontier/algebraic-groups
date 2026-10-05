@@ -42,3 +42,17 @@ provided.
 The [ordinary-import client](../../../AlgebraicGroupsTest/AlgebraicallyClosedCommonZero.lean)
 illustrates the theorems; see the [build guide](../../../docs/BUILDING.md)
 for pinned dependencies and cache-first commands.
+
+## References
+
+- The Stacks Project, [Theorem 10.34.1 (Hilbert Nullstellensatz)](https://stacks.math.columbia.edu/tag/00FV)
+  and [Lemma 10.60.12 (Krull's height theorem)](https://stacks.math.columbia.edu/tag/0BBZ).
+  These supply the mathematical zero-locus/radical and minimal-prime height
+  principles; arbitrary equations still require the known common zero above.
+- The mathlib community, [*Mathlib*](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5),
+  `Mathlib.RingTheory.Nullstellensatz` (`vanishingIdeal_zeroLocus_eq_radical`)
+  and `Mathlib.RingTheory.Ideal.KrullsHeightTheorem`
+  (`height_le_card_of_mem_minimalPrimes_span_finset`), and
+  `Mathlib.RingTheory.MvPolynomial.Homogeneous`
+  (`IsHomogeneous.coeff_eq_zero` for the origin). The evaluation height input
+  is `AlgebraicGroups.Algebra.PolynomialRationalPointHeight`.

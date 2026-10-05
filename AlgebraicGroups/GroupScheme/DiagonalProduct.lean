@@ -8,7 +8,29 @@ public import AlgebraicGroups.GroupScheme.Diagonal
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
-/-! # The diagonal group scheme is a finite product of multiplicative groups -/
+/-!
+# The diagonal group scheme is a finite product of multiplicative groups
+
+Milne identifies the diagonal subgroup over a field with a finite product of
+`Gₘ`. Here actual Hopf-coordinate projections and the global-sections
+adjunction establish the categorical product for **all** test schemes over
+any commutative base, not merely affine test-algebra points. The empty-index
+product is terminal.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2.9 (p. 42) for diagonal `D_n`,
+  and §12.d (p. 234, after Definition 12.11) for `D_n` as a product of `Gₘ`.
+* Mathlib, `Mathlib.AlgebraicGeometry.Group.Affine`
+  (`algΓAlgSpecAdjunction` and `hopfSpec`),
+  `Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits` (limits created by
+  `Grp.forget`), `Mathlib.CategoryTheory.Limits.Shapes.Products` (fans and
+  product projections), and `Mathlib.CategoryTheory.Limits.Shapes.IsTerminal`
+  (empty-product terminality).
+* `AlgebraicGroups.GroupScheme.Multiplicative` for Laurent-coordinate units
+  and `AlgebraicGroups.GroupScheme.Diagonal` for the diagonal Hopf quotient
+  and its group-valued algebra points.
+-/
 
 @[expose] public section
 
@@ -74,7 +96,8 @@ private theorem diagonalGroupCoordinate_comul (j : n) :
   · simp [Algebra.TensorProduct.map_tmul]
 
 set_option linter.style.haveILetI false in
-/-- Each diagonal entry is group-like, giving a genuine Hopf-algebra projection. -/
+/-- Each diagonal entry is group-like, giving a Hopf-algebra projection to
+one `Gₘ` factor of Milne's diagonal product (*Algebraic Groups*, §12.d). -/
 def diagonalGroupProjectionBialgHom (j : n) :
     multiplicativeGroupCoordinateRing K →ₐc[K] DiagonalCoordinateRing.CoordinateRing K n :=
   BialgHom.ofAlgHom (diagonalGroupProjectionCoordinateMap K n j)
@@ -161,7 +184,8 @@ theorem diagonalAffineHomEquiv_comp (X : Over (Spec (.of K)))
     ((algΓAlgSpecAdjunction (.of K)).homEquiv_naturality_right_symm hom
       (CommAlgCat.ofHom map).op)
 
-/-- Maps from any `K`-scheme to the diagonal group are tuples of global units. -/
+/-- Maps from any `K`-scheme to the diagonal group are tuples of global units,
+using Mathlib's `algΓAlgSpecAdjunction`, also when the source is nonaffine. -/
 def diagonalGroupHomUnits (X : Over (Spec (.of K))) :
     (X ⟶ (diagonalGroupScheme K n).X) ≃
       (n → ((algΓ (.of K)).obj X).unopˣ) :=
@@ -254,7 +278,9 @@ def diagonalGroupProductFan_isLimit : Limits.IsLimit (diagonalGroupProductFan K 
   Limits.isLimitOfReflects (Grp.forget (Over (Spec (.of K))))
     (diagonalGroupProductFan_forget_isLimit K n)
 
-/-- The literal finite categorical product of multiplicative group schemes. -/
+/-- The finite categorical product of multiplicative group schemes over any
+commutative base; compare Milne, *Algebraic Groups* (2017), §12.d (p. 234),
+for the diagonal product over a field. -/
 def diagonalGroupSchemeProductIso :
     diagonalGroupScheme K n ≅ (∏ᶜ fun _ : n ↦ multiplicativeGroupScheme K) :=
   (diagonalGroupProductFan_isLimit K n).conePointUniqueUpToIso

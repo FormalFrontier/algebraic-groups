@@ -15,6 +15,23 @@ The actual diagonal Hopf quotient of the determinant-localized general linear
 coordinate algebra is a localization of the polynomial algebra in its retained
 diagonal entries. Over a field, evaluation of those entries at one witnesses the
 full dimension, including over finite fields and for an empty index type.
+
+Milne's diagonal group over a field is the mathematical antecedent. Here the
+two ideal inclusions identify the determinant-localized quotient over any
+commutative ring; the field-only dimension calculation uses an explicit
+identity evaluation, not a general dimension formula for products.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.9 (diagonal matrices over a field).
+* `AlgebraicGroups.Algebra.LocalizedCoordinateQuotient` (erasing coordinates in a
+  localized quotient) and `AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension`
+  (dimension of a polynomial localization with a specified nonvanishing point);
+  `AlgebraicGroups.Algebra.DiagonalCoordinateRing` and
+  `AlgebraicGroups.GroupScheme.Diagonal` supply the quotient and underlying scheme.
+* Mathlib, `Mathlib.RingTheory.KrullDimension.Polynomial` and
+  `Mathlib.RingTheory.Spectrum.Prime.Topology` (polynomial and affine-spectrum
+  dimension), together with its matrix determinant and polynomial evaluation APIs.
 -/
 
 @[expose] public section
@@ -32,7 +49,9 @@ variable (K : Type u) [CommRing K] (ι : Type u) [Fintype ι] [DecidableEq ι]
 /-- Indices of the retained diagonal polynomial coordinates. -/
 def diagonalIndices : Set (ι × ι) := {index | index.1 = index.2}
 
-/-- The native off-diagonal ideal is the ideal of eliminated coordinates in GL. -/
+/-- The off-diagonal GL quotient ideal equals the ideal of eliminated coordinates.
+The diagonal-matrix equations in Milne, *Algebraic Groups* (2017), item 2.9,
+are the field-case antecedent; both ideal inclusions are proved over `CommRing K`. -/
 theorem ideal_eq_localizedCoordinateIdeal :
     ideal K ι = MvPolynomial.localizedCoordinateIdeal K (diagonalIndices ι)
       (GeneralLinearCoordinateRing.determinant K ι) := by
@@ -54,8 +73,10 @@ theorem ideal_eq_localizedCoordinateIdeal :
     apply Ideal.subset_span
     exact ⟨(i, j), by simp [relation, hne]⟩
 
-/-- The actual diagonal coordinate ring, as a localization of the retained
-polynomial coordinates. This also holds over the zero ring. -/
+/-- The diagonal coordinate ring as a localization of the retained polynomial
+coordinates, including over the zero ring. This specializes
+`MvPolynomial.localizedCoordinateQuotientEquiv` to the identified GL quotient ideal;
+Milne, *Algebraic Groups* (2017), item 2.9, treats diagonal groups over a field. -/
 def localizedPolynomialEquiv :
     CoordinateRing K ι ≃ₐ[K]
       Localization.Away (MvPolynomial.eraseCoordinates K (diagonalIndices ι)
@@ -138,7 +159,10 @@ namespace AlgebraicGeometry
 
 variable (K : Type u) [Field K] (ι : Type u) [Fintype ι] [DecidableEq ι]
 
-/-- The native finite diagonal coordinate ring has dimension `card ι`. -/
+/-- The finite diagonal coordinate ring has dimension `card ι` over every field.
+Milne, *Algebraic Groups* (2017), item 2.9, gives the field-case diagonal
+description; the dimension proof applies the supplied-point polynomial-localization
+theorem to the identity evaluation, then counts variables by `diagonalIndicesEquiv`. -/
 theorem diagonalCoordinateRing_ringKrullDim :
     ringKrullDim (DiagonalCoordinateRing.CoordinateRing K ι) =
       ((Fintype.card ι : ℕ) : WithBot ℕ∞) := by
@@ -158,8 +182,10 @@ theorem diagonalCoordinateRing_ringKrullDim :
         (by rw [DiagonalCoordinateRing.erasedDeterminant_eval_one]; exact one_ne_zero)
     _ = _ := by rw [Fintype.card_congr (DiagonalCoordinateRing.diagonalIndicesEquiv ι)]
 
-/-- The underlying affine scheme of the actual finite diagonal group has
-topological Krull dimension `card ι`. -/
+/-- The diagonal group's underlying affine scheme has topological Krull
+dimension `card ι` over every field. Milne, *Algebraic Groups* (2017),
+item 2.9, gives the diagonal field-case antecedent; Mathlib's
+`PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim` transfers the ring result. -/
 theorem diagonalGroupUnderlyingScheme_topologicalKrullDim :
     topologicalKrullDim (diagonalGroupUnderlyingScheme K ι).left =
       ((Fintype.card ι : ℕ) : WithBot ℕ∞) := by

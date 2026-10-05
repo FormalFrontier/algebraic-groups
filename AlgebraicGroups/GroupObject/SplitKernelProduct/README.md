@@ -48,7 +48,17 @@ categories and do not replace this arbitrary-cartesian result. The abstract
 construction does not assume or prove determinant or smoothness; the separate
 `AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct` specializes it
 to the finite determinant. A Formal Frontier AI-agent contributor authored the original generic
-implementation; exact contribution and review records are maintained separately.
+implementation.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), Definition 1.61, for the
+  algebraic-group kernel and exact-sequence context. The arbitrary-section
+  underlying-object isomorphism here is a more general categorical construction,
+  not a direct-product group-object assertion.
+- Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp` for the Hom-group
+  laws and `Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs`
+  for the kernel-pullback universal property used in the proof.
 
 ## Focused reproduction
 

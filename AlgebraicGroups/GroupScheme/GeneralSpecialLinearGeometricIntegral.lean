@@ -17,6 +17,23 @@ public import Mathlib.Algebra.Ring.Hom.InjSurj
 The genuine coordinate algebras of finite `GL` and `SL` are domains over integral
 base rings. Over any commutative base their structure maps have integral fibers
 after extension to every field, so both morphisms are geometrically integral.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2.8 for the field-base determinant
+  localization of `GL`, and §2.42 for the field-base domain argument for `SL`.
+  The assertions here also concern integral-base coordinate rings and
+  relative geometric integrality over arbitrary bases.
+* J. S. Milne, *Basic Theory of Affine Group Schemes* (2012), XIII §3,
+  item 3.14: a right-diagonal determinant splitting for positive rank.
+  The algebra section used here instead comes from left normalization; it is
+  not an assertion that arbitrary injections survive tensor products.
+* Mathlib, `RingTheory/Localization/Away/Basic`,
+  `RingTheory/Localization/BaseChange`, `RingTheory/TensorProduct/MvPolynomial`,
+  `AlgebraicGeometry/Geometrically/Integral` and
+  `AlgebraicGeometry/Pullbacks`: localization domains, tensor equivalences,
+  geometric-fiber criteria and affine pullbacks. Compatibility of the generic
+  determinant with coefficient maps is checked explicitly below.
 -/
 
 @[expose] public section
@@ -37,7 +54,9 @@ namespace AlgebraicGeometry
 variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
 
 /-- The actual determinant-localized finite general linear coordinate ring is a domain
-over an integral domain, including for an empty index. -/
+over an integral domain, including for an empty index. This extends the
+field-base `GL` determinant localization in Milne, *Algebraic Groups*, §2.8, using
+mathlib's domain theorem for localization away from a nonzero element. -/
 instance generalLinearCoordinateRing_isDomain [IsDomain K] :
     IsDomain (GeneralLinearCoordinateRing.CoordinateRing K n) :=
   Localization.Away.isDomain (Matrix.det_mvPolynomialX_ne_zero n K)
@@ -78,7 +97,9 @@ private theorem specialLinearSection_split :
     exact AlgEquiv.comp_symm (emptySpecialLinearEquiv K n)
 
 /-- The actual determinant-one coordinate ring is a domain over every integral base,
-including in rank zero. -/
+including in rank zero. Compare the positive-rank field-base result in Milne,
+*Algebraic Groups*, §2.42: here the algebra section into the GL domain is
+injective, while rank zero uses the quotient-bottom equivalence. -/
 instance specialLinearCoordinateRing_isDomain [IsDomain K] :
     IsDomain (SpecialLinearCoordinateRing.CoordinateRing K n) := by
   have injective : Function.Injective (specialLinearSection K n) := by
@@ -87,13 +108,15 @@ instance specialLinearCoordinateRing_isDomain [IsDomain K] :
     simpa only [← AlgHom.comp_apply, specialLinearSection_split, AlgHom.id_apply] using applied
   exact injective.isDomain (specialLinearSection K n)
 
-/-- The total space of finite `GL` is integral over any integral base. -/
+/-- The total space of finite `GL` is integral over any integral base, using
+mathlib's integral-affine-Spec instance for the GL coordinate domain. -/
 instance generalLinearGroupUnderlyingScheme_isIntegral [IsDomain K] :
     IsIntegral (generalLinearGroupUnderlyingScheme K n).left := by
   change IsIntegral (Spec (.of (GeneralLinearCoordinateRing.CoordinateRing K n)))
   infer_instance
 
-/-- The total space of finite `SL` is integral over any integral base. -/
+/-- The total space of finite `SL` is integral over any integral base, using
+mathlib's integral-affine-Spec instance for the SL coordinate domain. -/
 instance specialLinearGroupUnderlyingScheme_isIntegral [IsDomain K] :
     IsIntegral (specialLinearGroupUnderlyingScheme K n).left := by
   change IsIntegral (Spec (.of (SpecialLinearCoordinateRing.CoordinateRing K n)))
@@ -164,7 +187,10 @@ private theorem integral_closedUnderIsomorphisms :
   exact IsIntegral.of_isIso iso.hom
 
 /-- Every geometric fiber of the genuine finite general linear structure morphism
-is integral, for every finite index and every commutative base. -/
+is integral, for every finite index and every commutative base. The field
+presentation follows Milne, *Algebraic Groups*, §2.8; the relative proof uses
+mathlib's polynomial-tensor and localization equivalences, geometric-fiber
+criterion and affine-Spec pullback isomorphism. -/
 instance generalLinearGroupUnderlyingScheme_geometricallyIntegral :
     GeometricallyIntegral (generalLinearGroupUnderlyingScheme K n).hom := by
   letI : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
@@ -188,7 +214,10 @@ instance generalLinearGroupUnderlyingScheme_geometricallyIntegral :
     (pullbackSpecIso K (GeneralLinearCoordinateRing.CoordinateRing K n) F).inv
 
 /-- Every geometric fiber of the genuine finite special linear structure morphism
-is integral, for every finite index and every commutative base. -/
+is integral, for every finite index and every commutative base. The field
+case extends Milne, *Algebraic Groups*, §2.42; the relative proof tensors
+the explicit algebra-section identity and uses mathlib's geometric-fiber
+criterion and affine-Spec pullback isomorphism. -/
 instance specialLinearGroupUnderlyingScheme_geometricallyIntegral :
     GeometricallyIntegral (specialLinearGroupUnderlyingScheme K n).hom := by
   letI : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=

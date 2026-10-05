@@ -73,3 +73,20 @@ lake build
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
 credit appears in [CREDITS](../../../CREDITS.md).
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.9: the unitriangular
+  polynomial-coordinate presentation over a field. The over-scheme isomorphism
+  and the relative geometric statements for all commutative rings follow from
+  the existing `UnitriangularCoordinateRing.freeEquiv` and the APIs below;
+  they are not attributed wholesale to this passage.
+- Mathlib, `Mathlib.AlgebraicGeometry.AffineSpace` (Andrew Yang's affine-space
+  `SpecIso` and Justus Springer's geometric-integrality instance),
+  `Mathlib.AlgebraicGeometry.Morphisms.Smooth` and
+  `Mathlib.RingTheory.Smooth.StandardSmooth` (smoothness),
+  `Mathlib.RingTheory.KrullDimension.Polynomial` and
+  `Mathlib.Data.Fintype.Prod` (field dimension and strict-pair count).
+- The [unitriangular group-scheme guide](../Unitriangular/README.md) describes
+  the earlier polynomial equivalence and Hopf quotient; the geometry in this
+  guide does not equate its group law with affine-space addition.

@@ -13,8 +13,23 @@ public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 # General linear groups under extension of scalars
 
 For an arbitrary module, extension of scalars acts on endomorphisms by the
-existing tensor-cancellation construction. Its multiplicative structure makes
-the groups of invertible endomorphisms functorial in the coefficient algebra.
+tensor-cancellation construction. Its multiplicative structure makes the
+groups of invertible endomorphisms functorial in every coefficient algebra map,
+without finiteness of the module or flatness or injectivity of the coefficient
+map. A module isomorphism acts by conjugation; an arbitrary linear map does not
+induce a homomorphism on automorphism groups.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2, item 2.8, p. 41: the functor
+  of automorphisms of the scalar extension of a vector space over a field.
+* Mathlib, `LinearAlgebra/TensorProduct/Tower`: `Module.End.baseChangeHom` and
+  `AlgebraTensorModule.cancelBaseChange` underlying endomorphism extension.
+* Mathlib, `Algebra/Category/Grp/Adjunctions`: `MonCat.units` turns the
+  endomorphism composition functor into a group-valued functor.
+* Mathlib, `LinearAlgebra/GeneralLinearGroup/Basic`: the comparison
+  `generalLinearEquiv` between endomorphism units and linear automorphisms,
+  and `congrLinearEquiv` for conjugation by linear equivalences.
 -/
 
 public section
@@ -61,7 +76,10 @@ variable (K : Type u) [CommRing K] (V : Type u) [AddCommGroup V] [Module K V]
     intro h
     exact (endBaseChange_comp K V _ _ _ f.hom g.hom h).symm
 
-/-- The general linear group of `R ⊗[K] V` is functorial in every coefficient algebra. -/
+/-- The automorphism-group functor on scalar extensions, extending Milne's
+case over a field base, with all commutative algebras over that field as test
+algebras (*Algebraic Groups*, item 2.8), to arbitrary commutative base rings
+and arbitrary modules. -/
 @[expose] def generalLinearModuleFunctor : CommAlgCat K ⥤ GrpCat :=
   endCompositionFunctor K V ⋙ MonCat.units
 
@@ -104,7 +122,8 @@ theorem generalLinearModuleBaseChange_tmul (S : Type u) [CommRing S] [Algebra K 
       s • (g.toLinearMap.rTensor V) (f.val (1 ⊗ₜ[K] v)) := by
   rw [generalLinearModuleBaseChange_val, endBaseChange_tmul]
 
-/-- Comparison with actual linear automorphisms, without finiteness assumptions. -/
+/-- Endomorphism units are linear automorphisms by Mathlib's
+`LinearMap.GeneralLinearGroup.generalLinearEquiv`, without finiteness assumptions. -/
 def generalLinearModuleAutomorphisms :
     LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R) ≃*
       (SourceOrderTensor K V R ≃ₗ[R] SourceOrderTensor K V R) :=

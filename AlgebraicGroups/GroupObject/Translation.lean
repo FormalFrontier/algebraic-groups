@@ -11,6 +11,15 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 This file supplies the left-translation isomorphism complementary to
 `CategoryTheory.GrpObj.mulRight`.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), items 1.7–1.8, for rational
+  group points and the left-translation isomorphism of algebraic groups.
+  The results here apply to points `𝟙_ C ⟶ A` of an arbitrary group object;
+  no closed-point transitivity is asserted.
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, especially
+  `GrpObj.mulRight` and inversion, for the group-object translation API.
 -/
 
 public section
@@ -27,7 +36,8 @@ universe v u
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
-/-- The left-translation isomorphism `(f * ·)` of a group object. -/
+/-- The left-translation isomorphism `(f * ·)` of a group object.
+For algebraic groups and rational points, see Milne, *Algebraic Groups* (2017), item 1.8. -/
 @[to_additive /-- The left-translation isomorphism `(f + ·)` of an additive group object. -/]
 def mulLeft {A : C} [GrpObj A] (f : 𝟙_ C ⟶ A) : A ≅ A :=
   asIso ι[A] ≪≫ mulRight (f ≫ ι[A]) ≪≫ asIso ι[A]
@@ -58,7 +68,8 @@ lemma unit_comp_mulLeft_hom {A : C} [GrpObj A] (a : 𝟙_ C ⟶ A) :
     CategoryTheory.Hom.mul_def, CategoryTheory.Hom.one_def] using (mul_one a)
 
 /-- Composing left translation by `b` with left translation by `a` is left
-translation by `a * b`. -/
+translation by `a * b`. This is the categorical composition order of the
+identity `lₐ ∘ lᵦ = lₐᵦ` in Milne, *Algebraic Groups* (2017), item 1.8. -/
 @[to_additive
   /-- Composing additive left translation by `b` with additive left translation
   by `a` is additive left translation by `a + b`. -/]

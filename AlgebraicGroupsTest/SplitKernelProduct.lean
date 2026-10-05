@@ -8,6 +8,24 @@ public import AlgebraicGroups.GroupObject.SplitKernelProduct
 public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
+/-!
+# An underlying split-kernel product with a nonmultiplicative section
+
+For a genuine kernel pullback, the forward product is section first,
+`e(a) * i(n)`, and the inverse takes the kernel remainder
+`e(q(g))⁻¹ * g`. Neither formula requires the section to be multiplicative.
+For the terminal quotient of `Multiplicative ℤ`, the section taking its sole
+point to `ofAdd 1` is not multiplicative; the underlying product isomorphism
+acts by translation `n ↦ 1 + n`, not by a group-product isomorphism.
+
+## References
+
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp` (group-object and
+  Hom-group operations), `Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic`
+  (pullback universal property), and `Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp`
+  (group objects in `Type`).
+-/
+
 public section
 
 set_option warningAsError true

@@ -14,6 +14,17 @@ public import Mathlib.AlgebraicGeometry.Properties
 This file records basic properties of the closed subscheme cut out by the
 nilradical ideal sheaf, including its universal property for morphisms from
 reduced schemes and its functoriality.
+
+## References
+
+- The Stacks Project, [Section 26.12 (Tag 01IZ)](https://stacks.math.columbia.edu/tag/01IZ),
+  especially Lemma 26.12.4 (Tag 01J3) and Definition 26.12.5 (Tag 01J4), for
+  the reduced induced structure and scheme reduction.
+- J. S. Milne, *Algebraic Groups*, proof of Proposition 1.16, for the
+  factorization of field-valued points through scheme reduction.
+- Mathlib's `Scheme.nilradical`, `Scheme.IdealSheafData.subscheme`, and
+  `IsClosedImmersion.lift` supply the sheaf, closed subscheme, and factorization API
+  used for the functor and its natural inclusion.
 -/
 
 public section
@@ -60,7 +71,8 @@ lemma Scheme.Hom.liftNilradicalSubscheme_fac {Y X : Scheme.{u}}
   IsClosedImmersion.lift_fac _ _ _
 
 /-- A morphism from a reduced scheme factors uniquely through the closed subscheme cut out by
-the target's nilradical. -/
+the target's nilradical, the universal property of scheme reduction. Milne,
+*Algebraic Groups*, Proposition 1.16 uses the field-valued-point case. -/
 theorem Scheme.Hom.existsUnique_liftNilradicalSubscheme {Y X : Scheme.{u}}
     (f : Y ⟶ X) [IsReduced Y] :
     ∃! g : (Y ⟶ X.nilradical.subscheme), g ≫ X.nilradical.subschemeι = f := by
@@ -69,7 +81,8 @@ theorem Scheme.Hom.existsUnique_liftNilradicalSubscheme {Y X : Scheme.{u}}
   apply (cancel_mono X.nilradical.subschemeι).mp
   rw [hg, f.liftNilradicalSubscheme_fac]
 
-/-- Scheme reduction, functorially given by the closed subscheme cut out by the nilradical. -/
+/-- Scheme reduction, functorially given by the closed subscheme cut out by the nilradical
+(Stacks Project, Definition 26.12.5, Tag 01J4). -/
 @[expose] noncomputable def Scheme.reduction : Scheme.{u} ⥤ Scheme.{u} where
   obj X := X.nilradical.subscheme
   map {X Y} f := (X.nilradical.subschemeι ≫ f).liftNilradicalSubscheme

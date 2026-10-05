@@ -16,6 +16,16 @@ The restricted conjugation is defined by the kernel pullback, without a group st
 on the kernel or a multiplicative section. When the kernel and section are group-object
 homomorphisms, the underlying product trivialization has a twisted, not a direct-product,
 multiplication law.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 1.61, for the algebraic-group
+  kernel and extension context. The section-first twisted law here is proved for
+  group objects in an arbitrary cartesian monoidal category.
+* Mathlib, `GrpObj.conj` and the Hom-group laws in
+  `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, together with the
+  `IsPullback.lift`/`hom_ext` universal-property API. These supply the
+  categorical conjugation and kernel restriction used below.
 -/
 
 set_option warningAsError true
@@ -102,7 +112,10 @@ theorem splitKernelConj_mul {T : C} (a a' : T ⟶ Q) (n : T ⟶ N) :
     group
   · simp
 
-/-- The section-first product law on arbitrary test-object coordinates. -/
+/-- The section-first product law on arbitrary test-object coordinates.
+With `F(n,a) = e(a) * i(n)`, its kernel coordinate is
+`alpha(a'⁻¹,n) * n'`, where `alpha` is conjugation by the section;
+this is not the kernel-first semidirect law. -/
 theorem splitKernelProductIso_mul_lift {T : C} (n n' : T ⟶ N) (a a' : T ⟶ Q) :
     lift ((lift (a'⁻¹) n ≫ splitKernelConj i q e hN he) * n') (a * a') ≫
         (splitKernelProductIso i q e hN he).hom =

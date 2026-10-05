@@ -21,6 +21,18 @@ coordinates into the stage coordinate ring. This identifies the entire arrow
 over the base, not just its points. Sending higher variables to zero defines
 the ring pullback of a section of this underlying over-scheme projection;
 the section does not assert compatibility with group multiplication.
+
+Milne's unitriangular examples and filtration motivate the setting but do not
+state this arbitrary-ring positive-stage over-scheme projection or section.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.9 and item 6.49
+  (unitriangular groups and their filtration); item 2.1 (the additive group).
+* Mathlib, `Mathlib.Algebra.MvPolynomial.Rename` (variable renaming and
+  `MvPolynomial.killCompl`), `Mathlib.AlgebraicGeometry.AffineSpace`
+  (`AffineSpace.SpecIso`), and the categorical products and affine-Spec/global-
+  section constructions cited in `AdditiveProductAffineSpace`.
 -/
 
 @[expose] public section
@@ -78,7 +90,8 @@ theorem stageSurviving_gap_gt_of_not_mem_range (hr : 1 ≤ r)
   have hle := s.2
   omega
 
-/-- The complete algebra pullback of the affine coordinate projection. -/
+/-- The complete algebra pullback of the affine coordinate projection, using
+Mathlib's `MvPolynomial.rename` and the stage polynomial equivalence. -/
 def stageProductCoordinatePullback (hr : 1 ≤ r) :
     MvPolynomial (Matrix.UnitriangularGroup.superdiagonalIndex n r) K →ₐ[K]
       CoordinateRing K n r :=
@@ -185,7 +198,10 @@ theorem unitriangularStage_projection_triangle (hr : 1 ≤ r)
   rfl
 
 /-- Equality of the *entire* underlying over-arrows, by the generic
-polynomial product fan's universal property for arbitrary over-schemes. -/
+polynomial product fan's universal property for arbitrary over-schemes.
+This uses Mathlib's `MvPolynomial.rename` and the affine-Spec/product
+constructions cited above; Milne's item 6.49 is filtration context, not a
+statement of this over-scheme arrow identity. -/
 theorem unitriangularStageCoordinateMap_underlying_spec (hr : 1 ≤ r) :
     (unitriangularStageCoordinateMap K n r hr).hom.hom ≫
         (additiveGroupProductUnderlyingSpecIso K
@@ -198,7 +214,8 @@ theorem unitriangularStageCoordinateMap_underlying_spec (hr : 1 ≤ r) :
   exact unitriangularStage_projection_triangle K n r hr ij
 
 /-- The full affine-space arrow, transported through the official stage
-affine-space iso and the generic actual-product affine-space iso. -/
+affine-space iso and the generic actual-product affine-space iso, using
+Mathlib's `AffineSpace.SpecIso` on the surviving and current variables. -/
 theorem unitriangularStageCoordinateMap_underlying_affineSpace (hr : 1 ≤ r) :
     (unitriangularStageUnderlyingAffineSpaceIso K n r).inv ≫
         (unitriangularStageCoordinateMap K n r hr).hom.hom ≫
@@ -227,7 +244,8 @@ theorem unitriangularStageCoordinateMap_underlying_affineSpace (hr : 1 ≤ r) :
       rw [unitriangularStageUnderlyingSpecIso, Iso.trans_hom]
       simp only [← Category.assoc, Iso.inv_hom_id, Category.id_comp, Iso.symm_hom]
 
-/-- Kill the higher-gap variables and retain the current superdiagonal. -/
+/-- Kill the higher-gap variables and retain the current superdiagonal,
+using Mathlib's `MvPolynomial.killCompl`. -/
 def stageProductCoordinateKill (hr : 1 ≤ r) :
     MvPolynomial (SurvivingPair n r) K →ₐ[K]
       MvPolynomial (Matrix.UnitriangularGroup.superdiagonalIndex n r) K :=
@@ -397,7 +415,9 @@ theorem unitriangularStageCoordinateSectionOver_higher (hr : 1 ≤ r)
     stageProductSectionPullback_higher K n r hr s hs]
 
 /-- The underlying section is a right inverse of the actual categorical
-positive-stage group-scheme coordinate map after forgetting groups. -/
+positive-stage group-scheme coordinate map after forgetting groups. It uses
+Mathlib's `MvPolynomial.killCompl_comp_rename`; no group-scheme splitting or
+published theorem of Milne is asserted. -/
 theorem unitriangularStageCoordinateSectionOver_comp (hr : 1 ≤ r) :
     unitriangularStageCoordinateSectionOver K n r hr ≫
         (unitriangularStageCoordinateMap K n r hr).hom.hom =

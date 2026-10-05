@@ -13,6 +13,10 @@ unitriangularStageCoordinateMap K n r hr :
       additiveGroupScheme K)
 ```
 
+Milne's one-entry additive-group quotients over a field provide antecedents
+for individual coordinates. This map combines an entire positive
+superdiagonal over arbitrary commutative base rings.
+
 For each index, the
 [`UnitriangularStageCoordinateRing.coordinateBialgHom`](../../Algebra/UnitriangularStageCoordinates.lean)
 sends the additive group's rank-one symmetric-algebra generator to the
@@ -31,7 +35,8 @@ component of `superdiagonalCoordinateHom` under
 The target `Multiplicative (superdiagonalIndex n r → R)` uses pointwise
 **addition**, not multiplication of matrices. The separate
 `unitriangularStageCoordinateMap_point_natural` states compatibility with
-arbitrary `K`-algebra homomorphisms. The successor-stage coordinates vanish
+arbitrary `K`-algebra homomorphisms, which need not be injective or surjective;
+this is not a base-scheme-change theorem. The successor-stage coordinates vanish
 by `UnitriangularStageCoordinateRing.successor_coordinate`, and
 `unitriangularStageCoordinateMap_successor_zero` identifies the composite
 `S_(r+1) → S_r → Gₐ^J` with the **zero group-scheme morphism**.
@@ -56,5 +61,17 @@ The separate [kernel guide](../UnitriangularStageKernel/README.md) gives the
 stronger underlying over-scheme pullback. Neither result supplies a whole-stage
 additive Hopf/group-scheme isomorphism, group-homomorphic section, represented
 or sheaf quotient, surjectivity, effective epimorphism, flatness, smoothness,
-descent, native base-change tower or source-level coverage. See the repository
+descent or native base-change tower. See the repository
 [credits](../../../CREDITS.md) for Formal Frontier Agents' contributor roles.
+
+## References
+
+- J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
+  over a Field*, Cambridge University Press, 2017, item 2.1 (the additive
+  group) and §6.49 (one-entry additive quotients of the finer filtration).
+- Mathlib contributors, `Mathlib.AlgebraicGeometry.Group.Affine` (`hopfSpec`),
+  `Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits` and
+  `Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts` (group-object
+  products).
+- The existing rank-one `Additive` and point-group
+  `UnitriangularSuperdiagonalQuotients` interfaces supply the comparison.

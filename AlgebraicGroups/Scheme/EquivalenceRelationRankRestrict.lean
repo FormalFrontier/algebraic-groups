@@ -15,6 +15,23 @@ public import AlgebraicGroups.Scheme.EquivalenceRelationRestrict
 This file restricts a finite locally free internal equivalence relation to one
 of its invariant rank strata.  It also compares the scheme-theoretic rank with
 the rank of the induced map on affine coordinate rings.
+
+Both legs restrict to the same preimage because rank is invariant. The
+restricted first coordinate map is finite, flat and finitely presented,
+and symmetry transfers these properties and the rank to the second leg.
+The scheme and affine-coordinate ranks equal the stratum index, including
+for an empty stratum.
+
+## References
+
+* The Stacks Project, Lemma 39.23.3
+  ([tag 03BI](https://stacks.math.columbia.edu/tag/03BI)), restricts a
+  finite locally free groupoid to each invariant constant-rank piece.
+* Mathlib, `Mathlib.AlgebraicGeometry.Morphisms.FlatRank`, supplies the
+  pullback rank comparison and public `Scheme.Hom.finrank_SpecMap_eq_finrank`;
+  `isoSpec` naturality identifies affine schemes with their spectra.
+  `AlgebraicGroups.Scheme.EquivalenceRelationRestrict` supplies the
+  common-preimage restriction of an internal equivalence relation.
 -/
 
 open CategoryTheory Limits
@@ -99,7 +116,9 @@ def equivalenceRelationFinrankOpen [LocallyOfFinitePresentation p₁]
     (preimage_finrankOpen_eq h r)
 
 /-- On affine schemes, scheme-theoretic rank agrees with the rank of the map
-on global sections at the corresponding prime. -/
+on global sections at the corresponding prime. The public `Spec.map` rank
+formula, pullback invariance and `isoSpec` naturality give this affine
+comparison underlying Mathlib's `Scheme.Hom.finrank`. -/
 lemma finrank_eq_appTop_finrank {Y Z : Scheme.{u}} (f : Y ⟶ Z)
     [IsAffine Y] [IsAffine Z] [Flat f] [IsFinite f] (z : Z) :
     f.finrank z = f.appTop.hom.finrank (Z.isoSpec.hom z) := by

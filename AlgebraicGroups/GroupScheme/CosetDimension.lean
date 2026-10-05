@@ -17,6 +17,26 @@ This file gives a dimension-zero criterion for a represented coset quotient.
 If the subgroup has open underlying range and an fppf morphism has the subgroup
 right-action as its self-pullback, then an algebraic quotient over an
 algebraically closed field has topological Krull dimension at most zero.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Proposition 5.23 (the dimension
+  formula for an algebraic coset quotient), Theorem 5.28 / Theorem B.37
+  (existence of such quotients over a field), and Proposition 8.37 (the
+  reduced-identity-component quotient used in the anti-affine argument).
+  The dimension-zero conclusion here is conditional on a supplied quotient;
+  its proof translates open ranges and uses Jacobson closed points and fppf
+  openness, rather than formalizing the dimension-subtraction proof of 5.23.
+* `AlgebraicGroups.GroupScheme.ClosedPoints` supplies the rational/closed-point
+  equivalence, `AlgebraicGroups.GroupScheme.ReducedIdentityComponent` the
+  open underlying range of `(G_red)⁰ ⟶ G`, and
+  `AlgebraicGroups.Topology.KrullDimension` the Jacobson discreteness lemma;
+  `AlgebraicGroups.GroupScheme.CosetQuotient` supplies the separately defined
+  fppf coset sheaf and its recognition criterion, not a quotient construction.
+* Mathlib, `Mathlib.Topology.JacobsonSpace` (closed points in locally closed
+  subsets), `Mathlib.Topology.KrullDimension` (dimension of a discrete space),
+  and `Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen` (openness of flat
+  locally finitely presented morphisms).
 -/
 
 @[expose] public section
@@ -56,9 +76,16 @@ private lemma cosetTranslate_comp
     _ = (toUnit H ≫ a) ≫ q := by rw [← Category.assoc, lift_fst]
 
 /-- Let `H ⟶ G` be a morphism of group schemes over an algebraically closed
-field. If its underlying range is open and an fppf morphism `G ⟶ Q` has the
-right `H`-action as its self-pullback, then `Q` has topological Krull dimension
-at most zero. -/
+field with open underlying range. If `G` and `Q` are locally of finite type
+and a supplied fppf morphism `G ⟶ Q` has the right `H`-action as its
+self-pullback, then `Q` has topological Krull dimension at most zero.
+
+Milne's Proposition 5.23 yields the dimension-zero consequence for algebraic
+coset quotients by a dimension formula. This proof instead lifts each closed
+point to a rational point of `G`, translates the open range of `H`, uses the
+openness of the fppf map to make the singleton open, then applies the local
+Jacobson discreteness and Mathlib topological-Krull-dimension lemmas. It does
+not construct `Q`, assert an open immersion, or prove finiteness. -/
 theorem topologicalKrullDim_quotient_le_zero_of_isOpen_range
     (i : H ⟶ G) [IsMonHom i] (q : G ⟶ Q)
     (h : IsPullback (fst G H) ((𝟙 G ⊗ₘ i) ≫ μ[G]) q q)
@@ -112,10 +139,16 @@ theorem topologicalKrullDim_quotient_le_zero_of_isOpen_range
       exact q.left.isOpenMap _ htopen
   exact topologicalKrullDim_zero_of_discreteTopology Q.left
 
-/-- A represented fppf quotient of a finite-type group scheme by its reduced
-identity component has topological Krull dimension at most zero. The theorem
-assumes only the quotient map and its right-action pullback square; it does not
-construct the quotient target. -/
+/-- A supplied fppf quotient by the reduced identity component `(G_red)⁰`
+has topological Krull dimension at most zero when `G` and `Q` are locally of
+finite type, the reduction tensor square is reduced and the reduced-component
+tensor square is connected. This uses the local theorem that `(G_red)⁰ ⟶ G`
+has open **underlying range**, not that it is an open immersion.
+
+Milne's Proposition 8.37 uses the existence and finiteness of this quotient
+in an anti-affine argument. This specialization assumes a target and the exact
+right-action pullback square; it neither proves that quotient exists nor
+asserts normality, finiteness, reducedness or a group structure on `Q`. -/
 theorem reducedIdentityComponent_quotient_topologicalKrullDim_le_zero
     (G Q : Over (Spec (.of K))) [GrpObj G]
     [IsReduced ((Scheme.reductionOver G ⊗ Scheme.reductionOver G).left)]

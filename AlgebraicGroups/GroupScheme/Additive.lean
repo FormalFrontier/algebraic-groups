@@ -28,6 +28,23 @@ is primitive, has zero counit, and is negated by the antipode.
 - `AlgebraicGeometry.additiveGroupMulEquivPoints`
 - `AlgebraicGeometry.additiveGroupPointsIso`
 - `AlgebraicGeometry.additiveGroupCoordinateAlgEquiv`
+
+Milne's item 2.1 describes the field-base additive group by `k[T]`, its
+algebra-valued points and the primitive coproduct of `T`. The rank-one
+symmetric-algebra presentation here extends the base to any commutative ring;
+its identification with `Polynomial K` uses Mathlib's basis equivalence and
+does not assert a separate polynomial Hopf-algebra equivalence.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.1 (additive group and
+  coordinate coproduct).
+- Mathlib, `Mathlib.RingTheory.Bialgebra.SymmetricAlgebra`,
+  `Mathlib.LinearAlgebra.SymmetricAlgebra.Basis` (polynomial coordinates),
+  `Mathlib.Algebra.MvPolynomial.Equiv` (one variable), and
+  `Mathlib.Algebra.WithConv` (`WithConv.equiv`),
+  `Mathlib.RingTheory.Bialgebra.Convolution` (`AlgHom.convMul_apply`), and
+  `Mathlib.AlgebraicGeometry.Group.Affine` (`Spec.mapMulEquiv` and affine points).
 -/
 
 public section
@@ -205,7 +222,9 @@ theorem additiveGroupMulEquivPoints_apply_left (r : R) :
         (additiveGroupMulEquivAlgHom K R (.ofAdd r)).ofConv.toRingHom) :=
   rfl
 
-/-- The affine additive group scheme represents the additive-group functor. -/
+/-- The affine additive group scheme represents the additive-group functor.
+This extends the field-base additive group of Milne, *Algebraic Groups*
+(2017), item 2.1, to an arbitrary commutative base ring. -/
 @[expose] def additiveGroupPointsIso
     (K : Type u) [CommRing K] :
     additiveGroupFunctor K ≅ additiveGroupPointsFunctor K :=
@@ -232,7 +251,8 @@ theorem additiveGroupMulEquivPoints_apply_left (r : R) :
           CommRingCat.ofHom h.toRingHom)
         (additiveGroupMulEquivAlgHom_naturality K R f.hom r))
 
-/-- Comultiplication makes the distinguished coordinate primitive. -/
+/-- Comultiplication makes the distinguished coordinate primitive, as for
+Milne's `T` in *Algebraic Groups* (2017), item 2.1. -/
 @[simp]
 theorem additiveGroupCoordinate_comul
     (K : Type u) [CommRing K] :

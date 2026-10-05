@@ -18,7 +18,9 @@ the same relations; `polynomialEquiv K n` reverses that bridge.
 `polynomialFreeEquiv K n` presents the all-entry quotient as the free
 polynomial algebra on `UnitriangularCoordinateRing.StrictUpperPair n`, and
 `freeEquiv K n` composes the bridges. The determinant and its inverse become
-one even over the zero ring.
+one even over the zero ring. These are algebra equivalences, not
+identifications of the represented group scheme with an additive group
+scheme or equivalences of the specified Hopf structures.
 
 `AlgebraicGeometry.unitriangularInclusion K n` and
 `unitriangularInclusion_isClosedImmersion` give the closed GL group-scheme
@@ -42,8 +44,23 @@ see the [upper-triangular](../UpperTriangular/README.md) and
 [identity and scalar-tower coherence guide](../../../docs/UnitriangularSchemeBaseChangeCoherence.md).
 The base-change comparisons and these coherence laws do not assert unrestricted
 naturality for all group-scheme morphisms. This library does not classify
-unipotent groups or claim complete formalization of any source.
+unipotent groups.
 
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §§2.8–2.9: `GL_n` as a functor on
+  commutative algebras over a field, and its upper-unitriangular subgroup
+  with the unlocalized polynomial-quotient presentation. The group scheme
+  here also admits arbitrary commutative base rings and empty indices.
+* Mathlib, `Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean` and
+  `Mathlib/LinearAlgebra/Matrix/Block.lean`: matrix units and triangular
+  product, inverse and determinant results;
+  `Mathlib/RingTheory/HopfAlgebra/Quotient.lean` and
+  `Mathlib/RingTheory/Bialgebra/Quotient.lean`: Hopf-ideal quotient machinery.
+* `AlgebraicGroups/Algebra/GeneralLinearCoordinateRing.lean` supplies the
+  localized GL coordinate algebra and its matrix laws;
+  `AlgebraicGroups/Algebra/SpecialLinearCoordinateRing.lean` supplies the
+  earlier comparison between a GL Hopf quotient and a polynomial quotient.
 
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party

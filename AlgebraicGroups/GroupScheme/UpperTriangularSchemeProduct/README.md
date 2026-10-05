@@ -67,8 +67,21 @@ ordinary-import client exercises `Fin 0`, `Fin 1`, independent-unit/sign
 shear over `Fin 2`, zero ring (`ZMod 1`), a nonzero square-zero dual-number
 shear, and a noninjective coefficient reduction map. No arbitrary
 **base-scheme** change, normality of `U` in `GL`, smoothness/dimension, or
-source-specific mathematical correspondence is asserted.
+classification of upper-triangular groups is asserted.
 
+## References
+
+* J. S. Milne, *Algebraic Groups* (course notes, version 2.00), §§2.20–2.21:
+  the field-base upper-triangular split and semidirect product. The
+  categorical U-first coordinate change, arbitrary-base scheme isomorphism
+  and arbitrary-test twisted law here go beyond that example.
+* `AlgebraicGroups/GroupObject/SplitKernelProduct.lean` and
+  `AlgebraicGroups/GroupObject/SplitKernelSemidirect.lean` give the earlier
+  categorical section-first product and conjugation laws used by the
+  specialized construction. The [split-kernel producer](../UpperTriangularSplitKernel.lean)
+  supplies the actual represented kernel and section.
+* Mathlib, `Mathlib/CategoryTheory/Monoidal/Cartesian/Grp.lean`: group-object
+  multiplication and inversion of arrows from arbitrary test objects.
 
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party

@@ -9,6 +9,27 @@ public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.GroupTheory.Perm.Fin
 
+/-!
+# Conjugation and twisted multiplication of a split kernel
+
+Conjugation restricts to the kernel pullback even for a nonmultiplicative
+section; at a fixed section value it preserves kernel multiplication and
+inversion when the kernel inclusion is multiplicative. The action laws and
+the section-first twisted multiplication additionally require a multiplicative
+section. For `H = Equiv.Perm (Fin 3)`, the diagonal section of the second
+projection `H × H ⟶ H` is multiplicative, yet the underlying isomorphism
+`(n, a) ↦ (a * n, a)` does not preserve componentwise multiplication: two
+noncommuting swaps detect the nontrivial conjugation. Its twisted product
+instead uses conjugation by the inverse of the second section value.
+
+## References
+
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp` (group-object
+  conjugation), `Mathlib.CategoryTheory.Limits.Types.Pullbacks` (pullbacks in
+  `Type`), `Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp` (group objects
+  in `Type`), and `Mathlib.GroupTheory.Perm.Fin` (finite permutation groups).
+-/
+
 public section
 
 set_option warningAsError true

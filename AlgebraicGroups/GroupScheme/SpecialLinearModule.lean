@@ -13,15 +13,27 @@ public import Mathlib.RingTheory.TensorProduct.Finite
 # Special linear groups of finite-free modules
 
 The determinant-one automorphisms of the scalar extension of a finite-free module
-form a group-valued functor. Its coefficient maps use native base change and the
-same canonical tensor reassociation as the general linear module functor. A finite
-basis identifies this functor naturally with the published matrix special linear
-group and its represented functor of affine points. No basis-independent scheme
-object is asserted.
+form a group-valued functor. Its coefficient maps combine Mathlib's special
+linear base change with tensor reassociation and the general linear module
+functor. A chosen finite basis identifies it naturally with matrix special
+linear groups and their represented affine points over every commutative
+coefficient algebra. No basis-independent representing scheme is constructed.
 
-The native `SpecialLinearGroup`, its `baseChange` and `toLin_equiv` are due to
-Antoine Chambert-Loir in mathlib; this module reuses them rather than replacing
-their determinant or constructing a second matrix special linear group.
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2, item 2.8, p. 41: the
+  special linear groups mentioned alongside finite-dimensional `GL(V)` over
+  a field; the general-base coefficient and basis coherence here use the
+  formalizations below, not a proof in that brief passage.
+* Mathlib, `LinearAlgebra/SpecialLinearGroup`: Antoine Chambert-Loir's
+  `SpecialLinearGroup.baseChange`, `congr_linearEquiv`, and
+  `Matrix.SpecialLinearGroup.toLin_equiv` for determinant-one automorphisms.
+* Mathlib, `LinearAlgebra/TensorProduct/Tower` and
+  `RingTheory/TensorProduct/Free`: tensor cancellation and scalar-extended bases.
+* `AlgebraicGroups.Algebra.GeneralLinearBaseChange` and
+  `AlgebraicGroups.GroupScheme.GeneralLinearModule` supply the comparison with
+  GL under coefficient and basis change; `AlgebraicGroups.GroupScheme.SpecialLinear`
+  supplies the matrix special linear scheme and its point inclusion.
 -/
 
 @[expose] public section
@@ -49,7 +61,7 @@ def specialLinearModuleBaseChange (R S : Type u) [CommRing R] [Algebra K R]
     (SpecialLinearGroup.baseChange (R := R) (S := S)
       (V := SourceOrderTensor K V R))
 
-/-- Scalar extension agrees with the published canonical general-linear extension. -/
+/-- Scalar extension of SL agrees with general-linear scalar extension after inclusion. -/
 theorem specialLinearModuleBaseChange_toGL (R S : Type u)
     [CommRing R] [Algebra K R] [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
@@ -78,7 +90,7 @@ theorem specialLinearModuleBaseChange_toGL (R S : Type u)
   rw [specialLinearModuleBaseChange_toGL, specialLinearModuleBaseChange_toGL,
     specialLinearModuleBaseChange_toGL, generalLinearModuleBaseChange_comp]
 
-/-- The native special linear group, functorial by canonical scalar extension. -/
+/-- Determinant-one automorphisms, functorial under scalar extension. -/
 def specialLinearModuleFunctor : CommAlgCat K ⥤ GrpCat where
   obj R := GrpCat.of (SpecialLinearGroup R (SourceOrderTensor K V R))
   map g := GrpCat.ofHom (specialLinearModuleBaseChange K V _ _ g.hom)
@@ -93,7 +105,7 @@ def specialLinearModuleFunctor : CommAlgCat K ⥤ GrpCat where
     intro f
     exact (specialLinearModuleBaseChange_comp K V _ _ _ g.hom h.hom f).symm
 
-/-- The native determinant-one inclusion is natural into the canonical GL functor. -/
+/-- Inclusion of determinant-one automorphisms is natural into the GL functor. -/
 def specialLinearModuleInclusion :
     specialLinearModuleFunctor K V ⟶ generalLinearModuleFunctor K V where
   app R := GrpCat.ofHom (SpecialLinearGroup.toGeneralLinearGroup)
@@ -115,7 +127,9 @@ theorem specialLinearModuleBaseChange_tmul (R S : Type u)
 variable (indexType : Type u) [Fintype indexType] [DecidableEq indexType]
   (basis : Module.Basis indexType K V)
 
-/-- The native chosen-basis comparison uses mathlib's `toLin_equiv`. -/
+/-- The chosen-basis comparison uses Chambert-Loir's Mathlib
+`Matrix.SpecialLinearGroup.toLin_equiv`; compare the SL groups in Milne,
+*Algebraic Groups*, item 2.8, in the field case. -/
 def specialLinearModuleMatrixEquiv (R : Type u) [CommRing R] [Algebra K R] :
     SpecialLinearGroup R (SourceOrderTensor K V R) ≃*
       Matrix.SpecialLinearGroup indexType R :=
@@ -134,7 +148,7 @@ theorem specialLinearModuleMatrixEquiv_entry (R : Type u)
       LinearMap.toMatrix_apply _ _ _ _ _
 
 omit [Module.Free K V] [Module.Finite K V] in
-/-- Matrix SL followed by GL agrees with the published finite-basis GL comparison. -/
+/-- Matrix SL followed by GL agrees with the chosen-basis GL comparison. -/
 theorem specialLinearModuleMatrixEquiv_toGL (R : Type u)
     [CommRing R] [Algebra K R]
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
@@ -174,7 +188,9 @@ theorem specialLinearModuleMatrixEquiv_action (R : Type u)
     (generalLinearScalarBasis K V indexType basis R).repr x = _
   exact generalLinearModuleMatrixEquiv_action K V indexType basis R f.toGeneralLinearGroup x
 
-/-- The chosen-basis comparison is an isomorphism of group-valued functors. -/
+/-- A chosen finite basis gives a natural isomorphism of determinant-one
+automorphism groups with matrix SL, extending the field setting of Milne,
+*Algebraic Groups*, item 2.8. -/
 def specialLinearModuleMatrixIso :
     specialLinearModuleFunctor K V ≅ specialLinearGroupFunctor K indexType :=
   NatIso.ofComponents
@@ -185,7 +201,8 @@ def specialLinearModuleMatrixIso :
       intro f
       exact specialLinearModuleMatrixEquiv_natural K V indexType basis R S g.hom f)
 
-/-- Chosen-basis representation by the published finite SL affine group scheme. -/
+/-- Chosen-basis representation by the finite matrix SL affine group scheme,
+using `specialLinearGroupPointsIso`. -/
 def specialLinearModulePointsIso :
     specialLinearModuleFunctor K V ≅ specialLinearGroupPointsFunctor K indexType :=
   (specialLinearModuleMatrixIso K V indexType basis) ≪≫
@@ -232,7 +249,7 @@ theorem specialLinearModuleCoordinateEval_detInverse (R : Type u)
   specialLinearGroupMulEquivAlgHom_detInverse K indexType R
     (specialLinearModuleMatrixEquiv K V indexType basis R f)
 
-/-- The actual underlying morphism of the represented `Spec R` point. -/
+/-- The underlying morphism of the represented `Spec R` point. -/
 theorem specialLinearModulePointsIso_apply_left (R : CommAlgCat K)
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
     ((specialLinearModulePointsIso K V indexType basis).hom.app R f).left =
@@ -255,7 +272,7 @@ theorem specialLinearModulePoint_preimage_entry (R : Type u)
     (specialLinearModuleMatrixEquiv K V indexType basis R f) row column).trans
       (specialLinearModuleMatrixEquiv_entry K V indexType basis R f row column)
 
-/-- The inverse-determinant coordinate evaluates to one at every native SL point. -/
+/-- The inverse-determinant coordinate evaluates to one at every SL point. -/
 theorem specialLinearModulePoint_preimage_detInverse (R : Type u)
     [CommRing R] [Algebra K R]
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
@@ -268,7 +285,7 @@ theorem specialLinearModulePoint_preimage_detInverse (R : Type u)
   exact specialLinearGroupPoint_preimage_detInverse K indexType R
     (specialLinearModuleMatrixEquiv K V indexType basis R f)
 
-/-- The represented native SL-to-GL inclusion is the published scheme inclusion on points. -/
+/-- The SL-to-GL inclusion agrees with the matrix-scheme inclusion on points. -/
 theorem specialLinearModulePointsIso_inclusion (R : CommAlgCat K)
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
     (specialLinearModulePointsIso K V indexType basis).hom.app R f ≫
@@ -285,7 +302,7 @@ theorem specialLinearModulePointsIso_inclusion (R : CommAlgCat K)
 
 variable (otherBasis thirdBasis : Module.Basis indexType K V)
 
-/-- Changing chosen bases transports the same native automorphism, without altering it. -/
+/-- Changing chosen bases transports the same automorphism without altering it. -/
 def specialLinearModuleChangeBasis (R : Type u) [CommRing R] [Algebra K R] :
     Matrix.SpecialLinearGroup indexType R ≃* Matrix.SpecialLinearGroup indexType R :=
   (specialLinearModuleMatrixEquiv K V indexType basis R).symm.trans
@@ -359,7 +376,7 @@ theorem specialLinearModulePointsIso_changeBasis (R : CommAlgCat K)
   rfl
 
 omit [Module.Free K V] [Module.Finite K V] in
-/-- The changed matrix acts by the same native automorphism in the new coordinates. -/
+/-- The changed matrix acts by the same automorphism in the new coordinates. -/
 theorem specialLinearModuleChangeBasis_action (R : Type u)
     [CommRing R] [Algebra K R]
     (f : SpecialLinearGroup R (SourceOrderTensor K V R))

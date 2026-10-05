@@ -7,7 +7,29 @@ module
 public import AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel
 public import AlgebraicGroups.GroupObject.SplitKernelSemidirect
 
-/-! # The upper-triangular group scheme in unitriangular-first coordinates -/
+/-!
+# The upper-triangular group scheme in unitriangular-first coordinates
+
+The split unitriangular kernel first gives a section-first product. A
+categorical coordinate change then yields the U-first underlying scheme
+isomorphism `(u,d) ↦ i(u)e(d)` and its conjugation-twisted multiplication
+diagram for every test scheme over `Spec K`. This is not the direct-product
+group law or a transported group-object structure on the product.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (course notes, version 2.00), §§2.20–2.21:
+  the field-base split triangular group and its semidirect-product law.
+  The represented U-first arrow and arbitrary-commutative-base scheme-level
+  diagram here are additional constructions, not assertions of those passages.
+* `AlgebraicGroups.GroupObject.SplitKernelProduct` and
+  `AlgebraicGroups.GroupObject.SplitKernelSemidirect`: earlier formalized
+  categorical kernel trivialization and conjugation/action laws specialized
+  here; `AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel`: the
+  represented kernel and section.
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`: group objects
+  and their multiplication on arbitrary test arrows.
+-/
 
 @[expose] public section
 
@@ -54,8 +76,11 @@ theorem upperTriangularDiagonalConj_lift_comp_inclusion
         (diag ≫ (upperTriangularDiagonalSection K n).hom.hom)⁻¹ :=
   splitKernelConj_lift_comp_i _ _ _ _ _ diag unit
 
-/-- The published section-first kernel product, specialized to the represented
-upper-triangular group. Its multiplication convention differs from the U-first iso. -/
+/-- The generic split-kernel section-first product specialized to the
+represented upper-triangular group: `F(v,d) = e(d)i(v)`. Its multiplication
+convention differs from the U-first isomorphism. Compare Milne,
+*Algebraic Groups* (course notes, version 2.00), §§2.20–2.21 for the
+field-base split triangular group. -/
 def upperTriangularSectionFirstIso :
     unitriangularGroupUnderlyingScheme K n ⊗ diagonalGroupUnderlyingScheme K n ≅
       upperTriangularGroupUnderlyingScheme K n :=
@@ -121,14 +146,18 @@ def upperTriangularCoordinateChange :
     · simp
 
 /-- The underlying U-first product isomorphism `U × D ≅ T` over `Spec K`.
-Its forward arrow is unitriangular inclusion followed by diagonal section. -/
+Its forward arrow multiplies unitriangular inclusion on the left by diagonal
+section on the right; its inverse extracts the diagonal and normalizes each
+column by the inverse diagonal unit. The field-base semidirect antecedent is
+Milne, *Algebraic Groups* (course notes, version 2.00), §2.20; the categorical
+isomorphism here works over arbitrary commutative base rings. -/
 def upperTriangularUFirstIso :
     unitriangularGroupUnderlyingScheme K n ⊗ diagonalGroupUnderlyingScheme K n ≅
       upperTriangularGroupUnderlyingScheme K n :=
   upperTriangularCoordinateChange K n ≪≫ upperTriangularSectionFirstIso K n
 
 /-- The U-first forward arrow multiplies inclusion on the left and section on
-the right, unlike the published section-first product. -/
+the right, unlike the generic section-first product. -/
 theorem upperTriangularUFirstIso_hom :
     (upperTriangularUFirstIso K n).hom =
       (fst (unitriangularGroupUnderlyingScheme K n)
@@ -229,7 +258,9 @@ theorem upperTriangularUFirstIso_inv_fst_comp_inclusion :
     _ = _ := by rw [factor']
 
 /-- The U-first twisted law holds as an equality of morphisms from every test
-scheme over `Spec K`, not only as a law on affine or rational points. -/
+scheme over `Spec K`, not only as a law on affine or rational points. Its
+field-base group-law antecedent is Milne, *Algebraic Groups* (course notes,
+version 2.00), §§2.20–2.21. -/
 theorem upperTriangularUFirstIso_mul_lift
     {test : Over (Spec (.of K))}
     (unit unit' : test ⟶ unitriangularGroupUnderlyingScheme K n)
@@ -263,7 +294,10 @@ def upperTriangularUFirstTwistedMul :
     (diag * diag')
 
 /-- The U-first twisted product diagram is an equality of represented scheme
-morphisms on the product of two coordinate spaces. -/
+morphisms on the product of two coordinate spaces, extending the field-base
+triangular semidirect law of Milne, *Algebraic Groups* (course notes,
+version 2.00), §§2.20–2.21. It does not assert that the underlying product
+has the canonical direct-product group law. -/
 theorem upperTriangularUFirstTwistedMul_comp_hom :
     upperTriangularUFirstTwistedMul K n ≫ (upperTriangularUFirstIso K n).hom =
       ((upperTriangularUFirstIso K n).hom ⊗ₘ

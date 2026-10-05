@@ -14,6 +14,18 @@ public import Mathlib.AlgebraicGeometry.AffineSpace
 The actual stage quotient represents affine space on the surviving strict-upper
 entries, over the coefficient ring. This is an isomorphism of underlying schemes
 over the base, not an isomorphism of group schemes with an additive group.
+
+Milne's full-group polynomial presentation over a field is an antecedent;
+the stage comparison is an isomorphism of underlying over-schemes.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.9 (the polynomial
+  presentation of the full unitriangular algebraic group over a field).
+* Mathlib contributors, `Mathlib.AlgebraicGeometry.AffineSpace`
+  (`AffineSpace.SpecIso`).
+* The earlier `UnitriangularGeometry` underlying-affine-space comparison
+  supplies the `Spec`/`Over` proof pattern.
 -/
 
 @[expose] public section
@@ -28,7 +40,9 @@ namespace AlgebraicGeometry
 
 variable (K : Type) [CommRing K] (n r : ℕ)
 
-/-- The actual stage's underlying over-scheme is affine space on its surviving entries. -/
+/-- The stage's underlying over-scheme is affine space on its surviving entries.
+This extends the full-group polynomial presentation in Milne, *Algebraic Groups*
+(2017), item 2.9; it does not identify the stage as an additive group scheme. -/
 def unitriangularStageUnderlyingAffineSpaceIso :
     unitriangularStageUnderlyingScheme K n r ≅
       (AffineSpace (SurvivingPair n r) (Spec (.of K))).asOver (Spec (.of K)) := by
@@ -69,7 +83,7 @@ theorem unitriangularStageUnderlyingAffineSpaceIso_preimage_variable
   rw [Spec.preimage_map]
   exact polynomialEquiv_symm_X K n r s
 
-/-- Pullback in the reverse direction is the accepted polynomial algebra equivalence. -/
+/-- Pullback in the reverse direction is the polynomial algebra equivalence. -/
 theorem unitriangularStageUnderlyingAffineSpaceIso_preimage_inverse
     (f : CoordinateRing K n r) :
     Spec.preimage ((AffineSpace.SpecIso (SurvivingPair n r) (.of K)).inv ≫

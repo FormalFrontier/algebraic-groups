@@ -13,6 +13,19 @@ public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 The determinant-one Hopf quotient represents the native matrix special linear group
 over arbitrary coefficient algebras. Its inclusion into the finite general linear
 group scheme is a closed immersion.
+
+## References
+
+* J. S. Milne, *Algebraic Groups*, §§2.8, 2.10(a) (mentions of the classical
+  special linear subgroup over a field).
+* J. S. Milne, *Basic Theory of Affine Group Schemes*, VII §4, Example 4.3
+  (determinant-one coordinate quotient and field-base subgroup).
+* Mathlib, `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean` and
+  `LinearAlgebra/Matrix/SpecialLinearGroup.lean` (native SL and `toGL`),
+  `AlgebraicGeometry/Group/Affine.lean` (Hopf-Spec and convolution points), and
+  `AlgebraicGeometry/Morphisms/ClosedImmersion.lean`
+  (`IsClosedImmersion.spec_of_surjective`). The all-algebra equivalence here
+  uses the local GL evaluation and determinant-one Hopf quotient.
 -/
 
 @[expose] public section
@@ -50,7 +63,10 @@ def specialLinearInclusion : specialLinearGroupScheme K n ⟶ generalLinearGroup
 theorem specialLinearInclusion_left : (specialLinearInclusion K n).hom.hom.left =
     Spec.map (CommRingCat.ofHom (quotient K n).toRingHom) := rfl
 
-/-- The inclusion is scheme-theoretically closed, including over zero rings. -/
+/-- The inclusion is a closed immersion by Mathlib's
+`IsClosedImmersion.spec_of_surjective` applied to the coordinate quotient,
+including over zero rings; compare Milne, *Basic Theory of Affine Group Schemes*,
+VII §4, Example 4.3 in the field case. -/
 theorem specialLinearInclusion_isClosedImmersion :
     IsClosedImmersion (specialLinearInclusion K n).hom.hom.left := by
   rw [specialLinearInclusion_left]
@@ -108,8 +124,9 @@ theorem specialLinearFromSL_toSL
       (quotient K n) = f.comp (quotient K n)
   rw [specialLinearFromSL_comp_quotient, specialLinearToSL_toGL, evaluate_toGL]
 
-/-- All coefficient-algebra points are naturally the native special linear group,
-with group multiplication given by the actual quotient convolution. -/
+/-- All coefficient-algebra points are naturally Mathlib's matrix special linear
+group, with multiplication given by quotient convolution; the comparison uses
+`Matrix.SpecialLinearGroup.toGL` and the local GL point equivalence. -/
 def specialLinearGroupMulEquivAlgHom :
     Matrix.SpecialLinearGroup n R ≃*
       WithConv (SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K] R) where
@@ -248,7 +265,10 @@ def specialLinearGroupFunctor : CommAlgCat K ⥤ GrpCat where
 abbrev specialLinearGroupPointsFunctor : CommAlgCat K ⥤ GrpCat :=
   (algSpec (.of K)).rightOp ⋙ yonedaGrp.obj (specialLinearGroupScheme K n)
 
-/-- The native finite special linear group is its represented functor of points. -/
+/-- The native finite special linear group is its represented functor of points;
+the field-base determinant-one coordinate description occurs in Milne,
+*Basic Theory of Affine Group Schemes*, VII §4, Example 4.3. The natural
+all-algebra group equivalence uses Mathlib's Hopf-Spec and native matrix SL. -/
 def specialLinearGroupPointsIso :
     specialLinearGroupFunctor K n ≅ specialLinearGroupPointsFunctor K n :=
   NatIso.ofComponents

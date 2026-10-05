@@ -15,6 +15,19 @@ This file identifies the topological Krull dimension of a locally finite-type
 group scheme over an algebraically closed field with the dimension of its
 identity component.  It also combines this with invariance under scheme
 reduction to treat the identity component of the reduction.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, the dimension discussion following
+  Summary 1.36 (printed p. 17), for the common dimension of translated
+  connected components. These are topological Krull dimensions; the
+  tangent-space statement of Proposition 1.37 is different.
+- The local `Topology.KrullDimension` supplies the open-cover supremum
+  formula, `GroupScheme.ComponentGroup` the rational representatives,
+  `GroupScheme.ComponentSchemeMap` the translation isomorphisms, and
+  `Scheme.Reduction` the invariance of topological dimension under reduction.
+  The mathlib community, *Mathlib*, supplies topological Krull dimension
+  and the dimension invariance of homeomorphisms and embeddings.
 -/
 
 public section
@@ -35,7 +48,10 @@ local instance : LocallyConnectedSpace (Over.mk f).left :=
   inferInstanceAs (LocallyConnectedSpace G)
 
 /-- A locally finite-type group scheme over an algebraically closed field and
-its identity component have the same topological Krull dimension. -/
+its identity component have the same topological Krull dimension. This
+follows the common-component-dimension discussion in Milne,
+*Algebraic Groups*, immediately following Summary 1.36, using translations
+and the open-cover formula rather than irreducible-component dimensions. -/
 theorem identityComponent_topologicalKrullDim [LocallyOfFiniteType f] :
     topologicalKrullDim (Scheme.identityComponentOver (Over.mk f)).left =
       topologicalKrullDim G := by
@@ -58,7 +74,9 @@ theorem identityComponent_topologicalKrullDim [LocallyOfFiniteType f] :
 /-- The identity component of the reduction of a locally finite-type group
 scheme over an algebraically closed field has the same topological Krull
 dimension as the original scheme.  Reducedness of the Cartesian square of the
-reduction is the explicit hypothesis needed for its group-scheme structure. -/
+reduction is the explicit hypothesis needed for its group-scheme structure.
+The component-dimension idea is in Milne, *Algebraic Groups*, after Summary
+1.36; the final equality uses the local reduction-dimension invariance. -/
 theorem reducedIdentityComponent_topologicalKrullDim
     [LocallyOfFiniteType f]
     [IsReduced ((Scheme.reductionOver (Over.mk f) ⊗

@@ -1,6 +1,14 @@
 /-
+Copyright (c) 2024 Christian Merten. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Christian Merten
+-/
+/-
 SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
+The Mathlib notice above applies to the adapted dense smooth-locus proof.
+Modifications by Formal Frontier Agents: adapt Mathlib's
+`Scheme.Hom.dense_smoothLocus_of_perfectField` to geometrically reduced schemes.
 -/
 module
 
@@ -30,6 +38,23 @@ a geometrically reduced scheme locally of finite presentation over an arbitrary 
 - `AlgebraicGeometry.RationalPointSet.dense_underlyingPoints_of_isSepClosed`
 - `AlgebraicGeometry.FieldValuedPoints.schematicallyDense_of_geometricallyReduced_of_isSepClosed`
 - `AlgebraicGeometry.FieldValuedPoints.eq_of_subschemePoints_eq_of_isSepClosed`
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, Appendix A.48 and Corollaries 1.17--1.18,
+  for density of separably closed points and determination of geometrically
+  reduced closed subvarieties from those points.
+- The Stacks Project, [Lemma 33.25.7 (Tag 056V)](https://stacks.math.columbia.edu/tag/056V),
+  for the dense smooth locus of a geometrically reduced scheme locally of finite type
+  over a field, and [Lemma 10.44.2 (Tag 030W)](https://stacks.math.columbia.edu/tag/030W)
+  for the field-extension separability criterion used at generic points.
+- Mathlib's `Scheme.Hom.dense_smoothLocus_of_perfectField` in
+  `Mathlib.AlgebraicGeometry.Morphisms.Smooth` supplies the adapted dense-locus proof:
+  the generic-point step here uses geometric reducedness in place of a perfect base field.
+- Mathlib's `GeometricallyReduced.geometrically_isReduced`,
+  `GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian`,
+  `Scheme.Hom.smoothLocus`, and `Scheme.exists_fac_of_etale_of_isSepClosed`
+  provide the relative geometric-reducedness, smooth-locus, and étale-point APIs.
 -/
 
 public section
@@ -181,7 +206,8 @@ lemma Algebra.isGeometricallyReduced_of_geometricallyReduced_appLE
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The generic point of an integral geometrically reduced scheme locally of finite presentation
-over a field belongs to its smooth locus. -/
+over a field belongs to its smooth locus; compare the generic-point step of the Stacks Project,
+Lemma 33.25.7 (Tag 056V). -/
 lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_geometricallyReduced
     {K : Type u} [Field K] {X : Scheme.{u}} [IsIntegral X]
     (f : X ⟶ Spec (.of K)) [LocallyOfFinitePresentation f]
@@ -225,8 +251,9 @@ lemma Scheme.Hom.genericPoint_mem_smoothLocus_of_geometricallyReduced
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- A geometrically reduced scheme locally of finite presentation over a field has dense smooth
-locus. Unlike `Scheme.Hom.dense_smoothLocus_of_perfectField`, this result makes no perfectness
-assumption on the base field. -/
+locus. The proof adapts Mathlib's `Scheme.Hom.dense_smoothLocus_of_perfectField`, replacing
+perfectness of the base field with geometric reducedness of the morphism. See the Stacks Project,
+Lemma 33.25.7 (Tag 056V). -/
 lemma Scheme.Hom.dense_smoothLocus_of_geometricallyReduced
     {K : Type u} [Field K] {X : Scheme.{u}}
     (f : X ⟶ Spec (.of K)) [LocallyOfFinitePresentation f]
@@ -333,7 +360,9 @@ private lemma exists_point_mem_open_of_isStandardSmooth
 namespace RationalPointSet
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The rational points of a smooth scheme over a separably closed field are dense. -/
+/-- The rational points of a smooth scheme over a separably closed field are dense; this is
+the smooth case of the density used in Milne, *Algebraic Groups*, Appendix A.48.
+The proof uses Mathlib's lifting of étale points and evaluation of polynomials. -/
 theorem dense_underlyingPoints_of_smooth
     {K : Type u} [Field K] [IsSepClosed K]
     {Y : Over (Spec (.of K))} [Smooth Y.hom] :
@@ -377,7 +406,9 @@ theorem dense_underlyingPoints_of_smooth
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The rational points of a geometrically reduced scheme locally of finite type over a
-separably closed field are dense. -/
+separably closed field are dense, as in Milne, *Algebraic Groups*, Appendix A.48.
+Here the argument passes through the dense smooth locus rather than its
+birational-hypersurface presentation. -/
 theorem dense_underlyingPoints_of_isSepClosed
     {K : Type u} [Field K] [IsSepClosed K]
     {Y : Over (Spec (.of K))} [LocallyOfFiniteType Y.hom]
@@ -426,7 +457,8 @@ end RationalPointSet
 namespace FieldValuedPoints
 
 /-- All points valued in a separably closed extension are schematically dense in a geometrically
-reduced scheme locally of finite type over a field. -/
+reduced scheme locally of finite type over a field. This is Milne, *Algebraic Groups*,
+Corollary 1.17, using rational-point density and Proposition 1.16. -/
 theorem schematicallyDense_of_geometricallyReduced_of_isSepClosed
     {K L : Type u} [Field K] [Field L] [Algebra K L] [IsSepClosed L]
     {Y : Over (Spec (.of K))} [LocallyOfFiniteType Y.hom]
@@ -442,7 +474,8 @@ theorem schematicallyDense_of_geometricallyReduced_of_isSepClosed
   exact RationalPointSet.dense_underlyingPoints_of_isSepClosed
 
 /-- Geometrically reduced closed subschemes locally of finite type over a field are determined by
-their points in a separably closed extension. -/
+their points in a separably closed extension. This is the closed-subvariety assertion of Milne,
+*Algebraic Groups*, Corollary 1.18, without requiring a finite-type ambient scheme. -/
 theorem eq_of_subschemePoints_eq_of_isSepClosed
     {K L : Type u} [Field K] [Field L] [Algebra K L] [IsSepClosed L]
     {Y : Over (Spec (.of K))} (I J : Y.left.IdealSheafData)

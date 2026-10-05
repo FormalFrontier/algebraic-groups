@@ -14,6 +14,16 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 This file transfers effective epimorphisms to over-categories and constructs a group object
 structure on a subobject of a group object when multiplication and inversion restrict and the
 subobject covers the terminal object by an effective epimorphism.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 1.3 and the following
+  subgroup assertion, for the nonempty, multiplication- and inversion-stable
+  subscheme case. The categorical construction uses an effective epimorphism
+  to obtain the unit.
+* Mathlib, `EffectiveEpi.desc`, the cartesian group-object API in
+  `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, and
+  `Mathlib.AlgebraicGeometry.Sites.Fpqc` for the descent and scheme instances.
 -/
 
 public section
@@ -63,7 +73,9 @@ variable [CartesianMonoidalCategory C]
 variable {H G : C} [GrpObj G]
 
 /-- A subobject of a group object that is stable under multiplication and inversion is a group
-object when its map to the terminal object is an effective epimorphism. -/
+object when its map to the terminal object is an effective epimorphism. Compare the
+nonempty stable-subscheme assertion after Definition 1.3 of Milne, *Algebraic Groups*
+(2017); effective epimorphy replaces the nonemptiness argument in this categorical setting. -/
 @[instance_reducible]
 noncomputable def ofEffectiveEpi (i : H ⟶ G) [Mono i]
     (mul : H ⊗ H ⟶ H) (inv : H ⟶ H)

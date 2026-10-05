@@ -9,6 +9,9 @@ Let `K` be any commutative ring, `n r : ℕ` and **`hr : 1 ≤ r`**. Write
 group-scheme morphism `S_r → ∏ᶜ (_ : J), Gₐ`; the successor is the existing
 closed morphism `S_(r+1) → S_r`.
 
+Milne's finer field-case one-entry additive quotients provide antecedents;
+the whole-stage categorical kernel square over arbitrary bases is proved here.
+
 Import `AlgebraicGroups.GroupScheme.UnitriangularStageKernel` for
 `AlgebraicGeometry.unitriangularStageCoordinateMap_isPullback`. This theorem
 identifies the square of **underlying schemes over `Spec K`** with the
@@ -30,9 +33,12 @@ There is no `r = 0` coordinate map or kernel assertion.
 For an arbitrary test scheme, the global-sections/affine-spectrum adjunction
 turns a morphism to the current affine stage into an algebra map to global
 functions. Commutativity against the *categorical product* forces each
-coordinate to vanish. The algebraic universal property gives the unique
-successor factor; its base equation supplies the over-scheme structure.
-The existing closed immersion ensures uniqueness for arbitrary schemes,
+coordinate to vanish. This scheme proof directly checks that the ambient
+global-sections map kills the next-stage ideal and uses
+`Scheme.Hom.liftQuotient` to construct the successor factor. It does not
+invoke `existsUnique_comp_successor`. The base equation supplies the
+over-scheme structure; closed-immersion monicity gives uniqueness even for
+nonaffine test schemes,
 including the zero ring, ranks zero and one, and empty superdiagonals when
 `r ≥ n`.
 
@@ -49,5 +55,16 @@ lake build +AlgebraicGroups.Algebra.UnitriangularStageKernel +AlgebraicGroups.Gr
 The kernel square is not a theorem that the coordinate target is a represented
 or sheaf quotient, that the map is surjective or an effective epimorphism,
 or that a group-homomorphic section, flatness, smoothness, descent, native
-base-change tower or source-level coverage follows. Formal Frontier Agents
+base-change tower follows. Formal Frontier Agents
 developed the proofs; see [credits](../../../CREDITS.md) for roles and reuse.
+
+## References
+
+- J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
+  over a Field*, Cambridge University Press, 2017, §6.49 (one-entry
+  additive quotients of the finer field-case filtration).
+- Mathlib contributors, `Mathlib.AlgebraicGeometry.Scheme` (`Scheme.ΓSpecIso`),
+  `Mathlib.AlgebraicGeometry.AffineScheme` (`Scheme.Hom.liftQuotient`),
+  `Mathlib.AlgebraicGeometry.Morphisms.Finite`
+  (`IsClosedImmersion.iff_isFinite_and_mono`), and the categorical-product
+  constructions in `Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits`.

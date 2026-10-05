@@ -19,6 +19,21 @@ over the zero ring and for `N = 0` or `N = 1`. When `K` is nontrivial and
 
 This is an equivalence of `K`-algebras; it does not assert compatibility with
 any coalgebra or Hopf-algebra structure.
+
+The characteristic-power quotient over a field is the coordinate presentation
+in Milne's *Algebraic Groups*, item 2.5. The algebra equivalence here holds for
+every natural power and every commutative base; its nonvanishing theorem needs
+`1 < N` and a nontrivial base.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.5, p. 40 (the
+  characteristic-power polynomial quotient over a field).
+- Mathlib, `Mathlib.RingTheory.Ideal.Quotient.Operations` and
+  `Mathlib.RingTheory.AdjoinRoot` (transporting quotients across an algebra
+  equivalence and the distinguished quotient root).
+- `AlgebraicGroups.GroupScheme.Additive` (the additive-coordinate polynomial
+  presentation used to transport the quotient).
 -/
 
 public section
@@ -44,7 +59,9 @@ abbrev additivePowerCoordinateRing (K : Type u) [CommRing K] (N : ℕ) :=
   Ideal.Quotient.mk (additivePowerIdeal K N) (additiveGroupCoordinate K)
 
 /-- The algebraic presentation of the quotient by a coordinate power, with no
-nontriviality or positivity assumption on `K` or `N`. -/
+nontriviality or positivity assumption on `K` or `N`. At `N = p ^ m` over a
+characteristic-`p` field, this is the algebra presentation in Milne's
+*Algebraic Groups*, item 2.5, not an equivalence of Hopf algebras. -/
 @[expose] def additivePowerCoordinateAlgEquiv (K : Type u) [CommRing K] (N : ℕ) :
     additivePowerCoordinateRing K N ≃ₐ[K]
       AdjoinRoot ((Polynomial.X : Polynomial K) ^ N) :=

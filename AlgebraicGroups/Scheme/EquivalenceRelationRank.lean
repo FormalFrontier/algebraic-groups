@@ -20,6 +20,22 @@ positive, and on a compact target only finitely many ranks occur.
 
 This is the reusable rank-stratum input for finite locally free descent.  It
 does not construct an affine quotient or prove effectivity.
+
+Pointwise rank invariance compares the composition pullback with the defining
+pullback of the internal equivalence relation. Finite flatness suffices;
+local finite presentation gives clopen rank fibres, compactness gives a finite
+range, and reflexivity gives positive rank at every target point. Empty
+schemes and unused rank-zero pieces require no exception.
+
+## References
+
+* The Stacks Project, Lemma 39.23.3
+  ([tag 03BI](https://stacks.math.columbia.edu/tag/03BI)), gives the
+  invariant constant-rank decomposition of a finite locally free groupoid.
+* Mathlib, `Mathlib.AlgebraicGeometry.Morphisms.FlatRank`, supplies
+  `Scheme.Hom.finrank_of_isPullback`, `one_le_finrank_iff_surjective` and
+  `isLocallyConstant_finrank`. `AlgebraicGroups.Category.EquivalenceRelation`
+  supplies the composition pullback and symmetry used here.
 -/
 
 open CategoryTheory Limits
@@ -74,7 +90,10 @@ lemma finrank_snd_eq_finrank_fst
   rw [← h.symmetry₁]
   exact Scheme.Hom.finrank_comp_left_of_isIso h.s p₁
 
-/-- The rank of the first projection is constant along relation arrows. -/
+/-- The rank of the first projection is constant along relation arrows, by
+the two pullback rank comparisons in the argument of Stacks Project
+[Lemma 39.23.3, tag 03BI](https://stacks.math.columbia.edu/tag/03BI).
+No quotient or effectivity hypothesis is used. -/
 lemma finrank_fst_eq_finrank_snd
     (h : CategoryTheory.EquivalenceRelation p₁ p₂) (z : R) :
     p₁.finrank (p₁ z) = p₁.finrank (p₂ z) := by
@@ -103,7 +122,10 @@ lemma finrank_fiber_invariant
   change p₁.finrank (p₁ z) = r ↔ p₁.finrank (p₂ z) = r
   rw [finrank_fst_eq_finrank_snd h z]
 
-/-- The rank-`r` fibre as an open subset of the target. -/
+/-- The rank-`r` fibre as an open subset of the target. This packages the
+rank pieces of Stacks Project
+[Lemma 39.23.3, tag 03BI](https://stacks.math.columbia.edu/tag/03BI)
+under the explicit local finite presentation hypothesis. -/
 def finrankOpen [LocallyOfFinitePresentation p₁] (r : ℕ) : X.Opens :=
   ⟨{x : X | p₁.finrank x = r}, (isClopen_finrank_fiber (p₁ := p₁) r).2⟩
 

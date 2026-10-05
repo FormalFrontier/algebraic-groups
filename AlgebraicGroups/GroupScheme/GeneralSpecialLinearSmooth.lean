@@ -21,9 +21,20 @@ For empty indices the determinant is one and the special linear quotient is
 already isomorphic to the general linear coordinate algebra. No nonzero-ring or
 rank hypothesis is needed for either result.
 
-The proof uses the published finite matrix-group and coordinate-ring APIs and
-mathlib's smoothness and affine-scheme criteria. This module is an original
-formal proof under Apache-2.0, not a transcription of third-party text.
+## References
+
+* The Stacks Project, Tags 022W and 022X: finite positive-size `GL` as a
+  determinant localization and the determinant group-scheme morphism.
+* J. S. Milne, *Basic Theory of Affine Group Schemes* (2012), VII §4,
+  Example 4.3 and XIII §3, item 3.14: the field-base `SL` quotient and a
+  right-diagonal determinant section over all coefficient algebras. Here the
+  normalization instead multiplies on the left, at a chosen pivot; the
+  smoothness proof also covers empty indices and the zero ring.
+* Mathlib, `RingTheory/Smooth/Basic`, `RingTheory/FinitePresentation` and
+  `AlgebraicGeometry/Morphisms/Smooth`: square-zero lifting, finite
+  presentation and the affine `Spec` smoothness criterion. The diagonal map
+  reuses this library's determinant-section construction, which follows
+  mathlib's `Matrix.GeneralLinearGroup.det_surjective`.
 -/
 
 @[expose] public section
@@ -38,13 +49,17 @@ namespace AlgebraicGeometry
 
 variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
 
-/-- The finite general linear coordinate algebra is smooth over any commutative base. -/
+/-- The finite general linear coordinate algebra is smooth over any commutative
+base, by mathlib's formally smooth polynomial/localization and finite-presentation
+instances. Compare the determinant localization in Stacks, Tag 022W. -/
 instance generalLinearCoordinateRing_smooth :
     Algebra.Smooth K (GeneralLinearCoordinateRing.CoordinateRing K n) where
   formallySmooth := inferInstance
   finitePresentation := GeneralLinearCoordinateRing.finitePresentation K n
 
-/-- The determinant-one quotient has a finite presentation, including in rank zero. -/
+/-- The determinant-one quotient has a finite presentation, including in rank
+zero, using mathlib's finite-presentation theorem for a surjective algebra map
+with finitely generated kernel. -/
 instance specialLinearCoordinateRing_finitePresentation :
     Algebra.FinitePresentation K (SpecialLinearCoordinateRing.CoordinateRing K n) :=
   Algebra.FinitePresentation.of_surjective
@@ -55,7 +70,8 @@ instance specialLinearCoordinateRing_finitePresentation :
         Ideal.Quotient.mkₐ_ker]
       exact Submodule.fg_span_singleton _)
 
-/-- A retract of a formally smooth algebra is formally smooth. -/
+/-- A retract of a formally smooth algebra is formally smooth, by transporting
+mathlib's square-zero-ideal lifting criterion along the algebra section. -/
 private theorem formallySmooth_of_retract {A B : Type u} [CommRing A] [Algebra K A]
     [CommRing B] [Algebra K B] [Algebra.FormallySmooth K A]
     (quotient : A →ₐ[K] B) (split : B →ₐ[K] A)
@@ -71,7 +87,11 @@ private theorem formallySmooth_of_retract {A B : Type u} [CommRing A] [Algebra K
     _ = (f.comp quotient).comp split := by rw [lift_eq]
     _ = f := by rw [AlgHom.comp_assoc, split_quotient, AlgHom.comp_id]
 
-/-- Normalize the universal GL matrix to determinant one at the chosen pivot. -/
+/-- Normalize the universal GL matrix to determinant one by left multiplication
+with the chosen one-pivot diagonal matrix. The diagonal construction follows
+mathlib's `Matrix.GeneralLinearGroup.det_surjective`; compare Milne,
+*Basic Theory of Affine Group Schemes*, XIII §3, item 3.14, which gives a
+right-diagonal section. -/
 def specialLinearNormalization (pivot : n) :
     Matrix.SpecialLinearGroup n (GeneralLinearCoordinateRing.CoordinateRing K n) :=
   ⟨(generalLinearDiagonalHom n pivot
@@ -148,7 +168,11 @@ theorem specialLinearNormalizationSection_comp_quotient (pivot : n) :
 
 set_option linter.style.haveILetI false
 
-/-- The finite special linear coordinate algebra is smooth over any commutative base. -/
+/-- The finite special linear coordinate algebra is smooth over any commutative
+base. For a nonempty index its quotient splits as an algebra map via left
+normalization (compare Milne, *Basic Theory of Affine Group Schemes*, XIII §3,
+item 3.14); mathlib's square-zero lifting criterion proves formal
+smoothness of this retract. Empty indices reduce to the GL algebra. -/
 instance specialLinearCoordinateRing_smooth :
     Algebra.Smooth K (SpecialLinearCoordinateRing.CoordinateRing K n) where
   formallySmooth := by
@@ -172,7 +196,8 @@ instance specialLinearCoordinateRing_smooth :
 
 set_option linter.style.haveILetI true
 
-/-- The actual finite GL structure morphism is smooth. -/
+/-- The finite GL structure morphism is smooth via mathlib's affine `Spec`
+smoothness criterion and the smooth coordinate algebra. -/
 instance generalLinearGroupUnderlyingScheme_smooth :
     Smooth (generalLinearGroupUnderlyingScheme K n).hom := by
   change Smooth (Spec.map (CommRingCat.ofHom
@@ -180,7 +205,8 @@ instance generalLinearGroupUnderlyingScheme_smooth :
   rw [HasRingHomProperty.Spec_iff (P := @Smooth)]
   exact RingHom.smooth_algebraMap.mpr inferInstance
 
-/-- The actual finite SL structure morphism is smooth. -/
+/-- The finite SL structure morphism is smooth via mathlib's affine `Spec`
+smoothness criterion and the smooth coordinate algebra. -/
 instance specialLinearGroupUnderlyingScheme_smooth :
     Smooth (specialLinearGroupUnderlyingScheme K n).hom := by
   change Smooth (Spec.map (CommRingCat.ofHom

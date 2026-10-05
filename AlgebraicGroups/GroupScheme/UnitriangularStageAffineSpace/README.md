@@ -28,7 +28,7 @@ public import. The API consists of:
 - `unitriangularStageUnderlyingAffineSpaceIso_preimage_variable`: pulling back
   an affine-space coordinate gives its actual stage-quotient entry;
 - `unitriangularStageUnderlyingAffineSpaceIso_preimage_inverse`: pulling back a
-  regular function through the inverse gives its accepted polynomial expression.
+  regular function through the inverse gives its polynomial expression.
 
 The [ordinary-import client](../../../AlgebraicGroupsTest/GroupScheme/UnitriangularStageAffineSpace.lean)
 exercises the
@@ -39,9 +39,8 @@ index cases, and rank-three/stage-two's surviving `(0,2)` coordinate.
 
 The producer imports the stage polynomial algebra, actual stage
 schemes and mathlib affine-space interface. The proof pattern follows the
-released whole-unitriangular underlying-scheme comparison, with the inverse
-stage algebra equivalence in the contravariant direction. It does not access
-private cross-package declarations.
+existing whole-unitriangular underlying-scheme comparison, with the inverse
+stage algebra equivalence in the contravariant direction.
 
 With the pinned toolchain available, first obtain the matching mathlib cache
 successfully, then check the producer and public client:
@@ -54,8 +53,8 @@ lake build +AlgebraicGroups.GroupScheme.UnitriangularStageAffineSpace +Algebraic
 This is not an additive-Hopf or group-scheme isomorphism. It does not identify
 the categorical product of copies of the additive group, prove equality with
 the full positive-stage coordinate projection, construct a section, establish
-a quotient or descent theorem, or assert flatness/smoothness, base-change tower
-coherence or source coverage. The known rank-three cross term obstructs the
+a quotient or descent theorem, or assert flatness/smoothness or base-change
+tower coherence. The known rank-three cross term obstructs the
 chosen zero-higher-entry section's group compatibility, not
 every possible group section.
 
@@ -63,8 +62,18 @@ every possible group section.
 
 Formal Frontier Agents implemented the stage algebra, native stages and this
 geometric comparison. This implementation reuses the stage polynomial
-equivalence and adapts the released whole-unitriangular
+equivalence and adapts the existing whole-unitriangular
 `AlgebraicGroups.GroupScheme.UnitriangularGeometry` Spec/Over proof pattern,
-using mathlib's affine-space machinery. Earlier stage-affine-space research and
-its corrected independent review informed the orientation and scope. See
+using mathlib's affine-space machinery. See
 [credits](../../../CREDITS.md) for contributors and reuse attribution.
+
+## References
+
+- J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
+  over a Field*, Cambridge University Press, 2017, item 2.9 (the full
+  unitriangular algebraic group's polynomial presentation). The arbitrary-base
+  whole-stage over-scheme isomorphism is a separate result.
+- Mathlib contributors, `Mathlib.AlgebraicGeometry.AffineSpace`
+  (`AffineSpace.SpecIso` and its structural-map comparison).
+- The existing `UnitriangularGeometry` supplies the whole-group
+  `Spec`/`Over.isoMk` pattern.

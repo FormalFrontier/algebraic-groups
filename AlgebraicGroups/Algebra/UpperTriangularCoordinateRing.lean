@@ -8,7 +8,28 @@ public import AlgebraicGroups.GroupTheory.UpperTriangular
 public import AlgebraicGroups.Algebra.GeneralLinearCoordinateRing
 public import Mathlib.RingTheory.HopfAlgebra.Quotient
 
-/-! # The upper-triangular Hopf quotient of the general linear coordinate ring -/
+/-!
+# The upper-triangular Hopf quotient of the general linear coordinate ring
+
+Only entries below the diagonal are killed in the determinant-localized GL
+coordinate algebra. The diagonal entries remain units and the image of the
+determinant inverse inverts their product, rather than becoming one. The Hopf
+ideal argument uses the GL matrix coproduct and inverse-triangularity over
+arbitrary commutative rings, including the zero ring.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), items 2.8–2.9, pp. 41–42:
+  determinant-localized `GL_n` and its upper-triangular subgroup `T_n`
+  on commutative algebras.
+* Mathlib, `Mathlib/LinearAlgebra/Matrix/Block.lean` for inverse-triangularity
+  and the diagonal determinant, and Robert Hawkins's formalization in
+  `Mathlib/RingTheory/HopfAlgebra/Quotient.lean` for Hopf ideals.
+* `AlgebraicGroups/Algebra/GeneralLinearCoordinateRing.lean` supplies the GL
+  Hopf operations; `AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean`
+  supplies the earlier generator-by-generator quotient approach. Here there
+  are no diagonal-minus-one relations.
+-/
 
 @[expose] public section
 
@@ -62,7 +83,8 @@ theorem universal_diagUnit (i : ι) :
     IsUnit (quotient K ι (matrix K ι i i)) :=
   Matrix.UpperTriangularGroup.isUnit_entry (universal K ι) i
 
-/-- The determinant inverse is retained, rather than specialized to one. -/
+/-- In the coordinates of Milne's `T_n` (item 2.9), the determinant inverse
+inverts the product of the diagonal entries; it is not forced to one. -/
 theorem universal_detInverse :
     quotient K ι (detInverse K ι) *
       (∏ i, quotient K ι (matrix K ι i i)) = 1 := by
@@ -74,7 +96,10 @@ theorem universal_detInverse :
   rwa [mul_comm] at hm
 
 set_option linter.style.haveILetI false in
-/-- Counit, quotient-tensor coproduct and antipode preserve the defining relations. -/
+/-- The lower-entry relations of Milne's `T_n` (item 2.9) form a Hopf ideal:
+the GL coproduct is tested after both quotient maps, and Mathlib's
+`Matrix.blockTriangular_inv_of_blockTriangular` handles the antipode through
+the inverse of the quotient universal unit. -/
 theorem ideal_isHopfIdeal_proof : (ideal K ι).IsHopfIdeal K := by
   let q := quotient K ι
   let comulQuotient : GeneralLinearCoordinateRing.CoordinateRing K ι →ₐ[K]

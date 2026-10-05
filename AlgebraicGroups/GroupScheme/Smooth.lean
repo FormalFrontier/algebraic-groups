@@ -1,6 +1,14 @@
 /-
+Copyright (c) 2026 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang
+-/
+/-
 SPDX-License-Identifier: Apache-2.0
 Authors: Formal Frontier Agents
+The Mathlib notice above applies to the adapted identity-point smoothness proof.
+Modifications by Formal Frontier Agents: adapt the closed-point translation and
+algebraic-closure descent of Mathlib's `AlgebraicGeometry.smooth_of_grpObj`.
 -/
 module
 
@@ -14,6 +22,23 @@ public import Mathlib.AlgebraicGeometry.Morphisms.LocalFlatDescent
 This file proves that a group scheme locally of finite type over an algebraically closed field is
 smooth when its identity point is smooth. It also derives smoothness of a faithfully flat, locally
 finitely presented morphism of group schemes from smoothness of its kernel.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, Proposition 1.28, for propagation of
+  smoothness from the identity point in an algebraic group; Propositions
+  1.62(a) and 8.1(a) for smoothness of a group extension with smooth
+  kernel and quotient. These results concern algebraic groups over fields.
+- Mathlib's `AlgebraicGeometry.smooth_of_grpObj` and its algebraically closed helper in
+  `Mathlib.AlgebraicGeometry.Group.Smooth` provide the adapted closed-point translation
+  and algebraic-closure descent proof. Mathlib assumes geometric reducedness for the group
+  scheme; the identity-point result here assumes smoothness at the identity instead.
+- Mathlib's `GrpObj.mulRight`, `Scheme.Hom.smoothLocus`,
+  `MorphismProperty.of_pullback_snd_of_descendsAlong`, and smooth descent
+  provide the point-translation, base-change, and descent APIs. The
+  kernel-torsor pullback identifies the self-pullback of the quotient with a
+  base change of the kernel; this is a different route from Milne's fibrewise
+  argument.
 -/
 
 public section
@@ -27,7 +52,10 @@ namespace AlgebraicGeometry
 variable {K : Type u} [Field K] {X : Scheme.{u}}
 
 /-- A group scheme locally of finite type over an algebraically closed field is smooth if its
-identity point belongs to the smooth locus. -/
+identity point belongs to the smooth locus. This is the algebraically closed case of
+Milne, *Algebraic Groups*, Proposition 1.28. Its closed-point translation adapts Mathlib's
+algebraically closed helper for `AlgebraicGeometry.smooth_of_grpObj`, assuming smoothness at
+the identity rather than reducedness. -/
 theorem smooth_of_unit_mem_smoothLocus_of_isAlgClosed
     (f : X ⟶ Spec (.of K)) [LocallyOfFiniteType f] [IsAlgClosed K]
     [GrpObj (Over.mk f)]
@@ -74,7 +102,11 @@ private lemma exists_open_smooth_neighborhood (f : X ⟶ Spec (.of K))
   exact MorphismProperty.comp_mem (@Smooth) _ _ hres inferInstance
 
 /-- A group scheme locally of finite type over a field is smooth if its identity point belongs to
-the smooth locus. -/
+the smooth locus, the identity-point implication in Milne, *Algebraic Groups*,
+Proposition 1.28. The proof follows the algebraic-closure descent of Mathlib's
+`AlgebraicGeometry.smooth_of_grpObj`, replacing its geometric-reducedness input with
+smoothness at the identity; it does not assert that regularity of the identity stalk
+implies smoothness. -/
 theorem smooth_of_unit_mem_smoothLocus
     (f : X ⟶ Spec (.of K)) [LocallyOfFiniteType f] [GrpObj (Over.mk f)]
     (h : η[Over.mk f].left (IsLocalRing.closedPoint K) ∈ f.smoothLocus) : Smooth f := by
@@ -160,7 +192,10 @@ private lemma smooth_descendsAlong_fppf :
 variable {S : Scheme.{u}} {N G Q : Over S} [GrpObj G] [GrpObj Q]
 
 /-- A faithfully flat, locally finitely presented morphism of group schemes with smooth kernel is
-smooth. The kernel is expressed by a pullback square over the unit section. -/
+smooth. The kernel is expressed by a pullback square over the unit section. This strengthens the
+field-group smooth-extension argument of Milne, *Algebraic Groups*, Proposition 1.62(a):
+the base may be any scheme, and the quotient need not itself be smooth for this conclusion.
+The proof descends smoothness along the quotient via the kernel-torsor square. -/
 theorem smooth_of_smooth_kernel (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
     (hN : IsPullback i (toUnit N) q η[Q])
     [Smooth N.hom] [Surjective q.left] [Flat q.left]
@@ -175,7 +210,10 @@ theorem smooth_of_smooth_kernel (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
       (show Smooth N.hom from inferInstance)
 
 /-- In a faithfully flat, locally finitely presented extension of group schemes, a smooth kernel
-and smooth quotient imply that the middle group scheme is smooth. -/
+and smooth quotient imply that the middle group scheme is smooth. This extends Milne,
+*Algebraic Groups*, Propositions 1.62(a) and 8.1(a) from algebraic groups over fields
+to group schemes over arbitrary bases; flatness, surjectivity, a locally finitely presented
+quotient map, and the kernel pullback square remain hypotheses. -/
 theorem smooth_of_smooth_kernel_quotient (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
     (hN : IsPullback i (toUnit N) q η[Q])
     [Smooth N.hom] [Surjective q.left] [Flat q.left]

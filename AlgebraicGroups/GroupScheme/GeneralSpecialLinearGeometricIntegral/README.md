@@ -51,4 +51,26 @@ lake build AlgebraicGroupsTest.GeneralSpecialLinearGeometricIntegral
 The argument uses mathlib polynomial, localization, tensor and geometric-fiber
 APIs and this library's previously defined finite coordinate rings and
 normalization section. Its original project contributors are credited in the
-[credits](../../../CREDITS.md). No source-coverage decision follows.
+[credits](../../../CREDITS.md).
+
+## References
+
+* J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
+  over a Field* (Cambridge University Press, 2017), §2.8, gives the finite
+  field-base GL determinant localization; §2.42 proves that the coordinate
+  ring of positive-rank SL over a field is a domain using a right-diagonal
+  splitting. The results here additionally cover coordinate-ring domains over
+  integral bases and geometric integrality of the structure morphisms over
+  any commutative base, including the zero ring.
+* J. S. Milne, *Basic Theory of Affine Group Schemes* (2012), XIII §3,
+  item 3.14, gives a right-diagonal determinant splitting for positive
+  rank; the algebra section used here instead follows the left normalization
+  constructed in `GeneralSpecialLinearSmooth`.
+* The [mathlib formalization](https://github.com/leanprover-community/mathlib4)
+  supplies `Localization.Away.isDomain` for GL and
+  `MvPolynomial.algebraTensorAlgEquiv` and
+  `IsLocalization.Away.tensorProductEquivTMulRight` for field extension.
+  `GeometricallyIntegral` and `pullbackSpecIso` identify the resulting domain
+  proofs with geometric fibers. The determinant-map identity and the tensor
+  splitting of SL are established explicitly here, not inferred from
+  arbitrary injectivity or a generic base-change assertion.

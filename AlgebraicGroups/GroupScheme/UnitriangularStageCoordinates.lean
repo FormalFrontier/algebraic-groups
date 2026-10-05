@@ -15,8 +15,22 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 The primitive coordinates of the stage quotient induce group-scheme arrows
 to the rank-one additive group scheme. Their categorical product is the
 superdiagonal coordinate map over any commutative base ring. Its point formula
-uses the native stage representation and the released superdiagonal homomorphism;
+uses the stage representation and the existing superdiagonal homomorphism;
 no identification with a field-only vector group is made.
+
+Milne's finer field-case filtration has one-entry additive quotients;
+the product of all positive-stage projections here is a distinct construction.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.1 (the additive group)
+  and §6.49 (one-entry additive quotients of the finer filtration).
+* Mathlib contributors, `Mathlib.AlgebraicGeometry.Group.Affine`
+  (`hopfSpec`) and `Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits`
+  and `Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts` (group-object products).
+* The existing `UnitriangularStageCoordinates` and
+  `UnitriangularSuperdiagonalQuotients` provide the algebra maps and
+  multiplicative point-coordinate formula.
 -/
 
 @[expose] public section
@@ -33,7 +47,9 @@ set_option backward.isDefEq.respectTransparency false
 
 variable (K : Type) [CommRing K] (n r : ℕ)
 
-/-- A single positive-stage entry as a morphism of group schemes. -/
+/-- A single positive-stage entry as a morphism of group schemes.
+Milne, *Algebraic Groups* (2017), §6.49 gives one-entry additive
+quotients in the finer field-case filtration. -/
 def unitriangularStageCoordinateProjection (hr : 1 ≤ r)
     (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
     unitriangularStageScheme K n r ⟶ additiveGroupScheme K := by
@@ -50,7 +66,9 @@ theorem unitriangularStageCoordinateProjection_left (hr : 1 ≤ r)
         ((coordinateBialgHom K n r hr ij :
           additiveGroupCoordinateRing K →ₐ[K] CoordinateRing K n r)).toRingHom) := rfl
 
-/-- The categorical product of the positive-stage additive coordinates. -/
+/-- The categorical product of the positive-stage additive coordinates.
+Milne, *Algebraic Groups* (2017), §6.49 gives field-case one-entry additive
+quotients; this product map uses all entries on a positive superdiagonal. -/
 def unitriangularStageCoordinateMap (hr : 1 ≤ r) :
     unitriangularStageScheme K n r ⟶
       (∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
@@ -175,7 +193,7 @@ theorem unitriangularStageCoordinateProjection_point (hr : 1 ≤ r)
   exact congrArg (fun f : additiveGroupCoordinateRing K →ₐ[K] R =>
     Spec.map (CommRingCat.ofHom f.toRingHom)) hcoordinate
 
-/-- The product projections agree with the released point-group coordinate hom. -/
+/-- The product projections agree with the point-group coordinate hom. -/
 theorem unitriangularStageCoordinateMap_point (hr : 1 ≤ r)
     (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r)
     (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :

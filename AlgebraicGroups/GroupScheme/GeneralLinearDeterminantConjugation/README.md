@@ -61,10 +61,22 @@ the rank-two upper unipotent over `ZMod 5`: the column pivot with `t = 2`
 scales its upper-right entry by the inverse `3`, while the row pivot scales
 it by `2`.
 
-The APIs reuse pinned mathlib and this library's determinant section, actual
-kernel, product and split-kernel constructions. A Formal Frontier AI-agent contributor authored
-the original conjugation implementation and ordinary-import client. Exact origin
-and review records are maintained separately from this mathematical guide.
+## References
+
+- J. S. Milne, [*Basic Theory of Affine Group Schemes*, XIII §3,
+  item 3.14](https://www.jmilne.org/math/CourseNotes/AGS.pdf):
+  a field-base decomposition using a right-hand diagonal factor. The
+  section-first conjugation action and twisted law above have a different
+  factor order and are formulated on the arbitrary-base scheme kernel.
+- J. S. Milne, *Algebraic Groups*, §§2.8, 2.10(a): field-base GL coordinates
+  and mentions of SL, not an all-algebras conjugation formula.
+- [SplitKernelSemidirect](../../GroupObject/SplitKernelSemidirect.lean) supplies
+  the generic kernel conjugation and section-first twisted multiplication;
+  [SpecialLinearKernel](../SpecialLinearKernel.lean) gives the pullback, and
+  [GeneralLinearDeterminantSection](../GeneralLinearDeterminantSection.lean)
+  supplies the one-pivot section. Mathlib's
+  `CategoryTheory/Monoidal/Cartesian/Grp.lean` provides group-object
+  conjugation and `Data/Matrix/Mul.lean` its matrix diagonal readbacks.
 
 With the exact pinned toolchain and manifest, fetch the matching mathlib cache
 first, then run the two focused warning-fatal targets:
@@ -74,7 +86,6 @@ lake exe cache get
 lake build AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation
 lake build AlgebraicGroupsTest.GeneralLinearDeterminantConjugation
 ```
-
 
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party

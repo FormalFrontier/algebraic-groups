@@ -14,6 +14,26 @@ This file realizes a clopen subset of an affine scheme as a basic open cut
 out by an idempotent.  Its coordinate ring, and the coordinate ring of its
 preimage under an affine morphism, are the corresponding away localizations.
 It also records the natural restriction squares on global sections.
+
+The closed-immersion and restriction results hold for arbitrary schemes;
+identifying clopens with idempotents and their sections with away localizations
+uses an affine scheme (or an affine morphism with affine target).
+
+## References
+
+* The Stacks Project, Lemma 10.21.3
+  ([tag 00EE](https://stacks.math.columbia.edu/tag/00EE)), identifies
+  clopens of an affine spectrum with unique idempotents.
+* Mathlib, `Mathlib.RingTheory.Spectrum.Prime.Topology`
+  (`PrimeSpectrum.isIdempotentElemEquivClopens` and
+  `PrimeSpectrum.basicOpen_injOn_isIdempotentElem`),
+  `Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion`
+  (`IsClosedImmersion.of_isPreimmersion` and
+  `IsClosedImmersion.isAffine_surjective_of_isAffine`), and
+  `Mathlib.AlgebraicGeometry.AffineScheme`
+  (`isLocalization_away_of_isAffine`), provide the geometric and
+  ring-theoretic interfaces used here. The global-section restriction
+  squares follow the naturality of Mathlib's scheme presheaf.
 -/
 
 public section
@@ -50,7 +70,8 @@ lemma appTop_surjective_of_isClopen [IsAffine X] (hU : IsClopen (U : Set X)) :
   exact (IsClosedImmersion.isAffine_surjective_of_isAffine U.ι).2
 
 /-- A clopen subset of an affine scheme is a basic open cut out by an
-idempotent global section. -/
+idempotent global section. This transports Stacks Project, Lemma 10.21.3
+(tag 00EE), via Mathlib's `PrimeSpectrum.isIdempotentElemEquivClopens`. -/
 lemma exists_isIdempotent_basicOpen_eq [IsAffine X]
     (hU : IsClopen (U : Set X)) :
     ∃ e : Γ(X, ⊤), IsIdempotentElem e ∧ X.basicOpen e = U := by
@@ -67,7 +88,7 @@ lemma exists_isIdempotent_basicOpen_eq [IsAffine X]
   simp
 
 /-- On an affine scheme, an idempotent global section is determined by its
-basic open. -/
+basic open, as in Stacks Project, Lemma 10.21.3 (tag 00EE). -/
 lemma basicOpen_injOn_isIdempotentElem [IsAffine X] :
     {e : Γ(X, ⊤) | IsIdempotentElem e}.InjOn X.basicOpen := by
   intro e he f hf hef
@@ -81,7 +102,9 @@ lemma basicOpen_injOn_isIdempotentElem [IsAffine X] :
   exact congr_arg (fun V : X.Opens ↦ (V : Set X)) hef'
 
 /-- The coordinate ring of a clopen subset of an affine scheme is an away
-localization at an idempotent cutting out that subset. -/
+localization at an idempotent cutting out that subset; combine Stacks Project,
+Lemma 10.21.3 (tag 00EE), with Mathlib's
+`isLocalization_away_of_isAffine`. -/
 lemma exists_isIdempotent_isLocalization [IsAffine X]
     (hU : IsClopen (U : Set X)) :
     let _ : Algebra Γ(X, ⊤) Γ(X, U) :=

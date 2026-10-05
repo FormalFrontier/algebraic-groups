@@ -19,6 +19,28 @@ For any commutative ring `K` and finite index type `D`, the underlying over-sche
 of the actual categorical product of copies of the additive group scheme is
 `Spec (MvPolynomial D K)`, hence affine `D`-space over `Spec K`.
 The product universal property is proved for all schemes over `Spec K`.
+
+Milne's item 2.1 describes the additive group, and item 2.6 gives a
+chosen-basis group-scheme isomorphism `Gₐ^n ≃ Vₐ` for a finite-dimensional
+vector space over a field. This is a published product antecedent. The
+comparison here instead concerns underlying over-schemes over an arbitrary
+commutative ring, without a chosen vector-space basis or a claimed
+group-scheme isomorphism.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.1 (the additive group) and
+  item 2.6 (the chosen-basis vector-group/additive-product isomorphism over a field).
+* `AlgebraicGroups.GroupScheme.VectorProduct` formalizes this field/basis
+  group-scheme product as `vectorGroupSchemeProductIso`; `Additive` and
+  `AffineHomOver` supply the local additive and over-scheme interfaces.
+* Mathlib, `Mathlib.AlgebraicGeometry.AffineSpace` and
+  `Mathlib.AlgebraicGeometry.Group.Affine` (affine spectra and group schemes),
+  `Mathlib.Algebra.MvPolynomial.Eval` (polynomial evaluation), and
+  `Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits` and
+  `Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts` (categorical products).
+  The affine-Spec/global-section equivalence used below is obtained from
+  Mathlib's `algΓAlgSpecAdjunction` in `AffineHomOver`.
 -/
 
 @[expose] public section
@@ -96,7 +118,9 @@ def additiveGroupAffineProductFan :
     (additiveGroupAffineProductProjection K D)
 
 /-- The affine cone is a product in the category of schemes over `Spec K`.
-Its universal property includes every nonaffine test over-scheme. -/
+Its universal property includes every nonaffine test over-scheme. The proof uses
+Mathlib's `algΓAlgSpecAdjunction` through `affineSpecHomOverEquiv` and the
+universal evaluation map `MvPolynomial.aeval`. -/
 def additiveGroupAffineProductFan_isLimit :
     Limits.IsLimit (additiveGroupAffineProductFan K D) := by
   classical
@@ -132,7 +156,8 @@ def additiveGroupProductUnderlyingFan :
   Limits.Fan.mk ((∏ᶜ fun _ : D => additiveGroupScheme K).X)
     (fun d => (Limits.Pi.π (fun _ : D => additiveGroupScheme K) d).hom.hom)
 
-/-- Forgetting group structure preserves the actual group-object product cone. -/
+/-- Forgetting group structure preserves the actual group-object product cone,
+using Mathlib's `Grp.forget` product preservation and `Limits.productIsProduct`. -/
 def additiveGroupProductUnderlyingFan_isLimit :
     Limits.IsLimit (additiveGroupProductUnderlyingFan K D) := by
   classical
@@ -142,7 +167,11 @@ def additiveGroupProductUnderlyingFan_isLimit :
     (Limits.productIsProduct (fun _ : D => additiveGroupScheme K))
 
 /-- The underlying scheme of the literal finite group-scheme product is
-the spectrum of the polynomial coordinate ring, over any commutative ring. -/
+the spectrum of the polynomial coordinate ring, over any commutative ring.
+This compares the limiting cones built from Mathlib's categorical product and
+polynomial evaluation. Milne's item 2.6 chosen-basis group-scheme product over
+a field is a published antecedent; this comparison instead identifies the
+underlying over-scheme with `Spec (MvPolynomial D K)` for any commutative ring. -/
 def additiveGroupProductUnderlyingSpecIso :
     (∏ᶜ fun _ : D => additiveGroupScheme K).X ≅
       additiveGroupAffineProductScheme K D :=
@@ -158,7 +187,8 @@ theorem additiveGroupProductUnderlyingSpecIso_hom_projection (d : D) :
   (additiveGroupProductUnderlyingFan_isLimit K D).conePointUniqueUpToIso_hom_comp
     (additiveGroupAffineProductFan_isLimit K D) ⟨d⟩
 
-/-- The polynomial affine scheme is canonically affine space over the base. -/
+/-- The polynomial affine scheme is canonically affine space over the base,
+via Mathlib's `AffineSpace.SpecIso` and `AffineSpace.SpecIso_inv_over`. -/
 def additiveGroupAffineProductSpecToSpaceIso :
     additiveGroupAffineProductScheme K D ≅
       (AffineSpace D (Spec (.of K))).asOver (Spec (.of K)) := by
@@ -167,7 +197,10 @@ def additiveGroupAffineProductSpecToSpaceIso :
   exact AffineSpace.SpecIso_inv_over (.of K)
 
 /-- The actual finite product of additive group schemes has underlying over-scheme
-affine `D`-space; this does not assert a group-scheme isomorphism. -/
+affine `D`-space for any commutative ring; this does not assert a group-scheme
+isomorphism. Milne's item 2.6 field/basis group-scheme product is an antecedent,
+while this comparison uses Mathlib's categorical product and its
+polynomial-spectrum affine-space identification. -/
 def additiveGroupProductUnderlyingAffineSpaceIso :
     (∏ᶜ fun _ : D => additiveGroupScheme K).X ≅
       (AffineSpace D (Spec (.of K))).asOver (Spec (.of K)) :=

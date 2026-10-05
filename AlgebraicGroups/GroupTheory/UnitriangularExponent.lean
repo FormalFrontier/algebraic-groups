@@ -14,6 +14,16 @@ public import Mathlib.GroupTheory.Exponent
 
 The exponent bound and its sharpness concern the native group
 `Matrix.UnitriangularGroup (Fin n) R`, over a commutative ring.
+The bound uses Cayley–Hamilton for strictly upper-triangular matrices and a
+commuting prime-power identity; sharpness uses a consecutive superdiagonal
+shift. Neither conclusion is a group-scheme exponent statement.
+
+## References
+
+- Mathlib contributors, `Mathlib.LinearAlgebra.Matrix.Charpoly.Basic`
+  (triangular characteristic polynomial and Cayley–Hamilton),
+  `Mathlib.Algebra.CharP.Lemmas` (commuting prime-power identity) and
+  `Mathlib.GroupTheory.Exponent` (uniform exponent divisibility).
 -/
 
 @[expose] public section
@@ -23,7 +33,9 @@ noncomputable section
 namespace Matrix
 
 /-- A strictly upper-triangular matrix over a commutative ring vanishes at the
-power given by the number of its indices, including for an empty index type. -/
+power given by the number of its indices, including for an empty index type.
+The proof applies Cayley–Hamilton as formalized by Mathlib's
+`Matrix.aeval_self_charpoly` to its triangular characteristic polynomial. -/
 theorem pow_card_eq_zero_of_upperTriangular_diag_zero
     {ι R : Type*} [Fintype ι] [LinearOrder ι] [CommRing R]
     (N : Matrix ι ι R) (hupper : N.IsUpperTriangular)
@@ -85,7 +97,8 @@ private theorem shift_pow_mul_natCast_apply (n : ℕ) (R : Type) [CommRing R]
   simp [Matrix.natCast_apply]
 
 /-- A characteristic-`p` native upper-unitriangular matrix has prime-power order
-bounded by the first power of `p` at least its dimension. -/
+bounded by the first power of `p` at least its dimension. The proof combines
+Cayley–Hamilton with Mathlib's `Commute.add_pow_prime_pow_eq'`. -/
 theorem pow_prime_pow_eq_one {n p t : ℕ} {R : Type} [CommRing R]
     (hp : Nat.Prime p) (hchar : (p : R) = 0) (hn : n ≤ p ^ t)
     (g : Matrix.UnitriangularGroup (Fin n) R) : g ^ (p ^ t) = 1 := by
@@ -171,7 +184,8 @@ theorem exists_pow_ne_one_of_pos_lt {n : ℕ} {R : Type} [CommRing R] [Nontrivia
   exact one_ne_zero (hUentry.symm.trans (hpower.trans hzero))
 
 /-- The prime-power uniform exponent bound is sharp over nontrivial
-commutative coefficient rings. -/
+commutative coefficient rings. The consecutive-superdiagonal shift gives a
+witness to nontriviality below the dimension threshold. -/
 theorem forall_pow_prime_pow_eq_one_iff {n p t : ℕ} {R : Type}
     [CommRing R] [Nontrivial R] (hp : Nat.Prime p) (hchar : (p : R) = 0) :
     (∀ g : Matrix.UnitriangularGroup (Fin n) R, g ^ (p ^ t) = 1) ↔ n ≤ p ^ t := by
@@ -185,7 +199,8 @@ theorem forall_pow_prime_pow_eq_one_iff {n p t : ℕ} {R : Type}
     exact pow_prime_pow_eq_one hp hchar hn g
 
 /-- The native group's exponent divides the prime power precisely above the
-dimension threshold (with exponent `1` for the trivial group). -/
+dimension threshold (with exponent `1` for the trivial group). This uses
+Mathlib's `Monoid.exponent_dvd_iff_forall_pow_eq_one`. -/
 theorem exponent_dvd_prime_pow_iff {n p t : ℕ} {R : Type}
     [CommRing R] [Nontrivial R] (hp : Nat.Prime p) (hchar : (p : R) = 0) :
     (Monoid.exponent (Matrix.UnitriangularGroup (Fin n) R) ∣ p ^ t) ↔ n ≤ p ^ t := by

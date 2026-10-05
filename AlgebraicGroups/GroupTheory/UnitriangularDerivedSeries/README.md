@@ -41,7 +41,8 @@ The import publicly exposes the existing lower-central-series module
 (`UnitriangularCentralFiltration`), the native elementary units and ordered
 Steinberg commutator (`UnitriangularNilpotencyClass`), the coordinate quotient
 (`UnitriangularSuperdiagonalQuotients`), and pinned mathlib's
-`Mathlib.GroupTheory.Solvable`. The earlier G upper bound proves
+`Mathlib.GroupTheory.Solvable`. The theorem
+`superdiagonalSubgroup_commutator` proves
 `⁅F_r,F_s⁆ ≤ F_(r+s)`. For the reverse inclusion, the lower-central-series
 `superdiagonalSubgroup_le_of_elementary_mem` reduces it to all roots
 `E_ij(a)` at distances at least `r+s`. Split each at `k=i+r`; then
@@ -50,8 +51,9 @@ Steinberg commutator (`UnitriangularNilpotencyClass`), the coordinate quotient
 commutator. The generation criterion itself uses an existing private
 ordered-coordinate elimination; this module neither accesses nor duplicates
 it. Induction on the native derived series uses its self-commutator successor
-and `2^t+2^t=2^(t+1)`. For nontrivial coefficients, L identifies
-`F_d=γ_(d-1)` and K identifies the exact native nilpotency class `n-1`;
+and `2^t+2^t=2^(t+1)`. For nontrivial coefficients, the preceding
+lower-central-series theorem identifies `F_d=γ_(d-1)` and the exact-class
+theorem gives the native nilpotency class `n-1`;
 the pinned mathlib lower-central-series bot criterion gives the weak bounds
 above, including dimensions zero and one.
 
@@ -68,3 +70,13 @@ These commands are reproduction instructions. The library proof uses the
 separately maintained General Linear Groups dependency for the elementary
 commutator identity; its authorship and license remain distinct. See the
 [credits](../../../CREDITS.md) for project and external contributions.
+
+## References
+
+- Mathlib contributors, `Mathlib.GroupTheory.Solvable` (native derived series),
+  `Mathlib.GroupTheory.Commutator.Basic` (subgroup commutators) and
+  `Mathlib.GroupTheory.Nilpotent` (lower central series and class criterion).
+- General Linear Groups contributors, `GeneralLinearGroups.ElementaryCommutator`
+  (the ordered elementary-unit relation used by the preceding point-group
+  modules). The identities here concern point groups over commutative rings,
+  not algebraic subgroup schemes.

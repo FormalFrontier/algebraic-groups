@@ -24,6 +24,20 @@ from such a jointly injective family over a field.
 - `Algebra.TensorProduct.pi_baseChangeEvaluation_injective_of_free`
 - `Algebra.IsGeometricallyReduced.of_joint_evaluations`
 - `Algebra.IsGeometricallyReduced.of_iInf_eval_ker_eq_bot`
+
+Mathlib's canonical `TensorProduct.piScalarRightHom` is an equivalence for
+finite index types. Here its injectivity for *arbitrary* indices follows from
+the Mathlib basis decomposition of a tensor product with a free factor;
+flatness preserves the joint injectivity used in the applications.
+
+## References
+
+- Mathlib, `Mathlib.LinearAlgebra.TensorProduct.Pi` (`piScalarRightHom` and its
+  finite-index equivalence) and `Mathlib.LinearAlgebra.TensorProduct.Basis`
+  (`equivFinsuppOfBasisLeft`).
+- Mathlib, `Mathlib.Algebra.Algebra.Pi` (arbitrary-index `AlgHom.pi`),
+  `Mathlib.RingTheory.Flat.Basic` (flat base change), and
+  `Mathlib.RingTheory.Nilpotent.GeometricallyReduced` (the field criterion).
 -/
 
 public section
@@ -46,8 +60,10 @@ private lemma equivFinsuppOfBasisLeft_apply_piScalarRightHom
   | tmul x f => simp [mul_comm]
   | add x y hx hy => simp [hx, hy]
 
-/-- If `S` is free as an `R`-module, the canonical map
-`S ⊗[R] (I → R) →ₗ[S] (I → S)` is injective, even when `I` is infinite. -/
+/-- If `S` is free as an `R`-module, Mathlib's canonical map
+`S ⊗[R] (I → R) →ₗ[S] (I → S)` is injective, even when `I` is infinite.
+The proof uses Mathlib's `TensorProduct.equivFinsuppOfBasisLeft`; the
+finite-index equivalence is `TensorProduct.piScalarRight`. -/
 theorem piScalarRightHom_injective_of_free [Module.Free R S] :
     Function.Injective (piScalarRightHom R S S I) := by
   let b := Module.Free.chooseBasis R S

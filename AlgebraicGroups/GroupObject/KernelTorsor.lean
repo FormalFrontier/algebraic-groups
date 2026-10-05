@@ -10,6 +10,15 @@ public import AlgebraicGroups.GroupObject.Hom
 # Kernel torsors for morphisms of group objects
 
 This file begins the categorical core of smooth descent for extensions of group schemes.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 1.61 and the proof of
+  Proposition 1.62(a), for exact sequences and the fibre-translation argument
+  in smooth extension descent. The theorem here is a generic kernel-pair
+  pullback statement, not the smoothness implication.
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, for group laws on
+  Hom sets, and the `IsPullback` cone and universal-property API.
 -/
 
 public section
@@ -24,7 +33,9 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 variable {N G Q : C} [GrpObj G] [GrpObj Q]
 
 /-- If `N` is the kernel of a morphism of group objects `q : G ⟶ Q`, then multiplying
-an element of `G` by an element of `N` exhibits `N × G` as `G ×_Q G`. -/
+an element of `G` by an element of `N` exhibits `N × G` as `G ×_Q G`.
+Compare the fibre-translation argument in Milne, *Algebraic Groups* (2017), proof of
+Proposition 1.62(a); the conclusion here is only the categorical pullback. -/
 theorem isPullback_kernel_mul (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
     (hN : IsPullback i (toUnit N) q η[Q]) :
     IsPullback ((i ⊗ₘ 𝟙 G) ≫ μ[G]) (snd N G) q q := by

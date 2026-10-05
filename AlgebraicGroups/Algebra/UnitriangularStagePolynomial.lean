@@ -13,6 +13,20 @@ public import Mathlib.Algebra.MvPolynomial.Rename
 The actual quotient by forbidden strict-upper entries is freely generated, as a
 commutative algebra, by the entries whose index gap is at least the stage.
 This holds over every commutative base ring, including the zero ring.
+
+Milne's polynomial presentation is for the full unitriangular group over a
+field; the stage presentation here uses the actual quotient algebra.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.9 (polynomial
+  presentation of the full unitriangular group) and §6.49 (field-case
+  filtration by individual upper entries).
+* Mathlib contributors, `Mathlib.Algebra.MvPolynomial.Rename`
+  (`MvPolynomial.killCompl` and `rename`) and the algebra-quotient
+  lifting and extensionality API.
+* The existing `UnitriangularCoordinateRing.freeEquiv` supplies the full
+  group's free strict-upper coordinates.
 -/
 
 @[expose] public section
@@ -166,7 +180,11 @@ theorem fromPolynomial_comp_toPolynomialQuotient :
   rw [toPolynomialQuotient_quotient]
   simpa only [AlgHom.comp_apply, AlgEquiv.toAlgHom_apply] using AlgHom.congr_fun hgen p
 
-/-- The actual stage quotient is a polynomial algebra on its surviving entries. -/
+/-- The stage quotient is a polynomial algebra on its surviving entries.
+Milne, *Algebraic Groups* (2017), item 2.9 gives the full unitriangular
+field-case antecedent; this equivalence also removes entire superdiagonals
+over arbitrary commutative rings. It preserves ring addition as an algebra
+equivalence but does not identify additive group schemes or Hopf structures. -/
 def polynomialEquiv :
     CoordinateRing K n r ≃ₐ[K] MvPolynomial (SurvivingPair n r) K :=
   AlgEquiv.ofAlgHom (toPolynomialQuotient K n r) (fromPolynomial K n r)

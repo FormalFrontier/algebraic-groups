@@ -15,6 +15,16 @@ public section
 A section of a group-object morphism trivializes its kernel pullback as an underlying
 cartesian product. The section need not be multiplicative; this is not a group-object
 isomorphism.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 1.61, for kernels and
+  exact sequences of algebraic groups. The section-first underlying-object
+  construction here applies more generally and does not require a group
+  structure on the kernel or a multiplicative section.
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp` for group laws on
+  Hom sets and `Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs`
+  for the kernel-pullback lift and its universal property.
 -/
 
 set_option warningAsError true
@@ -57,7 +67,10 @@ private theorem splitKernelForward_comp_q :
     ((snd N Q ≫ e) * (fst N Q ≫ i)) ≫ q = snd N Q := by
   simp [MonObj.mul_comp, Category.assoc, he, hN.w, MonObj.one_eq_one]
 
-/-- The section-first multiplication gives an isomorphism of underlying objects. -/
+/-- The section-first multiplication gives an isomorphism of underlying objects.
+Compare the exact-sequence context of Milne, *Algebraic Groups* (2017),
+Definition 1.61; the section here need not be multiplicative, and the conclusion
+is not an isomorphism of group objects. -/
 noncomputable def splitKernelProductIso : N ⊗ Q ≅ G where
   hom := (snd N Q ≫ e) * (fst N Q ≫ i)
   inv := lift (splitKernelRemainder i q e hN he) q

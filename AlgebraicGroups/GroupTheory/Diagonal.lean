@@ -8,7 +8,24 @@ public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
-/-! # Diagonal subgroups of native matrix general linear groups -/
+/-!
+# Diagonal subgroups of matrix general linear groups
+
+Milne's diagonal subgroup `D_n` of `GL_n` is defined on algebras over a field.
+Here the index may be any finite decidable type and the coefficient ring any commutative ring.
+The identification with tuples of units uses Mathlib's diagonal ring map and unit-product
+equivalence; no ordering or nonempty index is required.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2.9 (p. 42), for `D_n`, and §12.d
+  (p. 234, after Definition 12.11), for its product-of-multiplicative-groups description.
+* Mathlib, `Mathlib.Data.Matrix.Basic` (`Matrix.diagonalRingHom`),
+  `Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs`,
+  `Mathlib.LinearAlgebra.Matrix.Determinant.Basic` (`Matrix.det_diagonal`),
+  `Mathlib.LinearAlgebra.Matrix.NonsingularInverse` (`Matrix.isUnits_det_units`), and
+  `Mathlib.Algebra.Group.Pi.Units` (`MulEquiv.piUnits`).
+-/
 
 @[expose] public section
 
@@ -30,7 +47,8 @@ def diagonalUnitsHom : (ι → Rˣ) →* GeneralLinearGroup ι R :=
   change (diagonal fun k => (d k : R)) i j = _
   exact diagonal_apply _ _ _
 
-/-- The literal subgroup of invertible matrices whose off-diagonal entries vanish. -/
+/-- Invertible matrices whose off-diagonal entries vanish, generalizing Milne's
+`D_n` over a field (*Algebraic Groups*, §2.9) to commutative rings. -/
 def diagonalSubgroup : Subgroup (GeneralLinearGroup ι R) where
   carrier := {g | ∀ i j, i ≠ j → g i j = 0}
   one_mem' := by
@@ -107,7 +125,8 @@ theorem isUnit_entry (g : DiagonalGroup ι R) (i : ι) : IsUnit (g.1 i i) := by
     exact isUnits_det_units g.1
   exact (IsUnit.prod_univ_iff.mp hdet) i
 
-/-- Explicit identification with a tuple of scalar units. -/
+/-- The diagonal subgroup is multiplicatively equivalent to tuples of scalar units;
+compare Milne, *Algebraic Groups* (2017), §12.d (p. 234). -/
 def unitsEquiv : DiagonalGroup ι R ≃* (ι → Rˣ) where
   toFun g i := (isUnit_entry g i).unit
   invFun d := ⟨diagonalUnitsHom ι R d, by

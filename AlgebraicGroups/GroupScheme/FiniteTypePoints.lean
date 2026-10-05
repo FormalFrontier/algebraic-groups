@@ -14,12 +14,28 @@ The generic functor of points on finitely generated algebras, its full faithfuln
 finite-limit preservation come from `SchemeProperties.FiniteTypePoints`. This module
 extends those results to group objects and finite-type group schemes.
 
+The tests here are `FGAlgCat K`, a category of finitely generated algebras,
+rather than Milne's equivalent small presentation `Alg⁰ₖ`. The
+locally-finite-type group-object results also apply without quasi-compactness.
+
 ## Main results
 
 - `AlgebraicGeometry.lftGroupPointsFullyFaithful`
 - `AlgebraicGeometry.lftGroupPoints_essImage_iff`
 - `AlgebraicGeometry.algebraicGroupPointsFullyFaithful`
 - `AlgebraicGeometry.algebraicGroupPoints_essImage_iff`
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 1.4 and Appendix A.33:
+  group-valued functors of points and the represented-functor criterion over
+  a field.
+- `SchemeProperties.FiniteTypePoints`: the separately developed
+  `finiteAlgSpecOver`, `lftPointsFullyFaithful`,
+  `lftPointsPreservesFiniteLimits` and `algebraicOverPoints` constructions.
+- Mathlib, `Functor.mapGrp` and `Functor.essImage_mapGrp`: lifting fully
+  faithful finite-limit-preserving functors and their essential images to
+  group objects.
 -/
 
 public section
@@ -47,19 +63,25 @@ noncomputable local instance lftPointsMonoidal
   Functor.Monoidal.ofChosenFiniteProducts _
 
 /-- The group-valued functor of points on finitely generated algebras. Group objects in this
-pointwise Cartesian functor category are group-valued functors. -/
+pointwise Cartesian functor category are group-valued functors, as in Milne,
+*Algebraic Groups* (2017), item 1.4. The underlying restricted point functor
+comes from `SchemeProperties.FiniteTypePoints`. -/
 @[expose] noncomputable def lftGroupPoints
     (K : Type u) [Field K] :=
   (Presheaf.restrictedULiftYoneda.{0} (finiteAlgSpecOver K)).mapGrp
 
 /-- The functor of points on finitely generated algebras is fully faithful on group objects among
-locally-finite-type schemes. -/
+locally-finite-type schemes. This extends Milne, *Algebraic Groups* (2017),
+item 1.4 beyond finite type using `lftPointsFullyFaithful` from
+`SchemeProperties.FiniteTypePoints` and Mathlib's `Functor.mapGrp`. -/
 noncomputable def lftGroupPointsFullyFaithful
     (K : Type u) [Field K] : (lftGroupPoints K).FullyFaithful :=
   (lftPointsFullyFaithful K).mapGrp
 
 /-- A group-valued functor is represented by a group object among locally-finite-type schemes if
-and only if its underlying set-valued functor is represented there. -/
+and only if its underlying set-valued functor is represented there. This
+extends the criterion in Milne, *Algebraic Groups* (2017), item 1.4 via
+Mathlib's `Functor.essImage_mapGrp`. -/
 theorem lftGroupPoints_essImage_iff
     (K : Type u) [Field K]
     {F : Grp ((((FGAlgCat K)ᵒᵖ)ᵒᵖ ⥤ Type u))} :
@@ -73,7 +95,8 @@ theorem lftGroupPoints_essImage_iff
   exact Functor.essImage_mapGrp
 
 /-- Group objects among schemes locally of finite type whose structure morphisms are also
-quasi-compact, hence finite type. -/
+quasi-compact, hence finite type, matching the field-based convention in
+Milne, *Algebraic Groups* (2017), Definition 1.1. -/
 abbrev algebraicGroupOver (K : Type u) [Field K] :=
   ObjectProperty.FullSubcategory
     (fun G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))) ↦
@@ -93,13 +116,17 @@ noncomputable def algebraicGroupPoints
   algebraicGroupOverInclusion K ⋙ lftGroupPoints K
 
 /-- The functor of points on finitely generated algebras is fully faithful on finite-type group
-schemes over a field. -/
+schemes over a field, as in Milne, *Algebraic Groups* (2017), item 1.4 and
+Appendix A.33, using the restricted Yoneda full faithfulness supplied by
+`SchemeProperties.FiniteTypePoints`. -/
 noncomputable def algebraicGroupPointsFullyFaithful
     (K : Type u) [Field K] : (algebraicGroupPoints K).FullyFaithful :=
   (ObjectProperty.fullyFaithfulι _).comp (lftGroupPointsFullyFaithful K)
 
 /-- A group-valued functor on finitely generated algebras is represented by a finite-type group
-scheme if and only if its underlying set-valued functor is represented by a finite-type scheme. -/
+scheme if and only if its underlying set-valued functor is represented by a
+finite-type scheme, as in Milne, *Algebraic Groups* (2017), item 1.4, using
+`algebraicOverPoints` from `SchemeProperties.FiniteTypePoints`. -/
 theorem algebraicGroupPoints_essImage_iff
     (K : Type u) [Field K]
     {F : Grp ((((FGAlgCat K)ᵒᵖ)ᵒᵖ ⥤ Type u))} :

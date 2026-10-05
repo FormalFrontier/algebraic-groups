@@ -13,10 +13,26 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 This file proves that a group scheme is separated when its unit section is a
 closed immersion. In particular, every group scheme over a field is separated.
 
+The closed-unit-section criterion is relative to an arbitrary base scheme;
+the field case needs no finite-type hypothesis.
+
 ## Main results
 
 - `AlgebraicGeometry.isSeparated_of_isClosedImmersion_unit`
 - `AlgebraicGeometry.isSeparated_of_grpObj`
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), Proposition 1.22 and
+  Appendix A.41: the field-based result and the diagonal-as-inverse-image
+  argument for separatedness.
+- Mathlib, `IsSeparated` (`Mathlib.AlgebraicGeometry.Morphisms.Separated`),
+  `MorphismProperty.of_isPullback` and
+  `isClosedImmersion_of_comp_eq_id`: the diagonal criterion, pullback stability
+  of closed immersions and the closed-unit-section step over a field.
+- Mathlib, `GrpObj.eq_lift_inv_left` and `GrpObj.lift_inv_left_eq`
+  (`Mathlib.CategoryTheory.Monoidal.Grp`): the identities proving
+  that categorical left division is an isomorphism.
 -/
 
 public section
@@ -32,7 +48,9 @@ universe v u
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
-/-- The automorphism `(x, y) ↦ (x, x⁻¹y)` of the product of a group object with itself. -/
+/-- The automorphism `(x, y) ↦ (x, x⁻¹y)` of the product of a group object with
+itself. It implements the diagonal-to-unit argument of Milne,
+*Algebraic Groups* (2017), Proposition 1.22 in a Cartesian category. -/
 def leftDivIso (G : C) [GrpObj G] : G ⊗ G ≅ G ⊗ G where
   hom := lift (fst G G) (lift (fst G G ≫ ι) (snd G G) ≫ μ)
   inv := lift (fst G G) (lift (fst G G) (snd G G) ≫ μ)
@@ -57,7 +75,10 @@ universe u
 
 variable {S : Scheme.{u}}
 
-/-- A group scheme whose unit section is a closed immersion is separated. -/
+/-- A group scheme whose unit section is a closed immersion is separated.
+This generalizes the argument of Milne, *Algebraic Groups* (2017),
+Proposition 1.22: after categorical left division the diagonal is a base
+change of the unit section. -/
 theorem isSeparated_of_isClosedImmersion_unit (G : Over S) [GrpObj G]
     (hunit : IsClosedImmersion η[G].left) : IsSeparated G.hom := by
   constructor
@@ -114,7 +135,9 @@ theorem isSeparated_of_isClosedImmersion_unit (G : Over S) [GrpObj G]
 
 variable {K : Type u} [Field K]
 
-/-- Every group scheme over a field is separated. -/
+/-- Every group scheme over a field is separated, with no finite-type
+assumption; this is Milne, *Algebraic Groups* (2017), Proposition 1.22 with
+the finite-type hypothesis removed. -/
 theorem isSeparated_of_grpObj (G : Over (Spec (.of K))) [GrpObj G] : IsSeparated G.hom :=
   isSeparated_of_isClosedImmersion_unit G <|
     isClosedImmersion_of_comp_eq_id (Y := Spec (.of K)) G.hom η[G].left (by simp)

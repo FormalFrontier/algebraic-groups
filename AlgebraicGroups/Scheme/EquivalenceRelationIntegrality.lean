@@ -18,6 +18,32 @@ invariant coefficients.  Clopen localization lifts the resulting equations,
 and the complete family of invariant rank idempotents patches them to prove
 that the affine object ring is integral over the equalizer of the two relation
 maps.
+
+The rank partition is finite on the compact affine target. On each piece,
+the restricted finite projective coordinate module has rank equal to that
+piece's index; its monic characteristic polynomial transports through the
+open-scheme isomorphisms. Supported equations then patch across the complete
+family of rank idempotents. Although this family is orthogonal, the generic
+polynomial patcher uses only idempotence and that the idempotents sum to one.
+No global basis, faithful flatness of the map to the invariant spectrum,
+tensor comparison or effectivity is asserted.
+
+## References
+
+* The Stacks Project, Lemmas 39.23.3 and 39.23.4
+  ([tags 03BI](https://stacks.math.columbia.edu/tag/03BI) and
+  [03BJ](https://stacks.math.columbia.edu/tag/03BJ)), give the invariant
+  finite locally free rank decomposition and integrality over the invariant
+  ring; Lemma 39.23.2
+  ([tag 03BH](https://stacks.math.columbia.edu/tag/03BH)) gives the
+  coefficient-invariance step.
+* `AlgebraicGroups.Scheme.AffineEquivalenceRelationIntegrality` supplies
+  fixed-rank coefficient invariance;
+  `AlgebraicGroups.Scheme.EquivalenceRelationRankRestrict` and
+  `AlgebraicGroups.Scheme.EquivalenceRelationRankEqualizer` supply the
+  restricted relation and invariant idempotents;
+  `AlgebraicGroups.RingTheory.Equalizer` supplies supported-equation lifting
+  and the general idempotent polynomial patcher.
 -/
 
 open CategoryTheory TopologicalSpace
@@ -293,7 +319,12 @@ lemma exists_monic_lift_finrankOpen_charpoly
   exact ⟨p, hpmonic, hpcoeff, hpeval⟩
 
 /-- The object ring of an affine finite locally free internal equivalence
-relation is integral over the equalizer of its two coordinate maps. -/
+relation is integral over the equalizer of its two coordinate maps. This
+formalizes the integrality conclusion and rank-piece argument of Stacks
+Project [Lemma 39.23.4, tag 03BJ](https://stacks.math.columbia.edu/tag/03BJ),
+with rank strata as in
+[Lemma 39.23.3, tag 03BI](https://stacks.math.columbia.edu/tag/03BI).
+-/
 lemma isIntegral_appTop_equalizer_of_equivalenceRelation
     {R X : Scheme.{u}} {p₁ p₂ : R ⟶ X}
     [Flat p₁] [IsFinite p₁] [LocallyOfFinitePresentation p₁]
@@ -324,7 +355,8 @@ lemma isIntegral_appTop_equalizer_of_equivalenceRelation
 
 /-- Algebra-level form of
 `isIntegral_appTop_equalizer_of_equivalenceRelation`: the full coordinate ring
-is integral over the invariant equalizer. -/
+is integral over the invariant equalizer, as in Stacks Project
+[Lemma 39.23.4, tag 03BJ](https://stacks.math.columbia.edu/tag/03BJ). -/
 theorem algebraIsIntegral_appTop_equalizer_of_equivalenceRelation
     {R X : Scheme.{u}} {p₁ p₂ : R ⟶ X}
     [Flat p₁] [IsFinite p₁] [LocallyOfFinitePresentation p₁]

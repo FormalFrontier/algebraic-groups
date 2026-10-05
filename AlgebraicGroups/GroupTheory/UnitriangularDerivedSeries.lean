@@ -14,6 +14,15 @@ The commutator of two positive stages of the superdiagonal filtration is
 exactly the stage indexed by their sum. Consequently the native derived
 series consists of the stages indexed by powers of two, over any commutative
 ring, including the zero ring.
+
+## References
+
+- Mathlib contributors, `Mathlib.GroupTheory.Solvable` (the derived series),
+  `Mathlib.GroupTheory.Commutator.Basic` (subgroup commutators) and
+  `Mathlib.GroupTheory.Nilpotent` (the lower central series used for the
+  stopping criterion).
+- General Linear Groups contributors, `GeneralLinearGroups.ElementaryCommutator`
+  (the elementary-unit relation used through the preceding modules).
 -/
 
 @[expose] public section
@@ -24,7 +33,10 @@ namespace Matrix.UnitriangularGroup
 
 variable (n : ℕ) (R : Type) [CommRing R]
 
-/-- The commutator of two positive superdiagonal stages is their sum stage. -/
+/-- The commutator of two positive superdiagonal stages is their sum stage.
+The reverse inclusion uses the elementary-unit relation from
+`GeneralLinearGroups.ElementaryCommutator` and the preceding generation
+criterion, rather than a quotient of group schemes. -/
 theorem superdiagonalSubgroup_commutator_eq (r s : ℕ)
     (hr : 1 ≤ r) (hs : 1 ≤ s) :
     ⁅superdiagonalSubgroup n R r, superdiagonalSubgroup n R s⁆ =
@@ -43,7 +55,9 @@ theorem superdiagonalSubgroup_commutator_eq (r s : ℕ)
   have hroot := elementary_commutator n R i k j hik hkj a (1 : R)
   simpa only [hroot, mul_one] using hcomm
 
-/-- The native derived series is the superdiagonal filtration at powers of two. -/
+/-- The native derived series is the superdiagonal filtration at powers of two.
+This uses Mathlib's `derivedSeries` successor and the positive-stage
+commutator equality above. -/
 theorem derivedSeries_eq_superdiagonalSubgroup (t : ℕ) :
     derivedSeries (Matrix.UnitriangularGroup (Fin n) R) t =
       superdiagonalSubgroup n R (2 ^ t) := by
@@ -81,7 +95,8 @@ theorem superdiagonalSubgroup_eq_bot_iff [Nontrivial R] (d : ℕ) (hd : 1 ≤ d)
     exact superdiagonalSubgroup_antitone n R hle
 
 /-- Over a nontrivial ring, the native derived series stops exactly when its
-superdiagonal stage reaches the dimension. -/
+superdiagonal stage reaches the dimension, using Mathlib's `derivedSeries`
+and the preceding point-group class and lower-central-series criteria. -/
 theorem derivedSeries_eq_bot_iff [Nontrivial R] (t : ℕ) :
     derivedSeries (Matrix.UnitriangularGroup (Fin n) R) t = ⊥ ↔ n ≤ 2 ^ t := by
   rw [derivedSeries_eq_superdiagonalSubgroup n R t]

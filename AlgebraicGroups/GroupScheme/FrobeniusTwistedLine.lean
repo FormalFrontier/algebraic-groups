@@ -25,6 +25,12 @@ and hence reduced. After scalar extension to any field containing `α` with `α 
 of `Y - α * X` is a nonzero nilpotent. Thus this gives a reusable example of a reduced affine
 finite-type group scheme that is not geometrically reduced.
 
+This is the equation and reduced/non-geometrically-reduced example in Milne's
+*Algebraic Groups*, Example 1.27. The hypothesis that `t` is not a `p`-th
+power is used for irreducibility over `K`; the nilpotent after extension uses
+a chosen `p`-th root. Its defining equation has no linear `-Y` term, unlike
+the Artin--Schreier twisted line.
+
 ## Main definitions
 
 - `FrobeniusTwistedLine.CoordinateRing`
@@ -40,6 +46,17 @@ finite-type group scheme that is not geometrically reduced.
 - `FrobeniusTwistedLine.isReduced_and_not_isGeometricallyReduced`
 - `FrobeniusTwistedLine.scheme_isReduced`
 - `FrobeniusTwistedLine.scheme_not_geometricallyReduced`
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), Example 1.27, p. 14 (the
+  equation `Y ^ p - t * X ^ p`, reducedness and failure of geometric reducedness).
+- Mathlib, `Mathlib.FieldTheory.KummerPolynomial` and
+  `Mathlib.FieldTheory.RatFunc.IntermediateField` (irreducibility via the
+  absence of a `p`-th root in the rational-function field).
+- Mathlib, `Mathlib.RingTheory.DualNumber` and
+  `Mathlib.AlgebraicGeometry.Group.Affine` (the nonzero nilpotent witness
+  after extension and the affine Hopf group scheme).
 -/
 
 @[expose] public section
@@ -159,10 +176,15 @@ theorem y_pow_eq (p : ℕ) (t : K) :
   rw [Ideal.Quotient.eq_zero_iff_mem]
   exact Ideal.subset_span (Set.mem_singleton _)
 
+/-- The defining equation of Milne's *Algebraic Groups*, Example 1.27, is
+irreducible when `t` is not a `p`-th power; the proof uses the polynomial
+irreducibility criterion in Mathlib's Kummer-polynomial development. -/
 theorem equation_irreducible {p : ℕ} (hp : p.Prime) {t : K}
     (ht : ∀ z : K, z ^ p ≠ t) : Irreducible (equation K p t) :=
   MvPolynomial.irreducible_X_pow_sub_C_mul_X_pow hp ht
 
+/-- The coordinate ring in Milne's *Algebraic Groups*, Example 1.27, is a
+domain when the twist is not a `p`-th power. -/
 theorem coordinateRing_isDomain {p : ℕ} (hp : p.Prime) {t : K}
     (ht : ∀ z : K, z ^ p ≠ t) : IsDomain (CoordinateRing K p t) := by
   rw [Ideal.Quotient.isDomain_iff_prime]
@@ -171,6 +193,8 @@ theorem coordinateRing_isDomain {p : ℕ} (hp : p.Prime) {t : K}
 instance coordinateRing_finiteType (p : ℕ) (t : K) :
     Algebra.FiniteType K (CoordinateRing K p t) := inferInstance
 
+/-- The coordinate ring in Milne's *Algebraic Groups*, Example 1.27, is
+reduced when `t` is not a `p`-th power, since it is a domain. -/
 theorem coordinateRing_isReduced {p : ℕ} (hp : p.Prime) {t : K}
     (ht : ∀ z : K, z ^ p ≠ t) : IsReduced (CoordinateRing K p t) := by
   let _ : IsDomain (CoordinateRing K p t) := coordinateRing_isDomain K hp ht
@@ -309,6 +333,9 @@ theorem baseChangeToDualNumber_witness (L : Type*) [Field L] [Algebra K L]
       (DualNumber.eps : DualNumber L) := by
   simp [baseChangeToDualNumber, nilpotentWitness, toDualNumber_x, toDualNumber_y]
 
+/-- The translated coordinate from Milne's *Algebraic Groups*, Example 1.27,
+is nonzero after any field extension and for any `α`; evaluation in dual
+numbers detects it. A root condition is needed only for nilpotence. -/
 theorem nilpotentWitness_ne_zero (L : Type*) [Field L] [Algebra K L]
     {p : ℕ} (hp : p.Prime) (t : K) (α : L) : nilpotentWitness K L p t α ≠ 0 := by
   intro h
@@ -316,6 +343,8 @@ theorem nilpotentWitness_ne_zero (L : Type*) [Field L] [Algebra K L]
   rw [baseChangeToDualNumber_witness, map_zero] at this
   exact one_ne_zero (congrArg TrivSqZeroExt.snd this)
 
+/-- If `α ^ p = t`, the translated coordinate in Milne's *Algebraic Groups*,
+Example 1.27, has `p`-th power zero after extension. -/
 theorem nilpotentWitness_pow (L : Type*) [Field L] [Algebra K L]
     {p : ℕ} (hp : p.Prime) [CharP K p] (t : K) (α : L)
     (hα : α ^ p = algebraMap K L t) : nilpotentWitness K L p t α ^ p = 0 := by
@@ -359,6 +388,8 @@ theorem not_isGeometricallyReduced {p : ℕ} (hp : p.Prime) [CharP K p] (t : K) 
   exact baseChange_not_isReduced K (AlgebraicClosure K) hp t α hα
     ((Algebra.isGeometricallyReduced_field_iff K (CoordinateRing K p t)).mp h)
 
+/-- The reduced but not geometrically reduced coordinate ring in Milne's
+*Algebraic Groups*, Example 1.27, for `t` outside the `p`-th powers of `K`. -/
 theorem isReduced_and_not_isGeometricallyReduced {p : ℕ} (hp : p.Prime)
     [CharP K p] {t : K} (ht : ∀ z : K, z ^ p ≠ t) :
     IsReduced (CoordinateRing K p t) ∧
@@ -564,12 +595,18 @@ abbrev groupScheme {p : ℕ} [Fact p.Prime] [CharP K p] (t : K) :
     Grp (Over (Spec (.of K))) :=
   ⟨scheme K p t⟩
 
+/-- The underlying affine scheme of Milne's *Algebraic Groups*, Example 1.27,
+is reduced when `t` is not a `p`-th power. -/
 theorem scheme_isReduced {p : ℕ} (hp : p.Prime) {t : K}
     (ht : ∀ z : K, z ^ p ≠ t) : AlgebraicGeometry.IsReduced (scheme K p t).left := by
   change AlgebraicGeometry.IsReduced (Spec (.of (CoordinateRing K p t)))
   rw [AlgebraicGeometry.affine_isReduced_iff]
   exact coordinateRing_isReduced K hp ht
 
+/-- After adjoining a `p`-th root of `t`, this scheme from Milne's
+*Algebraic Groups*, Example 1.27, is not reduced; hence it is not
+geometrically reduced for any `t`, even beyond the non-`p`-th-power case
+in the example. -/
 theorem scheme_not_geometricallyReduced {p : ℕ} (hp : p.Prime) [CharP K p] (t : K) :
     ¬GeometricallyReduced (scheme K p t).hom := by
   intro h

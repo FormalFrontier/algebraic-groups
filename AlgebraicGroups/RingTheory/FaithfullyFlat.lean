@@ -21,6 +21,22 @@ This file proves that faithful flatness can be checked after localizing a ring
 map along a family of elements that spans the unit ideal. It also specializes
 the criterion to the finite clopen cover defined by a complete orthogonal
 family of idempotents.
+
+It also proves descent of finite *module presentation* by descending a finite
+free presentation and its kernel. This does not assert finite presentation of
+the algebra itself, nor does it assume a field or a nonzero base ring.
+
+## References
+
+* Stacks Project, Lemma 10.39.16 (tag 00HQ), for faithful flatness as
+  flatness plus surjectivity on spectra; Lemma 10.83.2 (tag 03C4), for descent
+  of finite module presentation by a finite free presentation and its kernel.
+* Mathlib, `Mathlib.RingTheory.RingHom.FaithfullyFlat` and
+  `Mathlib.RingTheory.RingHom.Flat`, for faithful flatness and local flatness;
+  `Mathlib.RingTheory.Spectrum.Prime.Topology` for principal opens.
+* Mathlib, `Mathlib.RingTheory.Finiteness.Descent` for finite generation
+  descent, `Mathlib.Algebra.Module.FinitePresentation` for finite free
+  presentations, and `Mathlib.RingTheory.Flat.Equalizer` for `tensorKerEquiv`.
 -/
 
 universe u v
@@ -31,7 +47,8 @@ namespace RingHom.FaithfullyFlat
 
 /-- A ring map is faithfully flat if it is faithfully flat after localization
 away from every member of a family that spans the unit ideal in the source.
--/
+The proof combines local flatness with the spectrum-surjectivity criterion of
+Stacks Project, Lemma 10.39.16 (tag 00HQ). -/
 lemma ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.FaithfullyFlat := by
   intro R S _ _ f s hs h
   rw [iff_flat_and_comap_surjective]
@@ -87,7 +104,9 @@ lemma ofCompleteOrthogonalIdempotents.ofIsLocalization
 end RingHom.FaithfullyFlat
 
 /-- Finite presentation of a module descends along a faithfully flat base
-change. -/
+change, as in Stacks Project, Lemma 10.83.2 (tag 03C4): descend finite
+generation, choose a finite free surjection, then descend finite generation
+of its kernel through `LinearMap.tensorKerEquiv`. -/
 lemma Module.FinitePresentation.of_finitePresentation_tensorProduct_of_faithfullyFlat
     {R : Type u} (S : Type v) {M : Type*} [CommRing R] [CommRing S]
     [Algebra R S] [AddCommGroup M] [Module R M] [Module.FaithfullyFlat R S]

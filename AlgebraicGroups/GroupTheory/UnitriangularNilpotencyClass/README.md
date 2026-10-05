@@ -49,10 +49,22 @@ lake build AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass AlgebraicGro
 This module is a point-group class result; the separate
 [lower-central-series module](../UnitriangularLowerCentralSeries/README.md)
 now identifies every lower central stage with its superdiagonal filtration
-stage. Neither module asserts a quotient/group-scheme theorem. The original project proofs are credited to Formal Frontier Agents; the
-General Linear Groups dependency retains distinct contributors and license.
+stage. Neither module asserts a quotient/group-scheme theorem. The Lean
+development is credited to Formal Frontier Agents; the General Linear Groups
+dependency retains its distinct contributors and license.
 
 
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
 credit appears in [CREDITS](../../../CREDITS.md).
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), Example 6.36 and §6.49, for
+  unitriangular algebraic-group nilpotence via a central series. Passing to
+  point groups gives a field-based nilpotence antecedent; the exact `n-1`
+  point-group class over nontrivial commutative rings (including `n=0`), and
+  class zero for the zero ring, require the separate arguments above.
+- General Linear Groups contributors, `GeneralLinearGroups.ElementaryCommutator`
+  (`Matrix.GeneralLinearGroup.elementaryUnit_commutator`); Mathlib contributors,
+  `Mathlib.GroupTheory.Nilpotent` (lower central series and the class criterion).

@@ -39,6 +39,23 @@ lake build AlgebraicGroups.GroupScheme.FiniteTriangularGeometry \
   AlgebraicGroupsTest.GroupScheme.FiniteTriangularGeometry
 ```
 
-This geometry module and its client are contributions by Formal Frontier agents;
-the pre-existing multiplicative, diagonal-product, unitriangular and split-kernel
-APIs retain their own authorship and history.
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.2: the multiplicative group;
+  item 2.9: diagonal, unitriangular and upper-triangular groups over a field;
+  item 2.40: field-case triangular coordinate rings and integrality. These
+  passages are not cited for the arbitrary-base smoothness or geometric-fiber
+  proofs here.
+- J. S. Milne, preliminary *Algebraic Groups* course notes, v2.00 (2015),
+  Definition 2.20 and Proposition 2.21: the triangular splitting and its
+  split-kernel criterion over a field. These locators are not item 2.9 of the
+  2017 book; the isomorphism used here is of underlying over-schemes, not group
+  products.
+- Mathlib, `Mathlib.RingTheory.Smooth.StandardSmooth` (polynomial localization),
+  `Mathlib.RingTheory.TensorProduct.MonoidAlgebra` (field scalar extension),
+  `Mathlib.AlgebraicGeometry.Geometrically.Integral` and
+  `Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen` (geometric fibers).
+  The local `DiagonalProduct`, `UnitriangularGeometry`, `UpperTriangularSplitKernel`,
+  `GroupObject.SplitKernelProduct` and `Scheme.Smooth` modules provide separate
+  previously formalized ingredients; see [CREDITS](../../../CREDITS.md) for
+  their contributor credit.

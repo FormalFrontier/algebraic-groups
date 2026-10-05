@@ -21,6 +21,23 @@ module constructs the canonical morphism from the group scheme to the finite
 constant group scheme indexed by its rational component group.  The proof that
 the morphism respects multiplication works componentwise on the open cover by
 products of translated identity components.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, §2g and Proposition 2.37(b), (d),
+  for the component homomorphism, its identity-component kernel and its
+  component fibres; Remark 1.33(b) for faithful flatness of the general
+  component morphism. The finite constant target here requires an
+  algebraically closed field; no arbitrary-field étale universal property
+  is asserted.
+- *SchemeProperties*, `ConnectedComponents`, for the clopen-component
+  coproduct decomposition. The local `GroupScheme.FiniteConstant` provides
+  the coordinate-function group scheme; `Scheme.FiniteCoproduct` provides
+  finite-coproduct comparisons. The mathlib community, *Mathlib*, supplies
+  `CategoryTheory.Extensive` for coproduct pullbacks,
+  `AlgebraicGeometry.OpenImmersion` for lifts,
+  `AlgebraicGeometry.Morphisms.Flat` for componentwise flatness, and
+  categorical group-object morphisms.
 -/
 
 open CategoryTheory Limits MonoidalCategory CartesianMonoidalCategory MonObj
@@ -99,7 +116,10 @@ lemma componentSchemeMapLeft_over : componentSchemeMapLeft f ≫
   rw [Category.assoc, Category.assoc, hEval, Category.comp_id]
 
 /-- The component-labelled morphism from a group scheme to the finite constant
-group scheme on its rational component group. -/
+group scheme on its rational component group. This is the algebraically
+closed-field instance of the component homomorphism in Milne,
+*Algebraic Groups*, §2g and Proposition 2.37(b); its construction uses the
+clopen-component coproduct rather than only a map on rational points. -/
 noncomputable def componentSchemeMap :
     Over.mk f ⟶ (finiteConstantGroupScheme K (rationalComponentGroup f)).X :=
   Over.homMk (componentSchemeMapLeft f) (componentSchemeMapLeft_over f)
@@ -125,7 +145,9 @@ lemma componentSchemeMapLeft_sigma :
   rfl
 
 /-- The component-labelled morphism to the finite constant component group is
-flat. -/
+flat. Compare Milne, *Algebraic Groups*, Remark 1.33(b), for flatness of
+the general component morphism; here flatness is checked separately on the
+finite constant target's componentwise coproduct. -/
 instance componentSchemeMap_flat : Flat (componentSchemeMap f).left := by
   change Flat (componentSchemeMapLeft f)
   let X : rationalComponentGroup f → Scheme := fun q ↦
@@ -164,7 +186,9 @@ instance componentSchemeMap_flat : Flat (componentSchemeMap f).left := by
   exact (MorphismProperty.cancel_left_of_respectsIso @Flat _ _).mp hLeft'
 
 /-- The component-labelled morphism to the finite constant component group is
-surjective. -/
+surjective. Compare Milne, *Algebraic Groups*, Remark 1.33(b); the proof
+checks nonempty component opens and their coproduct map, rather than
+inferring scheme surjectivity solely from rational points. -/
 instance componentSchemeMap_surjective : Surjective (componentSchemeMap f).left := by
   change Surjective (componentSchemeMapLeft f)
   let X : rationalComponentGroup f → Scheme := fun q ↦
@@ -560,7 +584,10 @@ lemma identityComponentι_comp_componentSchemeMap :
 set_option maxHeartbeats 800000 in
 /-- The identity-component inclusion is the scheme-theoretic kernel of the
 component map: its square over the unit of the finite constant component group
-scheme is a pullback. -/
+scheme is a pullback. This is the kernel assertion of Milne,
+*Algebraic Groups*, Proposition 2.37(b), in the present constant-target
+setting; the proof uses the finite-coproduct pullback square, not just
+equality on points. -/
 lemma isPullback_identityComponentι_componentSchemeMap :
     IsPullback
       (Scheme.identityComponentι (Over.mk f))
@@ -755,7 +782,9 @@ lemma componentProductOpen_comp_componentSchemeMap_tensor_mul
       (Quotient.mk'' b)) = _
   rw [finiteConstantGroupSchemePoint_mul]
 
-/-- The component-labelled morphism respects multiplication. -/
+/-- The component-labelled morphism respects multiplication. This is the
+group-homomorphism assertion in Milne, *Algebraic Groups*, §2g, proved
+here on an open cover by products of translated connected components. -/
 lemma componentSchemeMap_mul_hom :
     μ[Over.mk f] ≫ componentSchemeMap f =
       (componentSchemeMap f ⊗ₘ componentSchemeMap f) ≫

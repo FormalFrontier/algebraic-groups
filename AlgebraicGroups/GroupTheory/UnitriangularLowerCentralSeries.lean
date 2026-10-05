@@ -12,6 +12,17 @@ public import AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass
 
 Over any commutative ring, the actual lower central series is the superdiagonal
 filtration, with the lower central series indexed from zero.
+The reverse inclusion uses elementary commutators and coordinate elimination
+through the preceding point-group modules, not a group-scheme quotient.
+
+## References
+
+- Mathlib contributors, `Mathlib.GroupTheory.Nilpotent` (the lower central
+  series and its antitone/successor laws) and
+  `Mathlib.GroupTheory.QuotientGroup.Defs` (the quotient operations used by
+  the preceding coordinate module).
+- General Linear Groups contributors, `GeneralLinearGroups.ElementaryCommutator`
+  (the ordered elementary-unit commutator used through the preceding module).
 -/
 
 @[expose] public section
@@ -22,7 +33,9 @@ namespace Matrix.UnitriangularGroup
 
 variable (n : ℕ) (R : Type) [CommRing R]
 
-/-- An elementary root of distance `d + 1` belongs to the `d`-th lower central term. -/
+/-- An elementary root of distance `d + 1` belongs to the `d`-th lower
+central term, using Mathlib's lower-central-series successor and the
+ordered relation from `GeneralLinearGroups.ElementaryCommutator`. -/
 theorem elementary_mem_lowerCentralSeries_of_distance
     (i j : Fin n) (hij : i < j) (a : R) (d : ℕ)
     (hd : j.val = i.val + d + 1) :
@@ -160,7 +173,9 @@ private theorem coordinateProduct_apply (r : ℕ) (hr : 1 ≤ r)
   exact (hlist _).trans hsum
 
 /-- A positive superdiagonal stage lies in any subgroup containing all elementary
-roots at every distance at least that stage. No normality or ring nontriviality is needed. -/
+roots at every distance at least that stage. No normality or ring nontriviality is needed.
+The coordinate elimination uses the preceding stage-coordinate homomorphism
+and Mathlib's subgroup operations. -/
 theorem superdiagonalSubgroup_le_of_elementary_mem (d : ℕ) (hd : 1 ≤ d)
     (H : Subgroup (Matrix.UnitriangularGroup (Fin n) R))
     (hroot : ∀ (i j : Fin n) (hij : i < j) (a : R),
@@ -203,7 +218,10 @@ theorem superdiagonalSubgroup_le_of_elementary_mem (d : ℕ) (hd : 1 ≤ d)
   · exact (superdiagonalSubgroup_antitone n R (by omega : n ≤ d)).trans
       (by rw [superdiagonalSubgroup_end]; exact bot_le)
 
-/-- The actual lower central series is exactly the superdiagonal filtration. -/
+/-- The actual lower central series is exactly the superdiagonal filtration.
+The reverse inclusion uses the preceding coordinate homomorphism and
+elementary-unit commutator together with Mathlib's `Subgroup.lowerCentralSeries`.
+This is an equality of point-group subgroups, not algebraic subgroup schemes. -/
 theorem lowerCentralSeries_eq_superdiagonalSubgroup (t : ℕ) :
     (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries t =
       superdiagonalSubgroup n R (t + 1) := by

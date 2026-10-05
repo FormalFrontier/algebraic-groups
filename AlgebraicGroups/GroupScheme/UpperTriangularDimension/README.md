@@ -57,6 +57,18 @@ lake build AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices \
   AlgebraicGroupsTest.GroupScheme.UpperTriangularDimension
 ```
 
-Formal Frontier agents developed this native specialization; the generic
-localization and existing GL and upper-triangular presentations retain their
-own original authorship.
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), items 2.9 and 2.40: triangular
+  matrices and their coordinate algebra over a field. The ideal equality over
+  arbitrary rings and the field dimension calculation are proved here, not
+  asserted as dimension statements in the cited passages.
+- Mathlib, `Mathlib.RingTheory.KrullDimension.Polynomial` and
+  `Mathlib.RingTheory.Spectrum.Prime.Topology`: dimension of polynomial rings
+  and affine spectra. The separate local
+  `AlgebraicGroups.Algebra.LocalizedCoordinateQuotient`,
+  `AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension` and
+  `AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices` modules supply
+  the elimination equivalence, supplied-point dimension theorem and count.
+- Contributor and third-party credit appears in the repository's
+  [CREDITS](../../../CREDITS.md).

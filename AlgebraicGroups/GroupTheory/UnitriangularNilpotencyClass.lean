@@ -13,6 +13,20 @@ public import GeneralLinearGroups.ElementaryCommutator
 Elementary units of the native unitriangular subgroup realize nonzero elements of
 its lower central series. Together with the superdiagonal upper bound this gives
 the exact nilpotency class over every nontrivial commutative ring.
+This is a numerical *point-group* result. Milne proves unitriangular
+algebraic-group nilpotence by a central series, giving a field-based
+point-group antecedent of nilpotence, but not this exact-class formula over
+nontrivial commutative rings or its `Fin 0` boundary.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), Example 6.36 and §6.49
+  (central-series proof of unitriangular algebraic-group nilpotence, hence
+  a field-based point-group nilpotence antecedent).
+- General Linear Groups contributors, `GeneralLinearGroups.ElementaryCommutator`
+  (`Matrix.GeneralLinearGroup.elementaryUnit_commutator`).
+- Mathlib contributors, `Mathlib.GroupTheory.Nilpotent` (lower central series
+  and nilpotency-class criteria) and the general-linear elementary-unit API.
 -/
 
 @[expose] public section
@@ -45,7 +59,9 @@ theorem elementary_coe (i j : Fin n) (hij : i < j) (a : R) :
     ((elementary n R i j hij a).1 : Matrix (Fin n) (Fin n) R) =
       1 + Matrix.single i j a := rfl
 
-/-- The ordered Steinberg commutator relation inside the native unitriangular group. -/
+/-- The ordered Steinberg commutator relation inside the native unitriangular
+group, transferred from `Matrix.GeneralLinearGroup.elementaryUnit_commutator`
+in `GeneralLinearGroups.ElementaryCommutator`. -/
 theorem elementary_commutator (i j k : Fin n)
     (hij : i < j) (hjk : j < k) (a b : R) :
     ⁅elementary n R i j hij a, elementary n R j k hjk b⁆ =
@@ -93,7 +109,12 @@ private theorem elementary_ne_one [Nontrivial R] (k : ℕ)
     simp only [ne_eq, Fin.mk_eq_mk]; omega
   simp [elementary_coe, Matrix.add_apply, hzero] at hentry
 
-/-- Over a nontrivial ring the upper bound is sharp in every finite dimension. -/
+/-- Over a nontrivial ring the upper bound is sharp in every finite dimension.
+The proof uses the elementary commutator formalized in
+`GeneralLinearGroups.ElementaryCommutator` and Mathlib's lower-central-series
+class criterion. Milne, *Algebraic Groups* (2017), Example 6.36 and §6.49,
+give field-based point-group nilpotence through the algebraic-group central
+series, not this exact `n-1` point-group class. -/
 theorem nilpotencyClass_eq_of_nontrivial [Nontrivial R] :
     Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin n) R) = n - 1 := by
   have hupper := nilpotencyClass_le n R
@@ -120,7 +141,8 @@ theorem nilpotencyClass_eq_of_nontrivial [Nontrivial R] :
       exact hnotbot (Subgroup.lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr hle)
     omega
 
-/-- Every unitriangular group over a subsingleton ring has nilpotency class zero. -/
+/-- Every unitriangular group over a subsingleton ring has nilpotency class
+zero, using Mathlib's `Group.nilpotencyClass_zero_iff_subsingleton`. -/
 theorem nilpotencyClass_eq_zero_of_subsingleton [Subsingleton R] :
     Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin n) R) = 0 := by
   have hsub : Subsingleton (Matrix.UnitriangularGroup (Fin n) R) :=

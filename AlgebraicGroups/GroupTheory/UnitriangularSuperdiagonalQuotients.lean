@@ -15,6 +15,20 @@ public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 The quotient of the `r`-th stage by the next stage is the additive group of
 its `r`-th superdiagonal coordinates, for `1 ≤ r` over any commutative ring.
 The construction is natural under arbitrary unital coefficient maps.
+Milne's one-entry additive-group quotients are published antecedents in
+one-coordinate cases (for example `n = 2`, `r = 1` over a field). The general
+whole-stage *point-group* quotient over arbitrary commutative rings is
+derived here independently; no quotient of group schemes is asserted.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), §6.49 (one-entry algebraic-group
+  quotients isomorphic to the additive group, antecedents of one-coordinate
+  cases).
+- Mathlib contributors, `Mathlib.GroupTheory.QuotientGroup.Defs` and
+  `Mathlib.GroupTheory.QuotientGroup.Basic` (`QuotientGroup.liftEquiv` and
+  `QuotientGroup.map`), and `Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs`
+  (matrix units used to construct coordinate lifts).
 -/
 
 public section
@@ -61,7 +75,10 @@ private theorem coordinate_mul (r : ℕ) (hr : 1 ≤ r)
   simp only [Matrix.add_apply, Matrix.sub_apply, hproduct, hone]
   ring
 
-/-- The actual `r`-stage maps to additive coordinates on its `r`-th superdiagonal. -/
+/-- The actual `r`-stage maps to additive coordinates on its `r`-th superdiagonal.
+Compare the published one-entry quotients in Milne, *Algebraic Groups*
+(2017), §6.49; this whole-stage point-group map works over arbitrary
+commutative rings. -/
 def superdiagonalCoordinateHom (r : ℕ) (hr : 1 ≤ r) :
     superdiagonalSubgroup n R r →*
       Multiplicative (superdiagonalIndex n r → R) where
@@ -84,7 +101,9 @@ def superdiagonalCoordinateHom (r : ℕ) (hr : 1 ≤ r) :
       (x.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2 := by
   simp [superdiagonalCoordinateHom]
 
-/-- The kernel inside the `r`-th stage is precisely its next stage. -/
+/-- The kernel inside the `r`-th stage is precisely its next stage.
+This identifies the subgroup to which Mathlib's `QuotientGroup.liftEquiv`
+is applied. -/
 theorem superdiagonalCoordinateHom_ker (r : ℕ) (hr : 1 ≤ r) :
     (superdiagonalCoordinateHom n R r hr).ker =
       (superdiagonalSubgroup n R (r + 1)).subgroupOf
@@ -170,7 +189,11 @@ theorem superdiagonalCoordinateHom_surjective (r : ℕ) (hr : 1 ≤ r) :
   rw [superdiagonalCoordinateHom_apply, hmatrix]
   simp [Matrix.add_apply, coordinate_one n R r hr ij, A, coordinateMatrix, ij.2]
 
-/-- The successive whole-stage quotient is the additive coordinate group. -/
+/-- The successive whole-stage quotient is the additive coordinate group.
+The isomorphism uses Mathlib's `QuotientGroup.liftEquiv`. Milne,
+*Algebraic Groups* (2017), §6.49, gives one-entry additive-group quotient
+antecedents, including the one-coordinate case; the whole-stage point-group
+equivalence over arbitrary commutative rings is derived here independently. -/
 noncomputable def superdiagonalQuotientEquiv (r : ℕ) (hr : 1 ≤ r) :
     (superdiagonalSubgroup n R r ⧸
       (superdiagonalSubgroup n R (r + 1)).subgroupOf
@@ -225,7 +248,8 @@ theorem superdiagonalCoordinateHom_natural {S : Type} [CommRing S]
   simp [superdiagonalCoordinateMap, superdiagonalStageMap,
     Matrix.UnitriangularGroup.map_apply]
 
-/-- Coefficient maps descend to the quotients by their actual next stages. -/
+/-- Coefficient maps descend to the quotients by their actual next stages,
+using Mathlib's `QuotientGroup.map`. -/
 def superdiagonalQuotientMap {S : Type} [CommRing S] (f : R →+* S) (r : ℕ) :
     (superdiagonalSubgroup n R r ⧸
       (superdiagonalSubgroup n R (r + 1)).subgroupOf
@@ -238,7 +262,8 @@ def superdiagonalQuotientMap {S : Type} [CommRing S] (f : R →+* S) (r : ℕ) :
     change (superdiagonalStageMap n R f r x).1 ∈ superdiagonalSubgroup n S (r + 1)
     exact map_mem_superdiagonalSubgroup n R f hx)
 
-/-- The quotient-to-coordinate equivalences are natural for all coefficient maps. -/
+/-- The quotient-to-coordinate equivalences are natural for all coefficient
+maps, using the quotient map supplied by Mathlib's `QuotientGroup.map`. -/
 theorem superdiagonalQuotientEquiv_natural {S : Type} [CommRing S]
     (f : R →+* S) (r : ℕ) (hr : 1 ≤ r)
     (x : superdiagonalSubgroup n R r ⧸

@@ -82,3 +82,21 @@ LEAN_NUM_THREADS=1 lake build AlgebraicGroupsTest.GeneralSpecialLinearDimension
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
 credit appears in [CREDITS](../../../CREDITS.md).
+
+## References
+
+* J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
+  over a Field* (Cambridge University Press, 2017), §2.8, gives the finite
+  field-base determinant-localized GL presentation and mentions SL; it does
+  not supply this proof of dimensions for all fields, including rank zero.
+* J. S. Milne, *Basic Theory of Affine Group Schemes* (2012), XI §16,
+  Example 16.3, computes the positive-rank field-base dimension of SL.
+* The [mathlib formalization](https://github.com/leanprover-community/mathlib4)
+  supplies `Polynomial.height_eq_height_add_one` and
+  `MvPolynomial.ringKrullDim_of_isNoetherianRing_of_finite` in
+  `RingTheory/KrullDimension/Polynomial`,
+  `Module.ringKrullDim_quotient_add_one_of_mem_nonZeroDivisors` in
+  `RingTheory/KrullDimension/Regular`, and the prime-spectrum dimension
+  bridge. This library's `MvPolynomial.height_ker_eval` specializes those
+  height ingredients; `GeneralLinearCoordinateRing.quotientEquiv` and
+  `SpecialLinearCoordinateRing.polynomialEquiv` identify the actual rings.

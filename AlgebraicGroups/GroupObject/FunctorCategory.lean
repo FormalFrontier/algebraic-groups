@@ -26,6 +26,18 @@ component ranges are subgroups to a morphism of group objects.
 - `CategoryTheory.NatTrans.IsPointwiseSubgroup`
 - `CategoryTheory.NatTrans.IsPointwiseSubgroup.grpObj`
 - `CategoryTheory.NatTrans.IsPointwiseSubgroup.isMonHom`
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 1.5, for recovering an
+  algebraic-subgroup structure from subgroups on the functor of points. This
+  module performs the pointwise transport in a functor category; it does not
+  establish representability of an arbitrary functor.
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory` for the
+  monoid-functor-category equivalence, and
+  `Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp` and
+  `Mathlib.Algebra.Group.TransferInstance` for group objects in types and
+  transported group structures.
 -/
 
 @[expose] public section
@@ -292,7 +304,9 @@ def internalGrp : Grp (C ⥤ Type u) :=
   Monoidal.GrpFunctorCategory.inverseObj h.internalFunctor
 
 /-- The group-object structure on the exact source functor induced by the
-pointwise subgroup hypothesis. -/
+pointwise subgroup hypothesis. Compare Milne, *Algebraic Groups* (2017), item 1.5,
+for the representable algebraic-scheme case; this construction only transports
+the pointwise groups in a functor category. -/
 abbrev grpObj : GrpObj F := h.internalGrp.grp
 
 def targetInternalFunctor : C ⥤ Grp (Type u) :=
@@ -306,7 +320,9 @@ def internalInclusion : h.internalGrp ⟶ targetInternalGrp (G := G) :=
     (Functor.whiskerRight h.inclusion GrpTypeEquivalenceGrp.inverse)
 
 /-- With the induced source structure and the pointwise target structure, the
-original natural transformation is a morphism of group objects. -/
+original natural transformation is a morphism of group objects. Compare the
+subgroup inclusion in Milne, *Algebraic Groups* (2017), item 1.5, for the
+representable algebraic-scheme specialization. -/
 theorem isMonHom :
     letI : GrpObj F := h.grpObj
     letI : GrpObj (G ⋙ forget GrpCat.{u}) := (targetInternalGrp (G := G)).grp

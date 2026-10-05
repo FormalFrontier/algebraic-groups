@@ -15,6 +15,36 @@ The canonical scalar extension of the determinant-localized unitriangular Hopf
 quotient is equivalent to the corresponding quotient over the new base. Both
 bialgebra structures are their independently defined tensor-product and quotient
 structures, not structures transported along the algebra equivalence.
+
+Milne's `GL_n` coordinate coproduct over a field and polynomial presentation
+of `U_n` give the matrix-coordinate antecedents. The scalar-extension map is
+built from Christian Merten's Mathlib polynomial equivalence, currently
+implemented using Yaël Dillies's monoid-algebra equivalence; Antoine
+Chambert-Loir contributed a related earlier scalar-extension equivalence.
+Mathlib's tensor-product Hopf structure, bialgebra equivalence and convolution
+API supply the compatibility and antipode arguments. The comparison also
+applies over arbitrary commutative base rings.
+
+## References
+
+* James S. Milne, *Algebraic Groups* (2017), items 2.8 (matrix-entry
+  coproduct) and 2.9 (the `U_n` coordinate presentation).
+* Antoine Chambert-Loir, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`
+  (the related earlier `MvPolynomial.scalarRTensorAlgEquiv`).
+* Christian Merten, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`
+  (`MvPolynomial.algebraTensorAlgEquiv` used by the algebra comparison).
+* Yaël Dillies, Mathlib, `Mathlib.RingTheory.TensorProduct.MonoidAlgebra`
+  (`AddMonoidAlgebra.scalarTensorEquiv` implementing the polynomial equivalence).
+* Amelia Livingston and Andrew Yang, Mathlib,
+  `Mathlib.RingTheory.Bialgebra.TensorProduct` and
+  `Mathlib.RingTheory.HopfAlgebra.TensorProduct` (canonical tensor structures).
+* Yaël Dillies, Mathlib, `Mathlib.RingTheory.Bialgebra.Equiv`
+  (`BialgEquiv.ofAlgEquiv`).
+* Yaël Dillies, Mathlib, `Mathlib.RingTheory.Bialgebra.Convolution`
+  (`AlgHom.convMul_comp_bialgHom_distrib`) and
+  `Mathlib.RingTheory.HopfAlgebra.Convolution` (`AlgHom.antipode_id_cancel`).
+  Michał Mrugała and Yunzhou Xie contributed to the wider Hopf-algebra
+  convolution formalization.
 -/
 
 @[expose] public section
@@ -40,7 +70,9 @@ private theorem counit_entry (K : Type u) [CommRing K]
   rw [Bialgebra.Quotient.counit_mk, GeneralLinearCoordinateRing.native_counit_matrix]
 
 /-- The canonical coproduct of every matrix entry in the actual quotient,
-including diagonal and lower entries. -/
+including diagonal and lower entries. The matrix-entry coproduct is the one
+given for `GL_n` in Milne, *Algebraic Groups*, item 2.8; item 2.9 gives the
+field-case `U_n` coordinate quotient. -/
 theorem comul_entry (K : Type u) [CommRing K]
     (ι : Type u) [Fintype ι] [LinearOrder ι] (i j : ι) :
     Coalgebra.comul (R := K)
@@ -141,8 +173,9 @@ theorem baseChange_comul :
 
 set_option maxHeartbeats 1000000
 
-/-- The published scalar-extension algebra equivalence respects the two
-independently given bialgebra structures. -/
+/-- The scalar-extension algebra equivalence built from Christian Merten's
+Mathlib `MvPolynomial.algebraTensorAlgEquiv` respects the two independently
+given bialgebra structures, using Yaël Dillies's `BialgEquiv.ofAlgEquiv`. -/
 def baseChangeBialgEquiv :
     S ⊗[R] CoordinateRing R ι ≃ₐc[S] CoordinateRing S ι := by
   let sourceBialgebra : Bialgebra S (S ⊗[R] CoordinateRing R ι) := inferInstance
@@ -207,7 +240,9 @@ private theorem bialgHom_antipode (K : Type*) [CommRing K]
   exact (AlgHom.congr_fun heq x).symm
 
 /-- The antipodes of the existing scalar-extension and quotient Hopf algebras
-intertwine under the published algebra base-change map. -/
+intertwine under the algebra base-change map. The proof uses Yaël Dillies's
+`AlgHom.convMul_comp_bialgHom_distrib` from Mathlib's bialgebra convolution and
+`AlgHom.antipode_id_cancel` from Hopf-algebra convolution. -/
 theorem baseChange_antipode (x : S ⊗[R] CoordinateRing R ι) :
     baseChange R S ι
         ((@HopfAlgebraStruct.antipode S (S ⊗[R] CoordinateRing R ι)

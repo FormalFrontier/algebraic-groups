@@ -22,6 +22,15 @@ No sheaf condition or representability is asserted here.
 - `CategoryTheory.NatTrans.cosetMk`
 - `CategoryTheory.IsMonHom.yonedaCoset`
 - `CategoryTheory.IsMonHom.yonedaCosetMk`
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 1.3 and item 1.4,
+  for algebraic subgroups and their functors of points. This file constructs
+  pointwise cosets, without a representability or sheafification assertion.
+* Mathlib, `QuotientGroup.leftRel` for left cosets and the group-object
+  Yoneda construction in `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`.
+  Functoriality uses `Quotient.map'` to descend maps to coset types.
 -/
 
 @[expose] public section

@@ -23,9 +23,20 @@ of the presentation.  It also proves scalar-base-change and intertwining
 formulas.
 
 This construction deliberately does not construct or specialize a
-fixed-degree exterior-power base-change equivalence.  That API is being
-developed upstream in mathlib; the Fredholm API here is a distinct reusable
-finite-projective construction.
+fixed-degree exterior-power base-change equivalence; it uses split finite-free
+presentations instead. The construction does not require constant rank.
+
+## References
+
+* Mathlib, `Mathlib.LinearAlgebra.Matrix.SchurComplement`, proves the
+  Weinstein--Aronszajn identity `Matrix.det_one_sub_mul_comm` used to compare
+  rectangular split presentations. `Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff`
+  defines `Matrix.charpolyRev`, the determinant `det(1 - X f)` on a finite free
+  module.
+* Mathlib, `Mathlib.RingTheory.Finiteness.Projective`
+  (`Module.Finite.exists_comp_eq_id_of_projective`) supplies a finite-free split
+  presentation, and `Mathlib.LinearAlgebra.TensorProduct.Free` supplies the
+  finite-basis scalar-extension equivalence.
 -/
 
 public section
@@ -68,7 +79,9 @@ presentation. -/
     (P.incl.comp (f.comp P.proj)))
 
 /-- The Fredholm polynomial is independent of the finite-free split
-presentation. -/
+presentation by Mathlib's Weinstein--Aronszajn identity
+`Matrix.det_one_sub_mul_comm`. This includes presentations of different
+finite ranks. -/
 lemma FreePresentation.fredholm_eq (P Q : FreePresentation R M)
     (f : Module.End R M) :
     FreePresentation.fredholm (R := R) (M := M) P f =
@@ -134,7 +147,9 @@ noncomputable def FreePresentation.baseChange (P : FreePresentation R M)
       rw [show P.proj (P.incl x) = x by
         simpa [LinearMap.comp_apply] using LinearMap.congr_fun P.proj_comp_incl x]
 
-/-- Fredholm polynomials commute with arbitrary scalar extension. -/
+/-- Fredholm polynomials commute with arbitrary scalar extension. The finite
+free matrix comparison uses Mathlib's `Matrix.charpolyRev` and
+`Algebra.TensorProduct.equivPiOfFiniteBasis`. -/
 lemma FreePresentation.fredholm_baseChange (P : FreePresentation R M)
     (S : Type uS) [CommRing S] [Algebra R S]
     (f : Module.End R M) :

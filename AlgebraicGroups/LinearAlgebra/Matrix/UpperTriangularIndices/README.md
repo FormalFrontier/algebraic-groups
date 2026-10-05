@@ -32,5 +32,13 @@ lake build AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices \
   AlgebraicGroupsTest.LinearAlgebra.Matrix.UpperTriangularIndices
 ```
 
-Lattice developed the original indexing equivalences; the finite strict-pair
-count is reused from mathlib.
+## References
+
+Lattice introduced the coordinate-preserving indexing equivalences in this
+project. The finite strict-pair count reuses Mathlib's
+`Fintype.card_product_filter_lt` by Bhavik Mehta and Jon Eugster in
+`Mathlib/Data/Fintype/Prod.lean`, which
+derives it from `Finset.card_product_filter_lt` in
+`Mathlib/Data/Finset/Prod.lean`; the sum count uses `Fintype.card_sum` in
+`Mathlib/Data/Fintype/Sum.lean`. None of these cardinality results is needed
+for the order-only equivalences.

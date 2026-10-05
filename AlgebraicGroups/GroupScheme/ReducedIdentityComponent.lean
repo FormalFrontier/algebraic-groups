@@ -21,6 +21,20 @@ the residual quotient `G⁰/(G_red)⁰`.
 
 No quotient, normality, finiteness, or representability statement is asserted
 here.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, Remark 2.39(b) for factorization of a
+  connected group through the identity component, and Proposition 1.38 for
+  the reduced-group construction under its geometric reducedness condition.
+  Proposition 8.37 motivates the reduced identity component as a different
+  quotient subgroup; Example 2.35(a) shows why normality of its inclusion
+  cannot be inferred.
+- The local `GroupScheme.Reduction` supplies the group structure on the
+  reduction under explicit base and product reducedness hypotheses;
+  `GroupScheme.IdentityComponent` supplies the inherited open component.
+  The mathlib community, *Mathlib*, supplies continuous-image arguments,
+  open-immersion lifts and reduction homeomorphisms.
 -/
 
 public section
@@ -53,7 +67,9 @@ private lemma Scheme.range_isMonHom_subset_identityComponent
     exact Set.mem_univ x)
 
 /-- A monoid-object morphism from a connected monoid scheme factors through the
-identity component of its target. -/
+identity component of its target. This extends the connected-group
+factorization in Milne, *Algebraic Groups*, Remark 2.39(b), to monoid
+sources over a nonempty one-point base. -/
 noncomputable def Scheme.identityComponentLift
     {H G : Over S} [MonObj H] [GrpObj G] (i : H ⟶ G) [IsMonHom i]
     [ConnectedSpace H.left] [LocallyConnectedSpace G.left]
@@ -162,7 +178,10 @@ lemma Scheme.reducedIdentityComponentι_isOpen_range
     (IsOpenImmersion.isOpen_range
       (Scheme.identityComponentι (Scheme.reductionOver G)).left)
 
-/-- The canonical comparison `(G_red)⁰ ⟶ G⁰`. -/
+/-- The canonical comparison `(G_red)⁰ ⟶ G⁰`. This is the inclusion used
+when distinguishing the reduced-component quotient of Milne,
+*Algebraic Groups*, Proposition 8.37 from the discrete component quotient;
+it asserts neither normality nor quotient representability. -/
 noncomputable def Scheme.reducedIdentityComponentToIdentityComponent
     (G : Over S) [GrpObj G] [IsReduced S]
     [IsReduced ((Scheme.reductionOver G ⊗ Scheme.reductionOver G).left)]

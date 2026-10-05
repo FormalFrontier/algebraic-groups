@@ -24,6 +24,27 @@ action of `H`, then the resulting coset sheaf is represented by `Q`.
 - `CategoryTheory.IsMonHom.relativeFppfCoset`
 - `CategoryTheory.IsMonHom.relativeFppfCosetMk`
 - `CategoryTheory.IsMonHom.relativeFppfCosetIso`
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 5.20 and
+  Proposition 5.21 (left cosets and maps out of a quotient), Propositions
+  5.24–5.25 (the right-action relation square and faithful flatness), and
+  Theorem 5.28 / Theorem B.37 (existence over a field). The last theorem
+  constructs a quotient; this module only recognizes an already supplied
+  fppf target, over an arbitrary base.
+* `AlgebraicGroups.GroupObject.Coset` formalizes the pointwise left-coset
+  functor and the injective map to a target with the right-action pullback;
+  `AlgebraicGroups.GroupScheme.QuotientSheaf` supplies the relative site and
+  the group-valued counterpart for normal morphisms.
+* Mathlib, `Mathlib.AlgebraicGeometry.Sites.Fpqc` and
+  `Mathlib.CategoryTheory.Sites.Over` (fppf singleton covers on the relative
+  site), `Mathlib.CategoryTheory.Sites.Canonical` (`uliftYoneda`),
+  `Mathlib.CategoryTheory.Sites.LeftExact` and
+  `Mathlib.CategoryTheory.Sites.Sheafification` (type-valued sheafification),
+  and `Mathlib.CategoryTheory.Sites.LocallySurjective` and
+  `Mathlib.CategoryTheory.Sites.LocallyBijective` (local surjectivity and
+  the class inverted by sheafification).
 -/
 
 @[expose] public section
@@ -39,7 +60,8 @@ namespace AlgebraicGeometry.Scheme
 variable {S : Scheme.{u}}
 
 /-- The type-valued relative fppf sheaf represented by a scheme over `S`,
-lifted to the universe in which relative fppf sheafification exists. -/
+lifted to the universe in which relative fppf sheafification exists, using
+Mathlib's `GrothendieckTopology.uliftYoneda` for the subcanonical site. -/
 noncomputable abbrev relativeFppfYonedaType (Q : Over S) :
     Sheaf (relativeFppfTopology S) (Type (u + 1)) :=
   ((relativeFppfTopology S).uliftYoneda.{u + 1}).obj Q
@@ -65,7 +87,9 @@ noncomputable abbrev relativeFppfCosetPresheaf :
   yonedaCoset i ⋙ CategoryTheory.uliftFunctor.{u + 1, u}
 
 /-- The type-valued relative fppf sheafification of the pointwise left-coset
-presheaf. It has no asserted group structure. -/
+presheaf from `AlgebraicGroups.GroupObject.Coset`. Its right-action relation
+models Milne's Definition 5.20, but no group structure or representing
+scheme is asserted here. -/
 noncomputable def relativeFppfCoset :
     Sheaf (relativeFppfTopology S) (Type (u + 1)) :=
   (presheafToSheaf (relativeFppfTopology S) (Type (u + 1))).obj
@@ -80,7 +104,9 @@ noncomputable abbrev relativeFppfCosetPresheafMk :
     CategoryTheory.uliftFunctor.{u + 1, u}
 
 /-- The canonical projection from the functor of points of `G` to the
-relative fppf left-coset sheaf. -/
+relative fppf left-coset sheaf. The pointwise coset projection is surjective
+before sheafification; this sheaf morphism is locally surjective and epi,
+not asserted surjective on every object's sections. -/
 noncomputable def relativeFppfCosetMk :
     relativeFppfYonedaType G ⟶ relativeFppfCoset i :=
   ⟨relativeFppfCosetPresheafMk i ≫
@@ -158,7 +184,8 @@ lemma relativeFppfCosetPresheafMk_comp_map :
 
 omit [GrpObj G] in
 /-- An fppf morphism of schemes over `S` is locally surjective on its lifted
-relative functor of points. -/
+relative functor of points. The proof uses Mathlib's fppf singleton-cover and
+relative-site sieve APIs; it does not assert objectwise surjectivity. -/
 lemma relativeFppfYonedaTypeMap_isLocallySurjective
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
     Presheaf.IsLocallySurjective (relativeFppfTopology S)
@@ -223,8 +250,8 @@ lemma relativeFppfCosetPresheafMap_W
     relativeFppfCosetPresheafMap_isLocallySurjective q h
   exact (relativeFppfTopology S).W_of_isLocallyBijective _
 
-/-- The map from the relative fppf coset sheaf to the sheaf represented by a
-candidate quotient. -/
+/-- The map from the relative fppf coset sheaf to the sheaf represented by an
+already supplied candidate quotient, induced by the right-action pullback. -/
 noncomputable def relativeFppfCosetMap :
     relativeFppfCoset i ⟶ relativeFppfYonedaType Q :=
   relativeFppfCosetSheafifyLift (relativeFppfCosetPresheafMap q h)
@@ -239,7 +266,11 @@ lemma relativeFppfCosetMk_comp_map :
 
 set_option linter.style.haveILetI false in
 /-- If an fppf morphism has self-pullback presented by the right action of
-`H`, the induced map from the relative fppf coset sheaf is an isomorphism. -/
+`H`, the induced map from the relative fppf coset sheaf is an isomorphism.
+The pullback gives pointwise injectivity and the fppf singleton cover gives
+local surjectivity; Mathlib's locally-bijective class `W` is inverted by
+sheafification. Milne's Proposition 5.24 gives this relation for a quotient
+over a field, but the present theorem assumes rather than builds its target. -/
 lemma relativeFppfCosetMap_isIso
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
     IsIso (relativeFppfCosetMap q h) := by
@@ -273,8 +304,12 @@ lemma relativeFppfCosetMap_isIso
         (relativeFppfYonedaType Q).property
   exact hcomp ▸ inferInstance
 
-/-- The relative fppf sheaf of left cosets by `H` is represented by an fppf
-quotient whose self-pullback is the right `H`-action. -/
+/-- The relative fppf sheaf of left cosets `gH` is represented by a supplied
+fppf quotient whose self-pullback is the right `H`-action
+`(g, h) ↦ (g, g * i(h))`. Milne's Definition 5.20 and Propositions 5.24–5.25
+are field-based antecedents; unlike Theorem 5.28 / Theorem B.37, this does
+not construct a quotient of an arbitrary subgroup. Neither normality nor a
+group structure on the target is assumed. -/
 noncomputable def relativeFppfCosetIso
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
     relativeFppfCoset i ≅ relativeFppfYonedaType Q := by

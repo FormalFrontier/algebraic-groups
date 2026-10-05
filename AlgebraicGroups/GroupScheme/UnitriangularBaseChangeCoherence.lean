@@ -9,6 +9,42 @@ public import AlgebraicGroups.Algebra.UnitriangularBaseChangeCoherence
 
 /-!
 # Identity and scalar-tower coherence for the unitriangular group scheme
+
+The canonical pullback unit and compositor come from Mathlib's pullback
+formalization. Their agreement with the unitriangular group-scheme comparison
+uses the quotient's tensor unit and tower laws, built from Christian Merten's
+polynomial scalar-extension equivalence (now implemented using Yaël Dillies's
+monoid-algebra equivalence). Antoine Chambert-Loir's earlier polynomial
+scalar-extension equivalence is a related antecedent. The affine pullbacks use
+the `Spec`-of-tensor-product description in the Stacks Project; Milne's `U_n`
+coordinates are the field-case antecedent to the coordinate algebra, not a
+statement of these arbitrary-base coherence laws.
+
+## References
+
+* James S. Milne, *Algebraic Groups* (2017), item 2.9 (the field-case `U_n`
+  coordinate presentation).
+* The Stacks Project, Section 26.17, Lemma 26.17.2 (affine fibre products).
+* Andrew Yang, Mathlib, `Mathlib.AlgebraicGeometry.Pullbacks`
+  (`pullbackSpecIso` and its projection laws).
+* Yaël Dillies, Mathlib, `Mathlib.AlgebraicGeometry.Group.Affine`
+  (`hopfSpec`, `algSpec`, `pullbackSpecIso'` and its monoid-homomorphism instance).
+  Christian Merten, Michał Mrugała and Andrew Yang contributed to the wider
+  affine group-scheme formalization.
+* Yaël Dillies, Mathlib, `Mathlib.CategoryTheory.Monoidal.Grp`
+  (`Functor.mapGrpNatIso`, `Functor.mapGrpCompIso` and `Functor.mapGrpIdIso`).
+  Markus Himmel contributed to the underlying group-object formalization.
+* Christian Merten, Mathlib, `Mathlib.RingTheory.TensorProduct.Maps`
+  (`Algebra.TensorProduct.cancelBaseChange`), and
+  `Mathlib.RingTheory.TensorProduct.MvPolynomial`
+  (`MvPolynomial.algebraTensorAlgEquiv` used by the algebra comparison).
+* Kevin Buzzard, Mathlib4 port of `Algebra.TensorProduct.lid`, now in
+  `Mathlib.RingTheory.TensorProduct.Maps`; Kim Morrison and Johan Commelin
+  contributed to the wider tensor-product maps module.
+* Antoine Chambert-Loir, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`
+  (the related earlier `MvPolynomial.scalarRTensorAlgEquiv`).
+* Yaël Dillies, Mathlib, `Mathlib.RingTheory.TensorProduct.MonoidAlgebra`
+  (`AddMonoidAlgebra.scalarTensorEquiv` implementing the polynomial equivalence).
 -/
 
 @[expose] public section
@@ -38,7 +74,8 @@ theorem unitriangularBaseMap_self (R : Type u) [CommRing R] :
     unitriangularBaseMap R R = 𝟙 (Spec (.of R)) := by
   simp [unitriangularBaseMap]
 
-/-- The canonical group-object compositor for pullback over a scalar tower. -/
+/-- The canonical group-object compositor for pullback over a scalar tower,
+assembled from Mathlib's `Over.pullbackComp` and its group-object functor. -/
 def unitriangularGroupSchemeBaseChangeTowerIso
     (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
@@ -53,7 +90,8 @@ def unitriangularGroupSchemeBaseChangeTowerIso
     (Functor.mapGrpCompIso.app (unitriangularGroupScheme R ι))
     )
 
-/-- The canonical group-object unit for pullback along the identity of the base. -/
+/-- The canonical group-object unit for pullback along the identity of the base,
+assembled from Mathlib's `Over.pullbackId` and its group-object functor. -/
 def unitriangularGroupSchemeBaseChangeSelfIso
     (R : Type u) [CommRing R]
     (ι : Type u) [Fintype ι] [LinearOrder ι] :
@@ -481,6 +519,8 @@ private theorem towerIso_left (R S T : Type u)
   simp only [Category.comp_id]
   rfl
 
+/-- The unitriangular group-scheme scalar comparison agrees with the Mathlib
+pullback unit. This follows from the coordinate algebra's tensor-unit law. -/
 theorem unitriangularGroupSchemeBaseChangeIso_self
     (R : Type u) [CommRing R]
     (ι : Type u) [Fintype ι] [LinearOrder ι] :
@@ -515,7 +555,12 @@ theorem unitriangularGroupSchemeBaseChangeIso_self
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option linter.style.haveILetI false in
-/-- Scalar extension from `R` to `T` agrees with successive extension through `S`. -/
+/-- Scalar extension from `R` to `T` agrees with successive extension through `S`.
+This follows from Mathlib's pullback compositor and tensor cancellation together
+with the coordinate-algebra tower law built from Christian Merten's
+`MvPolynomial.algebraTensorAlgEquiv`, currently implemented using Yaël Dillies's
+`AddMonoidAlgebra.scalarTensorEquiv`. Antoine Chambert-Loir's earlier
+`MvPolynomial.scalarRTensorAlgEquiv` is a related antecedent. -/
 theorem unitriangularGroupSchemeBaseChangeIso_tower
     (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]

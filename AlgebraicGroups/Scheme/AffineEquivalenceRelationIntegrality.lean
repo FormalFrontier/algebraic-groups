@@ -17,6 +17,29 @@ finite projective of constant local rank, the canonical finite-projective
 characteristic polynomial of multiplication has invariant coefficients.
 Consequently the object ring is integral over the equalizer of the two
 coordinate maps.
+
+The cartesian composition square compares the two scalar extensions of
+multiplication by `t x` through mixed scalar actions and `TargetCopy`;
+intertwining and base-change naturality give invariant coefficients without a
+global basis. The polynomial uses a split-presentation Fredholm construction.
+The coefficient-invariance argument itself does not use the stated local-rank
+hypothesis; local rank is needed for monicity and Cayley--Hamilton in the
+integrality conclusion. Reflexivity supplies injectivity of the other leg.
+
+## References
+
+* The Stacks Project, Lemmas 39.23.2 and 39.23.4
+  ([tags 03BH](https://stacks.math.columbia.edu/tag/03BH) and
+  [03BJ](https://stacks.math.columbia.edu/tag/03BJ)), establish invariant
+  norms and integrality for affine finite locally free groupoids.
+* `AlgebraicGroups.Scheme.AffineEquivalenceRelation` supplies the cartesian
+  composition coordinates and injectivity from reflexivity;
+  `AlgebraicGroups.LinearAlgebra.FiniteProjective.Charpoly` supplies the
+  finite-projective characteristic polynomial and its naturality, monicity
+  and Cayley--Hamilton results.
+* Mathlib, `Mathlib.LinearAlgebra.Matrix.SchurComplement`
+  (`Matrix.det_one_sub_mul_comm`), underlies the independence of the
+  split-presentation Fredholm polynomial used here.
 -/
 
 open CategoryTheory Limits
@@ -34,7 +57,11 @@ universe uC u
 
 /-- The canonical fixed-rank finite-projective characteristic polynomial of
 multiplication by `t x` has invariant coefficients.  The proof uses only the
-cartesian composition square and no global basis. -/
+cartesian composition square and no global basis. This is the coefficient
+invariance argument of Stacks Project
+[Lemma 39.23.2, tag 03BH](https://stacks.math.columbia.edu/tag/03BH),
+expressed through scalar-extension naturality. The displayed local-rank
+hypothesis is not used for coefficient invariance. -/
 lemma finiteProjectiveCharpoly_coeff_invariant
     {C : Type uC} {A B : Type u}
     [CommRing C] [CommRing A] [CommRing B]
@@ -136,7 +163,10 @@ lemma finiteProjectiveCharpoly_coeff_invariant
 
 /-- A finite projective affine internal equivalence relation of fixed local
 rank makes its object ring integral over the equalizer of its two coordinate
-maps. -/
+maps. This follows the invariant-polynomial and Cayley--Hamilton argument of
+Stacks Project
+[Lemma 39.23.4, tag 03BJ](https://stacks.math.columbia.edu/tag/03BJ),
+using a basis-free finite-projective characteristic polynomial. -/
 lemma isIntegral_equalizer_of_projective_constantRank
     {C : Type uC} {A B : Type u}
     [CommRing C] [CommRing A] [CommRing B]

@@ -45,6 +45,17 @@ extension.
 The rational points here are morphisms over `Spec K`. They are not identified with all closed
 points unless additional hypotheses, such as an algebraically closed base and finite type, are
 available.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, Definition 1.15, Proposition 1.16, and
+  Corollary 1.18, for schematic density of field-valued points, reducedness
+  and density, and determination of closed subvarieties from their points.
+  The proof here uses a family-of-morphisms criterion instead of the reduction
+  and descent argument in Proposition 1.16.
+- Mathlib's `SchemeTheoreticallyDominant`, ideal-sheaf kernels, and
+  `Scheme.IdealSheafData.vanishingIdeal` provide the formal scheme-theoretic
+  dominance and reduced-closure constructions generalized to families here.
 -/
 
 public section
@@ -213,7 +224,9 @@ private lemma iSup_closure_eq_top_iff_dense (s : J → Set Y) :
     Closeds.coe_top, Closeds.coe_closure, dense_iff_closure_eq]
 
 /-- A family of quasi-compact morphisms from reduced schemes is jointly scheme-theoretically
-dominant exactly when the target is reduced and the union of the ranges is dense. -/
+dominant exactly when the target is reduced and the union of the ranges is dense.
+For families of field-valued points this generalizes the reducedness implication
+of Milne, *Algebraic Groups*, Proposition 1.16. -/
 theorem jointlySchemeTheoreticallyDominant_iff_isReduced_and_denseRange
     (f : ∀ j, X j ⟶ Y) [∀ j, QuasiCompact (f j)] [∀ j, IsReduced (X j)] :
     JointlySchemeTheoreticallyDominant f ↔
@@ -252,7 +265,8 @@ abbrev RationalPoint {K : Type u} [Field K] (Y : Over (Spec (.of K))) :=
 namespace RationalPointSet
 
 /-- A set of rational points is schematically dense when its underlying scheme morphisms are
-jointly scheme-theoretically dominant. -/
+jointly scheme-theoretically dominant. For the full set of rational points this specializes
+Milne, *Algebraic Groups*, Definition 1.15 to the base field itself. -/
 def SchematicallyDense {K : Type u} [Field K] {Y : Over (Spec (.of K))}
     (S : Set (RationalPoint Y)) : Prop :=
   JointlySchemeTheoreticallyDominant (fun s : S ↦ s.1.1)
@@ -286,7 +300,8 @@ def LocallyEvaluationInjective {K : Type u} [Field K]
     (∀ s : S, s.1.1.app U r = 0) → r = 0
 
 /-- Rational points are schematically dense exactly when the scheme is reduced and their
-underlying points are topologically dense. -/
+underlying points are topologically dense. In the case of all points valued in the base
+field, the forward implication specializes Milne, *Algebraic Groups*, Proposition 1.16. -/
 theorem schematicallyDense_iff_isReduced_and_dense
     {K : Type u} [Field K] {Y : Over (Spec (.of K))}
     (S : Set (RationalPoint Y)) :
@@ -420,7 +435,8 @@ abbrev FieldValuedPoint {K L : Type u} [Field K] [Field L] [Algebra K L]
 namespace FieldValuedPoints
 
 /-- All `L`-valued points are schematically dense when their underlying scheme morphisms are
-jointly scheme-theoretically dominant. -/
+jointly scheme-theoretically dominant. This represents Milne,
+*Algebraic Groups*, Definition 1.15, using ideal-sheaf kernels. -/
 def SchematicallyDense {K L : Type u} [Field K] [Field L] [Algebra K L]
     {Y : Over (Spec (.of K))} : Prop :=
   JointlySchemeTheoreticallyDominant
@@ -472,7 +488,9 @@ def subschemePoints
       (Over.mk (I.subschemeι ≫ Y.hom)), q.1 ≫ I.subschemeι = p.1}
 
 /-- Schematically dense closed subschemes with the same extension-field-valued points inside an
-ambient scheme are equal. -/
+ambient scheme are equal. This is the point-determination argument of Milne,
+*Algebraic Groups*, Corollary 1.18, without its geometric-reducedness or
+separably-closed-field hypotheses: schematic density is assumed directly. -/
 theorem eq_of_schematicallyDense_of_subschemePoints_eq
     {K L : Type u} [Field K] [Field L] [Algebra K L]
     {Y : Over (Spec (.of K))} (I J : Y.left.IdealSheafData)
@@ -508,7 +526,7 @@ theorem eq_of_schematicallyDense_of_subschemePoints_eq
 
 /-- Field-valued points are schematically dense exactly when every closed subscheme containing all
 of them is the whole scheme. The factorization point is explicitly a morphism over the base
-field. -/
+field. This is Milne, *Algebraic Groups*, Definition 1.15. -/
 theorem schematicallyDense_iff_subscheme
     {K L : Type u} [Field K] [Field L] [Algebra K L]
     {Y : Over (Spec (.of K))} :
@@ -540,7 +558,9 @@ def underlyingPoints {K L : Type u} [Field K] [Field L] [Algebra K L]
   ⋃ p : FieldValuedPoint (L := L) Y, Set.range p.1
 
 /-- Field-valued points are schematically dense exactly when the target is reduced and their
-underlying points are topologically dense. -/
+underlying points are topologically dense. In particular, schematic density implies reducedness
+as in Milne, *Algebraic Groups*, Proposition 1.16; the converse here assumes reducedness and
+density on the original scheme, rather than geometric reducedness and density after base change. -/
 theorem schematicallyDense_iff_isReduced_and_dense
     {K L : Type u} [Field K] [Field L] [Algebra K L]
     {Y : Over (Spec (.of K))} :
@@ -621,7 +641,10 @@ theorem dense_underlyingPoints_of_dense_baseChange
   exact ⟨ofBaseChangeRationalPoint q, t, rfl⟩
 
 /-- If a scheme is geometrically reduced and its rational points become topologically dense after
-scalar extension, then its extension-field-valued points are schematically dense. -/
+scalar extension, then its extension-field-valued points are schematically dense. This is the second
+implication of Milne, *Algebraic Groups*, Proposition 1.16; unlike the source's descent proof,
+the argument transports density from the base change and applies a reduced-dense-points criterion.
+No finite-type hypothesis is needed here. -/
 theorem schematicallyDense_of_geometricallyReduced_of_dense_baseChange
     {K L : Type u} [Field K] [Field L] [Algebra K L]
     {Y : Over (Spec (.of K))} [GeometricallyReduced Y.hom]

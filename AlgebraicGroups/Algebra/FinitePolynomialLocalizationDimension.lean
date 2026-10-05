@@ -16,6 +16,27 @@ The localization of a finite-variable polynomial ring over a field at `f` has th
 same Krull dimension as the polynomial ring whenever a rational evaluation does
 not vanish on `f`. The stated witness works without an infinite-field hypothesis,
 even when the variable type is empty.
+
+The proof presents localization away from `f` by adjoining an inverse, as
+the quotient by `f * X - 1`. A rational evaluation at which `f` does not vanish
+extends to a maximal ideal containing this regular equation and having the
+full polynomial-ring height. Mathlib's regular-quotient dimension drop and
+polynomial dimension formulas then give the result.
+
+## References
+
+* The Stacks Project, [Lemma 10.114.1](https://stacks.math.columbia.edu/tag/00OP)
+  for polynomial maximal-ideal height and
+  [Lemma 10.60.13](https://stacks.math.columbia.edu/tag/00KW)
+  for the local nonzerodivisor dimension-drop principle. The latter is not a
+  statement of the present global localization formula.
+* The mathlib community, *Mathlib*, `Mathlib.RingTheory.Localization.Away.AdjoinRoot`
+  for `Localization.awayEquivAdjoin`, `Mathlib.RingTheory.KrullDimension.Regular` for
+  `Module.ringKrullDim_quotient_add_one_of_mem_nonZeroDivisors`, and
+  `Mathlib.RingTheory.KrullDimension.Polynomial` and
+  `Mathlib.RingTheory.KrullDimension.Field` for polynomial and field dimensions.
+* `AlgebraicGroups.Algebra.PolynomialRationalPointHeight` for the height of
+  the evaluation ideal.
 -/
 
 public section
@@ -29,7 +50,12 @@ namespace MvPolynomial
 universe u v
 
 /-- A principal open in finite-dimensional affine space containing a rational point
-has the full Krull dimension of affine space. -/
+has the full Krull dimension of affine space. The proof uses mathlib's
+`Localization.awayEquivAdjoin` and regular-quotient dimension drop, together
+with the evaluation height; compare the local nonzerodivisor principle in the
+Stacks Project, Lemma 10.60.13. A nonvanishing rational point is a sufficient
+hypothesis used by this proof, not a necessary condition for the numerical
+dimension equality. -/
 theorem ringKrullDim_localizationAway_of_eval_ne_zero
     (K : Type u) [Field K] (σ : Type v) [Fintype σ]
     (f : MvPolynomial σ K) (a : σ → K) (ha : eval a f ≠ 0) :

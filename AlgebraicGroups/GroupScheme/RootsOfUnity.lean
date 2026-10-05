@@ -17,6 +17,12 @@ public import Mathlib.RingTheory.AdjoinRoot
 
 This file packages the affine group scheme represented by the Hopf algebra
 `K[ZMod n]` and identifies its points with the `n`-th roots of unity.
+For positive `n`, Milne's *Algebraic Groups*, item 2.4, gives the roots-of-unity
+functor, the quotient `k[T]/(T ^ n - 1)` and the multiplication-induced
+comultiplication `T ↦ T ⊗ T` over a field. The construction here uses the
+cyclic group algebra over any commutative base. The coordinate ring and group
+scheme are also defined at `n = 0`, but the points isomorphism and polynomial
+quotient equivalence below require `[NeZero n]` (equivalently, positive `n`).
 
 ## Main definitions
 
@@ -25,6 +31,18 @@ This file packages the affine group scheme represented by the Hopf algebra
 - `AlgebraicGeometry.rootsOfUnityPointsIso`
 - `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv`
 - `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv_symm_root_isGroupLike`
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.4, p. 40 (positive-order
+  roots of unity, the quotient coordinate and multiplicative comultiplication).
+- Mathlib, `Mathlib.RingTheory.RootsOfUnity.Basic`,
+  `Mathlib.RingTheory.Bialgebra.MonoidAlgebra`,
+  `Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra`, and
+  `Mathlib.RingTheory.AdjoinRoot` (root construction, group-algebra Hopf
+  structure and the polynomial quotient presentation).
+- Mathlib, `Mathlib.AlgebraicGeometry.Group.Affine` (the affine Hopf `Spec`
+  construction and points equivalence used here).
 -/
 
 @[expose] public section
@@ -70,7 +88,8 @@ instance rootsOfUnityScheme_quasiCompact
   infer_instance
 
 /-- The roots-of-unity group scheme, using the standard Hopf structure on
-`K[ZMod n]`. -/
+`K[ZMod n]`. For positive `n` this represents the group in Milne's
+*Algebraic Groups*, item 2.4; the construction itself also allows `n = 0`. -/
 abbrev rootsOfUnityGroupScheme (K : Type u) [CommRing K] (n : ℕ) :
     Grp (Over (Spec (.of K))) :=
   ⟨rootsOfUnityScheme K n⟩
@@ -283,7 +302,8 @@ lemma rootsOfUnityMulEquivPoints_apply_left (n : ℕ) [NeZero n]
   rfl
 
 /-- The affine group scheme `rootsOfUnityGroupScheme K n` represents the
-group-valued roots-of-unity functor. -/
+group-valued roots-of-unity functor of Milne's *Algebraic Groups*, item 2.4,
+over an arbitrary commutative base for positive `n`. -/
 def rootsOfUnityPointsIso (n : ℕ) [NeZero n] :
     rootsOfUnityFunctor K n ≅ rootsOfUnityPointsFunctor K n :=
   NatIso.ofComponents
@@ -394,8 +414,9 @@ lemma adjoinRootToRootsOfUnityCoordinate_comp_coordinateTo (n : ℕ)
     simp
   · ext
 
-/-- The exact coordinate presentation
-`K[ZMod n] ≃ₐ[K] K[T]/(T ^ n - 1)`. -/
+/-- The coordinate presentation `K[ZMod n] ≃ₐ[K] K[T]/(T ^ n - 1)` from
+Milne's *Algebraic Groups*, item 2.4, extended from fields to commutative
+bases for positive `n`. -/
 def rootsOfUnityCoordinateAlgEquiv (n : ℕ) [NeZero n] :
     rootsOfUnityCoordinateRing K n ≃ₐ[K]
       AdjoinRoot (rootsOfUnityPolynomial K n) :=
@@ -431,7 +452,8 @@ lemma rootsOfUnityCoordinateAlgEquiv_symm_root_isGroupLike
   exact AddMonoidAlgebra.isGroupLikeElem_single_one 1
 
 /-- Under the coordinate equivalence, comultiplication sends the distinguished
-root to its tensor square. -/
+root to its tensor square, as in Milne's *Algebraic Groups*, item 2.4. This
+is the multiplicative-group comultiplication on the quotient generator. -/
 lemma rootsOfUnityCoordinateAlgEquiv_comul_root (n : ℕ) [NeZero n] :
     Algebra.TensorProduct.map
         (rootsOfUnityCoordinateAlgEquiv K n).toAlgHom

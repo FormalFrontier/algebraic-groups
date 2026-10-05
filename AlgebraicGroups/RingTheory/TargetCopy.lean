@@ -12,6 +12,17 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 This file provides a copy of a type which does not inherit any of its module
 or algebra instances.  It is useful when two incompatible scalar actions on
 the same underlying ring must coexist in one expression.
+
+The copy has a canonical ring equivalence with its source; homomorphisms into
+the source can be transported to give separately chosen scalar actions on the
+copy, including in mixed tensor products.
+
+## References
+
+* Mathlib's `Function.Injective.commRing`, `RingEquiv.symm.toRingHom`, and
+  `RingHom.toAlgebra` provide the structure and homomorphism transport used
+  here; `Mathlib.RingTheory.TensorProduct.Basic` supplies the tensor-product
+  algebra setting. The disjoint wrapper isolates the resulting scalar actions.
 -/
 
 public section
@@ -20,8 +31,8 @@ noncomputable section
 
 universe u uC uA uB
 
-/-- A genuinely distinct copy of a type.  Unlike `ULift`, this does not
-inherit the original type's module and algebra instances. -/
+/-- A distinct copy of a type which does not inherit the original type's
+module and algebra instances. -/
 structure TargetCopy (S : Type u) where
   /-- The element of the original type represented by this copy. -/
   down : S

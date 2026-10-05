@@ -15,6 +15,21 @@ closed field, with the explicit connectedness hypotheses needed to construct
 its component morphism, this file identifies the relative fppf quotient by the
 identity component with the sheaf represented by the finite constant rational
 component group.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, Proposition 2.37(b), for the exact
+  identity-component sequence; Definition 5.20 and Propositions 5.24–5.25
+  for quotient and relation-square conventions. The group-valued fppf
+  quotient here is by the scheme-theoretic identity component, not by its
+  reduction, and does not establish Theorem B.37.
+- The local `GroupScheme.QuotientSheaf` supplies the relative group-valued
+  fppf quotient and its representation from an fppf morphism with kernel;
+  `GroupScheme.ComponentSchemeMap` supplies that morphism, its fpqc
+  properties and its scheme-theoretic kernel. The mathlib community,
+  *Mathlib*, supplies the relative sites and sheafification machinery in
+  `AlgebraicGeometry.Sites.Fpqc` and
+  `CategoryTheory.Sites.PreservesSheafification`.
 -/
 
 open CategoryTheory Limits MonoidalCategory CartesianMonoidalCategory MonObj
@@ -44,7 +59,10 @@ noncomputable local instance : Fintype (rationalComponentGroup f) :=
 
 /-- The relative fppf quotient of a group scheme by its identity component is
 represented by the finite constant group scheme on its rational component
-group. -/
+group. This is the algebraically closed-field discrete quotient in Milne,
+*Algebraic Groups*, Proposition 2.37(b), with the quotient conventions of
+Definition 5.20 and Proposition 5.24. It does not construct the different
+quotient by the reduced identity component. -/
 noncomputable def identityComponentRelativeFppfQuotientIso :
     IsMonHom.Normal.relativeFppfQuotient
         (Scheme.identityComponentι (Over.mk f)) ≅

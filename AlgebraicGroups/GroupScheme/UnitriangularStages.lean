@@ -12,6 +12,20 @@ public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 
 The native group objects below arise from quotient Hopf algebras, rather than
 from a group law transported across an affine-space presentation.
+
+Milne's finer filtration by individual entries gives closed algebraic subgroups
+over a field, with these whole-superdiagonal stages at its block endpoints.
+The Hopf quotients here include arbitrary commutative base rings and the empty
+and singleton ranks.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.9 (unitriangular
+  algebraic groups) and §6.49 (finer individual-entry stages and quotients).
+* Mathlib contributors, `Mathlib.RingTheory.HopfAlgebra.Quotient`
+  (quotient Hopf structure), `Mathlib.AlgebraicGeometry.Group.Affine`
+  (`hopfSpec`), and `Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion`.
+* The existing `Unitriangular` point equivalence is reused.
 -/
 
 @[expose] public section
@@ -31,11 +45,15 @@ open UnitriangularStageCoordinateRing
 abbrev unitriangularStageUnderlyingScheme : Over (Spec (.of K)) :=
   (Spec (.of (CoordinateRing K n r))).asOver (Spec (.of K))
 
-/-- Native group scheme represented by the quotient Hopf algebra. -/
+/-- The group scheme represented by the stage quotient Hopf algebra.
+Milne, *Algebraic Groups* (2017), §6.49 gives finer field-case
+unitriangular algebraic subgroups; these stages remove whole superdiagonals. -/
 abbrev unitriangularStageScheme : Grp (Over (Spec (.of K))) :=
   ⟨unitriangularStageUnderlyingScheme K n r⟩
 
-/-- Closed inclusion into the released unitriangular group scheme. -/
+/-- Closed inclusion into the existing unitriangular group scheme.
+Milne, *Algebraic Groups* (2017), §6.49 gives finer closed field-case
+subgroups whose superdiagonal block endpoints give these stages. -/
 def unitriangularStageInclusion :
     unitriangularStageScheme K n r ⟶ unitriangularGroupScheme K (Fin n) :=
   (hopfSpec (.of K)).map
@@ -83,7 +101,9 @@ def unitriangularStageSuccessorBialgHom :
       ← Algebra.TensorProduct.map_comp, hfactor, hcomul₁,
       AlgHom.comp_assoc, hfactor]
 
-/-- Closed successor inclusion `S_(r+1) → S_r`. -/
+/-- Closed successor inclusion `S_(r+1) → S_r` induced by the Hopf quotient.
+Milne, *Algebraic Groups* (2017), §6.49 orders individual-entry
+field-case inclusions; the stage here removes an entire superdiagonal. -/
 def unitriangularStageSuccessor :
     unitriangularStageScheme K n (r + 1) ⟶ unitriangularStageScheme K n r :=
   (hopfSpec (.of K)).map
@@ -131,7 +151,7 @@ theorem unitriangularStageFromGL_comp_quotient
       unitriangularFromGL K (Fin n) R s.1 :=
   Ideal.Quotient.liftₐ_comp _ _ _
 
-/-- Evaluating a quotient point gives a matrix in the released stage subgroup. -/
+/-- Evaluating a quotient point gives a matrix in the existing stage subgroup. -/
 def unitriangularStageToGL (f : CoordinateRing K n r →ₐ[K] R) :
     Matrix.UnitriangularGroup.superdiagonalSubgroup n R r :=
   ⟨unitriangularToGL K (Fin n) R (f.comp (quotient K n r)),
@@ -163,7 +183,9 @@ def unitriangularStageToGL (f : CoordinateRing K n r →ₐ[K] R) :
       f.comp (quotient K n r)
   exact unitriangularFromGL_toGL K (Fin n) R _
 
-/-- The stage Hopf quotient represents the released point subgroup multiplicatively. -/
+/-- The stage Hopf quotient represents the point subgroup multiplicatively.
+Milne, *Algebraic Groups* (2017), item 2.9 represents the full unitriangular
+field-case group; §6.49 gives finer subgroups with these block endpoints. -/
 def unitriangularStageMulEquivAlgHom :
     Matrix.UnitriangularGroup.superdiagonalSubgroup n R r ≃*
       WithConv (CoordinateRing K n r →ₐ[K] R) where
@@ -190,7 +212,9 @@ def unitriangularStageMulEquivAlgHom :
     exact congrArg WithConv.ofConv
       ((unitriangularGroupMulEquivAlgHom K (Fin n) R).map_mul s.1 t.1)
 
-/-- Multiplicative identification with the points of the native group scheme. -/
+/-- Multiplicative identification with the points of the stage group scheme.
+Milne, *Algebraic Groups* (2017), item 2.9 and §6.49 supply the
+full-group and finer field-case subgroup antecedents. -/
 def unitriangularStagePointMulEquiv :
     Matrix.UnitriangularGroup.superdiagonalSubgroup n R r ≃*
       ((Spec (.of R)).asOver (Spec (.of K)) ⟶ unitriangularStageUnderlyingScheme K n r) :=
@@ -227,7 +251,7 @@ theorem unitriangularStageFromGL_natural {S : Type} [CommRing S] [Algebra K S]
     unitriangularStageFromGL_comp_quotient]
   exact unitriangularFromGL_natural K (Fin n) R v s.1
 
-/-- Underlying successor inclusion on the released matrix groups. -/
+/-- Underlying successor inclusion on the matrix groups. -/
 def unitriangularStagePointSuccessor
     (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R (r + 1)) :
     Matrix.UnitriangularGroup.superdiagonalSubgroup n R r :=
@@ -283,7 +307,7 @@ theorem unitriangularStageInclusion_point
     ← Spec.map_comp]
   congr 1
 
-/-- The released filtration of matrix groups as a functor on all `K`-algebras. -/
+/-- The filtration of matrix groups as a functor on all `K`-algebras. -/
 def unitriangularStageFunctor : CommAlgCat K ⥤ GrpCat where
   obj R := GrpCat.of (Matrix.UnitriangularGroup.superdiagonalSubgroup n R r)
   map f := GrpCat.ofHom (unitriangularStageMap n r _ f.hom.toRingHom)
@@ -310,7 +334,10 @@ def unitriangularStageFunctor : CommAlgCat K ⥤ GrpCat where
 abbrev unitriangularStagePointsFunctor : CommAlgCat K ⥤ GrpCat :=
   (algSpec (.of K)).rightOp ⋙ yonedaGrp.obj (unitriangularStageScheme K n r)
 
-/-- Natural multiplicative identification of stage points, for every algebra. -/
+/-- Natural multiplicative identification of stage points for every `K`-algebra.
+Milne, *Algebraic Groups* (2017), item 2.9 describes the unitriangular
+group functor and §6.49 its finer field-case stages; this is the
+whole-superdiagonal subgroup functor over arbitrary commutative bases. -/
 def unitriangularStagePointsIso :
     unitriangularStageFunctor K n r ≅ unitriangularStagePointsFunctor K n r :=
   NatIso.ofComponents

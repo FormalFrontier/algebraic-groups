@@ -17,6 +17,21 @@ on the literal tensor order `V ⊗[K] R`. Conjugation with its canonical compari
 gives an additive End functor without choosing a basis. For finite-dimensional
 `V`, a basis identifies the representing vector-group scheme with the native
 square-matrix vector-group scheme.
+
+Milne's item 2.7 gives the chosen-basis identification of finite-dimensional
+additive End and matrix algebraic groups over a field. Here this identification
+is realized as a group-scheme isomorphism with contravariant polynomial
+coordinate pullback, and the source-order tensor model is compared separately.
+The construction uses Mathlib's matrix equivalence for linear endomorphisms
+and the vector-group functor of this library; matrix multiplication is not the
+group law.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.7 (additive End and
+  chosen-basis square-matrix groups).
+- Mathlib, `Mathlib.LinearAlgebra.Matrix.ToLin` (`LinearMap.toMatrixAlgEquiv`)
+  and `Mathlib.LinearAlgebra.Dual.Basis` (matrix-entry coordinates).
 -/
 
 noncomputable section
@@ -153,8 +168,10 @@ theorem endMatrixBaseLinearEquiv_apply (f : Module.End K V) (row col : i) :
       b.repr (f (b col)) row :=
   LinearMap.toMatrix_apply b b f row col
 
-/-- The basis isomorphism is an actual group-scheme isomorphism, obtained by
-functoriality of the native vector-group construction. -/
+/-- The chosen-basis additive End/matrix group-scheme isomorphism from
+Milne, *Algebraic Groups* (2017), item 2.7, obtained by functoriality of the
+vector-group construction. Unlike a bijection on field points, this is an
+isomorphism of group objects over `Spec K`. -/
 def endMatrixSchemeIso :
     vectorGroupScheme K (Module.End K V) ≅ vectorGroupScheme K (Matrix i i K) :=
   (vectorGroupSchemeFunctor K).mapIso (endMatrixBaseLinearEquiv K V i b).toModuleIso

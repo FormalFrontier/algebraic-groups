@@ -24,6 +24,14 @@ containing a unit `p`-th root `u` of `t`, the coordinate `W = Y - uX` identifies
 ring with a polynomial ring.  Over a field of characteristic `p`, the scheme is connected for
 nonzero `t`; at `t = 0` it is disconnected.
 
+The linear `-Y` term distinguishes this equation from the Frobenius-twisted
+line `Y ^ p - t * X ^ p = 0`. The latter has a nilpotent transverse
+coordinate after adjoining a `p`-th root, whereas the normal form here is
+a polynomial ring and requires a *unit* root. The smoothness calculation
+uses the unit Jacobian entry `-1`; the zero-twist disconnection follows from
+a nontrivial idempotent. No characteristic assumption is needed just to
+define the equation or coordinate ring.
+
 ## Main definitions
 
 - `ArtinSchreierTwistedLine.CoordinateRing`
@@ -37,6 +45,20 @@ nonzero `t`; at `t = 0` it is disconnected.
 - `ArtinSchreierTwistedLine.coordinateRing_isDomain_of_ne_zero`
 - `ArtinSchreierTwistedLine.scheme_connectedSpace_of_ne_zero`
 - `ArtinSchreierTwistedLine.not_scheme_connectedSpace_zero`
+
+## References
+
+- Mathlib, `Mathlib.Algebra.CharP.Lemmas` (the characteristic-`p` binomial
+  identities used for the group law and base-change substitution).
+- Mathlib, `Mathlib.RingTheory.Extension.Presentation.Submersive`,
+  `Mathlib.RingTheory.Smooth.StandardSmooth`, and
+  `Mathlib.AlgebraicGeometry.Morphisms.Smooth` (the Jacobian presentation,
+  standard smoothness and its affine-scheme criterion).
+- Mathlib, `Mathlib.RingTheory.Spectrum.Prime.Topology` and
+  `Mathlib.Topology.Connected.Clopen` (idempotents, clopen subsets and the
+  connectedness criterion).
+- Mathlib, `Mathlib.AlgebraicGeometry.Group.Affine` (the additive Hopf
+  structure's affine group scheme).
 -/
 
 public section
@@ -328,7 +350,8 @@ open CategoryTheory AlgebraicGeometry
 abbrev scheme (p : ℕ) (t : R) : Over (Spec (.of R)) :=
   (Spec (.of (CoordinateRing R p t))).asOver (Spec (.of R))
 
-/-- The additive group scheme defined by the Artin--Schreier twisted-line equation. -/
+/-- The additive group scheme defined by `Y ^ p - Y = t * X ^ p`, distinct
+from the Frobenius-twisted equation `Y ^ p = t * X ^ p`. -/
 abbrev groupScheme {p : ℕ} [Fact p.Prime] [CharP R p] (t : R) :
     Grp (Over (Spec (.of R))) :=
   ⟨scheme R p t⟩
@@ -383,7 +406,8 @@ theorem coordinateRing_smooth [CharP R p] (t : R) :
     coordinateRing_isStandardSmooth R t
   infer_instance
 
-/-- The structure morphism of the Artin--Schreier twisted line is smooth. -/
+/-- The structure morphism is smooth: the defining relation has partial
+derivative `-1` with respect to `Y`. -/
 theorem scheme_smooth [CharP R p] (t : R) : Smooth (scheme R p t).hom := by
   change Smooth (Spec.map (CommRingCat.ofHom (algebraMap R (CoordinateRing R p t))))
   rw [HasRingHomProperty.Spec_iff (P := @Smooth)]
@@ -536,8 +560,9 @@ private theorem normalFormHom_comp_inv {p : ℕ} [Fact p.Prime] [CharP L p]
   ext
   simp [normalFormInv_X, normalFormHom_W R L t u hu]
 
-/-- After choosing a unit root `u` with `u ^ p = t`, scalar extension identifies the twisted
-line with the affine line having coordinate `W = Y - uX`. -/
+/-- After choosing a *unit* root `u` with `u ^ p = t`, scalar extension
+identifies the Artin--Schreier twisted line with the affine line having
+coordinate `W = Y - uX`; the inverse coordinate formula uses `u⁻¹`. -/
 @[expose] def baseChangeNormalForm {p : ℕ} [Fact p.Prime] [CharP L p]
     (t : R) (u : Lˣ) (hu : (u : L) ^ p = algebraMap R L t) :
     L ⊗[R] CoordinateRing R p t ≃ₐ[L] Polynomial L :=

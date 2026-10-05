@@ -16,6 +16,20 @@ public import Mathlib.AlgebraicGeometry.Restrict
 An invariant open of the object scheme has one common preimage under the two
 relation maps. The two restricted maps on that common source again form an
 internal equivalence relation.
+
+The preimage equality alone permits the second leg to be transported by
+`isoOfEq`; pullback lifts restrict reflexivity, symmetry and composition.
+Neither affine nor finite-flat hypotheses nor a quotient are required.
+
+## References
+
+* Stacks Project, Lemma 39.23.3 (tag 03BI), for the motivating restriction
+  to invariant constant-rank opens. The construction here applies to every
+  invariant open of any scheme equivalence relation.
+* Mathlib, `Mathlib.AlgebraicGeometry.Restrict` for `isoOfEq` and
+  `isPullback_morphismRestrict`, `Mathlib.AlgebraicGeometry.Pullbacks` for
+  limiting pullback lifts, and `Mathlib.CategoryTheory.EquivalenceRelation`
+  for the internal relation structure.
 -/
 
 open CategoryTheory Limits
@@ -160,7 +174,10 @@ lemma transitivity_snd (h : EquivalenceRelation p₁ p₂) (U : X.Opens)
           simp only [Category.assoc, snd_ι]
 
 /-- Restriction to an invariant open preserves an internal scheme equivalence
-relation. -/
+relation. This generalizes the invariant constant-rank-open restriction used
+in Stacks Project, Lemma 39.23.3 (tag 03BI): equality of the two leg
+preimages suffices, without any rank, finiteness, flatness or quotient
+assumption. -/
 def equivalenceRelation (h : EquivalenceRelation p₁ p₂) (U : X.Opens)
     (hU : p₁ ⁻¹ᵁ U = p₂ ⁻¹ᵁ U) :
     EquivalenceRelation (p₁ ∣_ U) (snd U hU) where

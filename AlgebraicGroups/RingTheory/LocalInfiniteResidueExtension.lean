@@ -20,6 +20,19 @@ therefore infinite.
 
 This construction is useful for arguments that may be checked after faithfully
 flat local base change and need an infinite residue field.
+
+## References
+
+* The Stacks Project, Lemma 10.159.1 ([tag 03C3](https://stacks.math.columbia.edu/tag/03C3)),
+  constructs this polynomial localization for the transcendental residue-field
+  extension. The proof of Proposition 39.23.9
+  ([tag 03BM](https://stacks.math.columbia.edu/tag/03BM)) uses a flat local
+  extension with infinite residue field.
+* Mathlib, `Mathlib.RingTheory.LocalRing.ResidueField.Polynomial`
+  (`Polynomial.residueFieldMapCAlgEquiv`) and
+  `Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra`
+  (`Module.FaithfullyFlat.of_flat_of_isLocalHom`), provide the residue-field
+  equivalence and faithful-flatness criterion used here.
 -/
 
 noncomputable section
@@ -36,7 +49,8 @@ variable (R : Type u) [CommRing R] [IsLocalRing R]
 abbrev genericPrime : Ideal R[X] :=
   (IsLocalRing.maximalIdeal R).map Polynomial.C
 
-/-- The local ring at the generic point of the closed fibre of `R[X]`. -/
+/-- The local ring at the generic point of the closed fibre of `R[X]`,
+as in the transcendental case of Stacks Project, Lemma 10.159.1 (tag 03C3). -/
 abbrev GenericLocalExtension := Localization.AtPrime (genericPrime R)
 
 lemma genericPrime_liesOver :
@@ -76,12 +90,17 @@ lemma isLocalHom_algebraMap :
       simpa using hx
     · simp [Polynomial.coeff_C, hn]
 
+/-- The polynomial localization is faithfully flat over the original local
+ring; compare the transcendental case of Stacks Project, Lemma 10.159.1
+(tag 03C3). -/
 lemma faithfullyFlat : Module.FaithfullyFlat R (GenericLocalExtension R) := by
   let _ := isLocalHom_algebraMap R
   exact Module.FaithfullyFlat.of_flat_of_isLocalHom
 
 /-- The residue field of the generic local extension is the rational function
-field over the residue field of the original local ring. -/
+field over the residue field of the original local ring, as in the
+transcendental case of Stacks Project, Lemma 10.159.1 (tag 03C3). This uses
+Mathlib's `Polynomial.residueFieldMapCAlgEquiv`. -/
 noncomputable def residueFieldEquivRatFunc :
     IsLocalRing.ResidueField (GenericLocalExtension R) ≃+*
       RatFunc (IsLocalRing.maximalIdeal R).ResidueField := by
@@ -91,7 +110,9 @@ noncomputable def residueFieldEquivRatFunc :
   exact (Polynomial.residueFieldMapCAlgEquiv
     (IsLocalRing.maximalIdeal R) (genericPrime R) rfl).toRingEquiv
 
-/-- The generic local extension has infinite residue field. -/
+/-- The generic local extension has infinite residue field. This supplies
+the local test extension used in the proof of Stacks Project, Proposition
+39.23.9 (tag 03BM). -/
 lemma infinite_residueField :
     Infinite (IsLocalRing.ResidueField (GenericLocalExtension R)) := by
   let _ : Infinite (RatFunc (IsLocalRing.maximalIdeal R).ResidueField) :=

@@ -17,6 +17,13 @@ commutative algebra with locally constant functions from its prime spectrum to
 the indexing finite group.  No reducedness or nontriviality assumption is
 needed; in particular the result includes the zero ring.
 
+Milne's *Algebraic Groups*, item 2.3, is a direct antecedent for the constant
+scheme and its intended trivial-idempotents point specialization. Its printed
+arbitrary-algebra formula allows all set maps from connected components,
+which need not be locally constant when components are not open. The
+trivial-idempotents specialization also requires a nontrivial ring: the prime
+spectrum of the zero ring is empty.
+
 ## Main results
 
 * `AlgebraicGeometry.FiniteGroupFunctions.locallyConstantMulEquivAlgHom`
@@ -29,6 +36,19 @@ needed; in particular the result includes the zero ring.
 * `AlgebraicGeometry.finiteConstantMulEquivPointsOfTrivialIdempotents`
   specializes to one group element when the target ring is nontrivial and has
   no nontrivial idempotents.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.3, p. 40 (finite constant
+  groups and the intended point specialization, with the qualifications above).
+- Mathlib, `Mathlib.RingTheory.Idempotents` (complete orthogonal idempotent
+  families) and `Mathlib.RingTheory.Spectrum.Prime.Topology`
+  (`PrimeSpectrum.isIdempotentElemEquivClopens`, used to construct the fibres
+  and characterize connected spectra).
+- Mathlib, `Mathlib.Topology.LocallyConstant.Basic` and
+  `Mathlib.Topology.LocallyConstant.Algebra` (locally constant functions and
+  their pointwise group structure); `Mathlib.AlgebraicGeometry.Group.Affine`
+  (convolution and the affine `Spec` points equivalence).
 -/
 
 @[expose] public section
@@ -125,7 +145,8 @@ theorem algHomOfIdempotents_single [CommRing R] [Algebra K R]
   · simp
 
 /-- Algebra homomorphisms out of a finite function algebra are equivalent to
-complete orthogonal idempotent partitions indexed by the function domain. -/
+complete orthogonal idempotent partitions indexed by the function domain,
+using Mathlib's `CompleteOrthogonalIdempotents` and `Pi.basisFun`. -/
 noncomputable def algHomEquivIdempotentPartitions [CommRing R] [Algebra K R] :
     (FiniteGroupFunctions K Γ →ₐ[K] R) ≃ IdempotentPartitions Γ R where
   toFun φ := ⟨idempotentsOfAlgHom φ, idempotentsOfAlgHom_complete φ⟩
@@ -298,7 +319,9 @@ noncomputable def locallyConstantEquivIdempotentPartitions [CommRing R] :
     exact congrArg Subtype.val hsub
 
 /-- Locally constant functions on `PrimeSpectrum R` with finite codomain `Γ` are
-equivalent to `K`-algebra homomorphisms from the finite function algebra on `Γ`. -/
+equivalent to `K`-algebra homomorphisms from the finite function algebra on `Γ`.
+The construction uses Mathlib's idempotent–clopen correspondence and complete
+orthogonal idempotents. -/
 noncomputable def locallyConstantEquivAlgHom [CommRing R] [Algebra K R] :
     LocallyConstant (PrimeSpectrum R) Γ ≃
       (FiniteGroupFunctions K Γ →ₐ[K] R) :=
@@ -400,7 +423,9 @@ theorem locallyConstantEquivAlgHom_symm_mul [CommRing R] [Algebra K R]
 end Points
 
 /-- Locally constant labels on a prime spectrum are multiplicatively equivalent
-to coordinate algebra maps equipped with convolution. -/
+to coordinate algebra maps equipped with convolution. This uses Mathlib's
+idempotent–clopen correspondence to correct the arbitrary-algebra point
+description accompanying Milne's *Algebraic Groups*, item 2.3. -/
 noncomputable def locallyConstantMulEquivAlgHom (K : Type u) (Γ : Type v) (R : Type*)
     [CommRing K] [CommRing R] [Algebra K R] [Fintype Γ] [Group Γ] :
     LocallyConstant (PrimeSpectrum R) Γ ≃*
@@ -480,7 +505,8 @@ theorem locallyConstantMulEquivAlgHom_const
   exact p.2.ne_top ((Ideal.eq_top_iff_one p.asIdeal).2 hone)
 
 /-- If the indexing type is unique, its finite function algebra is just the
-base algebra. -/
+base algebra, as in the trivial-group case of Milne's *Algebraic Groups*,
+item 2.3. -/
 def uniqueAlgEquiv (K : Type u) (Γ : Type v) [CommRing K] [Unique Γ] :
     FiniteGroupFunctions K Γ ≃ₐ[K] K :=
   (toPiAlgEquiv K Γ).trans (AlgEquiv.funUnique K Γ K)
@@ -491,7 +517,10 @@ variable (K Γ R : Type u)
 variable [CommRing K] [CommRing R] [Algebra K R] [Fintype Γ] [Group Γ]
 
 /-- The points of a finite constant group scheme over an arbitrary algebra are
-the locally constant labels on the algebra's prime spectrum. -/
+the locally constant labels on the algebra's prime spectrum. This is the
+corrected point description for the construction in Milne's *Algebraic Groups*,
+item 2.3: not every set map from connected components is a scheme point.
+The result also holds for the zero ring. -/
 noncomputable def finiteConstantLocallyConstantMulEquivPoints :
     LocallyConstant (PrimeSpectrum R) Γ ≃*
       ((Spec (.of R)).asOver (Spec (.of K)) ⟶
@@ -568,7 +597,9 @@ noncomputable def locallyConstantMulEquivOfConnected
   map_mul' _ _ := rfl
 
 /-- A prime spectrum is connected exactly when the ring is nontrivial and its
-only idempotents are zero and one. -/
+only idempotents are zero and one. The proof uses Mathlib's
+`PrimeSpectrum.isIdempotentElemEquivClopens`; the nontriviality condition
+excludes the empty spectrum of the zero ring. -/
 theorem connectedSpace_primeSpectrum_iff_trivialIdempotents (R : Type*) [CommRing R] :
     ConnectedSpace (PrimeSpectrum R) ↔
       Nontrivial R ∧ ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1 := by
@@ -624,7 +655,10 @@ noncomputable def finiteConstantMulEquivPointsOfConnected
     (finiteConstantLocallyConstantMulEquivPoints K Γ R)
 
 /-- If a nontrivial algebra has no nontrivial idempotents, its points in a
-finite constant group scheme are exactly the elements of the indexing group. -/
+finite constant group scheme are exactly the elements of the indexing group.
+This is the valid nontrivial-ring specialization of the intended point formula
+in Milne's *Algebraic Groups*, item 2.3; it uses the idempotent–clopen
+correspondence in Mathlib. -/
 noncomputable def finiteConstantMulEquivPointsOfTrivialIdempotents
     [Nontrivial R]
     (h : ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1) :

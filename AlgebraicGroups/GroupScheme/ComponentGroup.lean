@@ -22,6 +22,20 @@ In particular, the identity component's Cartesian square is assumed connected
 when constructing its group structure, and geometric connectedness is assumed
 when giving its point image the structure of a normal subgroup. No topological
 group structure on the underlying scheme is used.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, §2g and Proposition 2.37(b), (d),
+  for the component group, its identity-component kernel and the description
+  of its fibres; and Proposition 1.34 for the identity-component subgroup.
+  The present comparison uses rational points over an algebraically closed
+  field, rather than the general finite étale component group.
+- The mathlib community, *Mathlib*: `Topology.JacobsonSpace` for closed
+  points in nonempty locally closed subsets, and
+  `Topology.Connected.TotallyDisconnected` for component maps under
+  continuous translations. The local `GroupScheme.ClosedPoints` converts
+  these closed points into rational points, while `GroupObject.Quotient`
+  supplies the quotient-group interface.
 -/
 
 public section
@@ -81,7 +95,9 @@ section ClosedPoints
 variable [IsAlgClosed K]
 
 /-- Every connected component of a group scheme locally of finite type over an
-algebraically closed field contains a rational point. -/
+algebraically closed field contains a rational point. This is the rational
+representative underlying Milne, *Algebraic Groups*, Proposition 2.37(d),
+obtained here from the Jacobson closed-point argument. -/
 theorem groupSchemePointComponent_surjective
     (f : G ⟶ Spec (.of K)) [GrpObj (Over.mk f)] [LocallyOfFiniteType f] :
     Function.Surjective (groupSchemePointComponent f) := by
@@ -160,7 +176,9 @@ private lemma groupSchemePointComponent_one_eq_iff (x : groupSchemePoints f) :
   rfl
 
 /-- Two rational points lie in the same connected component exactly when their
-group quotient lies in the image of the identity component. -/
+group quotient lies in the image of the identity component. This is the
+translation argument behind the component group of Milne,
+*Algebraic Groups*, §2g. -/
 theorem groupSchemePointComponent_eq_iff (x y : groupSchemePoints f) :
     groupSchemePointComponent f x = groupSchemePointComponent f y ↔
       x⁻¹ * y ∈ identityComponentPointSubgroup f := by
@@ -185,7 +203,9 @@ abbrev rationalComponentGroup :=
   groupSchemePoints f ⧸ identityComponentPointSubgroup f
 
 /-- Geometric connectedness of the identity component makes its image on
-rational points a normal subgroup. -/
+rational points a normal subgroup. Compare Milne, *Algebraic Groups*,
+Proposition 1.52; the categorical normality of the identity-component
+inclusion supplies the pointwise normality. -/
 instance identityComponentPointSubgroup_normal
     [GeometricallyConnected (Scheme.identityComponentOver (Over.mk f)).hom] :
     (identityComponentPointSubgroup f).Normal :=
@@ -220,7 +240,9 @@ section AlgebraicallyClosed
 variable [IsAlgClosed K] [LocallyOfFiniteType f]
 
 /-- Over an algebraically closed field, the rational component group is in
-bijection with the connected components of the underlying scheme. -/
+bijection with the connected components of the underlying scheme. Compare
+Milne, *Algebraic Groups*, §2g and Proposition 2.37(b), (d): the quotient
+of rational points describes the components under the stated hypotheses. -/
 def rationalComponentGroupEquivConnectedComponents :
     rationalComponentGroup f ≃ ConnectedComponents G :=
   Equiv.ofBijective (rationalComponentGroupToConnectedComponents f)

@@ -16,6 +16,21 @@ public import SchemeProperties.ComponentFibers
 For a group scheme locally of finite type and quasi-compact over a field, the
 identity component is the fibre of the component morphism over the component
 selected by the unit section.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, Propositions 1.29–1.31(a) for the
+  component scheme and its connected-component fibres, and Proposition
+  2.37(b) for the identity-component kernel as the unit fibre. This
+  statement is a pullback over a fixed field, not the field-extension
+  isomorphism in Proposition 1.34 or Proposition 2.37(c).
+- *SchemeProperties*, `ComponentScheme` for the greatest finite-étale
+  component subalgebra and component morphism, and `ComponentFibers` for
+  identification of fibre ranges with connected components. The mathlib
+  community, *Mathlib*, supplies the étale/flat-monomorphism and
+  open-immersion pullback tools in
+  `AlgebraicGeometry.Morphisms.FlatMono` and
+  `AlgebraicGeometry.OpenImmersion`.
 -/
 
 open CategoryTheory Limits MonoidalCategory CartesianMonoidalCategory MonObj
@@ -28,7 +43,11 @@ universe u
 noncomputable section
 
 /-- The identity component is the pullback of the component morphism along the
-component selected by the unit section. -/
+component selected by the unit section. This is the kernel-fibre assertion
+of Milne, *Algebraic Groups*, Proposition 2.37(b), based on the component
+fibre description in Proposition 1.31(a). It needs neither an algebraically
+closed field nor the connected-square and geometric-connectedness hypotheses
+for an identity-component group structure. -/
 theorem isPullback_identityComponentι_toComponentScheme
     {K : Type u} [Field K]
     (G : Over (Spec (.of K))) [GrpObj G]

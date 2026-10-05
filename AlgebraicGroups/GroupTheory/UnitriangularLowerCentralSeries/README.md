@@ -75,3 +75,14 @@ lake build AlgebraicGroups.GroupTheory.UnitriangularLowerCentralSeries Algebraic
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
 credit appears in [CREDITS](../../../CREDITS.md).
+
+## References
+
+- Mathlib contributors, `Mathlib.GroupTheory.Nilpotent` (the lower central
+  series and its successor/antitone laws) and
+  `Mathlib.GroupTheory.QuotientGroup.Defs` (the quotient API used by the
+  preceding coordinate module).
+- General Linear Groups contributors, `GeneralLinearGroups.ElementaryCommutator`
+  (ordered elementary-unit relation used by the preceding exact-class module).
+  The equality here also uses the point-group coordinate elimination described
+  above; it is not an algebraic subgroup-scheme equality.

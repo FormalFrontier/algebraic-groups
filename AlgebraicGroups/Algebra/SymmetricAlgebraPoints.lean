@@ -12,6 +12,21 @@ public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
 Algebra maps out of a symmetric algebra, with convolution, form the additive
 group of linear maps into the target algebra. No finiteness assumption is needed.
+
+Mathlib supplies the symmetric-algebra universal property and convolution on
+algebra maps. Milne's item 2.6 identifies algebra maps from the symmetric
+algebra on a finite-dimensional vector space's dual with linear maps on that
+dual, over a field; the equivalence here also tracks the group law and holds
+for arbitrary modules over commutative rings.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.6 (dual symmetric coordinates).
+- Mathlib, `Mathlib.LinearAlgebra.SymmetricAlgebra.Basic` (the `lift` universal
+  property), `Mathlib.Algebra.WithConv` (`WithConv` and `WithConv.equiv`),
+  `Mathlib.RingTheory.Bialgebra.Convolution` (convolution multiplication and
+  `AlgHom.convMul_apply`), and `Mathlib.RingTheory.HopfAlgebra.Convolution`
+  (the convolution group instance).
 -/
 
 public section
@@ -26,7 +41,9 @@ variable (K : Type u) [CommRing K] (M : Type v) [AddCommMonoid M] [Module K M]
   (R : Type w) [CommRing R] [Algebra K R]
 
 /-- Convolution of algebra maps out of the symmetric algebra is addition of
-linear maps on its primitive generators. -/
+linear maps on its primitive generators. This uses Mathlib's `lift` and
+`WithConv`; the finite-dimensional dual-coordinate case appears in Milne,
+*Algebraic Groups* (2017), item 2.6. -/
 @[expose] def linearMapMulEquivAlgHom :
     Multiplicative (M →ₗ[K] R) ≃* WithConv (SymmetricAlgebra K M →ₐ[K] R) where
   toEquiv := (Multiplicative.toAdd : Multiplicative (M →ₗ[K] R) ≃ (M →ₗ[K] R)).trans

@@ -20,7 +20,20 @@ idempotent in the global equalizer.
 This combines the affine rank-stratum localization interface with the generic
 localization theorem for equalizers. It does not prove faithful flatness,
 identify a tensor comparison, construct a quotient, or prove quotient
-effectivity.
+effectivity. This particular idempotent localization is not the arbitrary
+base-change assertion for invariant rings in Stacks Project Lemma 39.23.5.
+
+## References
+
+* The Stacks Project, Lemma 39.23.3
+  ([tag 03BI](https://stacks.math.columbia.edu/tag/03BI)), supplies the
+  invariant rank pieces. Lemma 39.23.5
+  ([tag 03BK](https://stacks.math.columbia.edu/tag/03BK)) concerns a distinct,
+  more general base-change assertion.
+* `AlgebraicGroups.Scheme.EquivalenceRelationRankAffine` supplies the
+  rank-idempotent and common-preimage localization squares;
+  `AlgebraicGroups.RingTheory.Equalizer` supplies the generic
+  `AlgHom.equalizerMapOfCommuting_isLocalizationAway` interface.
 -/
 
 open CategoryTheory TopologicalSpace
@@ -37,7 +50,9 @@ variable {R X : Scheme.{u}} {p₁ p₂ : R ⟶ X}
 /-- On every affine rank stratum of a finite flat equivalence relation, the
 restriction map from the global equalizer of the two relation maps to the
 stratum equalizer is localization away from an idempotent. The same idempotent
-cuts out the stratum as a basic open of the target. -/
+cuts out the stratum as a basic open of the target. This specializes generic
+equalizer localization to the invariant rank pieces of Stacks Project
+[Lemma 39.23.3, tag 03BI](https://stacks.math.columbia.edu/tag/03BI). -/
 lemma exists_finrankOpen_equalizer_isLocalizationAway
     (h : CategoryTheory.EquivalenceRelation p₁ p₂) (r : ℕ) :
     let U := finrankOpen (p₁ := p₁) r

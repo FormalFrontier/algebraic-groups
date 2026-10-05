@@ -131,6 +131,8 @@ public import AlgebraicGroups.Scheme.Smooth
 public import AlgebraicGroups.Topology.KrullDimension
 
 /-!
+# Algebraic groups and group schemes
+
 The aggregate exposes the finite upper-unitriangular Hopf quotient, affine
 group scheme and underlying affine geometry, native closed superdiagonal
 stage Hopf quotients and underlying affine-space presentations, stage normality,
@@ -139,4 +141,19 @@ central filtration, successive quotients, exact nilpotency class under nontrivia
 all-stage lower-central-series identification and the derived series
 and sharp prime-power exponent bounds for the native point group alongside
 the general- and special-linear constructions.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), selected items in §§1–2 and §6,
+  for group functors, linear groups and unitriangular filtrations; and *Basic
+  Theory of Affine Group Schemes* (2012), XI §16, Example 16.3 and XIII §3,
+  item 3.14, for field-base special-linear dimension and determinant splitting.
+- The Stacks Project, tags 03BH–03BJ and 03BM, for invariant rings of finite
+  locally free relations; Mathlib for affine group schemes, matrix algebra
+  and categorical limits; and SchemeProperties for finite-type point functors
+  and connected components.
+
+The [mathematical topic guide](docs/MATHEMATICS.md) locates the specific
+antecedents and prior formalizations without identifying the general-base
+constructions with their field-base sources.
 -/

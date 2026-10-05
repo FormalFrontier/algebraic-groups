@@ -16,11 +16,32 @@ representing scheme when every component range is a subgroup. The original map,
 not merely an abstractly isomorphic replacement, is then a group-object
 homomorphism.
 
+The generic constructions work for locally-finite-type schemes and an
+injective natural transformation with subgroup ranges on finitely generated
+algebras. For a finite-type subscheme these data give the subgroup criterion
+of Milne's item 1.5; an immersion is not required by the generic construction.
+
 ## Main definitions
 
 - `AlgebraicGeometry.pointwiseSubgroupGrpObj`
 - `AlgebraicGeometry.pointwiseSubgroupIsMonHom`
 - `AlgebraicGeometry.algebraicGroupOfPointwiseSubgroup`
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), items 1.4–1.5 and
+  Appendix A.33: recovering the group law and subgroup homomorphism from
+  pointwise subgroups by restricted Yoneda full faithfulness.
+- `SchemeProperties.FiniteTypePoints`, `lftPointsFullyFaithful` and
+  `lftPointsPreservesFiniteLimits`: the separately developed restricted
+  functor of points and its finite-limit preservation.
+- Mathlib, `Functor.FullyFaithful.grpObj` and
+  `Functor.FullyFaithful.isMonHom_preimage`: reflection of the group-object
+  structure and its homomorphism through a fully faithful monoidal functor.
+
+The subgroup transport also uses `NatTrans.IsPointwiseSubgroup.grpObj` and
+`NatTrans.IsPointwiseSubgroup.isMonHom` from
+`AlgebraicGroups.GroupObject.FunctorCategory`.
 -/
 
 @[expose] public section
@@ -51,7 +72,9 @@ local instance : (lftPoints K).Monoidal :=
   Functor.Monoidal.ofChosenFiniteProducts _
 
 /-- A pointwise subgroup of the functor of points of a group scheme induces a
-group-object structure on its representing locally-finite-type scheme. -/
+group-object structure on its representing locally-finite-type scheme. The
+finite-type subscheme case follows Milne, *Algebraic Groups* (2017), item 1.5;
+the reflection uses full faithfulness from `SchemeProperties.FiniteTypePoints`. -/
 abbrev pointwiseSubgroupGrpObj
     (X : locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
     (G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))))
@@ -63,7 +86,9 @@ abbrev pointwiseSubgroupGrpObj
   exact (lftPointsFullyFaithful K).grpObj X
 
 /-- For the group structure induced by `pointwiseSubgroupGrpObj`, the original
-map to the target group scheme is a group-object homomorphism. -/
+map to the target group scheme is a group-object homomorphism. For finite-type
+subschemes this is the homomorphism assertion in Milne, *Algebraic Groups*
+(2017), item 1.5. -/
 theorem pointwiseSubgroupIsMonHom
     (X : locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
     (G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))))
@@ -128,7 +153,9 @@ theorem pointwiseSubgroupIsMonHom
 
 /-- A finite-type scheme whose point functor maps injectively onto pointwise
 subgroups of a finite-type group scheme becomes a finite-type group scheme on
-the same underlying represented object. -/
+the same underlying represented object. This is the pointwise subgroup
+criterion of Milne, *Algebraic Groups* (2017), item 1.5, without requiring
+an immersion in this criterion. -/
 abbrev algebraicGroupOfPointwiseSubgroup
     (X : algebraicOver K) (G : algebraicGroupOver K) (i : X.obj ⟶ G.obj.X)
     (h : NatTrans.IsPointwiseSubgroup
@@ -139,7 +166,8 @@ abbrev algebraicGroupOfPointwiseSubgroup
   exact ⟨⟨X.obj⟩, X.property⟩
 
 /-- In the finite-type specialization, the original map to the target group
-scheme is the homomorphism for the recovered group structure. -/
+scheme is the homomorphism for the recovered group structure, as in Milne,
+*Algebraic Groups* (2017), item 1.5. -/
 theorem algebraicPointwiseSubgroupIsMonHom
     (X : algebraicOver K) (G : algebraicGroupOver K) (i : X.obj ⟶ G.obj.X)
     (h : NatTrans.IsPointwiseSubgroup

@@ -18,6 +18,18 @@ For a finite index type the cardinality is `card ι + (card ι).choose 2`, using
 mathlib's existing count of strictly ordered pairs. The retained-coordinate
 predicate `¬ p.2 < p.1` gives the same indexing type without changing coordinates.
 No assertion about a coordinate ring or a scheme dimension is made here.
+
+The coordinate-preserving splitting was introduced by Lattice in this
+project. The cardinality calculation uses Mathlib's strict-pair count,
+without assuming finiteness for the equivalences themselves.
+
+## References
+
+* Bhavik Mehta and Jon Eugster's strict-pair count in Mathlib,
+  `Mathlib/Data/Fintype/Prod.lean`,
+  `Fintype.card_product_filter_lt` (via `Mathlib/Data/Finset/Prod.lean`),
+  and `Mathlib/Data/Fintype/Sum.lean`, `Fintype.card_sum`, for the finite
+  cardinality formula. The order-only equivalences are not these results.
 -/
 
 public section
@@ -109,8 +121,10 @@ theorem upperTriangularRetainedIndicesEquiv_symm_inr_val
     ((upperTriangularRetainedIndicesEquiv ι).symm (Sum.inr p)).1 = p.1 :=
   rfl
 
-/-- Weakly upper-triangular coordinates consist of one coordinate per diagonal
-index and one per unordered pair of distinct indices. -/
+/-- Lattice's coordinate-preserving split counts weakly upper-triangular
+positions by the diagonal and strict pairs. The finite count reuses Mathlib's
+`Fintype.card_product_filter_lt` and `Fintype.card_sum`; the equivalence
+itself requires only a linear order. -/
 theorem card_upperTriangularIndices [Fintype ι] :
     Fintype.card {p : ι × ι // p.1 ≤ p.2} =
       Fintype.card ι + (Fintype.card ι).choose 2 := by

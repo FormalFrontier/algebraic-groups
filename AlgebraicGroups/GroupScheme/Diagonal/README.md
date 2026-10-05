@@ -50,10 +50,24 @@ tuples (`Fin 0`), one unit/G_m **points** (`Fin 1`), independent pair entries
 `DualNumber ℤ` with the nonzero square-zero parameter `ε` and diagonal unit
 `1 + ε`, inverse `1 - ε`. These tests are not restricted to geometric points.
 
-
 A finite-product `Gₘ` **scheme** isomorphism is a distinct result in the
 [diagonal-product guide](../DiagonalProduct/README.md), not a consequence
 of the unit-tuple equivalence on points alone.
+
+## References
+
+Milne, *Algebraic Groups* (2017), §§2.8–2.9 (pp. 41–42), defines the
+determinant-localized `GL_n` and its diagonal algebraic subgroup `D_n` over a
+field and its algebras; §12.d (p. 234, after Definition 12.11) identifies
+`D_n` with a product of `Gₘ`. This library extends the base to arbitrary
+commutative rings and proves the Hopf-quotient and represented-group claims.
+The group and Hopf-coordinate constructions use Mathlib's
+`Mathlib.Data.Matrix.Basic`, `Mathlib.Algebra.Group.Pi.Units`,
+`Mathlib.LinearAlgebra.Matrix.Determinant.Basic`,
+`Mathlib.RingTheory.HopfAlgebra.Quotient`, and
+`Mathlib.AlgebraicGeometry.Group.Affine`; the GL coordinate ring and group
+scheme are provided by `AlgebraicGroups.Algebra.GeneralLinearCoordinateRing`
+and `AlgebraicGroups.GroupScheme.GeneralLinear`.
 
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party

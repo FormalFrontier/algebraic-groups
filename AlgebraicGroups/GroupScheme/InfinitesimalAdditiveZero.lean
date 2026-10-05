@@ -15,6 +15,21 @@ public section
 The quotient by the first power of the additive coordinate is the base Hopf
 algebra. Its native group scheme is therefore isomorphic to the group scheme
 represented by the group algebra on the one-element additive group.
+
+This is the `m = 0` boundary of the characteristic-power example in Milne's
+*Algebraic Groups*, item 2.5: both group schemes are trivial here, so the
+unqualified non-isomorphism assertion there does not hold at this exponent.
+The isomorphism is a group-object isomorphism over any commutative base of
+prime characteristic, not only an underlying-scheme isomorphism over a field.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.5, p. 40 (the
+  characteristic-power and roots-of-unity constructions and their boundary case).
+- Mathlib, `Mathlib.RingTheory.Bialgebra.Hom`,
+  `Mathlib.RingTheory.Bialgebra.MonoidAlgebra`, and
+  `Mathlib.AlgebraicGeometry.Group.Affine` (the bialgebra counit,
+  singleton group-algebra equivalence and affine Hopf `Spec` construction).
 -/
 
 noncomputable section
@@ -65,8 +80,10 @@ theorem infinitesimalAdditiveZeroBialgEquiv_coordinate :
       0 := by
   simp
 
-/-- The native first-power infinitesimal additive group scheme is the native
-order-one roots-of-unity group scheme, as a group object over `Spec K`. -/
+/-- The first-power infinitesimal additive group scheme is isomorphic to the
+order-one roots-of-unity group scheme as a group object over `Spec K`. This
+`m = 0` case corrects the unrestricted non-isomorphism assertion in Milne's
+*Algebraic Groups*, item 2.5. -/
 @[expose] def infinitesimalAdditiveGroupSchemeZeroIsoRootsOfUnityOne :
     infinitesimalAdditiveGroupScheme K p 0 ≅ rootsOfUnityGroupScheme K 1 :=
   (hopfSpec (.of K)).mapIso

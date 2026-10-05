@@ -8,7 +8,35 @@ public import AlgebraicGroups.GroupTheory.Diagonal
 public import AlgebraicGroups.GroupScheme.Unitriangular
 public import Mathlib.GroupTheory.SemidirectProduct
 
-/-! # Native upper-triangular general linear groups -/
+/-!
+# Native upper-triangular general linear groups
+
+Invertible upper-triangular matrices form a subgroup of the matrix general
+linear group over every commutative ring. Their diagonal is a split quotient
+with kernel the existing upper-unitriangular subgroup *inside this subgroup*.
+The U-first semidirect equivalence uses column normalization and commutes
+with every ring homomorphism, including noninjective ones. This is a result
+about groups of points, not a scheme base-change theorem.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.9, p. 42:
+  the `T_n`, `U_n` and `D_n` subgroup functors on commutative algebras.
+  The arbitrary-ring U-first semidirect equivalence is proved here, not
+  attributed to this item.
+* Mathlib, `Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean` for
+  matrix units and coefficient maps, and
+  `Mathlib/LinearAlgebra/Matrix/Block.lean` for triangular matrix products,
+  inverses and determinants.
+* Mathlib, `Mathlib/Algebra/Group/Subgroup/Ker.lean` for homomorphism kernels,
+  `Mathlib/GroupTheory/Subgroup/Centralizer.lean` for conjugation on a
+  normalizer, `Mathlib/Algebra/Group/End.lean` for `MulAut.congr`, and
+  `Mathlib/GroupTheory/SemidirectProduct.lean` for `lift` and Thomas
+  Browning's `map` construction.
+* `AlgebraicGroups/GroupTheory/Diagonal.lean` and
+  `AlgebraicGroups/GroupScheme/Unitriangular.lean` supply the existing
+  diagonal and unitriangular groups rather than replacement types.
+-/
 
 @[expose] public section
 
@@ -21,7 +49,9 @@ namespace Matrix
 variable (ι : Type u) [Fintype ι] [LinearOrder ι] (R : Type u) [CommRing R]
 
 set_option linter.style.haveILetI false in
-/-- The actual subgroup of native invertible upper-triangular matrices. -/
+/-- The subgroup of native invertible matrices corresponding to Milne's
+upper-triangular `T_n` (item 2.9), over any commutative ring. Inversion uses
+Mathlib's triangular-inverse theorem, not nonvanishing of the determinant. -/
 def upperTriangularSubgroup : Subgroup (GeneralLinearGroup ι R) where
   carrier := {g | (g : Matrix ι ι R).IsUpperTriangular}
   one_mem' := by
@@ -181,7 +211,8 @@ namespace UpperTriangularGroup
 variable {ι : Type u} [Fintype ι] [LinearOrder ι]
 variable {R S : Type u} [CommRing R] [CommRing S]
 
-/-- The kernel is exactly the image of the previously published unitriangular group. -/
+/-- The diagonal kernel is precisely the image of the existing unitriangular
+group as a subgroup of `UpperTriangularGroup`, not a subgroup of all GL. -/
 theorem range_unitriangular :
     (UnitriangularGroup.inUpperTriangular (ι := ι) (R := R)).range =
       (diagonal (ι := ι) (R := R)).ker := by
@@ -219,7 +250,9 @@ def kernelEquiv : UnitriangularGroup ι R ≃* (diagonal (ι := ι) (R := R)).ke
 @[simp] theorem kernelEquiv_val (unit : UnitriangularGroup ι R) :
     (kernelEquiv unit).1 = UnitriangularGroup.inUpperTriangular unit := rfl
 
-/-- Diagonal conjugation on the published native unitriangular group. -/
+/-- Diagonal conjugation on the existing unitriangular group, transported
+through Mathlib's normalizer action and `MulAut.congr`. The entrywise weight
+is `dᵢ * uᵢⱼ * dⱼ⁻¹`; normality in all of GL is not claimed. -/
 def diagonalAction : DiagonalGroup ι R →* MulAut (UnitriangularGroup ι R) :=
   (MulAut.congr (kernelEquiv (ι := ι) (R := R)).symm).toMonoidHom.comp
     (((diagonal (ι := ι) (R := R)).ker.normalizerMonoidHom).comp
@@ -279,7 +312,11 @@ def semidirHom :
       DiagonalGroup ι R) : diagonal (semidirHom coords) = coords.right := by
   rw [semidirHom_apply, map_mul, diagonal_inUpperTriangular, diagonal_section, one_mul]
 
-/-- Every upper-triangular matrix factors uniquely in U-first order. -/
+/-- Every upper-triangular matrix factors uniquely as a unitriangular matrix
+times its diagonal. Mathlib's `SemidirectProduct.lift` encodes the U-first
+product with diagonal conjugation; the inverse is column normalization.
+Milne, *Algebraic Groups* (2017), item 2.9 describes the subgroup functors,
+not this arbitrary-ring splitting of their point groups. -/
 def semidirEquiv :
     (UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)] DiagonalGroup ι R) ≃*
       UpperTriangularGroup ι R :=

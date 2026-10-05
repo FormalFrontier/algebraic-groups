@@ -20,6 +20,26 @@ public import Mathlib.Data.Fintype.Prod
 The underlying scheme of the unitriangular group is affine space on the strictly upper
 matrix entries. This is an isomorphism over the coefficient ring, not an isomorphism
 of group schemes with the additive group of affine space.
+
+Milne's field-case polynomial presentation of the unitriangular group
+motivates the existing `UnitriangularCoordinateRing.freeEquiv`. The over-scheme
+isomorphism below applies that equivalence contravariantly; geometric
+properties come from the specified Mathlib affine-space and smoothness APIs,
+not from an additive group-scheme identification. Only the numerical
+dimension statements require a field.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.9 (unitriangular polynomial
+  coordinates over a field).
+* `AlgebraicGroups.Algebra.UnitriangularCoordinateRing` (the existing
+  `freeEquiv` and its coordinate readback), and
+  `AlgebraicGroups.GroupScheme.Unitriangular` (the represented over-scheme).
+* Mathlib, `Mathlib.AlgebraicGeometry.AffineSpace` (Andrew Yang's `SpecIso`
+  and Justus Springer's geometric-integrality instance), `Mathlib.RingTheory.Smooth.StandardSmooth`
+  and `Mathlib.AlgebraicGeometry.Morphisms.Smooth` (smoothness transport), and
+  `Mathlib.RingTheory.KrullDimension.Polynomial` and `Mathlib.Data.Fintype.Prod`
+  (field dimension and strict-upper index count).
 -/
 
 @[expose] public section
@@ -36,8 +56,10 @@ namespace AlgebraicGeometry
 
 variable (K : Type u) [CommRing K] (ι : Type u) [Fintype ι] [LinearOrder ι]
 
-/-- The underlying unitriangular scheme is affine space on its strictly upper entries,
-over the actual structural morphism to `Spec K`. -/
+/-- The unitriangular scheme is affine space on its strictly upper entries over
+its structural morphism to `Spec K`. This uses `freeEquiv` contravariantly with
+Mathlib's `AffineSpace.SpecIso` and `Over.isoMk`; Milne, *Algebraic Groups*
+(2017), item 2.9, supplies the field-case polynomial-coordinate antecedent. -/
 def unitriangularUnderlyingAffineSpaceIso :
     unitriangularGroupUnderlyingScheme K ι ≅
       (AffineSpace (StrictUpperPair ι) (Spec (.of K))).asOver (Spec (.of K)) :=
@@ -96,7 +118,8 @@ theorem unitriangularUnderlyingAffineSpaceIso_preimage_inverse
       rfl
     _ = _ := by rw [Spec.preimage_map]; rfl
 
-/-- The free polynomial presentation is standard smooth over any commutative base. -/
+/-- The free polynomial presentation is standard smooth over any commutative
+base, by Mathlib's `Algebra.IsStandardSmooth.of_algEquiv` applied to `freeEquiv`. -/
 instance unitriangularCoordinateRing_standardSmooth :
     Algebra.IsStandardSmooth K (CoordinateRing K ι) :=
   Algebra.IsStandardSmooth.of_algEquiv (freeEquiv K ι)
@@ -105,7 +128,9 @@ instance unitriangularCoordinateRing_standardSmooth :
 instance unitriangularCoordinateRing_finitePresentation :
     Algebra.FinitePresentation K (CoordinateRing K ι) := inferInstance
 
-/-- Smoothness of the actual structural morphism, including over the zero ring. -/
+/-- Smoothness of the structural morphism, including over the zero ring.
+The proof transports standard smoothness along `freeEquiv` and applies Mathlib's
+`HasRingHomProperty.Spec_iff`; no field hypothesis is needed. -/
 instance unitriangularGroupUnderlyingScheme_smooth :
     Smooth (unitriangularGroupUnderlyingScheme K ι).hom := by
   change Smooth (Spec.map (CommRingCat.ofHom (algebraMap K (CoordinateRing K ι))))
@@ -113,7 +138,9 @@ instance unitriangularGroupUnderlyingScheme_smooth :
   change (algebraMap K (CoordinateRing K ι)).Smooth
   exact RingHom.smooth_algebraMap.mpr inferInstance
 
-/-- Relative geometric integrality over an arbitrary commutative coefficient ring. -/
+/-- Relative geometric integrality over any commutative ring, transported
+from Mathlib's affine-space morphism along the over-scheme isomorphism.
+This does not assert absolute integrality over a reducible or zero base. -/
 instance unitriangularGroupUnderlyingScheme_geometricallyIntegral :
     GeometricallyIntegral (unitriangularGroupUnderlyingScheme K ι).hom := by
   let e := unitriangularUnderlyingAffineSpaceIso K ι
@@ -146,7 +173,10 @@ section Dimensions
 
 variable (F : Type u) [Field F] (index : Type u) [Fintype index] [LinearOrder index]
 
-/-- Over a field, the coordinate ring has the expected absolute Krull dimension. -/
+/-- Over a field, the coordinate ring has Krull dimension `card ι` choose two.
+The polynomial-coordinate antecedent is Milne, *Algebraic Groups* (2017),
+item 2.9; the dimension calculation uses Mathlib's finite-variable polynomial
+dimension and strict-upper-pair count, not a general-base dimension formula. -/
 theorem unitriangularCoordinateRing_ringKrullDim :
     ringKrullDim (CoordinateRing F index) =
       (((Fintype.card index).choose 2 : ℕ) : WithBot ℕ∞) := by
@@ -155,7 +185,10 @@ theorem unitriangularCoordinateRing_ringKrullDim :
     ringKrullDim_eq_zero_of_field]
   simp [Nat.card_eq_fintype_card, card_strictUpperPair]
 
-/-- Over a field, the actual underlying scheme has the same topological dimension. -/
+/-- Over a field, the unitriangular group's underlying affine scheme has the
+polynomial-coordinate dimension suggested by Milne, *Algebraic Groups* (2017),
+item 2.9. Mathlib's `PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim`
+transfers the preceding coordinate-ring calculation. -/
 theorem unitriangularGroupUnderlyingScheme_topologicalKrullDim :
     topologicalKrullDim (unitriangularGroupUnderlyingScheme F index).left =
       (((Fintype.card index).choose 2 : ℕ) : WithBot ℕ∞) := by

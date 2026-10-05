@@ -21,6 +21,21 @@ that idempotent, and both global-section restriction squares commute.
 
 This is localization infrastructure for rank-stratum descent. It does not
 identify localized equalizers or prove quotient effectivity.
+
+The rank pieces come from the invariant decomposition of finite locally free
+groupoids. For affine targets, clopen opens have unique idempotent defining
+elements; that uniqueness, rather than equality of arbitrary basic-open
+generators, makes the two images of a rank idempotent agree.
+
+## References
+
+* The Stacks Project, Lemma 39.23.3
+  ([tag 03BI](https://stacks.math.columbia.edu/tag/03BI)), supplies the
+  invariant rank-decomposition antecedent.
+* `AlgebraicGroups.Scheme.ClopenAffine` supplies idempotent models of
+  clopen affine opens, their finite-morphism preimages, and restriction
+  squares. Mathlib, `Mathlib.RingTheory.Idempotents`, supplies the complete
+  orthogonal-idempotent API.
 -/
 
 open CategoryTheory TopologicalSpace
@@ -75,6 +90,8 @@ lemma isAffineOpen_preimage_finrankOpen [LocallyOfFinitePresentation p₁]
 /-- On an invariant affine rank stratum, one idempotent simultaneously models
 the target restriction and its common relation preimage. Its images under the
 two relation maps agree, and both global-section restriction squares commute.
+Idempotence makes equality of the two preimage basic opens imply equality of
+the idempotent images.
 -/
 lemma exists_finrankOpen_localizations_and_squares
     [LocallyOfFinitePresentation p₁] [IsAffine X]
@@ -111,7 +128,9 @@ lemma exists_finrankOpen_localizations_and_squares
       (preimage_finrankOpen_eq h r)
 
 /-- On a compact affine target, the finitely many nonempty rank strata are cut
-out by a complete orthogonal family of invariant idempotents. -/
+out by a complete orthogonal family of invariant idempotents, refining the
+rank decomposition of Stacks Project
+[Lemma 39.23.3, tag 03BI](https://stacks.math.columbia.edu/tag/03BI). -/
 lemma exists_completeOrthogonalIdempotents_finrankOpen
     [LocallyOfFinitePresentation p₁] [IsAffine X]
     (h : CategoryTheory.EquivalenceRelation p₁ p₂) :

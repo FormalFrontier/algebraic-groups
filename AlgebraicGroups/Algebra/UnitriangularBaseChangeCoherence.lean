@@ -12,6 +12,25 @@ public import Mathlib.RingTheory.TensorProduct.Maps
 
 These equations identify the published base-change equivalence of the actual
 determinant-localized quotient with the tensor unit and scalar-tower cancellation.
+They use the strict-upper-coordinate presentation (Milne's field case) and
+Mathlib's polynomial scalar extension and tensor-algebra coherence maps; the
+arbitrary-commutative-base coherence equations are established here.
+
+## References
+
+* James S. Milne, *Algebraic Groups* (2017), item 2.9 (the underlying
+  strict-upper-coordinate presentation over a field).
+* Antoine Chambert-Loir, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`
+  (the related earlier `MvPolynomial.scalarRTensorAlgEquiv`).
+* Christian Merten, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`
+  (`MvPolynomial.algebraTensorAlgEquiv` used by the algebra comparison), and
+  `Mathlib.RingTheory.TensorProduct.Maps` (`Algebra.TensorProduct.cancelBaseChange`).
+* Yaël Dillies, Mathlib, `Mathlib.RingTheory.TensorProduct.MonoidAlgebra`
+  (`AddMonoidAlgebra.scalarTensorEquiv` implementing the polynomial equivalence).
+* Kevin Buzzard, Mathlib4 port of `Algebra.TensorProduct.lid`, now in
+  `Mathlib.RingTheory.TensorProduct.Maps`.
+* Kim Morrison and Johan Commelin, Mathlib, contributors to the wider
+  `Mathlib.RingTheory.TensorProduct.Maps` module.
 -/
 
 @[expose] public section
@@ -24,7 +43,8 @@ universe u
 
 namespace UnitriangularCoordinateRing
 
-/-- Base change along the identity agrees with the algebra tensor unit. -/
+/-- Base change along the identity agrees with the algebra tensor unit
+`Algebra.TensorProduct.lid` from Mathlib's `RingTheory.TensorProduct.Maps`. -/
 theorem baseChange_self (R : Type u) [CommRing R]
     (ι : Type u) [Fintype ι] [LinearOrder ι] :
     baseChange R R ι =
@@ -52,7 +72,8 @@ private theorem baseChange_tower_polynomial (R S T : Type u)
   simp only [MvPolynomial.smul_eq_C_mul, map_mul, MvPolynomial.map_C,
     MvPolynomial.map_map, ← IsScalarTower.algebraMap_eq R S T]
 
-/-- Successive base changes agree with scalar-tower cancellation as algebra equivalences. -/
+/-- Successive base changes agree with Mathlib's
+`Algebra.TensorProduct.cancelBaseChange` as algebra equivalences. -/
 theorem baseChange_tower (R S T : Type u)
     [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T]

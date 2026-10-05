@@ -18,6 +18,16 @@ smooth morphism of schemes is geometrically reduced.
 
 - `AlgebraicGeometry.Smooth.isReduced_of_isDomain`
 - `AlgebraicGeometry.Smooth.geometricallyReduced`
+
+## References
+
+- The Stacks Project, [Lemma 10.163.7 (Tag 033B)](https://stacks.math.columbia.edu/tag/033B),
+  for reducedness of smooth algebras over reduced bases; base change to a field
+  yields geometric reducedness of smooth scheme morphisms.
+- Mathlib's `Smooth.smooth_appLE`, `IsReduced.of_openCover`, and
+  `smooth_isStableUnderBaseChange` supply the affine-local and base-change steps.
+- J. S. Milne, *Algebraic Groups*, Proposition 1.26, for the smooth-to-geometrically-reduced
+  implication in the special case of algebraic groups over fields.
 -/
 
 public section
@@ -50,7 +60,9 @@ theorem Smooth.isReduced_of_isDomain
       _ _ _ φ.toAlgebra hSmooth
   exact @isReduced_of_isAffine_isReduced _ inferInstance hReduced
 
-/-- Every smooth morphism of schemes is geometrically reduced. -/
+/-- Every smooth morphism of schemes is geometrically reduced. In particular, this supplies
+the smooth-to-geometrically-reduced implication for the algebraic groups in Milne,
+*Algebraic Groups*, Proposition 1.26; the theorem applies to arbitrary base schemes. -/
 instance (priority := low) Smooth.geometricallyReduced {X Y : Scheme.{u}} (f : X ⟶ Y)
     [Smooth f] : GeometricallyReduced f := by
   constructor

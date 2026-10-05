@@ -17,6 +17,20 @@ inversion and left translation to homeomorphisms of the closed-point subspace.
 No topological-group structure is asserted: continuity of scheme-theoretic
 multiplication uses the scheme-product topology, which need not be the ordinary
 product topology on the closed-point spaces.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), items 1.7 and 1.8:
+  the rational-point group, its identification with closed points over an
+  algebraically closed field, and inversion and translation on those points.
+- Mathlib, `AlgebraicGeometry.pointEquivClosedPoint`
+  (`Mathlib.AlgebraicGeometry.AlgClosed.Basic`): the equivalence between
+  base-preserving rational points and closed points of a locally-finite-type
+  scheme over an algebraically closed field.
+- Mathlib, `schemeIsoToHomeo`: the underlying homeomorphism of a scheme
+  isomorphism. Left translation uses `CategoryTheory.GrpObj.mulLeft` from
+  `AlgebraicGroups.GroupObject.Translation`, built from Mathlib's
+  `CategoryTheory.GrpObj.mulRight`.
 -/
 
 public section
@@ -34,7 +48,8 @@ universe u
 variable {K : Type u} [Field K] {G : Scheme.{u}}
 
 /-- Morphisms from the terminal object of `Over (Spec K)` are exactly
-base-preserving scheme-valued `K`-points. -/
+base-preserving scheme-valued `K`-points, as in Milne's affine-point convention
+in *Algebraic Groups* (2017), item 1.4. -/
 @[expose]
 def groupSchemePointEquiv (f : G ⟶ Spec (.of K)) :
     (𝟙_ (Over (Spec (.of K))) ⟶ Over.mk f) ≃
@@ -45,7 +60,8 @@ def groupSchemePointEquiv (f : G ⟶ Spec (.of K)) :
   right_inv p := by ext; rfl
 
 /-- Over an algebraically closed field, the group-scheme-valued points are in
-bijection with the closed points. -/
+bijection with the closed points, as in Milne, *Algebraic Groups* (2017),
+item 1.7, using Mathlib's `pointEquivClosedPoint`. -/
 @[expose]
 def groupSchemePointEquivClosedPoint (f : G ⟶ Spec (.of K))
     [LocallyOfFiniteType f] [IsAlgClosed K] :
@@ -76,14 +92,16 @@ lemma groupSchemePointEquivClosedPoint_symm_apply_value
     ((groupSchemePointEquivClosedPoint f).apply_symm_apply x)
 
 /-- The abstract group structure on the closed points transported from the
-group of rational points. This is deliberately not a global instance. -/
+group of rational points, as in Milne, *Algebraic Groups* (2017), item 1.7.
+This is deliberately not a global instance. -/
 abbrev groupSchemeClosedPointsGroup (f : G ⟶ Spec (.of K))
     [LocallyOfFiniteType f] [IsAlgClosed K] [GrpObj (Over.mk f)] :
     Group (closedPoints G) :=
   Equiv.group (groupSchemePointEquivClosedPoint f).symm
 
 /-- With the transported group structure, the equivalence from rational points
-to closed points is an equivalence of groups. -/
+to closed points is an equivalence of groups, as in Milne, *Algebraic Groups*
+(2017), item 1.7. -/
 def groupSchemePointMulEquivClosedPoint (f : G ⟶ Spec (.of K))
     [LocallyOfFiniteType f] [IsAlgClosed K] [GrpObj (Over.mk f)] :
     letI := groupSchemeClosedPointsGroup f
@@ -92,20 +110,24 @@ def groupSchemePointMulEquivClosedPoint (f : G ⟶ Spec (.of K))
   exact (Equiv.mulEquiv (groupSchemePointEquivClosedPoint f).symm).symm
 
 /-- A scheme isomorphism restricts to a homeomorphism of closed-point
-subspaces. -/
+subspaces, using Mathlib's `schemeIsoToHomeo`. -/
 def closedPointsHomeomorphOfIso {X Y : Scheme.{u}} (e : X ≅ Y) :
     closedPoints X ≃ₜ closedPoints Y :=
   e.schemeIsoToHomeo.subtype fun x ↦ by
     simpa using (e.schemeIsoToHomeo.isClosed_image (s := {x})).symm
 
 /-- Inversion in a group scheme is a homeomorphism of its closed-point
-subspace. -/
+subspace without a finite-type or algebraic-closure assumption. For finite-type
+group schemes over an algebraically closed field this is the inversion in
+Milne, *Algebraic Groups* (2017), item 1.7. -/
 def groupSchemeInvClosedPointsHomeomorph (f : G ⟶ Spec (.of K))
     [GrpObj (Over.mk f)] : closedPoints G ≃ₜ closedPoints G :=
   closedPointsHomeomorphOfIso ((Over.forget _).mapIso (asIso ι[Over.mk f]))
 
 /-- Left translation by a rational point of a group scheme is a homeomorphism
-of its closed-point subspace. -/
+of its closed-point subspace without a finite-type or algebraic-closure
+assumption. For finite-type group schemes over an algebraically closed field
+this specializes to Milne, *Algebraic Groups* (2017), items 1.7–1.8. -/
 def groupSchemeMulLeftClosedPointsHomeomorph (f : G ⟶ Spec (.of K))
     [GrpObj (Over.mk f)]
     (a : 𝟙_ (Over (Spec (.of K))) ⟶ Over.mk f) :
@@ -146,7 +168,8 @@ lemma groupSchemeMulLeftClosedPointsHomeomorph_apply_point
     (CategoryTheory.GrpObj.comp_mulLeft_hom a x)
 
 /-- Any two closed points of a group scheme locally of finite type over an
-algebraically closed field are related by an automorphism over the base. -/
+algebraically closed field are related by an automorphism over the base, using
+the left translations of Milne, *Algebraic Groups* (2017), item 1.8. -/
 theorem exists_groupSchemeIso_map_closedPoint (f : G ⟶ Spec (.of K))
     [LocallyOfFiniteType f] [IsAlgClosed K] [GrpObj (Over.mk f)]
     (x y : closedPoints G) :

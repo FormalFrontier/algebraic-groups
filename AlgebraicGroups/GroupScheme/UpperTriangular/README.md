@@ -58,9 +58,24 @@ square-zero `DualNumber.eps`, and a proved noninjective `ℤ →ₐ[ℤ] ZMod 1`
 The [native client](../../../AlgebraicGroupsTest/UpperTriangular.lean)
 separately checks the U-first native semidirect decomposition. No represented
 semidirect splitting, diagonal projection/section, product-of-`Gₘ` scheme,
-smoothness, dimension, arbitrary-base change or source-specific coverage is
-claimed here.
+smoothness, dimension, or arbitrary-base change is claimed here.
 
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §§2.8–2.9: `GL_n` and the
+  upper-triangular subgroup over a field, functorially on commutative
+  coefficient algebras. Here the base can be any commutative ring and the
+  ordered index set can be empty.
+* Mathlib, `Mathlib/LinearAlgebra/Matrix/Block.lean`: triangular matrix
+  multiplication, determinant and inverse;
+  `Mathlib/RingTheory/HopfAlgebra/Quotient.lean`: the Hopf-ideal quotient;
+  `Mathlib/AlgebraicGeometry/Morphisms/ClosedImmersion.lean`:
+  `IsClosedImmersion.spec_of_surjective` for the quotient inclusion.
+* `AlgebraicGroups/Algebra/GeneralLinearCoordinateRing.lean` and
+  `AlgebraicGroups/GroupScheme/GeneralLinear.lean` provide the localized GL
+  Hopf algebra and its represented group-point comparison; the native
+  triangular inverse and diagonal laws are in
+  `AlgebraicGroups/GroupTheory/UpperTriangular.lean`.
 
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party

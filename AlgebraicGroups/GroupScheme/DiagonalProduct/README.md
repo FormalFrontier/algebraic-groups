@@ -49,9 +49,21 @@ the polymorphic global-sections law and product triangles, `Fin 0/1/2`, the
 zero ring `ZMod 1`, and both independent projections for the nonreduced
 dual-number algebra `DualNumber ℤ` with unit `1 + ε` (inverse `1 - ε`).
 The construction does not assert an explicit multi-Laurent algebra
-presentation, dimension/smoothness, base change, a semidirect decomposition,
-or source coverage.
+presentation, dimension/smoothness, base change, or a semidirect decomposition.
 
+## References
+
+Milne, *Algebraic Groups* (2017), §2.9 (p. 42) introduces `D_n` over
+algebras of a field, and §12.d (p. 234, after Definition 12.11) identifies
+it with a finite product of `Gₘ`. The construction here proves the product
+universal property for possibly nonaffine test schemes over a commutative base.
+It uses Mathlib's `Mathlib.AlgebraicGeometry.Group.Affine`
+(`algΓAlgSpecAdjunction`),
+`Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits`, and
+`Mathlib.CategoryTheory.Limits.Shapes.Products` and
+`Mathlib.CategoryTheory.Limits.Shapes.IsTerminal`, together with
+`AlgebraicGroups.GroupScheme.Multiplicative` and
+`AlgebraicGroups.GroupScheme.Diagonal`.
 
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party

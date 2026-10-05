@@ -54,3 +54,12 @@ thresholds and a nonzero square-zero element over `DualNumber (ZMod 2)`.
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
 credit appears in [CREDITS](../../../CREDITS.md).
+
+## References
+
+- Mathlib contributors, `Mathlib.LinearAlgebra.Matrix.Charpoly.Basic`
+  (`Matrix.charpoly_of_isUpperTriangular` and Cayley–Hamilton via
+  `Matrix.aeval_self_charpoly`), `Mathlib.Algebra.CharP.Lemmas`
+  (`Commute.add_pow_prime_pow_eq'`) and `Mathlib.GroupTheory.Exponent`
+  (`Monoid.exponent_dvd_iff_forall_pow_eq_one`). The consecutive-shift witness
+  is a point-group construction, not a group-scheme exponent statement.

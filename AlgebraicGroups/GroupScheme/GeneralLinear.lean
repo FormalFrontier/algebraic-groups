@@ -12,7 +12,24 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 
 The determinant localization represents invertible square matrices over every
 commutative algebra. Its Hopf structure induces a finite-type group scheme whose
-affine points agree naturally, as groups, with the native matrix general linear group.
+affine points agree naturally, as groups, with invertible matrices. The group
+law is matrix multiplication, realized by convolution on coordinate evaluations;
+the represented points are morphisms from `Spec R`, not functions on field-valued
+points.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2, item 2.8, p. 41: the finite
+  general linear group represented by determinant localization over a field.
+* Mathlib, `AlgebraicGeometry/Group/Affine`: Hopf-algebra `Spec`, the algebraic
+  group of affine points, and `Spec.mapMulEquiv`.
+* Mathlib, `RingTheory/Bialgebra/Convolution` and
+  `CategoryTheory/Monoidal/Cartesian/Grp`: convolution multiplication of
+  algebra maps and the group-valued Yoneda functor.
+* Mathlib, `LinearAlgebra/Matrix/GeneralLinearGroup/Defs`,
+  `AlgebraicGeometry/Morphisms/FiniteType`, and
+  `AlgebraicGeometry/Morphisms/Affine`: coefficient change for invertible
+  matrices, finite-type `Spec` morphisms, and quasi-compact affine morphisms.
 -/
 
 @[expose] public section
@@ -46,11 +63,11 @@ instance generalLinearGroupUnderlyingScheme_quasiCompact :
     (algebraMap K (CoordinateRing K n))))
   infer_instance
 
-/-- The native group object represented by the GL Hopf algebra. -/
+/-- The group object represented by the determinant-localized Hopf algebra. -/
 abbrev generalLinearGroupScheme : Grp (Over (Spec (.of K))) :=
   ⟨generalLinearGroupUnderlyingScheme K n⟩
 
-/-- The native matrix general linear group, functorial in every `K`-algebra. -/
+/-- Invertible matrices, functorial in every `K`-algebra. -/
 def generalLinearGroupFunctor : CommAlgCat K ⥤ GrpCat where
   obj R := GrpCat.of (Matrix.GeneralLinearGroup n R)
   map f := GrpCat.ofHom (Matrix.GeneralLinearGroup.map f.hom.toRingHom)
@@ -86,7 +103,8 @@ theorem generalLinearConvMul_matrix
   intro index _
   exact Algebra.TensorProduct.lift_tmul _ _ _ _ _
 
-/-- Matrix multiplication is exactly convolution of coordinate evaluations. -/
+/-- Multiplication of the matrices represented by Milne's determinant
+localization (item 2.8) agrees with convolution through its ordered coproduct. -/
 def generalLinearGroupMulEquivAlgHom :
     Matrix.GeneralLinearGroup n R ≃* WithConv (CoordinateRing K n →ₐ[K] R) where
   toFun g := WithConv.toConv (evaluate (K := K) g)
@@ -144,7 +162,9 @@ theorem generalLinearGroupPoint_preimage_detInverse
   rw [generalLinearGroupMulEquivPoints_apply_left, Spec.preimage_map]
   exact generalLinearGroupMulEquivAlgHom_apply_detInverse K n R g
 
-/-- The native GL group functor is naturally its group-scheme functor of points. -/
+/-- Over every commutative base and test algebra, the finite matrix general
+linear group is naturally the group of affine points of its representing scheme;
+compare Milne, *Algebraic Groups*, item 2.8, over a field. -/
 def generalLinearGroupPointsIso :
     generalLinearGroupFunctor K n ≅ generalLinearGroupPointsFunctor K n :=
   NatIso.ofComponents

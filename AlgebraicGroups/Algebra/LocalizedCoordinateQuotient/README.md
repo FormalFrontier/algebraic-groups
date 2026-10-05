@@ -33,3 +33,16 @@ polynomial, and quotient by the coordinate ideal.
 over `ℤ`, a denominator erased to zero, empty or all retained variables, and
 the polynomial ring with no variables. No matrix or source-specific module is
 needed to use this API.
+
+## References
+
+- The Stacks Project, [Lemma 10.9.13](https://stacks.math.columbia.edu/tag/02C8)
+  for localization respecting quotients of modules. The present equivalence
+  specializes that principle to a polynomial-coordinate algebra quotient, using
+  universal properties without a field or a nonzero denominator assumption.
+- The mathlib community, [*Mathlib*](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5),
+  `Mathlib.Algebra.MvPolynomial.Rename` (`killCompl`),
+  `Mathlib.RingTheory.Localization.Away.Basic` (`liftAlgHom`),
+  `Mathlib.RingTheory.Localization.Basic` (`Localization.algHom_ext`), and
+  `Mathlib.RingTheory.Ideal.Quotient.Operations` (`Ideal.Quotient.liftₐ` and
+  `Ideal.Quotient.algHom_ext`).

@@ -12,6 +12,15 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 
 This file shows that a property of scheme morphisms which is Zariski-local on
 the target is preserved by maps between finite coproducts.
+
+## References
+
+- Mathlib, `IsZariskiLocalAtTarget.coprodMap`
+  (`Mathlib.AlgebraicGeometry.Morphisms.Basic`): the binary target-local
+  coproduct-map proof by open covers and pullback squares.
+- Mathlib, `FinitaryExtensive.isVanKampen_finiteCoproducts`
+  (`Mathlib.CategoryTheory.Extensive`): the categorical finite-coproduct
+  pullback criterion used through `FinitaryExtensive.isPullback_sigmaMap_ι`.
 -/
 
 public section
@@ -23,7 +32,9 @@ universe u v
 namespace AlgebraicGeometry
 
 /-- A target-local property of scheme morphisms is preserved by a map between
-finite coproducts when it holds on every summand. -/
+finite coproducts when it holds on every summand. This extends Mathlib's
+binary `IsZariskiLocalAtTarget.coprodMap` using the finite-coproduct
+Van Kampen pullback squares. -/
 lemma IsZariskiLocalAtTarget.sigmaMap {I : Type v} [Finite I]
     {P : MorphismProperty Scheme.{u}} [IsZariskiLocalAtTarget P]
     {X Y : I → Scheme.{u}} (F : ∀ i, X i ⟶ Y i)

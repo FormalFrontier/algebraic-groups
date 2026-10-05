@@ -9,7 +9,26 @@ public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import AlgebraicGroups.GroupScheme.Multiplicative
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 
-/-! # The finite-type closed diagonal group scheme of the native general linear group -/
+/-!
+# The finite-type closed diagonal group scheme of the native general linear group
+
+Milne's diagonal subgroup of `GL_n` over a field is an algebraic subgroup on
+all algebras over that field. The Hopf quotient here gives a closed affine
+finite-type group scheme over any commutative base. Its group-valued point
+identification is natural in test algebras at a **fixed** base, not a base-change
+isomorphism.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §§2.8–2.9 (pp. 41–42).
+* Mathlib, `Mathlib.AlgebraicGeometry.Group.Affine` (`hopfSpec`,
+  `Spec.mapMulEquiv`, and `algSpec`) and
+  `Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion`
+  (`IsClosedImmersion.spec_of_surjective`).
+* `AlgebraicGroups.Algebra.GeneralLinearCoordinateRing` and
+  `AlgebraicGroups.GroupScheme.GeneralLinear`, for GL evaluation and the
+  represented native matrix group.
+-/
 
 @[expose] public section
 
@@ -42,7 +61,8 @@ instance diagonalGroupUnderlyingScheme_quasiCompact :
     (algebraMap K (DiagonalCoordinateRing.CoordinateRing K n))))
   infer_instance
 
-/-- The affine finite-type group object represented by diagonal GL coordinates. -/
+/-- The affine finite-type diagonal group object over `Spec K`, extending
+Milne's field-based algebraic subgroup `D_n` (*Algebraic Groups*, §2.9). -/
 abbrev diagonalGroupScheme : Grp (Over (Spec (.of K))) :=
   ⟨diagonalGroupUnderlyingScheme K n⟩
 
@@ -52,7 +72,8 @@ def diagonalQuotientBialgHom :
       DiagonalCoordinateRing.CoordinateRing K n :=
   Bialgebra.Quotient.mkBialgHom (ideal K n)
 
-/-- Closed group-scheme inclusion induced by the off-diagonal Hopf quotient. -/
+/-- Closed group-scheme inclusion induced by the off-diagonal Hopf quotient;
+compare Milne, *Algebraic Groups* (2017), §2.9. -/
 def diagonalInclusion : diagonalGroupScheme K n ⟶ generalLinearGroupScheme K n :=
   (hopfSpec (.of K)).map
     (Opposite.op (CommHopfAlgCat.ofHom (diagonalQuotientBialgHom K n)))
@@ -232,7 +253,8 @@ def diagonalGroupFunctor : CommAlgCat K ⥤ GrpCat where
 abbrev diagonalGroupPointsFunctor : CommAlgCat K ⥤ GrpCat :=
   (algSpec (.of K)).rightOp ⋙ yonedaGrp.obj (diagonalGroupScheme K n)
 
-/-- Natural isomorphism on every `K`-algebra, not merely geometric points. -/
+/-- Natural group-valued identification on every `K`-algebra at fixed base;
+it extends Milne's `D_n` example (*Algebraic Groups*, §2.9). -/
 def diagonalGroupPointsIso :
     diagonalGroupFunctor K n ≅ diagonalGroupPointsFunctor K n :=
   NatIso.ofComponents

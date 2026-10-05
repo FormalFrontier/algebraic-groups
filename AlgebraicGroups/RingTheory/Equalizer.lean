@@ -19,6 +19,21 @@ commuting morphism of pairs whose ambient maps are idempotent localizations
 induces an idempotent localization on equalizers. Finitely many monic equations
 supported on a complete family of idempotents also patch to a single monic
 equation over the equalizer.
+
+Unlike flat base change of equalizers, localization here uses the elementary
+equality criterion for an idempotent localization. Patching needs idempotence
+and a sum of one, not pairwise orthogonality. With an empty index type, the
+completeness hypothesis implies `0 = 1`.
+
+## References
+
+* Stacks Project, Lemmas 39.23.3 and 39.23.4 (tags 03BI and 03BJ), for
+  invariant rank pieces and the norm-based integrality argument. The monic
+  equations on each piece are inputs to the patching theorem here.
+* Mathlib, `Mathlib.Algebra.Algebra.Subalgebra.Basic` for `AlgHom.equalizer`;
+  `Mathlib.RingTheory.Flat.Equalizer` for the separate flat base-change API
+  `AlgHom.tensorEqualizerEquiv`; `Mathlib.RingTheory.Localization.Away.Basic`
+  for idempotent localization; `Mathlib.Algebra.Polynomial.Lifts` for monic lifting.
 -/
 
 public section
@@ -225,8 +240,10 @@ lemma equalizerMapOfCommuting_isLocalizationAway
 
 /-- Finitely many idempotent-supported monic equations whose supported
 coefficients lie in the equalizer of `s` and `t` patch to one monic equation
-over that equalizer. Orthogonality is not required: idempotence of each piece
-and completeness of their sum are the exact algebraic inputs. -/
+over that equalizer. This isolates the patching after invariant rank pieces
+in Stacks Project, Lemmas 39.23.3–39.23.4 (tags 03BI, 03BJ); it does not
+construct the norm equations of the latter. Orthogonality is not required:
+idempotence of each piece and completeness of their sum suffice. -/
 theorem isIntegral_equalizer_of_idempotent_polynomial_patches
     (s t : A →ₐ[R] B) (e : ι → A)
     (he : ∀ i, IsIdempotentElem (e i))

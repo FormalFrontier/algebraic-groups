@@ -25,6 +25,23 @@ The coordinate maps send `u` to `1 + t` and `t` to `u - 1`. Their pointwise
 readbacks hold for arbitrary commutative algebras over the field, including
 the zero algebra, without assuming that the test algebra has characteristic
 exactly `p`.
+
+This is the translation `U = 1 + T` in Milne's *Algebraic Groups*, item 2.5.
+For `m > 0` it gives an isomorphism only of underlying schemes: the two
+comultiplications differ. Checking this translation is not a proof that
+*every* group-scheme isomorphism is impossible.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.5, p. 40 (the
+  translation of characteristic-power quotient coordinates and underlying
+  scheme isomorphism).
+- `AlgebraicGroups.GroupScheme.AdditivePowerQuotient` and
+  `AlgebraicGroups.GroupScheme.RootsOfUnity` (the two polynomial quotient
+  presentations transported by translation).
+- Mathlib, `Mathlib.Algebra.CharP.Lemmas` and
+  `Mathlib.RingTheory.AdjoinRoot` (the characteristic-power binomial identity
+  and universal maps from polynomial quotients).
 -/
 
 noncomputable section
@@ -101,7 +118,9 @@ private def translationPowerAlgEquiv :
 private instance translation_power_neZero : NeZero (p ^ m) :=
   ⟨pow_ne_zero _ (Fact.out : p.Prime).ne_zero⟩
 
-/-- Prime-power translation of the two coordinate rings, valid also for `m = 0`. -/
+/-- The prime-power coordinate translation `U = 1 + T` from Milne's
+*Algebraic Groups*, item 2.5, valid also for `m = 0`. This is an algebra
+equivalence, not an equivalence of Hopf algebras for positive `m`. -/
 def infinitesimalAdditiveTranslationAlgEquiv :
     rootsOfUnityCoordinateRing K (p ^ m) ≃ₐ[K]
       infinitesimalAdditiveCoordinateRing K p m :=
@@ -127,7 +146,9 @@ theorem infinitesimalAdditiveTranslationAlgEquiv_symm_coordinate :
     translationFromPowerAlgHom, infinitesimalAdditiveCoordinate,
     infinitesimalAdditiveIdeal]
 
-/-- The contravariant scheme isomorphism attached to the coordinate translation. -/
+/-- The underlying over-scheme isomorphism induced by the coordinate
+translation in Milne's *Algebraic Groups*, item 2.5; no group-law
+compatibility is asserted for positive `m`. -/
 def infinitesimalAdditiveTranslationIso :
     infinitesimalAdditiveUnderlyingScheme K p m ≅
       rootsOfUnityScheme K (p ^ m) :=
@@ -187,25 +208,5 @@ theorem infinitesimalAdditiveTranslation_point_symm_naturality
     f.comp (rho.comp (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom) =
       (f.comp rho).comp (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom := by
   rw [AlgHom.comp_assoc]
-
-#print axioms translation_char_target
-#print axioms translation_add_pow
-#print axioms translation_sub_pow
-#print axioms translationToPowerAlgHom
-#print axioms translationFromPowerAlgHom
-#print axioms translationToPower_comp_translationFromPower
-#print axioms translationFromPower_comp_translationToPower
-#print axioms translationPowerAlgEquiv
-#print axioms translation_power_neZero
-#print axioms infinitesimalAdditiveTranslationAlgEquiv
-#print axioms infinitesimalAdditiveTranslationAlgEquiv_generator
-#print axioms infinitesimalAdditiveTranslationAlgEquiv_symm_coordinate
-#print axioms infinitesimalAdditiveTranslationIso
-#print axioms infinitesimalAdditiveTranslationIso_hom_left
-#print axioms infinitesimalAdditiveTranslationIso_inv_left
-#print axioms infinitesimalAdditiveTranslation_point_generator
-#print axioms infinitesimalAdditiveTranslation_point_coordinate
-#print axioms infinitesimalAdditiveTranslation_point_naturality
-#print axioms infinitesimalAdditiveTranslation_point_symm_naturality
 
 end AlgebraicGeometry

@@ -40,4 +40,21 @@ lake build AlgebraicGroups AlgebraicGroupsTest
 
 Formal Frontier Agents and Lattice contributed the comparison; the existing
 coordinate presentation retains its own authorship. The reused mathlib
-scalar-extension equivalence was contributed by Antoine Chambert-Loir.
+`MvPolynomial.algebraTensorAlgEquiv` was contributed by Christian Merten; its
+current implementation uses Yaël Dillies's `AddMonoidAlgebra.scalarTensorEquiv`.
+Antoine Chambert-Loir contributed the related earlier
+`MvPolynomial.scalarRTensorAlgEquiv`.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.9: the polynomial
+  presentation of `U_n` over a field is the coordinate antecedent, not a
+  statement of this arbitrary-base scalar-extension equivalence.
+- Antoine Chambert-Loir, Mathlib,
+  `Mathlib.RingTheory.TensorProduct.MvPolynomial`:
+  the related earlier `MvPolynomial.scalarRTensorAlgEquiv`.
+- Christian Merten, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`:
+  `MvPolynomial.algebraTensorAlgEquiv` and its entry lemmas supply the
+  scalar-extension step.
+- Yaël Dillies, Mathlib, `Mathlib.RingTheory.TensorProduct.MonoidAlgebra`:
+  `AddMonoidAlgebra.scalarTensorEquiv` underlies the polynomial equivalence.

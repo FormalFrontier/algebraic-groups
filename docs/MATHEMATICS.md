@@ -8,6 +8,15 @@ passage correspondence is maintained separately.
 
 ## Vector groups, matrix groups and functors
 
+Milne, *Algebraic Groups* (2017), items 2.1 and 2.6–2.7, gives the additive,
+chosen-basis vector and additive-matrix antecedents. The field/basis
+`Gₐ^n ≃ Vₐ` of item 2.6 directly precedes the finite additive product;
+the arbitrary-ring underlying over-scheme comparison does not identify
+group schemes or Hopf algebras. Mathlib's symmetric-algebra, affine `Spec`
+and categorical product APIs supply the formal foundations; see the
+[vector product](../AlgebraicGroups/GroupScheme/VectorProduct.lean) and
+[additive-product comparison](../AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean).
+
 - `AlgebraicGeometry.affineSpecHomOverEquiv` and
   `additiveGroupHomOverEquiv` classify affine-target maps and additive
   coordinates by global sections of *any* over-scheme over a commutative
@@ -79,6 +88,15 @@ passage correspondence is maintained separately.
 
 ## Closed unitriangular stages
 
+Milne, *Algebraic Groups* (2017), item 2.9 and Definition 6.34,
+Remark 6.35, Example 6.36 and §6.49, supplies the field-base
+unitriangular group and one-entry central-filtration antecedents. The
+arbitrary-ring [closed stages](../AlgebraicGroups/GroupScheme/UnitriangularStages.lean)
+and [whole-superdiagonal coordinate maps](../AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates.lean)
+use Mathlib's quotient Hopf algebras, affine group schemes and categorical
+products; the underlying [affine-space comparison](../AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace.lean)
+does not turn its coordinate algebra equivalence into a Hopf equivalence.
+
 - At positive stage `hr : 1 ≤ r`,
   `unitriangularStageCoordinateMap_underlying_spec` equates the *whole*
   underlying arrow with the scheme projection from surviving-coordinate
@@ -132,6 +150,19 @@ passage correspondence is maintained separately.
   group-homomorphic section. See the [kernel guide](../AlgebraicGroups/GroupScheme/UnitriangularStageKernel/README.md).
 
 ## General and special linear geometry
+
+Milne, *Algebraic Groups* (2017), items 2.8–2.9, describes finite matrix
+groups over fields; §2.42 gives the field-base `SL` domain argument. His
+*Basic Theory of Affine Group Schemes* (2012), XI §16, Example 16.3 gives
+the positive-rank field-base dimension of `SL`,
+and XIII §3, item 3.14 gives a field-base determinant splitting with the
+diagonal factor on the right. The arbitrary-base
+[determinant-product comparison](../AlgebraicGroups/GroupScheme/GeneralLinearDeterminantProduct.lean)
+instead uses a chosen pivot and section-first left normalization as an
+underlying over-scheme isomorphism, not a Hopf or direct-product group
+isomorphism. Mathlib's matrix groups, affine Hopf `Spec` and Krull-dimension
+results underpin the [finite GL construction](../AlgebraicGroups/GroupScheme/GeneralLinear.lean)
+and [GL/SL dimension formulas](../AlgebraicGroups/GroupScheme/GeneralSpecialLinearDimension.lean).
 
 - `GeneralLinearCoordinateRing.CoordinateRing K n` is the determinant
   localization of the polynomial algebra on square-matrix entries. It has a
@@ -267,6 +298,18 @@ passage correspondence is maintained separately.
 
 ## Localization, descent and finite projective algebra
 
+The Stacks Project, tags [03BH](https://stacks.math.columbia.edu/tag/03BH),
+[03BI](https://stacks.math.columbia.edu/tag/03BI),
+[03BJ](https://stacks.math.columbia.edu/tag/03BJ) and
+[03BM](https://stacks.math.columbia.edu/tag/03BM), motivates the invariant
+rank and integrality arguments for finite locally free relations; the
+[rank-stratum](../AlgebraicGroups/Scheme/EquivalenceRelationRank.lean) and
+[integrality](../AlgebraicGroups/Scheme/EquivalenceRelationIntegrality.lean)
+modules record their exact scope. Mathlib supplies flatness, localization
+and finite-free presentation interfaces; the conditional
+[affine relation bridge](../AlgebraicGroups/Scheme/AffineRelationQuotient.lean)
+does not establish quotient effectivity from finite locally free hypotheses.
+
 - `RingHom.FaithfullyFlat.ofLocalizationSpan` proves that faithful flatness can
   be checked after localizing along a family of source elements that spans the
   unit ideal. It accepts arbitrary principal-open covers, including infinite
@@ -335,9 +378,15 @@ passage correspondence is maintained separately.
   characteristic polynomial of an endomorphism of a finite projective module
   of constant local rank, with base-change, monicity, and Cayley--Hamilton
   theorems. Its reusable core is the presentation-independent Fredholm
-  polynomial in `AlgebraicGroups.LinearAlgebra.FiniteProjective.Fredholm`,
-  whose independence proof uses the rectangular Weinstein--Aronszajn matrix
-  identity. It does not construct or specialize fixed-degree exterior-power
+  polynomial in [finite-projective Fredholm](../AlgebraicGroups/LinearAlgebra/FiniteProjective/Fredholm.lean):
+  its independence proof uses Mathlib's rectangular Weinstein--Aronszajn
+  identity `Matrix.det_one_sub_mul_comm`, `Matrix.charpolyRev` and a
+  finite-free split presentation. The [characteristic-polynomial module](../AlgebraicGroups/LinearAlgebra/FiniteProjective/Charpoly.lean)
+  credits Stacks [03BH](https://stacks.math.columbia.edu/tag/03BH) and
+  [03BJ](https://stacks.math.columbia.edu/tag/03BJ) for the invariant-norm
+  and Cayley--Hamilton context; its coefficient-invariance lemma is
+  conditional, not a proof of general groupoid invariance. It does not
+  construct or specialize fixed-degree exterior-power
   base change: that API remains an upstream mathlib responsibility, while the
   `projective-modules` exterior-algebra, projectivity, determinant,
   and invertible-line APIs remain separate reusable results.
@@ -384,6 +433,17 @@ passage correspondence is maintained separately.
   packages schematic density after extension to a separably closed field.
 
 ## Representability, group schemes and quotient constructions
+
+Milne, *Algebraic Groups* (2017), items 1.4–1.5 and Appendix A.33,
+motivates functors of points and subgroup transport;
+Definition 5.20, Propositions 5.24–5.25 and Theorem 5.28 / B.37 supply
+field-base quotient antecedents. The
+[finite-type point functor](../AlgebraicGroups/GroupScheme/FiniteTypePoints.lean)
+reuses SchemeProperties' restricted Yoneda API, while the
+[relative fppf quotient](../AlgebraicGroups/GroupScheme/QuotientSheaf.lean)
+uses Mathlib's site and sheafification APIs. Its recognition of a *supplied*
+fppf quotient target is not an existence proof; local fppf surjectivity
+does not assert surjectivity at every test object.
 
 - `CategoryTheory.Over.effectiveEpi_of_effectiveEpi_left`: a morphism in an
   over-category is an effective epimorphism when its underlying morphism is.
@@ -510,6 +570,23 @@ passage correspondence is maintained separately.
   a group scheme.
 
 ## Dimension, components and density
+
+Milne, *Algebraic Groups* (2017), Propositions 1.34 and 1.52 and §2g,
+Proposition 2.37, precedes the identity-component and component-map
+constructions; item 2.3 concerns finite constant groups. Definition 1.15,
+Proposition 1.16 and Corollary 1.18 precede schematic density of points.
+The [identity component](../AlgebraicGroups/GroupScheme/IdentityComponent.lean)
+and [component map](../AlgebraicGroups/GroupScheme/ComponentSchemeMap.lean)
+reuse Mathlib's connectedness and group-object APIs and SchemeProperties'
+connected-component coproducts; the
+[density criterion](../AlgebraicGroups/Scheme/JointlySchemeTheoreticallyDominant.lean)
+builds on Mathlib's scheme-theoretic dominance. These are conditional
+group-scheme constructions and do not supply the residual quotient
+`G⁰/(G_red)⁰`. The smooth-locus density argument uses Stacks
+[056V](https://stacks.math.columbia.edu/tag/056V) and
+[030W](https://stacks.math.columbia.edu/tag/030W) and Mathlib's
+perfect-field dense-locus proof; see
+[geometric reducedness](../AlgebraicGroups/Scheme/GeometricallyReduced.lean).
 
 - `AlgebraicGeometry.topologicalKrullDim_quotient_le_zero_of_isOpen_range`
   proves that an fppf coset quotient by a subgroup with open underlying range

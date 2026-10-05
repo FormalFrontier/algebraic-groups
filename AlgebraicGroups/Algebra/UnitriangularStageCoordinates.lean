@@ -15,6 +15,19 @@ At every positive stage, an entry on the stage's superdiagonal is primitive.
 The two endpoints of its matrix coproduct survive the stage quotient, while
 every strictly intermediate summand contains an entry of gap smaller than the
 stage index. This holds over arbitrary commutative base rings.
+
+Milne's finer field-case filtration has one-entry additive-group quotients;
+the entire-superdiagonal primitive-coordinate construction is proved here.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), item 2.1 (the additive
+  group's primitive coordinate) and §6.49 (one-entry additive
+  quotients of the finer filtration).
+* Mathlib contributors, `Mathlib.LinearAlgebra.SymmetricAlgebra.Basic`
+  (`SymmetricAlgebra.lift`) and `Mathlib.RingTheory.HopfAlgebra.Quotient`
+  (the stage's quotient bialgebra structure).
+* The existing `Additive` group-scheme coordinates supply the primitive target.
 -/
 
 @[expose] public section
@@ -36,7 +49,9 @@ noncomputable local instance : Coalgebra K (CoordinateRing K n r) :=
 noncomputable local instance : CoalgebraStruct K (CoordinateRing K n r) :=
   (inferInstance : Coalgebra K (CoordinateRing K n r)).toCoalgebraStruct
 
-/-- The universal entry on the `r`-th superdiagonal of the stage algebra. -/
+/-- The universal entry on the `r`-th superdiagonal of the stage algebra.
+Milne, *Algebraic Groups* (2017), §6.49 uses one-entry additive
+coordinates in the finer field-case filtration. -/
 def coordinate (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
     CoordinateRing K n r :=
   quotient K n r (entry K n ij.1.1 ij.1.2)
@@ -120,7 +135,9 @@ theorem coordinate_comul (hr : 1 ≤ r)
   simp only [zero_add]
   rfl
 
-/-- The rank-one symmetric-algebra map classifying an entry. -/
+/-- The rank-one symmetric-algebra map classifying an entry.
+Milne, *Algebraic Groups* (2017), item 2.1 describes the additive
+group's primitive polynomial coordinate. -/
 def coordinateAlgHom (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
     AlgebraicGeometry.additiveGroupCoordinateRing K →ₐ[K] CoordinateRing K n r := by
   letI : AddCommMonoid (CoordinateRing K n r) :=
@@ -136,7 +153,10 @@ def coordinateAlgHom (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
       coordinate K n r ij := by
   simp [coordinateAlgHom, AlgebraicGeometry.additiveGroupCoordinate]
 
-/-- A positive-stage coordinate is a genuine bialgebra homomorphism. -/
+/-- A positive-stage primitive coordinate defines a bialgebra homomorphism.
+Milne, *Algebraic Groups* (2017), §6.49 identifies one-entry additive
+quotients over a field; the whole-superdiagonal construction here works
+over arbitrary commutative rings. -/
 def coordinateBialgHom (hr : 1 ≤ r)
     (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
     AlgebraicGeometry.additiveGroupCoordinateRing K →ₐc[K] CoordinateRing K n r := by

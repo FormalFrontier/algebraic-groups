@@ -11,6 +11,12 @@ public import Mathlib.CategoryTheory.Extensive
 
 This file records a componentwise pullback property of the map between two
 finite coproducts induced by a family of morphisms.
+
+## References
+
+- Mathlib, `CategoryTheory.FinitaryExtensive.isVanKampen_finiteCoproducts`
+  (`Mathlib.CategoryTheory.Extensive`): the finite-coproduct Van Kampen
+  equivalence used to obtain the component pullback squares.
 -/
 
 public section
@@ -25,7 +31,7 @@ variable {C : Type u} [Category.{v} C]
 
 /-- In a finitary extensive category, the square formed by one component of a
 map between finite coproducts and the corresponding coproduct inclusions is a
-pullback. -/
+pullback, by Mathlib's finite-coproduct Van Kampen equivalence. -/
 lemma FinitaryExtensive.isPullback_sigmaMap_ι [FinitaryExtensive C]
     {ι : Type*} [Finite ι] (X Y : ι → C) (f : ∀ i, X i ⟶ Y i) (i : ι) :
     IsPullback (Sigma.ι X i) (f i) (Limits.Sigma.map f) (Sigma.ι Y i) := by

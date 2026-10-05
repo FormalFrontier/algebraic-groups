@@ -16,7 +16,29 @@ public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 The generic matrix over the multivariate polynomial algebra becomes invertible
 after localizing at its determinant. The construction works over any commutative
-ring, including the zero ring, and for an empty finite index type.
+ring, including the zero ring, and for an empty finite index type. Algebra maps
+from this localization evaluate at invertible matrices over any commutative
+algebra. The ordered matrix product gives the coproduct; commutativity of the
+coordinate algebra does not make the general linear group commutative.
+The localization is also finitely presented, stronger than the finite-type
+property needed for the group scheme.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2, item 2.8, p. 41: determinant
+  localization/quotient, universal invertible matrix, and coproduct equation (8)
+  over a field.
+* Mathlib, `LinearAlgebra/Matrix/MvPolynomial`,
+  `LinearAlgebra/Matrix/GeneralLinearGroup/Defs`, and
+  `LinearAlgebra/Matrix/NonsingularInverse`: generic matrices, matrix units,
+  and the adjugate formula.
+* Mathlib, `RingTheory/Localization/Basic`,
+  `RingTheory/Localization/Away/Basic`, and
+  `RingTheory/Localization/Away/AdjoinRoot`: algebra-map extensionality,
+  localization evaluation, and its quotient presentation.
+* Mathlib, `Algebra/MvPolynomial/Equiv`, `RingTheory/Bialgebra/Basic`, and
+  `RingTheory/HopfAlgebra/Basic`: extra polynomial coordinates and the
+  algebraic structures used for the group laws.
 -/
 
 @[expose] public section
@@ -37,7 +59,8 @@ abbrev PolynomialRing := MvPolynomial (n × n) K
 /-- The determinant of the generic square matrix. -/
 def determinant : PolynomialRing K n := (Matrix.mvPolynomialX n n K).det
 
-/-- The coordinate algebra of the general linear group. -/
+/-- The determinant localization representing invertible matrices over
+commutative algebras; see Milne, *Algebraic Groups*, item 2.8. -/
 abbrev CoordinateRing := Localization.Away (determinant K n)
 
 instance finiteType : Algebra.FiniteType K (CoordinateRing K n) := inferInstance
@@ -64,7 +87,7 @@ theorem isUnit_matrix_det : IsUnit (matrix K n).det := by
   rw [matrix_det]
   exact IsLocalization.Away.algebraMap_isUnit (determinant K n)
 
-/-- The universal invertible matrix in the native matrix general linear group. -/
+/-- The universal invertible matrix as a matrix general linear group element. -/
 def universal : Matrix.GeneralLinearGroup n (CoordinateRing K n) :=
   Matrix.GeneralLinearGroup.mk'' (matrix K n) (isUnit_matrix_det K n)
 
@@ -84,8 +107,8 @@ theorem det_mul_detInverse :
   rw [matrix_det]
   exact IsLocalization.Away.mul_invSelf (determinant K n)
 
-/-- The presentation as a polynomial ring with one inverse of the determinant
-adjoined, i.e. the quotient by `det(X) * T - 1`. -/
+/-- The quotient presentation by `det(X) * T - 1` in Milne, *Algebraic Groups*,
+item 2.8, via Mathlib's `Localization.awayEquivAdjoin`. -/
 def quotientEquiv : CoordinateRing K n ≃ₐ[K]
     AdjoinRoot (Polynomial.C (determinant K n) * Polynomial.X - 1) :=
   (Localization.awayEquivAdjoin (determinant K n)).restrictScalars K
@@ -200,7 +223,7 @@ theorem evaluate_det {R : Type u} [CommRing R] [Algebra K R]
   ext i j
   exact evaluate_matrix g i j
 
-/-- Evaluating the universal matrix gives a native general linear group element. -/
+/-- Evaluation of the universal matrix gives an invertible matrix. -/
 def toGL {R : Type u} [CommRing R] [Algebra K R]
     (f : CoordinateRing K n →ₐ[K] R) : Matrix.GeneralLinearGroup n R :=
   Matrix.GeneralLinearGroup.map f.toRingHom (universal K n)
@@ -209,7 +232,8 @@ def toGL {R : Type u} [CommRing R] [Algebra K R]
     (f : CoordinateRing K n →ₐ[K] R) (i j : n) :
     toGL f i j = f (matrix K n i j) := rfl
 
-/-- The all-algebras universal property of the GL coordinate ring. -/
+/-- The universal invertible-matrix property of the determinant localization
+(Milne, *Algebraic Groups*, item 2.8), for every commutative coefficient algebra. -/
 def homEquiv {R : Type u} [CommRing R] [Algebra K R] :
     (CoordinateRing K n →ₐ[K] R) ≃ Matrix.GeneralLinearGroup n R where
   toFun := toGL
@@ -280,6 +304,8 @@ def counit : CoordinateRing K n →ₐ[K] K := evaluate (K := K) 1
 def antipode : CoordinateRing K n →ₐ[K] CoordinateRing K n :=
   evaluate (K := K) (universal K n)⁻¹
 
+/-- The ordered coproduct on matrix entries: Milne, *Algebraic Groups*,
+item 2.8, equation (8). -/
 theorem comul_matrix (i j : n) :
     comul K n (matrix K n i j) =
       ∑ index : n, matrix K n i index ⊗ₜ[K] matrix K n index j := by

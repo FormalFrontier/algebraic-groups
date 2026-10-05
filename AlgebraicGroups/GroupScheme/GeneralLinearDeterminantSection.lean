@@ -14,10 +14,24 @@ For a specified matrix index `pivot`, the multiplicative group scheme embeds int
 finite general linear group scheme by placing a unit in that diagonal position and
 ones in all other diagonal positions. The explicit pivot is essential: in rank zero,
 the determinant is constant one and need not have a section over an arbitrary base.
-The diagonal witness follows the construction in mathlib's
-`Matrix.GeneralLinearGroup.det_surjective` (Chris Birkbeck, Apache-2.0); unlike
-pointwise surjectivity, the result here is a natural, multiplicative morphism of
-native group schemes over any commutative base.
+The diagonal witness follows mathlib's `Matrix.GeneralLinearGroup.det_surjective`
+(introduced by Whysoserioushah in a file that also credits Chris Birkbeck,
+whose Apache-2.0 notice is retained above). Unlike pointwise surjectivity, the
+result here is a natural, multiplicative morphism of group schemes over any
+commutative base.
+
+## References
+
+* J. S. Milne, *Basic Theory of Affine Group Schemes*, XIII §3, item 3.14
+  (a one-pivot field-base determinant section in a functorial product
+  decomposition, with the diagonal factor on the right).
+* Mathlib, `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`,
+  `Matrix.GeneralLinearGroup.det_surjective` (Whysoserioushah's one-pivot
+  lemma in the GL module also credited to Chris Birkbeck), and
+  `Data/Matrix/Mul.lean` (diagonal multiplication identities).
+  The local finite GL/multiplicative-group point comparisons and Mathlib's
+  `AlgebraicGeometry/Group/Affine.lean` (`hopfSpec`) support the group-scheme
+  upgrade, which requires a specified `pivot : n`.
 -/
 
 public section
@@ -33,7 +47,9 @@ namespace AlgebraicGeometry
 
 variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
 
-/-- The invertible diagonal matrix carrying a unit at the distinguished index. -/
+/-- The invertible diagonal matrix carrying a unit at the distinguished index,
+following Mathlib's `Matrix.GeneralLinearGroup.det_surjective`
+(Whysoserioushah). -/
 @[expose] def generalLinearDiagonalUnit {R : Type u} [CommRing R] (pivot : n) (unit : Rˣ) :
     Matrix.GeneralLinearGroup n R :=
   ⟨Matrix.diagonal (fun j ↦ if j = pivot then (unit : R) else 1),
@@ -192,7 +208,9 @@ multiplicative-group coordinate Hopf algebras. -/
             Algebra.TensorProduct.one_def]
       · simp [hij, TensorProduct.ite_tmul, TensorProduct.tmul_ite])
 
-/-- The one-pivot diagonal section as an actual native group-scheme morphism. -/
+/-- The one-pivot diagonal section as a group-scheme morphism: the
+Mathlib diagonal witness is made multiplicative and natural before applying
+the local GL evaluation and Mathlib's Hopf-Spec construction. -/
 @[expose] def generalLinearDeterminantSectionSchemeHom (pivot : n) :
     multiplicativeGroupScheme K ⟶ generalLinearGroupScheme K n :=
   (hopfSpec (.of K)).map
@@ -224,7 +242,10 @@ theorem generalLinearDeterminantSectionCoordinateMap_comp_det (pivot : n) :
     generalLinearDeterminantCoordinateMap_coordinate,
     generalLinearDeterminantSectionCoordinateMap_det]
 
-/-- Determinant has an actual section in group schemes over `Spec K`. -/
+/-- Determinant has a one-pivot section in group schemes over `Spec K`.
+Milne, *Basic Theory of Affine Group Schemes*, XIII §3, item 3.14 uses
+a field-base section on points; Mathlib's diagonal witness and Hopf-Spec
+construct the multiplicative section here for arbitrary commutative bases. -/
 theorem generalLinearDeterminantSectionSchemeHom_comp_det (pivot : n) :
     generalLinearDeterminantSectionSchemeHom K n pivot ≫
       generalLinearDeterminantSchemeHom K n = 𝟙 (multiplicativeGroupScheme K) := by

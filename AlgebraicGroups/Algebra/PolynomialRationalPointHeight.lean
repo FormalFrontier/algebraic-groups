@@ -15,6 +15,24 @@ For a field and a finite set of variables, the kernel of evaluation at any
 rational point has height equal to the number of variables. This includes
 affine space of dimension zero. The field and index type may live in different
 universes; no decidable equality on the index type is required.
+
+The proof inducts on the finite variable type, as in mathlib's finite-variable
+polynomial-dimension proof. Renaming handles equivalent variable types, and the
+empty-variable polynomial-ring equivalence handles the base case; adjoining
+one variable uses mathlib's
+`MvPolynomial.optionEquivLeft` and `Polynomial.height_eq_height_add_one` for
+the maximal evaluation ideal.
+
+## References
+
+* The Stacks Project, [Lemma 10.114.1](https://stacks.math.columbia.edu/tag/00OP),
+  for the height of maximal ideals of a polynomial ring over a field. Its proof
+  differs from the induction used here.
+* The mathlib community, *Mathlib*,
+  `Mathlib.RingTheory.KrullDimension.Polynomial` for the univariate height step
+  and finite-variable dimension induction, `Mathlib.RingTheory.KrullDimension.Field`
+  for field dimension, and `Mathlib.Algebra.MvPolynomial.Equiv` and
+  `Mathlib.Algebra.MvPolynomial.Rename` for the polynomial-ring equivalences.
 -/
 
 public section
@@ -91,7 +109,10 @@ private theorem height_ker_eval_finite (K : Type u) [Field K] (σ : Type v)
         rw [IH old]
         simp only [Nat.card_eq_fintype_card, Fintype.card_option, Nat.cast_add, Nat.cast_one]
 
-/-- A rational evaluation ideal has the full height of its finite-dimensional affine space. -/
+/-- A rational evaluation ideal has the full height of its finite-dimensional affine space.
+This is a case of the polynomial maximal-ideal height in the Stacks Project,
+Lemma 10.114.1; the proof instead uses mathlib's
+`Polynomial.height_eq_height_add_one` and multivariable polynomial equivalences. -/
 theorem height_ker_eval (K : Type u) [Field K] (σ : Type v) [Fintype σ]
     (a : σ → K) : (RingHom.ker (eval a)).height = (Fintype.card σ : ℕ∞) := by
   simpa only [Nat.card_eq_fintype_card] using height_ker_eval_finite K σ a

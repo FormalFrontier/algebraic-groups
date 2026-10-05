@@ -55,5 +55,25 @@ Formal Frontier Agents and Lattice contributed the quotient comparison;
 the existing coordinate presentation retains its own authorship. The proof
 reuses mathlib's tensor scalar-extension APIs and the
 `MvPolynomial.algebraTensorAlgEquiv` used by the preceding base-change module;
-that equivalence is credited there to Antoine Chambert-Loir. External
-contributors and licenses remain distinct.
+Christian Merten contributed that equivalence, now implemented using Yaël
+Dillies's `AddMonoidAlgebra.scalarTensorEquiv`. Antoine Chambert-Loir contributed
+the related earlier `MvPolynomial.scalarRTensorAlgEquiv`. External contributors
+and licenses remain distinct.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.9: the field-case `U_n`
+  presentation underlying the coordinate algebra, not these tower laws.
+- Antoine Chambert-Loir, Mathlib,
+  `Mathlib.RingTheory.TensorProduct.MvPolynomial`: the related earlier
+  `MvPolynomial.scalarRTensorAlgEquiv`.
+- Christian Merten, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`:
+  `MvPolynomial.algebraTensorAlgEquiv` used by the underlying comparison;
+  `Mathlib.RingTheory.TensorProduct.Maps`: the tensor cancellation
+  `Algebra.TensorProduct.cancelBaseChange` used here.
+- Yaël Dillies, Mathlib, `Mathlib.RingTheory.TensorProduct.MonoidAlgebra`:
+  `AddMonoidAlgebra.scalarTensorEquiv` implements the polynomial equivalence.
+- Kevin Buzzard, Mathlib4 port of `Algebra.TensorProduct.lid`, now in
+  `Mathlib.RingTheory.TensorProduct.Maps`.
+- Kim Morrison and Johan Commelin, Mathlib: contributors to the wider
+  `Mathlib.RingTheory.TensorProduct.Maps` module.

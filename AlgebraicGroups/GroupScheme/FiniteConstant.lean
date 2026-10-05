@@ -17,6 +17,12 @@ group. Its coordinate ring is the algebra of functions on the group. A
 dedicated type keeps its group-law coalgebra distinct from the componentwise
 coalgebra already available on finite dependent products.
 
+Milne's *Algebraic Groups*, item 2.3, constructs a constant group scheme
+over a field as a finite disjoint union of copies of the base point, with
+coordinate functions and comultiplication dual to the group law. The
+construction here works over any commutative base ring. The arbitrary-algebra
+point formula also printed in item 2.3 is not used to construct this scheme.
+
 ## Main definitions
 
 - `AlgebraicGeometry.FiniteGroupFunctions`: the coordinate function algebra.
@@ -28,6 +34,18 @@ coalgebra already available on finite dependent products.
   map from abstract group elements to rational points of the constant scheme.
 - `AlgebraicGeometry.finiteConstantSigmaIso`: its underlying scheme is the
   finite coproduct of copies of the base.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.3, p. 40 (the finite
+  constant group-scheme construction, coordinates, and group law).
+- Mathlib, `Mathlib.RingTheory.TensorProduct.Pi` (the tensor-product algebra
+  equivalence for finite function algebras) and `Mathlib.AlgebraicGeometry.Limits`
+  (the coproduct-to-spectrum-of-product isomorphism used for the summands).
+- Mathlib, `Mathlib.LinearAlgebra.StdBasis` (`Pi.basisFun`, the finite
+  function-algebra basis).
+- Mathlib, `Mathlib.AlgebraicGeometry.Group.Affine` (the affine Hopf-algebra
+  group-scheme construction and its convolution on points).
 -/
 
 @[expose] public section
@@ -42,6 +60,8 @@ universe u v
 /-- The coordinate ring of functions on a finite abstract group.  This is a
 dedicated type because its coalgebra structure comes from multiplication in
 the indexing group, not from the componentwise coalgebra on a finite product.
+The function algebra extends the field-base coordinate ring in Milne's
+*Algebraic Groups*, item 2.3, to arbitrary commutative base rings.
 -/
 def FiniteGroupFunctions (K : Type u) (Γ : Type v) := Γ → K
 
@@ -204,7 +224,8 @@ private lemma tripleCoordinate_eq_tripleEvalAlgHom
         tensorEvalAlgHom_eq_tensorAlgEquiv_apply]
   | add x y hx hy => simp [hx, hy]
 
-/-- Comultiplication on functions, dual to multiplication in the group. -/
+/-- Comultiplication on functions, dual to multiplication in the group as
+in Milne's *Algebraic Groups*, item 2.3. -/
 noncomputable def comulAlgHom :
     FiniteGroupFunctions K Γ →ₐ[K]
       FiniteGroupFunctions K Γ ⊗[K] FiniteGroupFunctions K Γ :=
@@ -397,7 +418,8 @@ lemma evalAlgHom_comp_comulAlgHom (g h : Γ) :
 
 end FiniteGroupFunctions
 
-/-- The finite constant group scheme associated to an abstract finite group. -/
+/-- The finite constant group scheme associated to an abstract finite group,
+extending Milne's *Algebraic Groups*, item 2.3, to commutative base rings. -/
 noncomputable abbrev finiteConstantGroupScheme (K Γ : Type u)
     [CommRing K] [Fintype Γ] [Group Γ] :
     CategoryTheory.Grp (CategoryTheory.Over (Spec (.of K))) :=
@@ -420,7 +442,8 @@ noncomputable def finiteConstantGroupSchemePoint (K Γ : Type u)
       rfl)
 
 /-- Evaluation-labelled rational points multiply according to their abstract
-group labels. -/
+group labels, as in the componentwise multiplication of Milne's *Algebraic
+Groups*, item 2.3. -/
 @[simp]
 lemma finiteConstantGroupSchemePoint_mul (K Γ : Type u)
     [CommRing K] [Fintype Γ] [Group Γ] (g h : Γ) :
@@ -507,7 +530,9 @@ noncomputable def finiteConstantGroupSchemePointHom (K Γ : Type u)
   map_mul' := fun g h ↦ (finiteConstantGroupSchemePoint_mul K Γ g h).symm
 
 /-- The underlying scheme of a finite constant group scheme is the finite
-coproduct of copies of the base affine scheme indexed by the group. -/
+coproduct of copies of the base affine scheme indexed by the group. This
+extends Milne's *Algebraic Groups*, item 2.3, from fields to commutative rings;
+the proof uses Mathlib's `sigmaSpec`. -/
 noncomputable def finiteConstantSigmaIso (K Γ : Type u)
     [CommRing K] [Fintype Γ] [Group Γ] :
     (∐ fun _ : Γ ↦ Spec (.of K)) ≅ (finiteConstantGroupScheme K Γ).X.left := by
@@ -518,7 +543,7 @@ noncomputable def finiteConstantSigmaIso (K Γ : Type u)
 
 /-- Under the coproduct description of a finite constant group scheme, the
 inclusion of the summand labelled by `g` is its evaluation-labelled rational
-point. -/
+point, as in Milne's *Algebraic Groups*, item 2.3. -/
 @[reassoc (attr := simp)]
 lemma finiteConstantSigmaIso_hom_ι (K Γ : Type u)
     [CommRing K] [Fintype Γ] [Group Γ] (g : Γ) :

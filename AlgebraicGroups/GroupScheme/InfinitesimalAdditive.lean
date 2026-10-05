@@ -17,6 +17,25 @@ coordinate Hopf algebra by the `p ^ m`-th power of its primitive coordinate
 represents the additive group of elements whose `p ^ m`-th power vanishes.
 The construction includes `m = 0` and works with arbitrary test algebras,
 including the zero algebra.
+
+This represents the characteristic-power additive group in Milne's
+*Algebraic Groups*, item 2.5, where the base is a field. The Hopf quotient
+here instead uses the general primitive-power Hopf-ideal theorem, and the
+nilpotent-element functor and its affine points are defined over every
+commutative base of prime characteristic. A test algebra need not have
+characteristic *exactly* `p` or an injective structure map.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.5, p. 40 (nilpotent
+  points, the additive law, quotient coordinates and comultiplication).
+- `AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal` and
+  `AlgebraicGroups.GroupScheme.Additive` (the general quotient-Hopf criterion
+  and the additive coordinate and point equivalences used here).
+- Mathlib, `Mathlib.Algebra.CharP.Lemmas`,
+  `Mathlib.RingTheory.HopfAlgebra.Quotient`, and
+  `Mathlib.AlgebraicGeometry.Group.Affine` (prime-power binomial identities,
+  quotient Hopf structure and affine point/convolution transport).
 -/
 
 public section
@@ -46,7 +65,9 @@ instance infinitesimalAdditiveIdeal_isHopfIdeal :
     Ideal.IsHopfIdeal K (infinitesimalAdditiveIdeal K p m) :=
   (infinitesimalAdditive_primitive K).isHopfIdeal_span_pow_char_pow m
 
-/-- The coordinate Hopf algebra of the characteristic-power infinitesimal additive group. -/
+/-- The coordinate Hopf algebra of the characteristic-power infinitesimal
+additive group in Milne's *Algebraic Groups*, item 2.5, extended from fields
+to commutative bases of prime characteristic. -/
 abbrev infinitesimalAdditiveCoordinateRing :=
   additiveGroupCoordinateRing K ⧸ infinitesimalAdditiveIdeal K p m
 
@@ -112,7 +133,9 @@ instance infinitesimalAdditiveUnderlyingScheme_quasiCompact :
     (algebraMap K (infinitesimalAdditiveCoordinateRing K p m))))
   infer_instance
 
-/-- The group scheme attached to the quotient's native Hopf algebra. -/
+/-- The group scheme attached to the quotient Hopf algebra, representing
+Milne's *Algebraic Groups*, item 2.5, over fields and more generally over
+commutative bases of prime characteristic. -/
 abbrev infinitesimalAdditiveGroupScheme : Grp (Over (Spec (.of K))) :=
   ⟨infinitesimalAdditiveUnderlyingScheme K p m⟩
 
@@ -172,7 +195,9 @@ theorem infinitesimalAdditiveSubgroup_zero_eq_zero
   map_zero' := Subtype.ext (map_zero f)
   map_add' r s := Subtype.ext (map_add f r.val s.val)
 
-/-- The natural group-valued functor of characteristic-power nilpotent elements. -/
+/-- The group-valued functor of characteristic-power nilpotent elements from
+Milne's *Algebraic Groups*, item 2.5, defined on every commutative test
+algebra over a base of prime characteristic. -/
 @[expose] def infinitesimalAdditiveFunctor : CommAlgCat K ⥤ GrpCat where
   obj S := GrpCat.of (Multiplicative (infinitesimalAdditiveSubgroup K p m S))
   map f := GrpCat.ofHom (AddMonoidHom.toMultiplicative
@@ -337,8 +362,9 @@ theorem infinitesimalAdditiveMulEquivPoints_symm_coordinate
       ((Spec.mapMulEquiv (R := K) (S := infinitesimalAdditiveCoordinateRing K p m)
         (T := R)).symm f).ofConv (infinitesimalAdditiveCoordinate K p m) := rfl
 
-/-- The natural group-valued functor of nilpotent elements is represented by
-the native quotient Hopf algebra's affine group scheme. -/
+/-- The group-valued functor of nilpotent elements in Milne's *Algebraic Groups*,
+item 2.5, is represented by the quotient Hopf algebra's affine group scheme;
+here the base may be any commutative ring of prime characteristic. -/
 @[expose] def infinitesimalAdditivePointsIso :
     infinitesimalAdditiveFunctor K p m ≅ infinitesimalAdditivePointsFunctor K p m :=
   NatIso.ofComponents
@@ -364,41 +390,5 @@ the native quotient Hopf algebra's affine group scheme. -/
       exact congrArg (fun h : infinitesimalAdditiveCoordinateRing K p m →ₐ[K] S ↦
           CommRingCat.ofHom h.toRingHom)
         (infinitesimalAdditiveMulEquivAlgHom_naturality K p m R f.hom r.toAdd))
-
-#print axioms infinitesimalAdditiveIdeal
-#print axioms infinitesimalAdditive_primitive
-#print axioms infinitesimalAdditiveIdeal_isHopfIdeal
-#print axioms infinitesimalAdditiveCoordinateRing
-#print axioms infinitesimalAdditiveCoordinate
-#print axioms infinitesimalAdditiveCoordinate_pow
-#print axioms infinitesimalAdditiveCoordinate_comul
-#print axioms infinitesimalAdditiveCoordinate_counit
-#print axioms infinitesimalAdditiveCoordinate_antipode
-#print axioms infinitesimalAdditiveCoordinateRing_finiteType
-#print axioms infinitesimalAdditiveUnderlyingScheme
-#print axioms infinitesimalAdditiveUnderlyingScheme_locallyOfFiniteType
-#print axioms infinitesimalAdditiveUnderlyingScheme_quasiCompact
-#print axioms infinitesimalAdditiveGroupScheme
-#print axioms infinitesimalAdditive_char_target
-#print axioms infinitesimalAdditiveSubgroup
-#print axioms mem_infinitesimalAdditiveSubgroup
-#print axioms infinitesimalAdditiveSubgroup_zero_eq_bot
-#print axioms infinitesimalAdditiveSubgroup_zero_eq_zero
-#print axioms infinitesimalAdditiveMap
-#print axioms infinitesimalAdditiveFunctor
-#print axioms infinitesimalAdditivePointsFunctor
-#print axioms infinitesimalAdditiveLift
-#print axioms infinitesimalAdditiveLift_coordinate
-#print axioms infinitesimalAdditiveLift_comp_mk
-#print axioms infinitesimalAdditiveMulEquivAlgHom
-#print axioms infinitesimalAdditiveMulEquivAlgHom_coordinate
-#print axioms infinitesimalAdditiveMulEquivAlgHom_symm_coordinate
-#print axioms infinitesimalAdditiveMulEquivAlgHom_add
-#print axioms infinitesimalAdditiveConvolution_coordinate
-#print axioms infinitesimalAdditiveMulEquivAlgHom_naturality
-#print axioms infinitesimalAdditiveMulEquivPoints
-#print axioms infinitesimalAdditiveMulEquivPoints_apply_left
-#print axioms infinitesimalAdditiveMulEquivPoints_symm_coordinate
-#print axioms infinitesimalAdditivePointsIso
 
 end AlgebraicGeometry

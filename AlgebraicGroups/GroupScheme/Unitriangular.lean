@@ -12,8 +12,23 @@ public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 # Upper-unitriangular group schemes
 
 The universal group is the subgroup of the native matrix general linear group
-with zeros below the diagonal and units on the diagonal. Its affine group
-scheme is represented by the upper-unitriangular Hopf quotient.
+with zeros below the diagonal and ones on the diagonal. Its affine group
+scheme is represented by a Hopf quotient of the determinant-localized GL
+coordinate ring. The construction and point comparison work over every
+commutative base ring, not only a field.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §§2.8–2.9: the GL functor on
+  commutative algebras over a field and the polynomial presentation of its
+  upper-unitriangular subgroup.
+* Mathlib, `Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs` and
+  `Mathlib.LinearAlgebra.Matrix.Block`: matrix units, triangular multiplication,
+  determinant and inverse; `Mathlib.RingTheory.HopfAlgebra.Quotient`: Hopf ideals
+  and their quotients.
+* `AlgebraicGroups.Algebra.GeneralLinearCoordinateRing` and
+  `AlgebraicGroups.Algebra.SpecialLinearCoordinateRing`: the localized GL
+  coordinates and the earlier Hopf-quotient comparison pattern.
 -/
 
 @[expose] public section
@@ -109,7 +124,9 @@ instance unitriangularGroupUnderlyingScheme_quasiCompact :
     (algebraMap K (UnitriangularCoordinateRing.CoordinateRing K n))))
   infer_instance
 
-/-- The finite-type affine group scheme of upper-unitriangular matrices. -/
+/-- The finite-type affine group scheme of upper-unitriangular matrices over a
+commutative ring. Over a field and `Fin n`, this represents the subgroup in
+Milne, *Algebraic Groups* (2017), §2.9. -/
 abbrev unitriangularGroupScheme : Grp (Over (Spec (.of K))) :=
   ⟨unitriangularGroupUnderlyingScheme K n⟩
 
@@ -127,6 +144,10 @@ def unitriangularInclusion : unitriangularGroupScheme K n ⟶ generalLinearGroup
 theorem unitriangularInclusion_left : (unitriangularInclusion K n).hom.hom.left =
     Spec.map (CommRingCat.ofHom (quotient K n).toRingHom) := rfl
 
+/-- The quotient defines a closed subgroup of GL over every commutative
+base ring. For the field-base subgroup compare Milne, *Algebraic Groups*
+(2017), §2.9; the scheme-level proof uses Mathlib's
+`IsClosedImmersion.spec_of_surjective` on the coordinate quotient. -/
 theorem unitriangularInclusion_isClosedImmersion :
     IsClosedImmersion (unitriangularInclusion K n).hom.hom.left := by
   rw [unitriangularInclusion_left]
@@ -317,7 +338,9 @@ abbrev unitriangularGroupPointsFunctor : CommAlgCat K ⥤ GrpCat :=
   (algSpec (.of K)).rightOp ⋙ yonedaGrp.obj (unitriangularGroupScheme K n)
 
 /-- Multiplicative and natural functorial identification of native group units
-with the points of the finite-type upper-unitriangular group scheme. -/
+with the points of the finite-type upper-unitriangular group scheme, for all
+fixed-base coefficient-algebra maps. This extends the field-base functor of
+Milne, *Algebraic Groups* (2017), §§2.8–2.9 to commutative base rings. -/
 def unitriangularGroupPointsIso :
     unitriangularGroupFunctor K n ≅ unitriangularGroupPointsFunctor K n :=
   NatIso.ofComponents

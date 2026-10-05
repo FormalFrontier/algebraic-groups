@@ -12,6 +12,21 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 The usual scalar extension of `V` is `R ⊗[K] V`. We use this canonical
 `R`-module while recording explicitly the comparison with `V ⊗[K] R`.
+The factor interchange is `K`-linear; a separate wrapped type transports the
+`R`-module structure to literal right-ordered tensors. Endomorphisms extend
+along every homomorphism of coefficient algebras without finiteness of `V`
+or flatness of the coefficient map.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2, items 2.7–2.8, p. 41: scalar
+  extensions in the definitions of additive endomorphisms and multiplicative
+  automorphisms of a vector space over a field.
+* Mathlib, `LinearAlgebra/TensorProduct/Basic`: the `K`-linear interchange
+  `TensorProduct.comm` between the two factor orders.
+* Mathlib, `LinearAlgebra/TensorProduct/Tower`: `AlgebraTensorModule.cancelBaseChange`,
+  `LinearMap.baseChange`, and `Module.End.baseChangeHom` supply endomorphism
+  extension and tensor reassociation over arbitrary modules.
 -/
 
 public section
@@ -114,7 +129,10 @@ theorem sourceOrderedEndEquiv_apply (f : Module.End R (SourceOrderedTensor K V R
       sourceOrderedCanonicalLinearEquiv K V R (f x) := by
   simp [sourceOrderedEndEquiv, LinearEquiv.conj_apply_apply]
 
-/-- Scalar extension of endomorphisms along any algebra map, including non-flat maps. -/
+/-- Scalar extension of endomorphisms along any algebra map, including non-flat
+maps, by Mathlib's `LinearMap.baseChange` and tensor cancellation. Unlike the
+finite-dimensional field comparison in Milne, *Algebraic Groups*, items 2.7–2.8,
+this construction imposes no finiteness condition on `V`. -/
 @[expose] def endBaseChange (S : Type u) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (f : Module.End R (SourceOrderTensor K V R)) :
     Module.End S (SourceOrderTensor K V S) :=

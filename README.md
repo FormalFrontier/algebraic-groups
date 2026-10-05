@@ -186,6 +186,77 @@ For a broader survey of additional algebra, component and quotient APIs, see
 the [mathematical topic guide](docs/MATHEMATICS.md). The focused guides give
 declarations, proofs and limitations.
 
+## References
+
+These are selected mathematical antecedents and prior formalizations, not
+claims to cover entire sources. Module References and the focused guides give
+the precise passage-to-construction distinctions.
+
+- J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
+  over a Field*, Cambridge Studies in Advanced Mathematics 170, Cambridge
+  University Press, 2017. Items 2.1 and 2.6 describe the additive group and
+  the chosen-basis `Gₐ^n ≃ Vₐ` group-scheme isomorphism **over a field**, a
+  direct antecedent for finite additive products; the comparison here is of
+  their underlying over-scheme with affine space over an arbitrary commutative
+  ring, not an additive-group-scheme or Hopf isomorphism. Item 2.3 concerns
+  finite constant groups; their points here have locally constant labels, not
+  unrestricted constant labels. Selected passages on group functors, matrix
+  and triangular groups, components, quotients and schematic density also
+  inform the corresponding modules. Items 2.9 and 6.49 describe the
+  field-case unitriangular group and its finer one-entry filtration: the
+  block endpoints antecede closed whole-superdiagonal stages over arbitrary
+  rings, but these passages give only context for the separate whole-stage
+  *underlying over-scheme* projection and its nonmultiplicative section.
+- J. S. Milne, *Basic Theory of Affine Group Schemes* (2012, version 1.00;
+  [author's course-notes address](https://www.jmilne.org/math/CourseNotes/AGS.pdf),
+  which may serve a later version). VII §4 Proposition 4.1 and Example 4.3
+  give field-kernel/determinant antecedents, XI §16 Example 16.3 the field
+  positive-rank special-linear dimension, and XIII §3 **item 3.14** a
+  field-base *right*-diagonal determinant splitting. The represented
+  arbitrary-ring left-normalized section-first product has a twisted group
+  law, not a direct-product splitting; its kernel and scheme-level laws require
+  separate arguments.
+- J. S. Milne, preliminary *Algebraic Groups* course notes, version 2.00
+  (2015), Definition 2.20 and Proposition 2.21: field-base triangular
+  splitting and its split-kernel criterion. These locators belong to the 2015
+  preliminary notes, not the 2017 book; neither source is cited here for an
+  arbitrary-base group-scheme splitting.
+- The Stacks Project: [tags 022W](https://stacks.math.columbia.edu/tag/022W)
+  and [022X](https://stacks.math.columbia.edu/tag/022X) for general linear
+  coordinates and determinant; [03BH](https://stacks.math.columbia.edu/tag/03BH),
+  [03BI](https://stacks.math.columbia.edu/tag/03BI) and
+  [03BM](https://stacks.math.columbia.edu/tag/03BM) for affine groupoid
+  integrality, invariant rank and the setting of a conditional quotient bridge,
+  not full quotient existence or effectivity. Section 26.17, Lemma 26.17.2
+  concerns affine pullbacks; [03C4](https://stacks.math.columbia.edu/tag/03C4)
+  finite-presentation descent, [02C8](https://stacks.math.columbia.edu/tag/02C8)
+  localization,
+  [033B](https://stacks.math.columbia.edu/tag/033B) reducedness,
+  [056V](https://stacks.math.columbia.edu/tag/056V) dense smooth loci, and
+  [00OP](https://stacks.math.columbia.edu/tag/00OP) and
+  [0B7I](https://stacks.math.columbia.edu/tag/0B7I) dimension arguments.
+- Darij Grinberg and Victor Reiner, *Hopf algebras in combinatorics* (2020),
+  Proposition 1.4.17, **as cited by Mathlib** for the primitive counit
+  consequence. The general monoid-algebra primitive-vanishing theorem is
+  proved separately in [this library](AlgebraicGroups/Algebra/MonoidAlgebraPrimitive.lean).
+- Formal Frontier, *Alpha-power versus roots of unity: scheme isomorphism,
+  not group isomorphism*, § “No group-scheme isomorphism for positive
+  exponent”: a finite-cyclic diagonal-coefficient argument developed further
+  in the [primitive module](AlgebraicGroups/Algebra/MonoidAlgebraPrimitive.lean)
+  and [client](AlgebraicGroupsTest/MonoidAlgebraPrimitive.lean). An algebra
+  equivalence alone does not give an additive-group-scheme or Hopf equivalence.
+- The mathlib community, [*Mathlib*](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5):
+  affine spectra, group objects and Hopf quotients, tensor and polynomial
+  coordinates, categorical products, affine space, dimension and smoothness
+  APIs used by the constructions here. See [credits](CREDITS.md) for specific
+  interfaces and contributor roles.
+- Formal Frontier's separately maintained [*SchemeProperties*](https://github.com/FormalFrontier/scheme-properties)
+  for the finite-type restricted functor of points and connected-component,
+  component-scheme and component-fibre APIs used here.
+- Formal Frontier's separately maintained [*GeneralLinearGroups*](https://github.com/FormalFrontier/general-linear-groups)
+  for `ElementaryCommutator`, used in the elementary-unit arguments for the
+  unitriangular lower and derived series of **point groups**.
+
 ## Use and build
 
 The repository pins Lean `v4.34.0-rc2` and exact official GitHub dependencies in

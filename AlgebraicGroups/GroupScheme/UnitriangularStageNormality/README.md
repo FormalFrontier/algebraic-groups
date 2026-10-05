@@ -7,6 +7,10 @@ superdiagonal stage `S_r` is a native normal subgroup object of the
 upper-unitriangular group scheme `U_n` over `Spec K`. This includes the zero
 ring, empty and one-element ranks, and the stages `r = 0, 1`.
 
+Milne's finer individual-entry filtration over a field has normal subgroups
+even in the upper-triangular group; its superdiagonal block endpoints give
+field-case antecedents to the normality of these whole stages.
+
 Import `AlgebraicGroups.GroupScheme.UnitriangularStageNormality` for the
 `AlgebraicGeometry.unitriangularStageInclusion_normal` instance of
 `IsMonHom.Normal`. The module also constructs the underlying over-scheme
@@ -35,10 +39,21 @@ lake build +AlgebraicGroups.GroupScheme.UnitriangularStageNormality +AlgebraicGr
 
 Conjugation here is **not** asserted to be a homomorphism from the product
 group. This module does not establish an additive-coordinate kernel, a
-scheme/sheaf quotient, flatness, smoothness or source-level coverage. The
+scheme/sheaf quotient, flatness or smoothness. The
 [positive-stage coordinate map](../UnitriangularStageCoordinates/README.md)
 is a separate construction; normality is not a prerequisite for its proof.
 
 Formal Frontier Agents developed the stage constructions and normality proof;
 see the repository [credits](../../../CREDITS.md) for contributor roles and
 dependency attribution.
+
+## References
+
+- J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
+  over a Field*, Cambridge University Press, 2017, Example 6.36 and §6.49(a)
+  (the finer normal filtration of unitriangular algebraic groups).
+- Mathlib contributors, `Mathlib.CategoryTheory.Monoidal.Cartesian.Normal`
+  (`IsMonHom.Normal`) and `Mathlib.AlgebraicGeometry.Pullbacks`
+  (`pullbackSpecIso`).
+- The existing `UnitriangularCentralFiltration` provides normality of the
+  whole-superdiagonal matrix subgroup for every ring.

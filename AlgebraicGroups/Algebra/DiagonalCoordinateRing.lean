@@ -8,7 +8,26 @@ public import AlgebraicGroups.GroupTheory.Diagonal
 public import AlgebraicGroups.Algebra.GeneralLinearCoordinateRing
 public import Mathlib.RingTheory.HopfAlgebra.Quotient
 
-/-! # The diagonal Hopf quotient of the general linear coordinate ring -/
+/-!
+# The diagonal Hopf quotient of the general linear coordinate ring
+
+The off-diagonal entries generate an ideal in the determinant-localized GL coordinate
+ring. Its Hopf-ideal proof kills the coproduct after quotienting **both** tensor factors
+and uses inverse closure of diagonal matrix units for the antipode. The determinant-
+inverse coordinate remains the inverse of the product of diagonal entries. Milne's
+field-based diagonal subgroup is the mathematical antecedent; the Hopf quotient here
+uses the existing GL coordinates rather than an explicit Laurent presentation.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §§2.8–2.9 (pp. 41–42), for
+  determinant-localized `GL_n` and its diagonal subgroup over field algebras.
+* Mathlib, `Mathlib.RingTheory.Bialgebra.Quotient` and
+  `Mathlib.RingTheory.HopfAlgebra.Quotient` (`Ideal.IsHopfIdeal` and the quotient
+  bialgebra and Hopf structures).
+* `AlgebraicGroups.Algebra.GeneralLinearCoordinateRing`, for the localized
+  coordinates, universal matrix, antipode, and entrywise coproduct.
+-/
 
 @[expose] public section
 
@@ -31,7 +50,8 @@ def relation (i j : ι) : GeneralLinearCoordinateRing.CoordinateRing K ι :=
 def ideal : Ideal (GeneralLinearCoordinateRing.CoordinateRing K ι) :=
   Ideal.span (Set.range fun p : ι × ι => relation K ι p.1 p.2)
 
-/-- The coordinate ring of the closed diagonal subgroup of GL. -/
+/-- The off-diagonal quotient of the determinant-localized GL coordinate ring;
+compare Milne's diagonal subgroup in *Algebraic Groups* (2017), §2.9. -/
 abbrev CoordinateRing := GeneralLinearCoordinateRing.CoordinateRing K ι ⧸ ideal K ι
 
 /-- Quotient of the published GL coordinate ring. -/
@@ -62,6 +82,8 @@ theorem universal_diagUnit (i : ι) :
     IsUnit (quotient K ι (matrix K ι i i)) :=
   Matrix.DiagonalGroup.isUnit_entry (universal K ι) i
 
+/-- In the diagonal quotient, the inverse-determinant coordinate in the GL
+presentation inverts the product of the diagonal entries. -/
 theorem universal_detInverse :
     quotient K ι (detInverse K ι) *
       (∏ i, quotient K ι (matrix K ι i i)) = 1 := by
@@ -81,7 +103,8 @@ theorem universal_detInverse :
   rwa [mul_comm] at hm
 
 set_option linter.style.haveILetI false in
-/-- The defining ideal is stable under counit, coproduct and antipode. -/
+/-- The defining ideal is stable under counit, coproduct and antipode, by
+the GL coordinate formulas and Mathlib's `Ideal.IsHopfIdeal` criterion. -/
 theorem ideal_isHopfIdeal_proof : (ideal K ι).IsHopfIdeal K := by
   let q := quotient K ι
   let comulQuotient : GeneralLinearCoordinateRing.CoordinateRing K ι →ₐ[K]

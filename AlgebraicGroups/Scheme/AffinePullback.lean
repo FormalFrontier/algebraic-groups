@@ -14,6 +14,19 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 A cartesian square of affine schemes identifies its coordinate ring with the
 corresponding tensor-product pushout. This file records the resulting linear
 equivalence with an explicit formula for pure tensors.
+
+The proof uses Mathlib's tensor-product pushout, contravariance of `Spec` and
+reflection of isomorphisms by affine spectra. The square's projection order
+fixes the formula `e (b₀ ⊗ₜ b₁) = p1 b₀ * c b₁`.
+
+## References
+
+* Stacks Project, Lemma 26.17.2 (tag 01JQ), for affine fibre products
+  represented by tensor products.
+* Mathlib, `Mathlib.Algebra.Category.Ring.Constructions` for
+  `CommRingCat.isPushout_tensorProduct`, `Mathlib.AlgebraicGeometry.Pullbacks`
+  for `isPullback_SpecMap_of_isPushout`, and
+  `Mathlib.AlgebraicGeometry.Morphisms.IsIso` for `isIso_SpecMap_iff`.
 -/
 
 public section
@@ -36,7 +49,10 @@ abbrev specMapRing {R S : Type u} [CommRing R] [CommRing S]
     (f : R →+* S) : Spec (.of S) ⟶ Spec (.of R) :=
   Spec.map (CommRingCat.ofHom f)
 
-/-- A cartesian square of affine spectra identifies its coordinate ring with\nthe tensor pushout. The displayed formula fixes the projection orientation. -/
+/-- A cartesian square of affine spectra identifies its coordinate ring with
+the tensor pushout, as in Stacks Project, Lemma 26.17.2 (tag 01JQ). The
+displayed formula fixes the projection orientation: `p1` acts on the first
+tensor factor and `c` on the second. -/
 lemma exists_tensorLinearEquiv_of_isPullback (c p1 : B →+* D)
     (hbase : c.comp (algebraMap A B) = p1.comp (algebraMap A B))
     (hcart : IsPullback

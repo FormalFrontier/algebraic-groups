@@ -11,6 +11,14 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 This file defines characteristic monomorphisms of group objects: every automorphism of the
 ambient group object restricts to an automorphism of the subgroup object.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 1.3, for the algebraic-subgroup
+  context. The automorphism-restriction condition here is stated for group objects in
+  an arbitrary cartesian monoidal category.
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, for group-object morphisms
+  and isomorphisms used to formulate the restriction.
 -/
 
 public section

@@ -14,9 +14,9 @@ public import Mathlib.RingTheory.Smooth.Field
 /-!
 # Geometrically reduced field extensions
 
-This file relates geometric reducedness to separable generation and formal smoothness for field
-extensions of finite type. It also records that geometric reducedness over a field is preserved by
-localization.
+This file relates geometric reducedness to separable generation and formal smoothness for
+essentially finite-type field extensions. It also records that geometric reducedness over a
+field is preserved by localization.
 
 ## Main results
 
@@ -25,6 +25,17 @@ localization.
 - `Algebra.IsSeparablyGenerated.of_isGeometricallyReduced`
 - `Algebra.FormallySmooth.of_isGeometricallyReduced`
 - `IsSepClosed.instInfinite`: a separably closed field is infinite
+
+## References
+
+- The Stacks Project, [Lemma 10.44.2 (Tag 030W)](https://stacks.math.columbia.edu/tag/030W),
+  for the positive-characteristic equivalence between geometric reducedness and separability
+  of field extensions, including the criterion using powers of independent elements.
+- Mathlib's `Algebra.isGeometricallyReduced_field_iff`,
+  `exists_isTranscendenceBasis_and_isSeparable_of_perfectField`,
+  `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType`, and
+  `FormallySmooth.of_algebraicIndependent_of_isSeparable` supply the formal algebraic
+  characterization and the separating-basis route to formal smoothness.
 -/
 
 public section
@@ -58,7 +69,8 @@ theorem of_isLocalization {A B : Type v} [CommRing A] [CommRing B]
     (M.map (Algebra.TensorProduct.includeRight (R := k) (A := E))) (E ⊗[k] B) inferInstance
 
 /-- A linearly independent family in a geometrically reduced field extension remains linearly
-independent after taking `p`th powers in positive characteristic. -/
+independent after taking `p`th powers in positive characteristic. This is the geometric-reducedness
+direction of the separability criterion in the Stacks Project, Lemma 10.44.2 (Tag 030W). -/
 theorem linearIndepOn_pow (p : ℕ) [hp : Fact p.Prime] [CharP k p]
     [Algebra.IsGeometricallyReduced k K]
     {s : Set K} (hs : LinearIndepOn k _root_.id s) :
@@ -144,7 +156,10 @@ namespace Algebra
 
 variable (k : Type u) (K : Type v) [Field k] [Field K] [Algebra k K]
 
-/-- A geometrically reduced field extension of finite type is separably generated. -/
+/-- A geometrically reduced, essentially finite-type field extension is separably generated.
+In positive characteristic this uses the power criterion of the Stacks Project,
+Lemma 10.44.2 (Tag 030W); in characteristic zero it uses Mathlib's perfect-field
+separating-basis theorem. -/
 instance (priority := low) IsSeparablyGenerated.of_isGeometricallyReduced
     [Algebra.IsGeometricallyReduced k K] [Algebra.EssFiniteType k K] :
     Algebra.IsSeparablyGenerated k K := by
@@ -161,7 +176,10 @@ instance (priority := low) IsSeparablyGenerated.of_isGeometricallyReduced
           Algebra.IsGeometricallyReduced.linearIndepOn_pow (k := k) (K := K) p hs
     exact ⟨s, hs, hsep⟩
 
-/-- A geometrically reduced field extension of finite type is formally smooth. -/
+/-- A geometrically reduced, essentially finite-type field extension is formally smooth.
+The Stacks Project, Lemma 10.44.2 (Tag 030W), supplies the positive-characteristic
+separability criterion; Mathlib's `FormallySmooth.of_algebraicIndependent_of_isSeparable`
+gives the formal-smoothness step after choosing a separating basis. -/
 instance (priority := low) FormallySmooth.of_isGeometricallyReduced
     [Algebra.IsGeometricallyReduced k K] [Algebra.EssFiniteType k K] :
     Algebra.FormallySmooth k K := by

@@ -17,6 +17,28 @@ Over an algebraically closed field, fewer polynomial equations than variables ca
 isolate a known common zero. Positive-degree homogeneous equations automatically
 have the origin as a common zero, and hence also have a nonzero common zero under
 the same strict cardinality bound.
+
+The uniqueness bound uses mathlib's strong affine Nullstellensatz to make
+the evaluation prime minimal over the ideal of the equations. Mathlib's
+finite-generator Krull height bound then applies to the image of the family,
+and `MvPolynomial.height_ker_eval` computes the evaluation prime's height.
+The other two results use this bound and, for homogeneous equations, the
+origin as an already known common zero.
+
+## References
+
+* The Stacks Project, [Theorem 10.34.1](https://stacks.math.columbia.edu/tag/00FV)
+  (Hilbert's Nullstellensatz) and
+  [Lemma 10.60.12](https://stacks.math.columbia.edu/tag/0BBZ)
+  (Krull's height bound for a prime minimal over finitely many generators).
+* The mathlib community, *Mathlib*, `Mathlib.RingTheory.Nullstellensatz` for
+  `MvPolynomial.vanishingIdeal_zeroLocus_eq_radical`, and
+  `Mathlib.RingTheory.Ideal.KrullsHeightTheorem` for
+  `Ideal.height_le_card_of_mem_minimalPrimes_span_finset`, and
+  `Mathlib.RingTheory.MvPolynomial.Homogeneous` for the vanishing of positive-degree
+  homogeneous polynomials at the origin.
+* `AlgebraicGroups.Algebra.PolynomialRationalPointHeight` for the height of
+  the rational evaluation ideal used in the inequality.
 -/
 
 public section
@@ -33,7 +55,11 @@ variable {K : Type u} [Field K] [IsAlgClosed K]
 variable {σ : Type v} [Fintype σ] {ι : Type w} [Fintype ι]
 
 /-- A finite polynomial family with exactly one common zero has at least as many
-equations as variables. Repetitions and zero polynomials are permitted. -/
+equations as variables. From Hilbert's Nullstellensatz and Krull's height
+theorem (Stacks Project, Theorem 10.34.1 and Lemma 10.60.12), using mathlib's
+`vanishingIdeal_zeroLocus_eq_radical` and finite-generator height bound on
+the prime minimal over the family's ideal. Repetitions and zero polynomials
+are permitted. -/
 theorem card_le_card_of_unique_common_zero (f : ι → MvPolynomial σ K) (a : σ → K)
     (hunique : ∀ x : σ → K, (∀ i, eval x (f i) = 0) ↔ x = a) :
     Fintype.card σ ≤ Fintype.card ι := by
@@ -62,7 +88,10 @@ theorem card_le_card_of_unique_common_zero (f : ι → MvPolynomial σ K) (a : �
     (hheight.trans (by exact_mod_cast Finset.card_image_le (s := Finset.univ) (f := f)))
 
 /-- If a finite family has fewer equations than variables, any known common zero
-has another distinct common zero. -/
+has another distinct common zero. This is the contrapositive of the
+Nullstellensatz-and-Krull-height bound `card_le_card_of_unique_common_zero`
+(Stacks Project, Theorem 10.34.1 and Lemma 10.60.12); the supplied zero is
+essential for arbitrary equations. -/
 theorem exists_common_zero_ne (f : ι → MvPolynomial σ K) (a : σ → K)
     (hcard : Fintype.card ι < Fintype.card σ)
     (ha : ∀ i, eval a (f i) = 0) :
@@ -78,7 +107,11 @@ theorem exists_common_zero_ne (f : ι → MvPolynomial σ K) (a : σ → K)
   exact (not_le_of_gt hcard) (card_le_card_of_unique_common_zero f a hunique)
 
 /-- Fewer positive-degree homogeneous equations than variables have a nonzero
-common zero; degree labels can differ and zero equations are allowed. -/
+common zero. Positive homogeneity makes the origin a known zero; the
+Nullstellensatz-and-Krull-height consequence `exists_common_zero_ne` supplies
+another (Stacks Project, Theorem 10.34.1 and Lemma 10.60.12). Mathlib's
+`IsHomogeneous.coeff_eq_zero` handles the origin. Degree labels can differ and
+zero equations are allowed. -/
 theorem exists_nonzero_common_zero_of_isHomogeneous (f : ι → MvPolynomial σ K)
     (d : ι → ℕ) (hcard : Fintype.card ι < Fintype.card σ)
     (hpositive : ∀ i, 0 < d i) (hhomo : ∀ i, (f i).IsHomogeneous (d i)) :

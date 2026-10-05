@@ -26,6 +26,35 @@ The principal bridge is `hasExpectedGeometry_of_hasExpectedAlgebra`: faithful
 flatness of the invariant-ring inclusion and bijectivity of the canonical
 tensor-product comparison imply flatness and surjectivity of the quotient map
 and invertibility of the kernel-pair comparison.
+
+An arbitrary affine pair has the categorical coequalizer here. The bridge
+*assumes* the two hard ring facts; an internal equivalence relation and
+finite-flat relation legs are not shown to imply them. Consequently this file
+does not prove the finite locally free affine quotient theorem or represent
+an fppf quotient sheaf. Its ring comparison applies the first relation map
+to the first tensor factor and the second to the second, reversing the leg
+order of the displayed comparison in Stacks Project, Proposition 39.23.9
+(tag 03BM).
+
+## References
+
+* Stacks Project, Proposition 39.23.9 (tag 03BM), for the finite locally
+  free affine equivalence-relation theorem motivating the conditional bridge;
+  Lemma 10.83.2 (tag 03C4), for descent of finite module presentation.
+* J. S. Milne, *Algebraic Groups*, Appendix B, Theorems B.26 and B.37, for
+  the wider quotient setting; their nonaffine and subgroup conclusions are
+  not obtained here.
+* Mathlib, `Mathlib.AlgebraicGeometry.AffineScheme` for affine spectra and
+  coequalizers, `Mathlib.CategoryTheory.EquivalenceRelation` for internal
+  relation/effectivity structures, and `Mathlib.AlgebraicGeometry.EffectiveEpi`
+  for the faithfully flat geometric setting.
+* Mathlib, `Mathlib.Algebra.Algebra.Subalgebra.Basic` for the
+  `AlgHom.equalizer` defining the invariant ring, and
+  `Mathlib.RingTheory.Flat.Equalizer` for separate flat base-change context;
+  `Mathlib.Algebra.Category.Ring.Constructions` and
+  `Mathlib.AlgebraicGeometry.Pullbacks` for tensor pushouts and affine
+  pullbacks, and `Mathlib.RingTheory.Flat.EquationalCriterion` for the
+  finite-presentation-to-projectivity step.
 -/
 
 noncomputable section
@@ -86,7 +115,9 @@ def HasExpectedGeometry : Prop :=
     IsIso (kernelPairComparison s t)
 
 /-- Once the kernel-pair comparison is invertible, the affine coequalizer is
-an effective quotient of a categorical equivalence relation. -/
+an effective quotient of a categorical equivalence relation. This packages
+the final categorical step of Stacks Project, Proposition 39.23.9 (tag
+03BM), assuming rather than proving comparison invertibility. -/
 def effectiveEquivalenceRelation
     (e : EquivalenceRelation s t) [IsIso (kernelPairComparison s t)] :
     EffectiveEquivalenceRelation s t where
@@ -143,7 +174,9 @@ def snd : A →ₐ[invariantRing S A C f g] C :=
     rw [map_mul, b.2])
 
 /-- The canonical map from the tensor square over the invariant ring to the
-target ring. -/
+target ring. It sends `x ⊗ₜ y` to `f x * g y`, the swapped-leg orientation
+relative to the displayed map in Stacks Project, Proposition 39.23.9
+(tag 03BM). -/
 def kernelPairComparison :
     _root_.TensorProduct (invariantRing S A C f g) A A
       →ₐ[invariantRing S A C f g] C :=
@@ -164,7 +197,9 @@ def HasExpectedAlgebra : Prop :=
 
 /-- Under the expected tensor-square comparison, finite presentation of the
 relation ring over the object ring descends to finite presentation of the
-object ring over the invariant ring. -/
+object ring over the invariant ring. This is the module-presentation descent
+of Stacks Project, Lemma 10.83.2 (tag 03C4), conditional on the faithful
+flatness and tensor equivalence supplied as hypotheses. -/
 lemma finitePresentation_of_hasExpectedAlgebra
     [Algebra A C] [Module.FinitePresentation A C]
     (hf : algebraMap A C = f.toRingHom) (h : HasExpectedAlgebra S A C f g) :
@@ -184,7 +219,10 @@ lemma finitePresentation_of_hasExpectedAlgebra
   exact Module.FinitePresentation.of_finitePresentation_tensorProduct_of_faithfullyFlat A
 
 /-- Under the same hypotheses, the object ring is a finite projective module
-over the invariant ring. -/
+over the invariant ring: descend module finite presentation as in Stacks
+Project, Lemma 10.83.2 (tag 03C4), then use Mathlib's theorem that finitely
+presented flat modules are projective. Faithful flatness and the comparison
+are assumed here rather than derived as in Proposition 39.23.9 (tag 03BM). -/
 lemma projective_of_hasExpectedAlgebra
     [Algebra A C] [Module.FinitePresentation A C]
     (hf : algebraMap A C = f.toRingHom) (h : HasExpectedAlgebra S A C f g) :
@@ -417,7 +455,10 @@ lemma kernelPairComparison_isIso_of_hasExpectedAlgebra
     AffineScheme.forgetToScheme
 
 /-- Faithful flatness and tensor-comparison bijectivity imply all expected
-geometric properties of the affine coequalizer. -/
+geometric properties of the affine coequalizer. These are the geometric
+consequences in Stacks Project, Proposition 39.23.9 (tag 03BM), but the two
+algebraic hypotheses are assumed here, not deduced from finite-flat relation
+legs. -/
 lemma hasExpectedGeometry_of_hasExpectedAlgebra
     (h : Ring.HasExpectedAlgebra
       ℤ Γ(X.obj, ⊤) Γ(R.obj, ⊤)

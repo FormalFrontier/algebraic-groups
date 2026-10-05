@@ -40,3 +40,14 @@ dimension calculation reuses
 coordinate ring/scheme come directly from the existing
 `AlgebraicGroups.Algebra.DiagonalCoordinateRing` and
 `AlgebraicGroups.GroupScheme.Diagonal` modules.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.9: diagonal matrices over a
+  field. The general-base ideal equality and the field dimension calculation
+  here are not claimed as statements of that passage.
+- Mathlib, `Mathlib.RingTheory.KrullDimension.Polynomial` and
+  `Mathlib.RingTheory.Spectrum.Prime.Topology`: polynomial and affine-spectrum
+  dimension. The local supplied-point localization and coordinate-elimination
+  results cited above are distinct earlier Formal Frontier implementations.
+- Contributor credit appears in the repository's [CREDITS](../../../CREDITS.md).

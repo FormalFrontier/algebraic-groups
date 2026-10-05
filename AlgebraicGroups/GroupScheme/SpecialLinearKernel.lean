@@ -14,6 +14,21 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 
 The determinant-one affine scheme is the actual pullback of the finite GL
 determinant character along the unit of the multiplicative group scheme.
+The coordinate pushout and contravariant affine-Spec pullback give a kernel
+universal property for arbitrary test schemes, including nonreduced ones.
+
+## References
+
+* J. S. Milne, *Basic Theory of Affine Group Schemes*, VII §4, Proposition 4.1
+  (generic field-base affine-group kernel quotient) and Example 4.3 (its
+  special-linear instance). The commutative-ring pushout and
+  all-schemes/group-objects kernel properties here use further categorical APIs.
+* Mathlib, `AlgebraicGeometry/Pullbacks.lean`
+  (`isPullback_SpecMap_of_isPushout`),
+  `CategoryTheory/Limits/Constructions/Over/Connected.lean` and
+  `CategoryTheory/Monoidal/Cartesian/GrpLimits.lean` (passing the genuine
+  pullback to schemes over the base and group objects). The quotient and
+  determinant-coordinate maps are supplied by the local GL/SL modules.
 -/
 
 @[expose] public section
@@ -71,8 +86,10 @@ theorem specialLinearDeterminantSquare_commutes :
       (Bialgebra.counitAlgHom K (multiplicativeGroupCoordinateRing K))).toRingHom
   exact congrArg AlgHom.toRingHom (specialLinearDeterminant_eq_unitCoordinate K n)
 
-/-- The actual determinant-one quotient is the pushout of the published
-determinant coordinate map along the multiplicative-group counit. -/
+/-- The determinant-one quotient is the pushout of the determinant coordinate
+map along the multiplicative-group counit, by the quotient universal property
+for every commutative target ring; compare the field-base quotient in Milne,
+*Basic Theory of Affine Group Schemes*, VII §4, Example 4.3. -/
 theorem specialLinearDeterminantSquare_isPushout :
     IsPushout
       (CommRingCat.ofHom (generalLinearDeterminantCoordinateMap K n).toRingHom)
@@ -129,8 +146,11 @@ theorem specialLinearDeterminantSquare_isPushout :
       change lift (algebraMap K (SpecialLinearCoordinateRing.CoordinateRing K n) r) = b.hom r
       exact hbase r
 
-/-- Contravariant `Spec` turns the actual coordinate pushout into the scheme
-pullback of determinant along the multiplicative-group unit. -/
+/-- Contravariant `Spec` turns the coordinate pushout into the scheme pullback
+of determinant along the multiplicative-group unit. Milne, *Basic Theory of
+Affine Group Schemes*, VII §4, Proposition 4.1 and Example 4.3 describe the
+field-base kernel; Mathlib's `isPullback_SpecMap_of_isPushout` gives this
+pullback in all schemes over any commutative base. -/
 theorem specialLinearDeterminantSquare_isPullback :
     IsPullback (specialLinearInclusion K n).hom.hom.left
       (specialLinearGroupUnderlyingScheme K n).hom
@@ -170,7 +190,9 @@ def multiplicativeUnitGroupHom :
     (multiplicativeGroupScheme K).toMon)
 
 /-- The determinant-one group scheme is the categorical kernel square of the
-published determinant character, for arbitrary test group schemes. -/
+determinant character for arbitrary test group schemes. Mathlib's
+`GrpLimits` limit-creation instance and `IsPullback.of_map_of_faithful`
+lift the underlying `Over` pullback to group objects. -/
 theorem specialLinearDeterminantSquare_isPullback_group :
     IsPullback (specialLinearInclusion K n) (specialLinearToTrivialGroupHom K n)
       (generalLinearDeterminantSchemeHom K n) (multiplicativeUnitGroupHom K) := by
@@ -200,7 +222,9 @@ theorem specialLinearSchemeKernel_universal
   · exact toUnit_unique _ _
 
 /-- Universal property of the determinant kernel for arbitrary `K`-group
-schemes: the lift is itself a group-scheme map, not merely a scheme map. -/
+schemes: the lift is itself a group-scheme map, not merely a scheme map.
+Compare the field-base affine kernel in Milne, *Basic Theory of Affine Group
+Schemes*, VII §4, Proposition 4.1 and Example 4.3. -/
 theorem specialLinearGroupKernel_universal
     (H : Grp (Over (Spec (.of K))))
     (f : H ⟶ generalLinearGroupScheme K n)

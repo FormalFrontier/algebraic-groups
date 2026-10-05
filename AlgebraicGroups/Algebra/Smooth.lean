@@ -20,6 +20,15 @@ reduced.
 - `Algebra.Etale.isReduced_of_isDomain`
 - `Algebra.IsStandardSmooth.isReduced_of_isDomain`
 - `Algebra.Smooth.isReduced_of_isDomain`
+
+## References
+
+- The Stacks Project, [Lemma 10.163.7 (Tag 033B)](https://stacks.math.columbia.edu/tag/033B),
+  gives the stronger result that a smooth algebra over a reduced ring is reduced.
+- Mathlib's `FormallyUnramified.isReduced_of_field`,
+  `RingHom.IsStandardSmooth.exists_etale_mvPolynomial`, and
+  `Smooth.exists_span_eq_top_isStandardSmooth` provide the étale, polynomial, and local
+  smooth-algebra arguments used here.
 -/
 
 public section
@@ -53,7 +62,9 @@ theorem IsStandardSmooth.isReduced_of_isDomain
   have : Etale (MvPolynomial (Fin n) R) S := hg.toAlgebra
   exact Etale.isReduced_of_isDomain (MvPolynomial (Fin n) R) S
 
-/-- A smooth algebra over an integral domain is reduced. -/
+/-- A smooth algebra over an integral domain is reduced; see also the Stacks Project,
+Lemma 10.163.7 (Tag 033B), which allows a reduced base ring. The proof reduces locally to
+standard smooth algebras and then to étale algebras over a polynomial ring. -/
 theorem Smooth.isReduced_of_isDomain
     (R : Type u) (S : Type v) [CommRing R] [IsDomain R] [CommRing S] [Algebra R S]
     [Smooth R S] : IsReduced S := by

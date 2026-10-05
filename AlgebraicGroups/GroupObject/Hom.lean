@@ -11,6 +11,14 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 This file records basic results about morphisms into group objects in a cartesian monoidal
 category.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 1.2 and Proposition 1.21,
+  for multiplication-preserving maps of algebraic groups and their automatic
+  preservation of the unit.
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, for the group
+  structure on morphisms into a group object and the `IsMonHom` interface.
 -/
 
 public section
@@ -27,7 +35,9 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 variable {M G : C} [MonObj M] [GrpObj G]
 
 /-- A morphism from a monoid object to a group object that preserves multiplication is a monoid
-morphism. -/
+morphism. For algebraic groups, compare Milne, *Algebraic Groups* (2017), Definition 1.2
+and Proposition 1.21; the categorical proof uses idempotence and cancellation rather than
+evaluation on points. -/
 @[to_additive]
 lemma isMonHom_of_mul_hom (f : M ⟶ G)
     (mul_hom : μ[M] ≫ f = (f ⊗ₘ f) ≫ μ[G]) : IsMonHom f where

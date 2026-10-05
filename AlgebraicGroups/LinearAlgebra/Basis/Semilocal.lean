@@ -12,6 +12,33 @@ public import Mathlib.RingTheory.Jacobson.Ideal
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
+/-!
+# Basis selection over semilocal algebras
+
+A spanning subspace over an infinite field contains a basis of a finite free
+module over a semilocal algebra. For a local base ring with infinite residue
+field, the same selection works when the extended maximal ideal lies in the
+Jacobson radical. The finite index set may be empty.
+
+The selection first avoids finitely many proper kernels over a field, then
+finds unit coordinates modulo each maximal ideal. A unit coordinate permits
+a basis update by the determinant and adjugate identities.
+
+## References
+
+* The Stacks Project, Lemma 10.78.8
+  ([tag 03C1](https://stacks.math.columbia.edu/tag/03C1)), proves the
+  local-ring version by reducing to the infinite residue field and selecting
+  a basis over a semilocal algebra. The field version below uses the same
+  finite-avoidance idea.
+* Mathlib, `Mathlib.Algebra.Module.Submodule.Union`
+  (`Submodule.exists_forall_notMem_of_forall_ne_top`),
+  `Mathlib.RingTheory.Ideal.Nonunits`, `Mathlib.RingTheory.Jacobson.Ideal`,
+  `Mathlib.LinearAlgebra.Determinant`, and
+  `Mathlib.LinearAlgebra.Matrix.Adjugate` provide the avoidance, unit,
+  Jacobson, and basis-update ingredients.
+-/
+
 @[expose] public section
 
 open Function
@@ -223,7 +250,8 @@ variable {K : Type*} [Field K] [Infinite K] [Algebra K A]
   [Module K M] [IsScalarTower K A M] [Finite (MaximalSpectrum A)]
 
 /-- A base-field subspace spanning a finite free module over a semilocal
-algebra contains a basis. -/
+algebra contains a basis. This is a field-base analogue of Stacks Project,
+Lemma 10.78.8 (tag 03C1). -/
 lemma exists_basis_subset (b : Basis ι A M) (W : Submodule K M)
     (hW : Submodule.span A (W : Set M) = ⊤) :
     ∃ b' : Basis ι A M, ∀ i, b' i ∈ W := by
@@ -257,7 +285,9 @@ variable {R B L : Type*} [CommRing R] [IsLocalRing R]
   [Finite (MaximalSpectrum B)]
 
 /-- Local-base version of `exists_basis_subset`: a generating base submodule
-contains a basis if the extended maximal ideal lies in the Jacobson radical. -/
+contains a basis if the extended maximal ideal lies in the Jacobson radical.
+This is the basis-selection conclusion of Stacks Project, Lemma 10.78.8
+(tag 03C1). -/
 lemma exists_basis_subset_of_le_jacobson (b : Basis ι B L) (W : Submodule R L)
     (hW : Submodule.span B (W : Set L) = ⊤)
     (hJ : Ideal.map (algebraMap R B) (IsLocalRing.maximalIdeal R) ≤

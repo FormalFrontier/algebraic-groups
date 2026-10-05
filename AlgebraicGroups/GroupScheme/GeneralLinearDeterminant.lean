@@ -14,6 +14,25 @@ For any commutative ring and finite matrix index type, determinant induces a mor
 from the general linear group scheme to the multiplicative group scheme. The
 coordinate map sends the Laurent generator to the determinant of the universal
 matrix; its point map is the unit-valued determinant on every coefficient algebra.
+
+The coordinate map goes from the Laurent algebra to the localized GL algebra;
+`hopfSpec` reverses this direction. Group-likeness is an identity in the
+coordinate tensor algebra, obtained from the universal matrix multiplication,
+not from values at rational points. Empty index types and zero base rings are included.
+
+## References
+
+* J. S. Milne, *Algebraic Groups*, §2.8 (finite-matrix GL coordinates over a field).
+* J. S. Milne, *Basic Theory of Affine Group Schemes*, VII §4, Proposition 4.1
+  (generic field-base kernel quotient) and Example 4.3 (the determinant
+  morphism and its special-linear kernel).
+* The Stacks Project, Example 39.5.5 (tag 022X), gives the determinant
+  morphism of positive-size general linear group schemes over any base.
+* Mathlib, `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean` (`det`, `map_det`),
+  `RingTheory/Bialgebra/MonoidAlgebra.lean` and
+  `RingTheory/HopfAlgebra/MonoidAlgebra.lean` (the Laurent Hopf coordinates),
+  and `AlgebraicGeometry/Group/Affine.lean` (`hopfSpec`). The local finite GL
+  and multiplicative-group coordinate/point APIs supply the remaining readbacks.
 -/
 
 public section
@@ -59,7 +78,9 @@ def generalLinearDeterminantUnit : (CoordinateRing K n)ˣ :=
   exact (isUnit_matrix_det K n).mul_left_cancel
     (h.trans (det_mul_detInverse K n).symm)
 
-/-- The universal determinant is group-like for the actual GL coalgebra. -/
+/-- The universal determinant is group-like for the GL coalgebra. This follows
+from `Matrix.det_mul` and determinant compatibility with algebra maps, applied
+to the comultiplication of the universal matrix in the tensor coordinate ring. -/
 theorem generalLinearDeterminant_comul :
     Coalgebra.comul (R := K) (matrix K n).det =
       (matrix K n).det ⊗ₜ[K] (matrix K n).det := by
@@ -132,7 +153,11 @@ private theorem generalLinearDeterminant_coordinate_ext {R : Type u} [CommRing R
         generalLinearDeterminantCoordinateMap_coordinate,
         generalLinearDeterminant_comul])
 
-/-- The determinant character as a morphism of native group schemes over `Spec K`. -/
+/-- The determinant character as a group-scheme morphism over `Spec K`.
+Milne, *Basic Theory of Affine Group Schemes*, VII §4, Example 4.3,
+gives the field-base morphism; the Stacks Project, Example 39.5.5 (tag 022X),
+gives the positive-size arbitrary-base morphism. Here the Laurent-coordinate
+bialgebra map and Mathlib's `hopfSpec` include the empty-index case. -/
 @[expose] def generalLinearDeterminantSchemeHom :
     generalLinearGroupScheme K n ⟶ multiplicativeGroupScheme K :=
   (hopfSpec (.of K)).map
@@ -147,7 +172,10 @@ private theorem generalLinearDeterminant_coordinate_ext {R : Type u} [CommRing R
 
 variable (R : Type u) [CommRing R] [Algebra K R]
 
-/-- The determinant character sends a GL point to its unit-valued determinant. -/
+/-- The determinant character sends every affine GL point to its unit-valued
+determinant; compare the field case in Milne, *Basic Theory of Affine Group
+Schemes*, VII §4, Example 4.3, and the arbitrary-base character in the Stacks
+Project, Example 39.5.5 (tag 022X). -/
 theorem generalLinearDeterminant_point (g : Matrix.GeneralLinearGroup n R) :
     generalLinearGroupMulEquivPoints K n R g ≫ (generalLinearDeterminantSchemeHom K n).hom.hom =
       multiplicativeGroupMulEquivPoints K R (Matrix.GeneralLinearGroup.det g) := by

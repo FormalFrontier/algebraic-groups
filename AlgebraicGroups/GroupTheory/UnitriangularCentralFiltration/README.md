@@ -64,3 +64,20 @@ schemes, additive quotient group schemes, or scheme nilpotence.
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
 credit appears in [CREDITS](../../../CREDITS.md).
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), Definition 6.34 and Remark 6.35
+  (central-series criterion), Example 6.36 and §6.49 (unitriangular
+  algebraic-group nilpotence via a central series). Passing to point groups
+  gives nilpotence in Milne's field-based setting, a published special-case
+  antecedent. Milne removes individual entries through algebraic subgroups;
+  the coarser whole-superdiagonal point-group filtration here covers arbitrary
+  commutative rings, `Fin 0` and the zero ring. Its `n-1` class upper bound
+  does not follow from a numerical claim attributed to Milne; no algebraic
+  subgroup-scheme correspondence is asserted here.
+- Mathlib contributors, `Mathlib.GroupTheory.Nilpotent` (descending central
+  series, lower central series and nilpotency class) and
+  `Mathlib.GroupTheory.Commutator.Basic` (subgroup commutators). The underlying
+  unitriangular group and coefficient map are supplied by this library's
+  `AlgebraicGroups.GroupScheme.Unitriangular`.

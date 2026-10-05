@@ -19,6 +19,21 @@ For a finite-dimensional vector space `V` over a field `K`, the symmetric algebr
 on its dual represents the additive group functor `R ↦ V ⊗[K] R`.
 The tensor–dual equivalence is canonical; finite dimensionality is used for
 its inverse and for finite type of the coordinate ring.
+
+Milne's item 2.6 gives the finite-dimensional field-base vector group,
+its dual symmetric-algebra coordinates and representation on all test
+algebras. This implementation uses Mathlib's double-dual evaluation,
+finite-free base change and symmetric-algebra/convolution interfaces;
+the coordinate map itself needs no finite-dimensionality.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.6 (vector group and
+  dual symmetric coordinates).
+- Mathlib, `Mathlib.LinearAlgebra.Dual.Defs` (`Module.evalEquiv`),
+  `Mathlib.RingTheory.TensorProduct.IsBaseChangeHom` (linear-map base change),
+  `Mathlib.LinearAlgebra.SymmetricAlgebra.Basis` (polynomial coordinates),
+  and `Mathlib.AlgebraicGeometry.Group.Affine` (affine group points).
 -/
 
 public section
@@ -36,7 +51,10 @@ namespace AlgebraicGeometry
 variable (K : Type u) [Field K] (V : Type u) [AddCommGroup V] [Module K V]
   [FiniteDimensional K V]
 
-/-- The canonical, source-order tensor/evaluation equivalence. -/
+/-- The canonical, source-order tensor/evaluation equivalence. Its
+finite-dimensional field-base identification is in Milne, *Algebraic Groups*
+(2017), item 2.6; the inverse uses Mathlib's `Module.evalEquiv` and
+`IsBaseChange.linearMapRightBaseChangeEquiv`. -/
 @[expose] def vectorGroupTensorDualEquiv (R : Type u) [CommRing R] [Algebra K R] :
     (V ⊗[K] R) ≃ₗ[K] (Module.Dual K V →ₗ[K] R) :=
   let first : (V ⊗[K] R) ≃ₗ[K] (R ⊗[K] V) := TensorProduct.comm K V R
@@ -237,7 +255,9 @@ theorem vectorGroupMulEquivPoints_apply_left (x : V ⊗[K] R) :
         (vectorGroupMulEquivAlgHom K V R (.ofAdd x)).ofConv.toRingHom) :=
   rfl
 
-/-- The vector group scheme represents the group-valued tensor functor. -/
+/-- The vector group scheme represents the group-valued tensor functor on
+commutative test algebras, as in Milne, *Algebraic Groups* (2017), item 2.6.
+The statement includes zero test algebras and naturality for every algebra map. -/
 @[expose] def vectorGroupPointsIso :
     vectorGroupFunctor K V ≅ vectorGroupPointsFunctor K V :=
   NatIso.ofComponents

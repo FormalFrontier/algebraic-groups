@@ -61,6 +61,24 @@ signatures and `Fin 0`/`Fin 1`/`Fin 2`, `ZMod 1`, a proved noninjective map
 `ℤ →+* ZMod 1`, and a genuine `DualNumber ℤ` conjugation in which the
 nonzero epsilon coefficient survives.
 
+## References
+
+Milne, *Algebraic Groups* (2017), item 2.9, p. 42, describes `T_n`, `U_n`
+and `D_n` as subgroup functors of `GL_n` on commutative algebras; item 2.8,
+p. 41, supplies the GL context. The arbitrary-ring U-first point-group
+splitting here is a separate result, not a theorem ascribed to that item.
+Mathlib's `Matrix.GeneralLinearGroup` and coefficient maps come from
+`Mathlib/LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean`; triangular
+inversion and determinants come from `Mathlib/LinearAlgebra/Matrix/Block.lean`.
+The kernel, normalizer-conjugation and transported automorphism use
+`Mathlib/Algebra/Group/Subgroup/Ker.lean`,
+`Mathlib/GroupTheory/Subgroup/Centralizer.lean` and
+`Mathlib/Algebra/Group/End.lean`. The U-first multiplication and natural
+coordinate map use `SemidirectProduct.lift` and Thomas Browning's
+`SemidirectProduct.map` from `Mathlib/GroupTheory/SemidirectProduct.lean`.
+The [diagonal](../Diagonal.lean)
+and [unitriangular](../../GroupScheme/Unitriangular.lean) producers supply
+the previously constructed groups.
 
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party

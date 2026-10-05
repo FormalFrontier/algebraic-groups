@@ -12,6 +12,16 @@ public import Mathlib.AlgebraicGeometry.AffineSpace
 This file proves that an epimorphism of schemes induces an injective map on global sections.
 It also packages the resulting criterion that an affine quotient of a scheme with unchanged
 global sections is trivial.
+
+## References
+
+- Mathlib, `AffineSpace.toSpecMvPolyIntEquiv` and
+  `AffineSpace.toSpecMvPolyIntEquiv_comp`
+  (`Mathlib.AlgebraicGeometry.AffineSpace`): representation of global sections
+  by maps to the affine line, used with categorical epimorphism cancellation.
+- Mathlib, `Flat.epi_of_flat_of_surjective` and
+  `HasAffineProperty.iff_of_isAffine`: the flat-surjective specialization and
+  the affine-morphism criterion used below.
 -/
 
 public section
@@ -22,7 +32,9 @@ namespace AlgebraicGeometry
 
 universe u
 
-/-- An epimorphism of schemes induces an injective map on global sections. -/
+/-- An epimorphism of schemes induces an injective map on global sections:
+represent sections by morphisms to the affine line using Mathlib's
+`AffineSpace.toSpecMvPolyIntEquiv`, then cancel the epimorphism. -/
 lemma Scheme.Hom.appTop_injective_of_epi {X Y : Scheme.{u}} (f : X ⟶ Y) [Epi f] :
     Function.Injective f.appTop := by
   intro a b h
@@ -48,7 +60,9 @@ lemma Scheme.Hom.appTop_injective_of_flat_of_surjective
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Suppose `q : X ⟶ Y` is an epimorphism and `p : Y ⟶ Z` is affine, with `Z` affine.
-If `p ∘ q` induces an isomorphism on global sections, then `p` is an isomorphism. -/
+If `p ∘ q` induces an isomorphism on global sections, then `p` is an isomorphism;
+the proof uses Mathlib's `HasAffineProperty.iff_of_isAffine` to reduce to the
+global-section map. -/
 lemma IsAffineHom.isIso_of_epi_of_isIso_comp_appTop
     {X Y Z : Scheme.{u}} (q : X ⟶ Y) (p : Y ⟶ Z) [Epi q] [IsAffine Z]
     [IsAffineHom p] [IsIso ((q ≫ p).appTop)] : IsIso p := by

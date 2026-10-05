@@ -18,6 +18,20 @@ A linear map induces a morphism of affine group schemes by pullback of linear
 polynomial coordinates. This construction does not require finite dimension.
 Finite bases additionally identify a vector group with a categorical product
 of additive groups, including the empty product.
+
+Milne's item 2.6 directly gives the chosen-basis field group-scheme
+identification `Gₐ^n ≃ Vₐ`. The construction here also provides maps from
+arbitrary vector spaces and proves the finite product's universal property
+for all schemes over the base, including nonaffine schemes and empty bases.
+Tensor-valued point comparisons still require finite dimensionality.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.6 (chosen-basis vector
+  group as a product of additive groups).
+- Mathlib, `Mathlib.LinearAlgebra.Dual.Basis` (dual-basis coordinates),
+  `Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits` (group-object limits),
+  and `Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts` (product cones).
 -/
 
 public section
@@ -281,7 +295,10 @@ def vectorGroupBasisFan_isLimit {i : Type u} [Finite i]
     (vectorGroupBasisFan_forget_isLimit K V b)
 
 /-- A chosen finite basis identifies the vector group with the literal product
-of its one-dimensional additive group factors. -/
+of its one-dimensional additive group factors. Milne, *Algebraic Groups*
+(2017), item 2.6 gives this group-scheme identification over a field for a
+basis of size `n`; here the categorical product also includes the empty
+index type. -/
 def vectorGroupSchemeProductIso {i : Type u} [Finite i]
     (b : Module.Basis i K V) :
     vectorGroupScheme K V ≅ (∏ᶜ fun _ : i ↦ additiveGroupScheme K) :=

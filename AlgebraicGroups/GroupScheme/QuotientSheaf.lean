@@ -43,6 +43,28 @@ represented by `Q`.
 - `CategoryTheory.IsMonHom.Normal.relativeFppfQuotientMap`
 - `CategoryTheory.IsMonHom.Normal.relativeFppfQuotientMap_isIso`
 - `CategoryTheory.IsMonHom.Normal.relativeFppfQuotientIso`
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 5.20 and Proposition 5.21
+  (coset quotients and factorization), Propositions 5.24–5.25 (the relation
+  square and faithfully flat quotient map), and Theorem 5.28 / Theorem B.37
+  (existence over a field). Here the base is arbitrary; sheafification and
+  recognition of a **supplied** quotient target do not prove that existence theorem.
+* Mathlib, `Mathlib.AlgebraicGeometry.Sites.Fpqc` (the fppf site and its
+  subcanonical property), `Mathlib.CategoryTheory.Sites.Over` and
+  `Mathlib.CategoryTheory.Sites.SubcanonicalOver` (the relative site), and
+  `Mathlib.CategoryTheory.Sites.Canonical` (sheaves of represented functors).
+* Mathlib, `Mathlib.CategoryTheory.Sites.Sheafification` and
+  `Mathlib.CategoryTheory.Sites.LeftExact` (sheafification),
+  `Mathlib.CategoryTheory.Sites.LocallySurjective` and
+  `Mathlib.CategoryTheory.Sites.LocallyBijective` (local epimorphisms and
+  sheafification equivalences). `Mathlib.Algebra.Category.Grp.FilteredColimits`
+  supplies the group-colimit cocone packaged by
+  `AlgebraicGroups.Category.Grp.FilteredColimits` into the same-universe
+  instance needed for group-valued sheafification;
+  `AlgebraicGroups.GroupObject.Quotient` supplies the pointwise quotient and
+  kernel-recognition formalization used here.
 -/
 
 @[expose] public section
@@ -55,7 +77,8 @@ universe u
 
 namespace AlgebraicGeometry.Scheme
 
-/-- The relative fppf topology on schemes over `S`. -/
+/-- The relative fppf topology on schemes over `S`, obtained from Mathlib's
+`Scheme.fppfTopology.over S`. -/
 abbrev relativeFppfTopology (S : Scheme.{u}) : GrothendieckTopology (Over S) :=
   Scheme.fppfTopology.over S
 
@@ -85,7 +108,9 @@ lemma relativeFppfYoneda_isSheaf (G : Over S) [GrpObj G] :
       CategoryTheory.uliftFunctor.{u + 1, u})
 
 /-- The group-valued relative fppf sheaf represented by a group scheme over `S`,
-with values lifted to the universe in which relative fppf sheafification exists. -/
+with values lifted to the universe in which relative fppf sheafification exists.
+The sheaf condition follows from Mathlib's subcanonical relative topology and
+its criterion for sheaves after forgetting the group structure. -/
 noncomputable def relativeFppfYoneda (G : Over S) [GrpObj G] :
     Sheaf (relativeFppfTopology S) GrpCat.{u + 1} :=
   ⟨yonedaGrpObj G ⋙ GrpCat.uliftFunctor.{u + 1, u}, relativeFppfYoneda_isSheaf G⟩
@@ -116,8 +141,12 @@ open AlgebraicGeometry AlgebraicGeometry.Scheme
 variable {S : Scheme.{u}} {H G : Over S} [GrpObj H] [GrpObj G]
 variable (i : H ⟶ G) [Normal i]
 
-/-- The group-valued relative fppf quotient sheaf of `G` by the normal subgroup
-`H`, obtained by sheafifying the pointwise quotient presheaf. -/
+/-- The group-valued relative fppf quotient sheaf of `G` by the image of a
+normal morphism `i : H ⟶ G`. It sheafifies the pointwise quotient formalized in
+`AlgebraicGroups.GroupObject.Quotient`, using Mathlib's group-valued
+sheafification one universe above the site. Milne's Definition 5.20 and
+Theorem 5.28 concern represented quotients over a field; representability is
+not asserted by this construction over an arbitrary base. -/
 noncomputable def relativeFppfQuotient :
     Sheaf (relativeFppfTopology S) GrpCat.{u + 1} :=
   (presheafToSheaf (relativeFppfTopology S) GrpCat.{u + 1}).obj
@@ -130,7 +159,10 @@ noncomputable abbrev relativeFppfQuotientPresheafMk :
   Functor.whiskerRight (yonedaQuotientMk i) GrpCat.uliftFunctor.{u + 1, u}
 
 /-- The canonical projection from the relative functor of points of `G` to its
-relative fppf quotient sheaf by `H`. -/
+relative fppf quotient sheaf by the image of `H`. Its pointwise quotient
+projection is componentwise surjective; after sheafification the resulting
+projection is locally surjective and epi, not asserted componentwise
+surjective. -/
 noncomputable def relativeFppfQuotientMk :
     relativeFppfYoneda G ⟶ relativeFppfQuotient i :=
   ⟨relativeFppfQuotientPresheafMk i ≫
@@ -292,8 +324,11 @@ lemma relativeFppfQuotientMk_comp_relativeFppfQuotientSheafifyLift
     relativeFppfQuotientPresheafMk i ≫ f
   rw [Category.assoc, toSheafify_sheafifyLift]
 
-/-- A morphism from the relative functor of points of `G` to an fppf sheaf
-that kills `H` descends canonically to the relative fppf quotient sheaf. -/
+/-- A morphism from the relative functor of points of `G` to any group-valued
+relative fppf sheaf that kills `H` descends to the quotient sheaf. This is the
+relative-sheaf analogue of Milne's Proposition 5.21: it uses the pointwise
+`QuotientGroup.lift` followed by Mathlib's `sheafifyLift`, not the existence of
+a represented quotient. Uniqueness follows from `relativeFppfQuotientMk_epi`. -/
 noncomputable def relativeFppfQuotientLift
     {F : Sheaf (relativeFppfTopology S) GrpCat.{u + 1}}
     (f : relativeFppfYoneda G ⟶ F)
@@ -427,7 +462,8 @@ lemma relativeFppfQuotientPresheafMap_W
   exact (relativeFppfTopology S).W_of_isLocallyBijective _
 
 /-- The morphism from the relative fppf quotient sheaf by a kernel subgroup
-scheme to the represented target sheaf. -/
+scheme to the sheaf represented by a supplied target. The pointwise map uses
+`CategoryTheory.IsMonHom.Normal.yonedaQuotientMap`. -/
 noncomputable def relativeFppfQuotientMap
     (h : IsPullback i (toUnit H) q η[Q]) :
     relativeFppfQuotient i ⟶ relativeFppfYoneda Q :=
@@ -445,9 +481,12 @@ lemma relativeFppfQuotientMk_comp_map
   exact relativeFppfQuotientPresheafMk_comp_map q h
 
 set_option linter.style.haveILetI false in
-/-- If `H` is the kernel of an fppf morphism `q : G ⟶ Q`, the induced map
-from the relative fppf quotient sheaf to the sheaf represented by `Q` is an
-isomorphism. -/
+/-- If `H` is the kernel of a supplied fppf morphism `q : G ⟶ Q`, the
+induced map from the relative fppf quotient sheaf to the sheaf represented by
+`Q` is an isomorphism. The kernel pullback gives pointwise injectivity; the
+fppf singleton cover gives local surjectivity. Mathlib's locally-bijective
+criterion then shows that sheafification inverts the map. This recognizes a
+target, rather than constructing the quotient of Milne's Theorem 5.28. -/
 lemma relativeFppfQuotientMap_isIso
     (h : IsPullback i (toUnit H) q η[Q])
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
@@ -481,8 +520,10 @@ lemma relativeFppfQuotientMap_isIso
         (relativeFppfYoneda Q).property
   exact hcomp ▸ inferInstance
 
-/-- The relative fppf quotient sheaf by the kernel of an fppf morphism is
-isomorphic to the sheaf represented by its target. -/
+/-- The relative fppf quotient sheaf by the kernel of a supplied fppf
+morphism is represented by its target. Milne's Propositions 5.24–5.25 give
+the field-based quotient relation and faithful flatness that motivate this
+recognition criterion; no quotient target is constructed here. -/
 noncomputable def relativeFppfQuotientIso
     (h : IsPullback i (toUnit H) q η[Q])
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :

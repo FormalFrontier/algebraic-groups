@@ -11,10 +11,22 @@ public import Mathlib.CategoryTheory.EquivalenceRelation
 /-!
 # Cartesian squares from internal equivalence relations
 
-This file records two structural facts about an internal equivalence relation.
-Its symmetry map is an isomorphism, and its composition map together with the
-first projection exhibits a pullback.  The latter is the categorical square
-used to compare ranks along a finite flat relation.
+This file transports internal equivalence relations across isomorphisms and
+shows that their symmetry maps are involutive isomorphisms. Composition with
+the first projection exhibits a pullback: the categorical square used to
+compare ranks along a finite flat relation.
+
+These statements use only the jointly monic internal relation and its chosen
+limiting cone; they require neither schemes nor an effective quotient.
+
+## References
+
+* Stacks Project, Lemma 39.13.4 (tag 02YE), for groupoid cartesian
+  squares; Lemma 39.23.2 (tag 03BH) uses one in the invariant-norm argument,
+  and Lemma 39.23.3 (tag 03BI) uses symmetry to compare relation-leg ranks.
+  The results here isolate their underlying categorical consequences.
+* Mathlib, `Mathlib.CategoryTheory.EquivalenceRelation`, for jointly monic
+  internal relations and their limiting composition cone.
 -/
 
 open CategoryTheory Limits
@@ -92,7 +104,8 @@ def transport (h : CategoryTheory.EquivalenceRelation p₁ p₂)
           (iR.hom ≫ p₂ ≫ iX.hom) := by simp
 
 /-- The symmetry map of an internal equivalence relation is an isomorphism,
-with itself as inverse. -/
+with itself as inverse. This abstracts the inverse used to compare the two
+relation-leg ranks in Stacks Project, Lemma 39.23.3 (tag 03BI). -/
 lemma isIso_symmetry (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
     IsIso h.s := by
   have hs : h.s ≫ h.s = 𝟙 R := by
@@ -102,7 +115,9 @@ lemma isIso_symmetry (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
   exact ⟨⟨h.s, hs, hs⟩⟩
 
 /-- For an internal equivalence relation, composition and the first
-projection form a pullback over the first relation map. -/
+projection form a pullback over the first relation map. This abstracts the
+groupoid cartesian square of Stacks Project, Lemma 39.13.4 (tag 02YE), without
+requiring a quotient or any geometric hypotheses. -/
 def isLimit_composition_fst (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
     IsLimit (PullbackCone.mk h.t h.c.fst h.transitivity₁) := by
   let inverseComposeCone (z : PullbackCone p₁ p₁) : PullbackCone p₂ p₁ :=

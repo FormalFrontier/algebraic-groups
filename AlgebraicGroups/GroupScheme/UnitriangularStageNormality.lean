@@ -17,6 +17,21 @@ over-schemes, not as a group homomorphism from the product. Its affine product
 is the spectrum of the tensor product of the two coordinate algebras; the
 universal point conjugates into the stage by normality of the matrix subgroup.
 The stage-point equivalence descends this point through the quotient algebra.
+
+Milne's finer field-case filtration consists of subgroups normal even in the
+upper-triangular group; its superdiagonal block endpoints give field-case
+whole stages. This module proves normality in the unitriangular group scheme
+over arbitrary commutative rings.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Example 6.36 and §6.49
+  (nilpotence and normality of the finer field-case filtration).
+* Mathlib contributors, `Mathlib.CategoryTheory.Monoidal.Cartesian.Normal`
+  (`IsMonHom.Normal`) and `Mathlib.AlgebraicGeometry.Pullbacks`
+  (`pullbackSpecIso`).
+* The existing `UnitriangularCentralFiltration` supplies subgroup normality
+  for every coefficient ring.
 -/
 
 @[expose] public section
@@ -95,7 +110,9 @@ end UnitriangularStageNormality
 open UnitriangularStageNormality
 
 /-- Conjugation by the ambient group, factored through the closed stage in
-`Over (Spec K)`. The factor is not asserted to preserve the product group law. -/
+`Over (Spec K)`. The factor is not asserted to preserve the product group law.
+Milne, *Algebraic Groups* (2017), §6.49(a) proves normality for the finer
+field-case filtration, including these superdiagonal block endpoints. -/
 def unitriangularStageConjugation :
     (unitriangularGroupScheme K (Fin n)).X ⊗
       (unitriangularStageScheme K n r).X ⟶ (unitriangularStageScheme K n r).X :=
@@ -131,8 +148,10 @@ theorem unitriangularStageConjugation_inclusion :
   simp only [Category.assoc, Iso.inv_hom_id_assoc] at *
   exact ht.trans hc.symm
 
-/-- Each represented closed superdiagonal stage is a normal subgroup object,
-including ranks zero and one and zero base rings. -/
+/-- Each closed superdiagonal stage is a normal subgroup object, including
+ranks zero and one and zero base rings. Milne, *Algebraic Groups* (2017),
+§6.49 gives a finer field-case normal filtration whose superdiagonal block
+endpoints antecede these whole stages. -/
 instance unitriangularStageInclusion_normal :
     CategoryTheory.IsMonHom.Normal (unitriangularStageInclusion K n r).hom.hom where
   exists_comp_eq_conj := ⟨unitriangularStageConjugation K n r,

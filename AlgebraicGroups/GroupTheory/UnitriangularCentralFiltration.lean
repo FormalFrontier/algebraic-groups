@@ -17,6 +17,23 @@ descending normal filtration by the vanishing of its first superdiagonals.
 Products of matrices supported above superdiagonals `r` and `s` are supported
 above superdiagonal `r + s`; this gives a central series and a nilpotency-class
 bound even for the zero ring and empty index type.
+
+Milne proves unitriangular algebraic-group nilpotence using a central series;
+passing to point groups gives nilpotence in his field-based setting. This
+module instead constructs a coarser whole-superdiagonal filtration over any
+commutative ring, including the zero ring and `Fin 0`, without asserting a
+group-scheme correspondence. The group, coefficient map and general-linear
+matrix operations come from
+`AlgebraicGroups.GroupScheme.Unitriangular` and Mathlib.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), Definition 6.34, Remark 6.35,
+  Example 6.36 and §6.49 (unitriangular algebraic-group nilpotence via a
+  central series, a field-based point-group antecedent).
+- Mathlib contributors, `Mathlib.GroupTheory.Nilpotent` (descending and lower
+  central series, nilpotency class) and `Mathlib.GroupTheory.Commutator.Basic`
+  (subgroup commutators).
 -/
 
 public section
@@ -210,7 +227,9 @@ instance superdiagonalSubgroup_normal (r : ℕ) : (superdiagonalSubgroup n R r).
     rw [heq]
     simpa only [mul_assoc] using hs
 
-/-- The commutator of stages `r` and `s` lies in stage `r + s`. -/
+/-- The commutator of stages `r` and `s` lies in stage `r + s`.
+This point-group version uses Mathlib's `Subgroup.commutator_le`; compare
+Milne, *Algebraic Groups* (2017), Remark 6.35, for algebraic groups. -/
 theorem superdiagonalSubgroup_commutator (r s : ℕ) :
     ⁅superdiagonalSubgroup n R r, superdiagonalSubgroup n R s⁆ ≤
       superdiagonalSubgroup n R (r + s) := by
@@ -267,7 +286,9 @@ theorem superdiagonalSubgroup_commutator (r s : ℕ) :
 def descendingSeries (t : ℕ) : Subgroup (Matrix.UnitriangularGroup (Fin n) R) :=
   superdiagonalSubgroup n R (t + 1)
 
-/-- The full infinite family satisfies the native descending-central-series predicate. -/
+/-- The full infinite family satisfies Mathlib's descending-central-series
+predicate. Compare Milne, *Algebraic Groups* (2017), Definition 6.34 and
+Remark 6.35, for the algebraic-group setting. -/
 theorem descendingSeries_isDescendingCentralSeries :
     Subgroup.IsDescendingCentralSeries (descendingSeries n R) := by
   constructor
@@ -291,13 +312,21 @@ theorem descendingSeries_end : descendingSeries n R (n - 1) = ⊥ := by
   · have hindex : n - 1 + 1 = n := by omega
     simpa only [descendingSeries, hindex] using superdiagonalSubgroup_end n R
 
-/-- The native unitriangular point group is nilpotent over every commutative ring. -/
+/-- The native unitriangular point group is nilpotent over every commutative ring.
+This uses Mathlib's finite-descending-central-series criterion; Milne,
+*Algebraic Groups* (2017), Example 6.36 and §6.49, prove unitriangular
+algebraic-group nilpotence by a central series, yielding the corresponding
+point-group assertion in the field-based setting. The whole-superdiagonal
+argument here also covers arbitrary commutative rings and `Fin 0`. -/
 instance instIsNilpotent : Group.IsNilpotent (Matrix.UnitriangularGroup (Fin n) R) :=
   (Subgroup.nilpotent_iff_finite_descending_central_series _).2
     ⟨n - 1, descendingSeries n R, descendingSeries_isDescendingCentralSeries n R,
       descendingSeries_end n R⟩
 
-/-- The nilpotency class is at most the dimension minus one, also for `Fin 0`. -/
+/-- The nilpotency class is at most the dimension minus one, also for `Fin 0`.
+The bound uses Mathlib's `Subgroup.lowerCentralSeries_eq_bot_iff_nilpotencyClass_le`;
+Milne, *Algebraic Groups* (2017), Example 6.36 and §6.49, supply a field-based
+nilpotence antecedent, not this numerical bound over arbitrary rings. -/
 theorem nilpotencyClass_le :
     Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin n) R) ≤ n - 1 := by
   apply (Subgroup.lowerCentralSeries_eq_bot_iff_nilpotencyClass_le).mp

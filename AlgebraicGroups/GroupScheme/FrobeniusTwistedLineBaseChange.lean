@@ -24,6 +24,13 @@ the sole relation `W ^ p = 0`.  The equivalence sends the original coordinates t
 and hence sends the translated coordinate `Y - α X` to `W`.  Both directions of these
 coordinate formulas are exposed as simp lemmas.
 
+Milne's *Algebraic Groups*, Example 1.27, describes the resulting line
+as having multiplicity `p`. This file establishes the explicit quotient
+presentation and translated-coordinate equations, not a separate geometric
+or cycle-theoretic multiplicity predicate. The equivalence is an algebra
+equivalence after extension to a field `L` with a chosen `α : L` satisfying
+`α ^ p = t`; `L` may have a different universe size from the base field.
+
 ## Main definitions
 
 - `FrobeniusTwistedLine.ThickenedLineCoordinateRing`
@@ -37,6 +44,16 @@ coordinate formulas are exposed as simp lemmas.
 - `FrobeniusTwistedLine.baseChangeNormalForm_witness`
 - `FrobeniusTwistedLine.baseChangeNormalForm_symm_x`
 - `FrobeniusTwistedLine.baseChangeNormalForm_symm_w`
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), Example 1.27, p. 14 (the
+  `p`-th-root base change and multiplicity-`p` line description).
+- `AlgebraicGroups.GroupScheme.FrobeniusTwistedLine` (the quotient relation,
+  scalar-extended coordinate and nilpotent witness used in the normal form).
+- Mathlib, `Mathlib.Algebra.CharP.Lemmas` and the `MvPolynomial` and
+  `Ideal.Quotient` algebra-map APIs (characteristic-power identities and
+  evaluation/lifting from the two polynomial quotients).
 -/
 
 @[expose] public section
@@ -264,9 +281,11 @@ theorem baseChangeNormalFormInv_comp_hom {p : ℕ} (hp : p.Prime) [CharP K p]
     rw [(baseChangeNormalFormInv K L hp t α hα).commutes α]
     simp [nilpotentWitness, Algebra.TensorProduct.tmul_mul_tmul]
 
-/-- After adjoining `α` with `α ^ p = t`, the Frobenius-twisted line has coordinate ring
-`L[W, X] / (W ^ p)`. The equivalence identifies `W` with the translated coordinate
-`1 ⊗ Y - α ⊗ X`. -/
+/-- After choosing `α` with `α ^ p = t`, the Frobenius-twisted line of Milne's
+*Algebraic Groups*, Example 1.27, has scalar-extended coordinate ring
+`L[W, X] / (W ^ p)`. The equivalence identifies `W` with
+`1 ⊗ Y - α ⊗ X`; it gives the explicit thickened-line quotient, rather than
+a geometric multiplicity predicate. -/
 def baseChangeNormalForm {p : ℕ} (hp : p.Prime) [CharP K p]
     (t : K) (α : L) (hα : α ^ p = algebraMap K L t) :
     L ⊗[K] CoordinateRing K p t ≃ₐ[L] ThickenedLineCoordinateRing L p :=

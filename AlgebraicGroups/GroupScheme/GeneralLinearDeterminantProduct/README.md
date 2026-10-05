@@ -24,10 +24,25 @@ ring are covered; rank zero is deliberately **not** claimed because no `pivot`
 exists. There are no field, reducedness, nontrivial-ring, flat-descent, or
 pointwise-test assumptions.
 
-The module reuses `AlgebraicGroups.GroupObject.SplitKernelProduct` for the
-abstract product and the published `AlgebraicGroups.GroupScheme` determinant,
-section, kernel pullback and smoothness APIs. For a pinned project checkout,
-run `lake exe cache get` before focused warning-fatal builds:
+## References
+
+- J. S. Milne, [*Basic Theory of Affine Group Schemes*, XIII §3,
+  item 3.14](https://www.jmilne.org/math/CourseNotes/AGS.pdf):
+  a field-base functorial decomposition with the diagonal factor on the
+  **right**. The present section-first scheme isomorphism, inverse with left
+  normalization and smoothness argument are not assertions of that proof.
+- J. S. Milne, *Algebraic Groups*, §2.8: the field-base GL coordinates and a
+  mention of SL, not the arbitrary-base split-kernel or smoothness argument.
+- [SplitKernelProduct](../../GroupObject/SplitKernelProduct.lean) supplies the
+  categorical isomorphism and readbacks;
+  [SpecialLinearKernel](../SpecialLinearKernel.lean) supplies its kernel square.
+  [GeneralSpecialLinearSmooth](../GeneralSpecialLinearSmooth.lean) establishes
+  the smooth SL structure morphism. Mathlib's
+  `AlgebraicGeometry/Morphisms/Smooth.lean` supplies base-change stability,
+  applied to the second projection.
+
+For a pinned project checkout, fetch the matching mathlib cache before
+focused builds:
 
 ```sh
 lake exe cache get
@@ -35,8 +50,5 @@ lake build AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct
 lake build AlgebraicGroupsTest.GeneralLinearDeterminantProduct
 ```
 
-The producer and its persistent ordinary-import client were originally authored
-by a separate Formal Frontier AI-agent contributor. Exact contribution, review and
-release decisions are recorded outside this shipping guide. The focused imports
-are also reached by the aggregate production import and the default-build test
-roots; build success alone is not release acceptance.
+The focused imports are also reached by the aggregate production import and
+the default-build test roots.

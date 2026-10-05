@@ -49,5 +49,19 @@ cross term obstructs that particular choice, not every conceivable
 group section. No group quotient, descent, smoothness, flatness, base-change
 tower is asserted.
 
-Formal Frontier Agents contributed the stage projection and section
-argument and Lean proof. See [credits](../../../CREDITS.md) for collective credit.
+## References
+
+Milne, *Algebraic Groups* (2017), item 2.9, describes unitriangular groups;
+item 6.49 discusses their filtration, and item 2.1 describes the additive
+group. These are mathematical context, not statements of this arbitrary-ring
+whole-stage projection or its underlying over-scheme section. The Lean
+construction follows Mathlib's `MvPolynomial.rename` and
+`MvPolynomial.killCompl` for the complementary-coordinate retraction and
+`AffineSpace.SpecIso` for the scheme comparison. The actual target uses the
+categorical-product and affine-Spec/global-section formalizations described
+in the [finite-product guide](../AdditiveProductAffineSpace/README.md); the
+local stage-polynomial and coordinate modules supply the source stage.
+
+Formal Frontier Agents contributed this Lean projection and section proof,
+without asserting a multiplicative section or invention of the mathematical
+constructions. See [credits and bibliography](../../../CREDITS.md).

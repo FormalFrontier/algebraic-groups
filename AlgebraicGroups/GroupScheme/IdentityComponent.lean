@@ -28,6 +28,21 @@ preservation of connectedness by scheme fibre products is asserted here.
 Likewise, geometric connectedness of the component is a separate hypothesis:
 connectedness of the component or its Cartesian square is not silently
 promoted to geometric connectedness.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, Proposition 1.34 and its proof, for the
+  identity-component subgroup and restriction of the group operations; and
+  Proposition 1.52 for characteristicity, hence normality. The construction
+  here retains explicit connectedness and geometric-connectedness hypotheses
+  and does not establish the field-extension assertion of Proposition 1.34.
+- The mathlib community, *Mathlib*: `Topology.Connected.LocallyConnected`
+  and `Topology.Connected.Basic` for connected components and continuous
+  images; `AlgebraicGeometry.OpenImmersion` and
+  `AlgebraicGeometry.Morphisms.ClosedImmersion` for the inherited subscheme
+  and its lifts; `AlgebraicGeometry.Geometrically.Connected` for connected
+  fibres after base change; and `CategoryTheory.Monoidal.Cartesian.Normal`
+  for categorical normality.
 -/
 
 public section
@@ -42,7 +57,9 @@ universe u
 variable {S : Scheme.{u}}
 
 /-- The connected component containing the identity of a group scheme over a
-nonempty one-point base, regarded as an open subset. -/
+nonempty one-point base, regarded as an open subset. Compare Milne,
+*Algebraic Groups*, Proposition 1.34; the openness here uses local
+connectedness of the underlying scheme. -/
 @[expose] noncomputable def Scheme.identityComponent (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] : G.left.Opens :=
   ⟨connectedComponent (η[G].left (Classical.choice (inferInstance : Nonempty S))),
@@ -245,7 +262,8 @@ lemma Scheme.identityComponentInv_comp_ι (G : Over S) [GrpObj G]
   exact IsOpenImmersion.lift_fac _ _ _
 
 /-- The identity component is a group scheme when its Cartesian square is
-connected. -/
+connected. This follows the restriction argument in Milne, *Algebraic Groups*,
+Proposition 1.34, with connectedness of the square assumed explicitly. -/
 noncomputable instance Scheme.identityComponent_grpObj (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
     [ConnectedSpace ((Scheme.identityComponentOver G ⊗
@@ -394,7 +412,10 @@ lemma Scheme.identityComponentConj_comp_ι (G : Over S) [GrpObj G]
   exact IsOpenImmersion.lift_fac _ _ _
 
 /-- A geometrically connected identity component is a normal subgroup scheme
-of the ambient group scheme. -/
+of the ambient group scheme. Milne, *Algebraic Groups*, Proposition 1.52,
+proves the stronger characteristicity assertion; here connected fibres of the
+projection from the group times its identity component give the required
+conjugation factorization under explicit hypotheses. -/
 instance Scheme.identityComponentι_normal (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
     [ConnectedSpace ((Scheme.identityComponentOver G ⊗

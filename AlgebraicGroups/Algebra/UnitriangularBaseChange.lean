@@ -15,6 +15,25 @@ arbitrary commutative base ring. The equivalence is transported through its
 published free strict-upper-coordinate presentation. Its entry laws include
 lower and diagonal entries, and require neither nontrivial rings nor nonempty
 indices. This is an algebra comparison, not a Hopf or scheme base-change claim.
+
+Milne's presentation of `U_n` over a field supplies the strict-upper-coordinate
+antecedent; the arbitrary-commutative-base comparison uses Christian Merten's
+Mathlib `MvPolynomial.algebraTensorAlgEquiv`, whose implementation uses Yaël
+Dillies's `AddMonoidAlgebra.scalarTensorEquiv`. Antoine Chambert-Loir's earlier
+`MvPolynomial.scalarRTensorAlgEquiv` is a related scalar-extension formalization,
+not a base-change theorem stated by Milne.
+
+## References
+
+* James S. Milne, *Algebraic Groups* (2017), item 2.9 (the polynomial
+  presentation of `U_n` over a field).
+* Antoine Chambert-Loir, Mathlib,
+  `Mathlib.RingTheory.TensorProduct.MvPolynomial` (the related earlier
+  `MvPolynomial.scalarRTensorAlgEquiv`).
+* Christian Merten, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`
+  (`MvPolynomial.algebraTensorAlgEquiv` and its entry lemmas).
+* Yaël Dillies, Mathlib, `Mathlib.RingTheory.TensorProduct.MonoidAlgebra`
+  (`AddMonoidAlgebra.scalarTensorEquiv`, used in the polynomial equivalence).
 -/
 
 @[expose] public section
@@ -31,7 +50,12 @@ variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
   (ι : Type u) [Fintype ι] [LinearOrder ι]
 
 /-- Extension of scalars for the actual determinant-localized unitriangular
-coordinate quotient, with its natural `S`-algebra structure. -/
+coordinate quotient, with its natural `S`-algebra structure. The strict-upper
+presentation specializes to Milne, *Algebraic Groups*, item 2.9 over a field;
+the scalar-extension step uses Christian Merten's Mathlib
+`MvPolynomial.algebraTensorAlgEquiv`, now implemented using Yaël Dillies's
+`AddMonoidAlgebra.scalarTensorEquiv`. Antoine Chambert-Loir's
+`MvPolynomial.scalarRTensorAlgEquiv` is a related earlier equivalence. -/
 def baseChange : S ⊗[R] CoordinateRing R ι ≃ₐ[S] CoordinateRing S ι :=
   ((Algebra.TensorProduct.congr (AlgEquiv.refl : S ≃ₐ[S] S) (freeEquiv R ι).symm).trans
     (MvPolynomial.algebraTensorAlgEquiv R S)).trans (freeEquiv S ι)

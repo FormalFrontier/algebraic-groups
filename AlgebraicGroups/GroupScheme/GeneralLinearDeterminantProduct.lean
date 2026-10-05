@@ -18,6 +18,18 @@ underlying schemes over the base, with the section multiplied *before* the
 special-linear factor. This is not a direct-product isomorphism of group schemes.
 The projection of this product is a base change of the smooth special-linear
 structure morphism, so the actual determinant morphism of schemes is smooth.
+
+## References
+
+* J. S. Milne, *Basic Theory of Affine Group Schemes*, XIII §3, item 3.14
+  (a field-base functorial product with the diagonal factor on the **right**,
+  not the section-first scheme coordinates used here).
+* `AlgebraicGroups.GroupObject.SplitKernelProduct` supplies the general
+  categorical product isomorphism and normalized-kernel readbacks;
+  `AlgebraicGroups.GroupScheme.SpecialLinearKernel` supplies its genuine
+  kernel square. The smoothness argument uses the local
+  `GeneralSpecialLinearSmooth` instance and Mathlib's
+  `AlgebraicGeometry/Morphisms/Smooth.lean` base-change stability.
 -/
 
 public section
@@ -46,9 +58,12 @@ theorem generalLinearDeterminantSection_over_comp_det (pivot : n) :
     (generalLinearDeterminantSectionSchemeHom_comp_det K n pivot)
   exact h
 
-/-- The actual underlying-scheme isomorphism `SL(n,K) ×ₖ Gₘ,K ≅ GL(n,K)`.
+/-- The underlying-scheme isomorphism `SL(n,K) ×ₖ Gₘ,K ≅ GL(n,K)`.
 Its forward map sends `(s,t)` to `diagonalSection(t) * inclusion(s)`;
-the inverse first normalizes by `diagonalSection(det(g))⁻¹`. -/
+the inverse first normalizes by `diagonalSection(det(g))⁻¹`.
+Milne, *Basic Theory of Affine Group Schemes*, XIII §3, item 3.14,
+uses a field-base functorial decomposition with the opposite factor order;
+the scheme-level isomorphism here applies the local `splitKernelProductIso`. -/
 def generalLinearDeterminantProductIso (pivot : n) :
     specialLinearGroupUnderlyingScheme K n ⊗ multiplicativeGroupUnderlyingScheme K ≅
       generalLinearGroupUnderlyingScheme K n :=
@@ -112,8 +127,11 @@ determinant-one kernel. -/
   rw [← Category.assoc, generalLinearDeterminantProductIso_inv_comp_fst,
     splitKernelRemainder_comp_i]
 
-/-- The actual determinant scheme morphism is smooth whenever an explicit
-matrix index is available; this also applies in rank one and over the zero ring. -/
+/-- The determinant scheme morphism is smooth whenever an explicit matrix
+index is available, including rank one and the zero ring. This transports
+the base-changed smooth SL structure morphism along the product iso, using
+Mathlib's `smooth_isStableUnderBaseChange` and the local SL smoothness instance;
+no smoothness proof is attributed to Milne's product calculation. -/
 theorem generalLinearDeterminantSchemeHom_smooth (pivot : n) :
     Smooth (generalLinearDeterminantSchemeHom K n).hom.hom.left := by
   let SL := specialLinearGroupUnderlyingScheme K n

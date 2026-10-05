@@ -16,6 +16,20 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 The closed successor is the fiber of the actual product of additive
 superdiagonal coordinates over the unit section. The proof tests arbitrary
 schemes, using the adjunction between global sections and affine spectra.
+
+Its scheme factorization uses a quotient-spectrum lift and closed-immersion
+monicity, not the separate algebraic successor-factorization lemma.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §6.49 (field-case one-entry
+  additive quotients); no general whole-stage scheme-kernel square is
+  attributed to this passage.
+* Mathlib contributors, `Mathlib.AlgebraicGeometry.Scheme` (`Scheme.ΓSpecIso`),
+  `Mathlib.AlgebraicGeometry.AffineScheme` (`Scheme.Hom.liftQuotient`),
+  `Mathlib.AlgebraicGeometry.Morphisms.Finite` (closed-immersion monicity),
+  and `Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits`
+  (the product's categorical projections and unit).
 -/
 
 @[expose] public section
@@ -44,7 +58,9 @@ private theorem preimage_spec_comp {A B : CommRingCat} {X : Scheme}
     ← Scheme.ΓSpecIso_inv_naturality, Category.assoc]
 
 /-- An arbitrary scheme map into a stage spectrum factors uniquely through
-the successor as soon as all superdiagonal functions vanish on global sections. -/
+the successor when all superdiagonal functions vanish on global sections.
+The factor is constructed with `Scheme.Hom.liftQuotient` and uniqueness
+uses the closed immersion, without an affineness assumption on the test scheme. -/
 theorem unitriangularStageSuccessor_existsUnique_scheme
     (_hr : 1 ≤ r) {X : Scheme}
     (f : X ⟶ Spec (.of (CoordinateRing K n r)))
@@ -109,8 +125,10 @@ theorem unitriangularStageSuccessor_existsUnique_scheme
   exact (cancel_mono (unitriangularStageSuccessor K n r).hom.hom.left).mp
     (hg.trans hlift.symm)
 
-/-- The actual successor stage is the fiber over the unit of the native
-product of additive superdiagonal coordinates, in schemes over `Spec K`. -/
+/-- The successor stage is the fiber over the unit of the superdiagonal
+coordinate product in `Over (Spec K)`, including nonaffine test schemes.
+Milne, *Algebraic Groups* (2017), §6.49 supplies one-entry field-case additive
+quotients, not this whole-stage categorical kernel square. -/
 theorem unitriangularStageCoordinateMap_isPullback (hr : 1 ≤ r) :
     IsPullback (unitriangularStageSuccessor K n r).hom.hom
       (toUnit (unitriangularStageScheme K n (r + 1)).toMon.X)

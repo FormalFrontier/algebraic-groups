@@ -28,6 +28,15 @@ For a normal morphism of group objects, this constructs the presheaf
 - `CategoryTheory.NatTrans.IsPointwiseNormal.quotientCoforkIsColimit`
 - `CategoryTheory.IsMonHom.Normal.yonedaQuotient`
 - `CategoryTheory.IsMonHom.Normal.yonedaQuotientMap`
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), Definition 1.3 and item 1.4,
+  for the algebraic-subgroup and functor-of-points context. The quotients
+  here are formed pointwise, without a sheaf or representability claim.
+* Mathlib, `Mathlib.GroupTheory.QuotientGroup.Defs` for quotient groups and
+  their maps, and `Mathlib.CategoryTheory.Monoidal.Cartesian.Normal` for
+  normal morphisms of group objects and their pointwise normal ranges.
 -/
 
 @[expose] public section

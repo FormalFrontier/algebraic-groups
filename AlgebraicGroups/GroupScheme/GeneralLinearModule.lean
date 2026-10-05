@@ -14,8 +14,26 @@ public import Mathlib.RingTheory.TensorProduct.Free
 
 A chosen finite basis identifies automorphisms of the scalar extension of a
 module with invertible matrices, naturally in every commutative coefficient
-algebra. Composing with the existing matrix GL representation gives affine
-group-scheme points; the construction does not require a field or flatness.
+algebra. Entries, vector action, coefficient naturality, and change of basis
+are explicit. Composing with matrix GL representation gives affine group-scheme
+points for this chosen basis, over arbitrary commutative base rings, including
+zero rings and empty bases. No basis-independent finite-type scheme for arbitrary
+modules is constructed here.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2, item 2.8, p. 41: the
+  chosen-basis comparison of `GL(V)` with matrix `GL_n` for finite-dimensional
+  vector spaces over a field.
+* Mathlib, `RingTheory/IsTensorProduct`, `RingTheory/TensorProduct/Free`, and
+  `RingTheory/TensorProduct/IsBaseChangeFree`: `TensorProduct.isBaseChange`,
+  `IsBaseChange.basis`, and their coordinate readbacks.
+* Mathlib, `LinearAlgebra/Matrix/ToLin`, `Algebra/Group/Units/Equiv`, and
+  `LinearAlgebra/Matrix/GeneralLinearGroup/Defs`: `toMatrixAlgEquiv`,
+  `Units.mapEquiv`, and matrix units under coefficient homomorphisms.
+* `AlgebraicGroups.GroupScheme.GeneralLinear` supplies the multiplicative
+  matrix scheme and affine points; `AlgebraicGroups.GroupScheme.MatrixEndAdditive`
+  supplies the separate additive endomorphism comparison used in the field case.
 -/
 
 public section
@@ -78,7 +96,8 @@ theorem generalLinearScalarBasis_endBaseChange_matrix
   rw [generalLinearScalarBasis_apply, generalLinearScalarBasis_apply,
     endBaseChange_tmul, one_smul, generalLinearScalarBasis_repr_rTensor]
 
-/-- The matrix comparison uses the native algebra equivalence and native units. -/
+/-- Matrix coordinates are the units of the endomorphism-to-matrix algebra
+equivalence. -/
 @[expose] def generalLinearModuleMatrixEquiv (R : Type u) [CommRing R] [Algebra K R] :
     LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R) ≃*
       Matrix.GeneralLinearGroup indexType R :=
@@ -118,7 +137,9 @@ theorem generalLinearModuleMatrixEquiv_natural (R S : Type u)
   exact congrArg (fun matrix : Matrix indexType indexType S ↦ matrix row column)
     (generalLinearScalarBasis_endBaseChange_matrix K V indexType basis R S g f.val)
 
-/-- A finite chosen basis gives a natural group isomorphism to matrix GL. -/
+/-- For a chosen finite basis, the automorphism functor is naturally matrix GL;
+compare Milne, *Algebraic Groups*, item 2.8, for a finite-dimensional vector
+space over a field. -/
 @[expose] def generalLinearModuleMatrixIso :
     generalLinearModuleFunctor K V ≅ generalLinearGroupFunctor K indexType :=
   NatIso.ofComponents
@@ -134,8 +155,9 @@ def sourceOrderedGeneralLinearMatrixIso :
     sourceOrderedGeneralLinearFunctor K V ≅ generalLinearGroupFunctor K indexType :=
   sourceOrderedGeneralLinearIso K V ≪≫ generalLinearModuleMatrixIso K V indexType basis
 
-/-- The group of automorphisms is represented, after choosing a finite basis,
-by the existing finite-type general linear group scheme. -/
+/-- With a chosen finite basis, the automorphism functor has the affine
+finite-type matrix GL representation of Milne, *Algebraic Groups*, item 2.8;
+the comparison also holds over commutative base rings. -/
 @[expose] def generalLinearModulePointsIso :
     generalLinearModuleFunctor K V ≅ generalLinearGroupPointsFunctor K indexType :=
   (generalLinearModuleMatrixIso K V indexType basis) ≪≫ generalLinearGroupPointsIso K indexType
@@ -287,7 +309,8 @@ variable (F : Type u) [Field F] (W : Type u) [AddCommGroup W] [Module F W]
   [FiniteDimensional F W] (coordinates : Module.Basis indexType F W)
 
 omit [FiniteDimensional F W] in
-/-- In the field case the GL entries are the accepted additive End coordinates. -/
+/-- Over a field, GL entries agree with the additive endomorphism matrix
+coordinates from `endMatrixLinearEquiv`. -/
 theorem generalLinearModuleMatrixEquiv_endMatrixLinearEquiv
     (R : Type u) [CommRing R] [Algebra F R]
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor F W R)) :

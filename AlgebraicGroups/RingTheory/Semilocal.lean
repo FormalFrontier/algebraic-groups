@@ -22,6 +22,21 @@ integral local orbit criterion is free of that rank.  The finite-orbit theorem
 also handles an empty maximal spectrum. The local corollaries use exactly
 mathlib's `IsLocalRing` assumption (which visibly includes `Nontrivial`) and
 require no domain or Noetherian hypothesis.
+
+## References
+
+* The Stacks Project, Proposition 39.23.9
+  ([tag 03BM](https://stacks.math.columbia.edu/tag/03BM)), uses the finite
+  fibre of a finite relation leg and the orbit description of Lemma 39.23.6
+  ([tag 03BL](https://stacks.math.columbia.edu/tag/03BL)) to deduce
+  semilocality. Lemma 10.78.7
+  ([tag 02M9](https://stacks.math.columbia.edu/tag/02M9)) gives freeness
+  of constant-rank finite locally free modules over semilocal rings.
+* Mathlib, `Mathlib.RingTheory.QuasiFinite.Basic`
+  (`Algebra.QuasiFinite.finite_comap_preimage_singleton`) and
+  `Mathlib.RingTheory.LocalRing.Module`
+  (`Module.nonempty_basis_of_flat_of_finrank_eq`), supply the finite-fibre
+  and constant-rank basis results used in the proofs.
 -/
 
 public section
@@ -31,7 +46,9 @@ universe uR uA uB
 open scoped TensorProduct
 
 /-- For an integral algebra over a local ring, the extension of the maximal
-ideal is contained in the Jacobson radical. -/
+ideal is contained in the Jacobson radical. This is the contraction step
+used in the local argument of Stacks Project, Proposition 39.23.9
+(tag 03BM). -/
 lemma Ideal.map_maximalIdeal_le_jacobson_of_isIntegral
     {R : Type uR} {A : Type uA} [CommRing R] [CommRing A] [IsLocalRing R]
     [Algebra R A] [Algebra.IsIntegral R A] :
@@ -50,7 +67,9 @@ namespace MaximalSpectrum
 
 /-- Suppose one of two maps `A →+* B` is finite. If every pair of maximal
 ideals of `A` is obtained by contracting one prime ideal of `B` along the two
-maps, then `A` has only finitely many maximal ideals. -/
+maps, then `A` has only finitely many maximal ideals. This abstracts the
+finite-fibre/orbit argument in the proof of Stacks Project, Proposition
+39.23.9 (tag 03BM); it also covers an empty maximal spectrum. -/
 lemma finite_of_finite_orbit
     {A : Type uA} {B : Type uB} [CommRing A] [CommRing B]
     (s t : A →+* B) (hs : s.Finite)
@@ -87,7 +106,8 @@ lemma finite_of_finite_orbit
 /-- Let `R` be local and let `A` be integral over `R`. Suppose one of two maps
 `A →+* B` is finite and any two maximal ideals of `A` with the same contraction
 to `R` are joined by a prime of `B`. Then `A` has only finitely many maximal
-ideals. -/
+ideals. Compare the local step of Stacks Project, Proposition 39.23.9
+(tag 03BM), using the orbit statement of Lemma 39.23.6 (tag 03BL). -/
 lemma finite_of_isIntegral_of_isLocalRing
     {R : Type uR} {A : Type uA} {B : Type uB}
     [CommRing R] [CommRing A] [CommRing B] [IsLocalRing R]
@@ -113,7 +133,9 @@ end MaximalSpectrum
 
 /-- A finite flat algebra of constant fibre rank is free of that rank when its
 base is integral over a local ring and the two supplied maps satisfy the common
-contraction orbit criterion. -/
+contraction orbit criterion. The semilocal constant-rank freeness step follows
+Stacks Project, Lemma 10.78.7 (tag 02M9), via Mathlib's
+`Module.nonempty_basis_of_flat_of_finrank_eq`. -/
 lemma Module.nonempty_basis_of_finrank_eq_of_integral_local_orbit
     {R : Type uR} {A : Type uA} {B : Type uB}
     [CommRing R] [CommRing A] [CommRing B] [IsLocalRing R]

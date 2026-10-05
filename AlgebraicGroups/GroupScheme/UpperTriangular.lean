@@ -8,7 +8,26 @@ public import AlgebraicGroups.Algebra.UpperTriangularCoordinateRing
 public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 
-/-! # The finite-type upper-triangular subgroup scheme of general linear groups -/
+/-!
+# The finite-type upper-triangular subgroup scheme of general linear groups
+
+The below-diagonal relations cut out an invertible upper-triangular subgroup
+of GL. Unlike the unitriangular quotient, its diagonal entries remain units,
+and its determinant need not be one. The represented group and its pointwise
+matrix description hold over any commutative base ring.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §§2.8–2.9: the GL functor and the
+  upper-triangular subgroup over a field and its commutative algebras.
+* Mathlib, `Mathlib.LinearAlgebra.Matrix.Block`: triangular determinants,
+  products and inverses; `Mathlib.RingTheory.HopfAlgebra.Quotient`: Hopf ideals
+  and their quotients; `Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion`:
+  closed immersions from surjective affine coordinate maps.
+* `AlgebraicGroups.Algebra.GeneralLinearCoordinateRing` and
+  `AlgebraicGroups.GroupScheme.GeneralLinear`: the localized GL Hopf algebra
+  and its represented group and point comparison.
+-/
 
 @[expose] public section
 
@@ -41,7 +60,9 @@ instance upperTriangularGroupUnderlyingScheme_quasiCompact :
     (algebraMap K (UpperTriangularCoordinateRing.CoordinateRing K n))))
   infer_instance
 
-/-- The affine finite-type group object of upper-triangular invertible matrices. -/
+/-- The affine finite-type group object of upper-triangular invertible matrices
+over a commutative ring. Over a field and `Fin n`, its points recover the
+upper-triangular subgroup of Milne, *Algebraic Groups* (2017), §2.9. -/
 abbrev upperTriangularGroupScheme : Grp (Over (Spec (.of K))) :=
   ⟨upperTriangularGroupUnderlyingScheme K n⟩
 
@@ -60,6 +81,10 @@ def upperTriangularInclusion :
 theorem upperTriangularInclusion_left : (upperTriangularInclusion K n).hom.hom.left =
     Spec.map (CommRingCat.ofHom (quotient K n).toRingHom) := rfl
 
+/-- The upper-triangular quotient defines a closed subgroup of GL over any
+commutative base ring. For the field-base subgroup compare Milne,
+*Algebraic Groups* (2017), §2.9; the scheme-level proof uses Mathlib's
+`IsClosedImmersion.spec_of_surjective` on the coordinate quotient. -/
 theorem upperTriangularInclusion_isClosedImmersion :
     IsClosedImmersion (upperTriangularInclusion K n).hom.hom.left := by
   rw [upperTriangularInclusion_left]
@@ -158,7 +183,9 @@ theorem upperTriangularGroupMulEquivAlgHom_detInverse
   change (evaluate (K := K) s.1) (detInverse K n) = _
   exact evaluate_detInverse s.1
 
-/-- Multiplicative classification of affine scheme-valued points. -/
+/-- Multiplicative classification of affine scheme-valued points over any
+commutative `K`-algebra; compare the field-base functor in Milne,
+*Algebraic Groups* (2017), §§2.8–2.9. -/
 def upperTriangularGroupMulEquivPoints :
     Matrix.UpperTriangularGroup n R ≃*
       ((Spec (.of R)).asOver (Spec (.of K)) ⟶ upperTriangularGroupUnderlyingScheme K n) :=
@@ -227,7 +254,9 @@ def upperTriangularGroupFunctor : CommAlgCat K ⥤ GrpCat where
 abbrev upperTriangularGroupPointsFunctor : CommAlgCat K ⥤ GrpCat :=
   (algSpec (.of K)).rightOp ⋙ yonedaGrp.obj (upperTriangularGroupScheme K n)
 
-/-- Multiplicative natural isomorphism on all `K`-algebras. -/
+/-- Multiplicative natural isomorphism on all `K`-algebras and their maps,
+extending the field-base functor in Milne, *Algebraic Groups* (2017),
+§§2.8–2.9. -/
 def upperTriangularGroupPointsIso :
     upperTriangularGroupFunctor K n ≅ upperTriangularGroupPointsFunctor K n :=
   NatIso.ofComponents

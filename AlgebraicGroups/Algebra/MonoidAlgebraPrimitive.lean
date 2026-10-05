@@ -19,6 +19,23 @@ both the comultiplication identity and a zero counit. Over semirings without
 additive cancellation, the comultiplication identity alone does not imply this
 conclusion: over the Boolean semiring with the trivial monoid, `1` satisfies the
 comultiplication identity but has nonzero counit.
+
+The proof compares diagonal coefficients of the comultiplication and the two
+unit tensors, then uses the counit at the identity. This generalizes the
+finite cyclic group-algebra argument in the exposition cited below to
+arbitrary monoids and commutative semirings.
+
+## References
+
+- Formal Frontier, *Alpha-power versus roots of unity: scheme isomorphism, not group
+  isomorphism*, § “No group-scheme isomorphism for positive exponent” (finite
+  cyclic group-algebra diagonal-coefficient argument).
+- Mathlib, `Mathlib.RingTheory.Coalgebra.MonoidAlgebra`,
+  `Mathlib.RingTheory.Bialgebra.MonoidAlgebra`, and
+  `Mathlib.RingTheory.Bialgebra.Primitive` (the monoid-algebra comultiplication,
+  counit, and primitive-element predicate).
+- Mathlib, `Mathlib.RingTheory.TensorProduct.MonoidAlgebra` (the tensor-product
+  coefficient equivalence used in the diagonal argument).
 -/
 
 open scoped TensorProduct
@@ -29,7 +46,10 @@ variable {K M : Type*} [CommSemiring K] [Monoid M]
 
 /-- Every primitive element of the canonical bialgebra on a monoid algebra is zero.
 No cancellation, nontriviality, commutativity or finiteness hypothesis on the indices
-is required. -/
+is required. The diagonal-coefficient proof extends the finite cyclic group-algebra
+argument of Formal Frontier's *Alpha-power versus roots of unity: scheme isomorphism,
+not group isomorphism* exposition; the counit eliminates the coefficient at the
+identity over semirings. -/
 theorem isPrimitiveElem_iff_eq_zero (x : MonoidAlgebra K M) :
     Bialgebra.IsPrimitiveElem K x ↔ x = 0 := by
   constructor

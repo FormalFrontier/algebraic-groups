@@ -15,6 +15,33 @@ Scalar extension of the native group object agrees with the group scheme
 represented by the scalar-extended unitriangular Hopf algebra. The affine
 pullback comparison uses its existing monoid-morphism instance; the Hopf
 equivalence is the independently established coordinate-ring base change.
+
+The affine fibre-product description is the published `Spec`-of-tensor-product
+case of the Stacks Project. Milne describes the field-case `U_n` coordinate
+presentation; the arbitrary-commutative-base group-object comparison uses
+Mathlib's affine pullback and Hopf-algebra-to-group-scheme formalizations,
+as well as Christian Merten's polynomial scalar-extension equivalence through
+the coordinate-ring comparison. That equivalence is implemented using Yaël
+Dillies's `AddMonoidAlgebra.scalarTensorEquiv`; Antoine Chambert-Loir provided
+a related earlier polynomial scalar-extension equivalence.
+
+## References
+
+* James S. Milne, *Algebraic Groups* (2017), item 2.9 (the field-case `U_n`
+  coordinate presentation).
+* The Stacks Project, Section 26.17, Lemma 26.17.2 (affine fibre products).
+* Andrew Yang, Mathlib, `Mathlib.AlgebraicGeometry.Pullbacks`
+  (`pullbackSpecIso` and its projection laws).
+* Yaël Dillies, Mathlib, `Mathlib.AlgebraicGeometry.Group.Affine`
+  (`hopfSpec`, `algSpec`, `pullbackSpecIso'` and its monoid-homomorphism instance).
+  Christian Merten, Michał Mrugała and Andrew Yang contributed to the wider
+  affine group-scheme formalization.
+* Antoine Chambert-Loir, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`
+  (the related earlier `MvPolynomial.scalarRTensorAlgEquiv`).
+* Christian Merten, Mathlib, `Mathlib.RingTheory.TensorProduct.MvPolynomial`
+  (`MvPolynomial.algebraTensorAlgEquiv` used by the coordinate comparison).
+* Yaël Dillies, Mathlib, `Mathlib.RingTheory.TensorProduct.MonoidAlgebra`
+  (`AddMonoidAlgebra.scalarTensorEquiv` implementing the polynomial equivalence).
 -/
 
 @[expose] public section
@@ -32,7 +59,15 @@ variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
   (ι : Type u) [Fintype ι] [LinearOrder ι]
 
 /-- The native pullback of the unitriangular group scheme along `Spec S ⟶ Spec R`
-is the unitriangular group scheme over `S`, including at zero rings and empty indices. -/
+is the unitriangular group scheme over `S`, including at zero rings and empty indices.
+The affine pullback uses the `Spec`-of-tensor-product antecedent in the Stacks
+Project, Lemma 26.17.2, formalized by Mathlib's `pullbackSpecIso`; the Hopf
+comparison ultimately uses Christian Merten's Mathlib
+`MvPolynomial.algebraTensorAlgEquiv`, implemented using Yaël Dillies's
+`AddMonoidAlgebra.scalarTensorEquiv`, with Antoine Chambert-Loir's
+`MvPolynomial.scalarRTensorAlgEquiv` as a related earlier formalization.
+Milne, *Algebraic Groups*, item 2.9 describes the underlying `U_n` coordinates
+over a field, not this arbitrary-base group-object isomorphism. -/
 def unitriangularGroupSchemeBaseChangeIso :
     ((Over.pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))).mapGrp.obj
       (unitriangularGroupScheme R ι)) ≅ unitriangularGroupScheme S ι := by

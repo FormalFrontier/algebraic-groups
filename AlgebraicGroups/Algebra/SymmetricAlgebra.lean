@@ -12,6 +12,16 @@ public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 The symmetric algebra of a module over a commutative ring is a Hopf algebra whose
 generators are primitive. Its antipode sends every generator to its additive inverse.
+
+Mathlib supplies the primitive bialgebra structure and the Hopf-algebra constructor;
+this file supplies the antipode for an arbitrary module. The rank-one primitive
+coordinate specializes to the additive-group coproduct in Milne's item 2.1.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.1 (rank-one additive coordinate).
+- Mathlib, `Mathlib.RingTheory.Bialgebra.SymmetricAlgebra` (primitive generators)
+  and `Mathlib.RingTheory.HopfAlgebra.Basic` (`HopfAlgebra.ofAlgHom`).
 -/
 
 public section
@@ -31,7 +41,8 @@ theorem antipodeAlgHom_ι (x : M) :
     antipodeAlgHom K M (ι K M x) = -ι K M x := by
   simp [antipodeAlgHom]
 
-/-- The Hopf algebra structure on a symmetric algebra, with primitive generators. -/
+/-- The Hopf algebra structure on a symmetric algebra, extending Mathlib's
+`SymmetricAlgebra.instBialgebra` by the antipode negating each generator. -/
 instance instHopfAlgebra : HopfAlgebra K (SymmetricAlgebra K M) :=
   HopfAlgebra.ofAlgHom (antipodeAlgHom K M)
     (by

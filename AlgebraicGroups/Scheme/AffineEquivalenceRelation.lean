@@ -18,6 +18,29 @@ This file transports the composition morphism of an internal affine-scheme
 relation to the explicit mixed tensor-product presentation.  The resulting
 cartesian square and outer groupoid identities are the inputs for invariance
 of finite-projective characteristic polynomials.
+
+Reflexivity alone makes both coordinate maps injective. The composition is
+transported from an arbitrary chosen limiting cone to
+`TargetCopy B ⊗[A] B`: its projections send `x` to `1 ⊗ₜ x` and
+`TargetCopy.mk x ⊗ₜ 1`, respectively. Thus `p0` and `p1` use the opposite
+tensor-factor convention from Stacks Project, Lemma 39.23.8 (tag 03C8).
+The coefficient ring `C` may live in a different universe from `A` and `B`,
+which share a universe. No quotient or effectivity assertion is made here.
+
+## References
+
+* Stacks Project, Lemma 39.13.4 (tag 02YE), for the cartesian groupoid
+  composition square; Lemma 39.23.2 (tag 03BH), for its use in proving norm
+  invariance; and Lemma 39.23.8 (tag 03C8), for the invariant-basis argument.
+  This module supplies coordinate infrastructure, not the invariant-basis or
+  quotient conclusion.
+* Mathlib, `Mathlib.CategoryTheory.EquivalenceRelation` for the chosen
+  limiting cone and `Mathlib.AlgebraicGeometry.GammaSpecAdjunction` for
+  `Spec.preimage` and its inverse relation to `Spec.map`.
+* `AlgebraicGroups.Category.EquivalenceRelation`,
+  `AlgebraicGroups.RingTheory.TargetCopy` and
+  `AlgebraicGroups.Scheme.AffinePullback` for the categorical cartesian square,
+  independent target copy and affine tensor-pullback comparison.
 -/
 
 open CategoryTheory Limits
@@ -69,7 +92,9 @@ lemma maps_injective_of_equivalenceRelation (s t : A →ₐ[C] B)
 /-- The composition morphism of an internal affine-scheme equivalence relation,
 transported from its arbitrary limiting pullback cone to the explicit mixed
 tensor product.  The two equations are the outer groupoid identities used by
-the invariant-coordinate calculation. -/
+the invariant-coordinate calculation of Stacks Project, Lemma 39.23.8
+(tag 03C8). This is a coordinate construction, not the theorem's
+invariant-basis conclusion. -/
 lemma exists_composition_coordinates (s t : A →ₐ[C] B)
     (hs : IsScalarTower.toAlgHom C A B = s)
     (h : EquivalenceRelation (specMap s) (specMap t)) :

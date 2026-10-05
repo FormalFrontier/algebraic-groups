@@ -12,13 +12,33 @@ public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 /-!
 # Characteristic polynomials of finite projective modules
 
-For a finite projective module of constant local rank, this file defines its
-characteristic polynomial by reflecting the presentation-independent Fredholm
-polynomial.  Scalar-base-change and intertwining formulas follow from the
-Fredholm construction.  Comparison with the ordinary characteristic
-polynomial after localization gives monicity and Cayley--Hamilton.
+For a finite projective module and a supplied natural number `n`, this file
+defines a polynomial by reflecting the presentation-independent Fredholm
+polynomial at `n`. Scalar-base-change and intertwining formulas need no rank
+hypothesis. At constant maximal-local rank `n`, comparison with the ordinary
+characteristic polynomial after localization gives monicity and
+Cayley--Hamilton. The polynomial itself does not supply a global basis.
 
 No fixed-degree exterior-power base-change construction is used here.
+
+## References
+
+* Mathlib, `Mathlib.LinearAlgebra.Charpoly.Basic` (finite-free
+  characteristic polynomial and Cayley--Hamilton),
+  `Mathlib.LinearAlgebra.Charpoly.BaseChange`, and
+  `Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff` (the reverse form) provide
+  the free-module comparison. `Mathlib.RingTheory.LocalRing.Module`
+  (`Module.free_of_flat_of_isLocalRing`) and
+  `Mathlib.RingTheory.Spectrum.Prime.FreeLocus` supply the local freeness
+  needed after localization; maximal-local detection proves the resulting
+  coefficient and endomorphism equalities.
+* The Stacks Project, Lemmas 39.23.2 and 39.23.4
+  ([tags 03BH](https://stacks.math.columbia.edu/tag/03BH) and
+  [03BJ](https://stacks.math.columbia.edu/tag/03BJ)), use invariant norm
+  polynomials and Cayley--Hamilton to establish integrality for affine
+  finite-locally-free groupoid relations. The conditional equalizer lemma
+  below isolates their coefficient-invariance and integrality step, rather
+  than proving the groupoid invariance assertion.
 -/
 
 public section
@@ -292,7 +312,8 @@ lemma finiteProjectiveCharpoly_map_localization_eq_charpoly
     (f.baseChange (Localization J.primeCompl))
 
 /-- For constant maximal-local rank `n`, the finite-projective
-characteristic polynomial is monic of degree `n`. -/
+characteristic polynomial is monic. This uses Mathlib's finite-free
+characteristic-polynomial monicity after localization at maximal ideals. -/
 lemma finiteProjectiveCharpoly_monic_of_local_finrank
     (f : Module.End R M)
     (hrank : ∀ (J : Ideal R) [J.IsMaximal],
@@ -335,7 +356,8 @@ lemma finiteProjectiveCharpoly_monic_of_local_finrank
   exact monic_of_natDegree_le_of_coeff_eq_one n hdegree hcoeff
 
 /-- Cayley--Hamilton for a finite projective module of constant maximal-local
-rank. -/
+rank, obtained from Mathlib's `LinearMap.aeval_self_charpoly` after
+localization. -/
 lemma finiteProjectiveCharpoly_aeval_eq_zero_of_local_finrank
     (f : Module.End R M)
     (hrank : ∀ (J : Ideal R) [J.IsMaximal],
@@ -373,8 +395,10 @@ variable {C : Type uL} {A : Type uR} {B : Type uM}
   [Algebra C A] [Algebra C B] [Algebra A B] [IsScalarTower C A B]
   [Module.Finite A B] [Module.Projective A B]
 
-/-- Invariant coefficients of the canonical finite-projective characteristic
-polynomial give integrality over the equalizer. -/
+/-- Invariant coefficients of the finite-projective characteristic polynomial
+give integrality over the equalizer. Compare the norm-polynomial argument in
+Stacks Project, Lemma 39.23.4 (tag 03BJ), using Lemma 39.23.2 (tag 03BH):
+the invariance of coefficients is assumed here, not deduced from a groupoid. -/
 lemma isIntegral_equalizer_of_finiteProjectiveCharpoly_coeff_invariant
     (s t : A →ₐ[C] B) (hs : IsScalarTower.toAlgHom C A B = s)
     (ht : Function.Injective t) (n : ℕ)

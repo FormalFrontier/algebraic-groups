@@ -13,6 +13,23 @@ public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct
 The diagonal section of the determinant restricts conjugation to the actual
 special-linear kernel. Its affine points agree with conjugation of native
 special-linear matrices over every commutative coefficient algebra.
+
+The section-first product carries the twisted law
+`F(s,t) * F(s',t') = F(alpha(t'⁻¹,s) * s',t*t')`, not direct-product
+multiplication; the restricted action itself is defined on the genuine
+kernel pullback, rather than reconstructed from selected points.
+
+## References
+
+* J. S. Milne, *Basic Theory of Affine Group Schemes*, XIII §3, item 3.14
+  (field-base determinant splitting with the diagonal factor on the right).
+  The left-factor conjugation and scheme-level twisted law
+  below use the different section-first convention.
+* `AlgebraicGroups.GroupObject.SplitKernelSemidirect` and
+  `SplitKernelProduct` give the general kernel action and twisted product.
+  Mathlib's `CategoryTheory/Monoidal/Cartesian/Grp.lean` supplies the
+  group-object conjugation; `Data/Matrix/Mul.lean` gives the diagonal entry
+  identities used with the local section and native matrix SL APIs.
 -/
 
 public section
@@ -100,8 +117,10 @@ theorem generalLinearDeterminantConj_point [Algebra K R] (pivot : n) (unit : Rˣ
               rw [specialLinearInclusion_point, generalLinearDiagonalConjSL_toGL]
   · simp
 
-/-- An arbitrary-ring entry formula: the inverse is taken in `Rˣ` before coercion
-to `R`, so no inverse of an arbitrary coefficient is assumed. -/
+/-- For any coefficient ring, diagonal conjugation scales entry `(row,col)`
+by the row unit and the inverse column unit. The inverse is formed in `Rˣ`
+before coercion to `R`; the proof uses Mathlib's `Matrix.diagonal_mul` and
+`Matrix.mul_diagonal`, without dividing by an arbitrary ring element. -/
 theorem generalLinearDiagonalConjSL_apply (pivot : n) (unit : Rˣ)
     (matrix : Matrix.SpecialLinearGroup n R) (row col : n) :
     generalLinearDiagonalConjSL n pivot unit matrix row col =

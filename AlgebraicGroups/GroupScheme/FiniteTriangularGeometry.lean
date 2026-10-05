@@ -24,6 +24,34 @@ public import Mathlib.Algebra.MvPolynomial.Equiv
 
 The native multiplicative, finite diagonal, and finite upper-triangular group schemes
 are smooth with geometrically integral fibers over every commutative base.
+
+Milne's field-case triangular groups and integrality discussion motivate the
+results. Multiplicative smoothness uses Laurent-polynomial localization;
+geometric integrality uses scalar extension to fields. Finite diagonal
+geometry comes from the existing product fan. Upper-triangular geometry uses
+the section-first split-kernel isomorphism of underlying *over-schemes*, not
+a direct-product group law. Total integrality is separate and requires a domain
+base; no product dimension formula is asserted here.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), items 2.2 (the multiplicative group),
+  2.9 (diagonal, unitriangular and upper-triangular groups), and 2.40
+  (field-case triangular coordinates and integrality).
+* J. S. Milne, *Algebraic Groups*, preliminary course notes, v2.00 (2015),
+  Definition 2.20 and Proposition 2.21 (field-case triangular splitting and
+  its split-kernel criterion); these are distinct from the 2017 book's item 2.9.
+* `AlgebraicGroups.GroupScheme.Multiplicative`,
+  `AlgebraicGroups.GroupScheme.UnitriangularGeometry`,
+  `AlgebraicGroups.GroupScheme.DiagonalProduct`,
+  `AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel`,
+  `AlgebraicGroups.GroupObject.SplitKernelProduct`, and
+  `AlgebraicGroups.Scheme.Smooth` supply the reused over-scheme results.
+* Mathlib, `Mathlib.RingTheory.Smooth.StandardSmooth` (polynomial localization),
+  `Mathlib.RingTheory.TensorProduct.MonoidAlgebra` (scalar extension),
+  `Mathlib.AlgebraicGeometry.Geometrically.Integral` (fiber properties), and
+  `Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen` (smooth open maps),
+  with categorical finite-product and pullback isomorphism APIs.
 -/
 
 @[expose] public section
@@ -54,7 +82,9 @@ private instance multiplicativeGroupCoordinateRing_standardSmooth :
       LaurentPolynomial.algebraMap_eq_toLaurent, Polynomial.toLaurent_C])
   exact Algebra.IsStandardSmooth.trans K K[X] (LaurentPolynomial K)
 
-/-- The genuine Laurent-polynomial structure map is smooth, even over the zero ring. -/
+/-- The Laurent-polynomial structure map is smooth, even over the zero ring.
+Mathlib's polynomial and localization standard-smoothness instances give the
+ring certificate, then `HasRingHomProperty.Spec_iff` gives scheme smoothness. -/
 instance multiplicativeGroupUnderlyingScheme_smooth :
     Smooth (multiplicativeGroupUnderlyingScheme K).hom := by
   change Smooth (Spec.map (CommRingCat.ofHom
@@ -70,7 +100,9 @@ private theorem multiplicativeGroupTensor_isDomain
   exact (AddMonoidAlgebra.scalarTensorEquiv (M := ℤ) K F).injective.isDomain
     (AddMonoidAlgebra.scalarTensorEquiv (M := ℤ) K F).toRingHom
 
-/-- Every geometric fiber of the native multiplicative group is integral. -/
+/-- Every geometric fiber of the multiplicative group is integral. The proof
+identifies the scalar extension of its Laurent coordinate algebra with a
+group algebra over a field using Mathlib's `AddMonoidAlgebra.scalarTensorEquiv`. -/
 instance multiplicativeGroupUnderlyingScheme_geometricallyIntegral :
     GeometricallyIntegral (multiplicativeGroupUnderlyingScheme K).hom := by
   letI : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
@@ -233,14 +265,19 @@ private def diagonalUnderlyingProductIso (index : Type u) [Fintype index]
   (diagonalGroupProductFan_forget_isLimit K index).conePointUniqueUpToIso
     (productIsProduct fun _ : index => multiplicativeGroupUnderlyingScheme K)
 
-/-- The native finite diagonal structure morphism is smooth over every commutative base. -/
+/-- The finite diagonal structure morphism is smooth over any commutative base,
+transported through the existing finite-product fan from multiplicative groups;
+compare Milne, *Algebraic Groups* (2017), item 2.9, over a field. -/
 instance diagonalGroupUnderlyingScheme_smooth (index : Type u) [Fintype index]
     [DecidableEq index] : Smooth (diagonalGroupUnderlyingScheme K index).hom := by
   haveI : Smooth (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom :=
     (finiteMultiplicativeProductGeometry K index).1
   exact smooth_of_iso (diagonalUnderlyingProductIso K index)
 
-/-- Every geometric fiber of the native finite diagonal group is integral. -/
+/-- Every geometric fiber of the finite diagonal group is integral. The
+finite-product argument combines smoothness (hence universal openness and
+geometric reduction) with geometric irreducibility; Milne, *Algebraic Groups*
+(2017), item 2.40, gives the field-case integral group. -/
 instance diagonalGroupUnderlyingScheme_geometricallyIntegral (index : Type u)
     [Fintype index] [DecidableEq index] :
     GeometricallyIntegral (diagonalGroupUnderlyingScheme K index).hom := by
@@ -262,7 +299,10 @@ private def upperTriangularSplitIso
   exact congrArg (fun morphism => morphism.hom.hom)
     (upperTriangularDiagonal_section K n)
 
-/-- The actual structure morphism of the finite upper-triangular group is smooth. -/
+/-- The upper-triangular structure morphism is smooth over any commutative
+base via the section-first split-kernel over-scheme isomorphism. Milne's
+preliminary *Algebraic Groups* (2015), Definition 2.20 and Proposition 2.21,
+give the field-case splitting; no direct-product group law is claimed. -/
 instance upperTriangularGroupUnderlyingScheme_smooth
     (n : Type u) [Fintype n] [LinearOrder n] :
     Smooth (upperTriangularGroupUnderlyingScheme K n).hom := by
@@ -270,7 +310,10 @@ instance upperTriangularGroupUnderlyingScheme_smooth
       diagonalGroupUnderlyingScheme K n).hom := product_smooth _ _
   exact smooth_of_iso (upperTriangularSplitIso K n).symm
 
-/-- Every geometric fiber of the native finite upper-triangular group is integral. -/
+/-- Every geometric fiber of the upper-triangular group is integral, by
+combining the two factors' relative geometry with the underlying split-kernel
+isomorphism. Milne, *Algebraic Groups* (2017), item 2.40, gives the field-case
+integrality; the arbitrary-base fiber argument uses Mathlib's geometric APIs. -/
 instance upperTriangularGroupUnderlyingScheme_geometricallyIntegral
     (n : Type u) [Fintype n] [LinearOrder n] :
     GeometricallyIntegral (upperTriangularGroupUnderlyingScheme K n).hom := by
@@ -296,7 +339,9 @@ instance diagonalGroupUnderlyingScheme_isIntegral [IsDomain K]
     IsIntegral (diagonalGroupUnderlyingScheme K index).left :=
   integral_of_relative K _
 
-/-- The finite upper-triangular group is integral over an integral domain. -/
+/-- The finite upper-triangular group is integral over a domain. This uses
+`AlgebraicGeometry.Smooth.isReduced_of_isDomain` and the open-map/geometric-irreducibility
+descent, not integrality of a product over an arbitrary base. -/
 instance upperTriangularGroupUnderlyingScheme_isIntegral [IsDomain K]
     (index : Type u) [Fintype index] [LinearOrder index] :
     IsIntegral (upperTriangularGroupUnderlyingScheme K index).left :=

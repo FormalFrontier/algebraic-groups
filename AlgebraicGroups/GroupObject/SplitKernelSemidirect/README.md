@@ -76,12 +76,23 @@ and `IsPullback.lift`/`hom_ext`. The existing
 domain and conclusion; it is not duplicated here. For ordinary Type group
 extensions, mathlib already has a kernel-first semidirect-product
 equivalence. Future clients may specialize these generic Hom readbacks
-without adding a second extension framework. Finite determinant, source
-correspondence and coverage are outside this module.
+without adding a second extension framework. This generic module does not
+assert a finite determinant specialization.
 
 A Formal Frontier AI-agent contributor authored the original conjugation and twisted-product
-implementation and its ordinary-import client. Exact origin and review records
-are maintained separately from this mathematical guide.
+implementation and its ordinary-import client.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), Definition 1.61, for kernels
+  in algebraic-group extensions. The section-first twisted multiplication
+  here is a categorical result under the additional homomorphism assumptions;
+  it is not the underlying-object trivialization alone.
+- Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp` for `GrpObj.conj`
+  and Hom-group identities, and `IsPullback.lift`/`hom_ext` for the
+  kernel-pullback universal property used to restrict conjugation. The existing
+  Mathlib Type-group semidirect-product equivalence uses a kernel-first convention, as contrasted
+  above; it is not substituted for this categorical construction.
 
 For a pinned checkout, fetch the matching mathlib cache before checking the
 producer and persistent client:

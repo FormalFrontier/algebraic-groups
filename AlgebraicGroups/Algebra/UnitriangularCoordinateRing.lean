@@ -15,6 +15,26 @@ The quotient of the localized general linear coordinate algebra by the entries
 below the diagonal and the diagonal entries minus one is a Hopf algebra. The
 coideal condition is proved after applying both quotient maps to the coproduct;
 no flatness of the base ring is needed.
+
+The determinant becomes one in the corresponding unlocalized polynomial
+quotient. Both this presentation and the polynomial algebra on the strict
+upper pairs are compared to the GL quotient as `K`-algebras. These comparisons
+do not identify the represented group scheme with an additive group scheme
+or assert compatibility with Hopf structures. The represented group law
+still has a cross term in rank three.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), items 2.8–2.9, pp. 41–42:
+  the determinant-localized coordinates of `GL_n` and the unlocalized
+  polynomial quotient representing `U_n` on commutative algebras.
+* Mathlib, `Mathlib/LinearAlgebra/Matrix/Block.lean` (triangular inverses and
+  determinants) and Robert Hawkins's Hopf-ideal and quotient formalization
+  in `Mathlib/RingTheory/HopfAlgebra/Quotient.lean`.
+* `AlgebraicGroups/Algebra/GeneralLinearCoordinateRing.lean` supplies the GL
+  Hopf operations; `AlgebraicGroups/Algebra/SpecialLinearCoordinateRing.lean`
+  supplies the earlier localized-to-polynomial quotient proof pattern. The
+  lower-entry and diagonal-generator calculations here are separate.
 -/
 
 @[expose] public section
@@ -98,8 +118,10 @@ theorem upper_mul_diag {R : Type u} [CommRing R]
 variable (K ι)
 
 set_option linter.style.haveILetI false in
-/-- Hopf stability of the actual GL quotient ideal, proved on both types of
-generators; the antipode part uses the inverse of the quotient of a GL unit. -/
+/-- The relations defining Milne's `U_n` (item 2.9) form a Hopf ideal over any
+commutative ring. Both quotient maps are applied in the coideal calculation;
+antipode stability uses the inverse of the quotient universal GL unit and the
+diagonal-of-product identity, rather than a field-point argument. -/
 theorem ideal_isHopfIdeal_proof : (ideal K ι).IsHopfIdeal K := by
   let q := quotient K ι
   let comulQuotient : GeneralLinearCoordinateRing.CoordinateRing K ι →ₐ[K]
@@ -386,8 +408,9 @@ theorem polynomialQuotientToCoordinateRing_comp_coordinateRingTo :
   rw [← AlgHom.comp_apply, polynomialQuotientToCoordinateRing_comp_polynomialQuotient]
   exact polynomialToCoordinateRing_variable K ι i j
 
-/-- The GL Hopf quotient and the all-entry polynomial quotient agree as
-`K`-algebras, not just on field-valued points. -/
+/-- The GL Hopf quotient and the all-entry polynomial presentation of Milne's
+`U_n` (item 2.9) agree as `K`-algebras over any commutative ring, not just on
+field-valued points. No compatibility with Hopf structures is asserted. -/
 def polynomialEquiv : PolynomialCoordinateRing K ι ≃ₐ[K] CoordinateRing K ι :=
   AlgEquiv.ofAlgHom (polynomialQuotientToCoordinateRing K ι)
     (coordinateRingToPolynomialQuotient K ι)
@@ -509,8 +532,10 @@ theorem freeToPolynomialQuotient_comp_polynomialQuotientToFree :
   · simp [freeEntry, not_lt.mpr (le_of_lt hij), ne_of_gt hij,
       polynomialQuotient_lower K ι i j hij]
 
-/-- The unlocalized all-entry presentation is the free algebra on exactly
-the strictly upper entries. -/
+/-- The unlocalized all-entry presentation of Milne's `U_n` (item 2.9) is
+the free polynomial algebra on exactly the strictly upper entries. This
+algebra equivalence does not assert an additive-group-scheme identification
+or compatibility with Hopf structures. -/
 def polynomialFreeEquiv : PolynomialCoordinateRing K ι ≃ₐ[K] FreeCoordinateRing K ι :=
   AlgEquiv.ofAlgHom (polynomialQuotientToFree K ι)
     (freeToPolynomialQuotient K ι)
@@ -518,7 +543,9 @@ def polynomialFreeEquiv : PolynomialCoordinateRing K ι ≃ₐ[K] FreeCoordinate
     (freeToPolynomialQuotient_comp_polynomialQuotientToFree K ι)
 
 /-- The localized Hopf quotient is a freely generated polynomial algebra
-on the strictly upper entries, as a `K`-algebra. -/
+on the strictly upper entries, as a `K`-algebra. This combines the
+unlocalized presentation of Milne's `U_n` (item 2.9) with determinant
+localization; it does not identify the Hopf structure with an additive one. -/
 def freeEquiv : FreeCoordinateRing K ι ≃ₐ[K] CoordinateRing K ι :=
   (polynomialFreeEquiv K ι).symm.trans (polynomialEquiv K ι)
 

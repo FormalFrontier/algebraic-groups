@@ -75,3 +75,18 @@ lake build AlgebraicGroups.GroupTheory.UnitriangularSuperdiagonalQuotients Algeb
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
 credit appears in [CREDITS](../../../CREDITS.md).
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), §6.49, proves one-entry
+  algebraic-group quotients isomorphic to the additive group, published
+  antecedents for one-coordinate point-group cases such as `n = 2`, `r = 1`
+  over a field.
+  The whole-superdiagonal quotient here is derived independently for arbitrary
+  commutative rings; no group-scheme quotient or formal source correspondence
+  is asserted.
+- Mathlib contributors, `Mathlib.GroupTheory.QuotientGroup.Defs` and
+  `Mathlib.GroupTheory.QuotientGroup.Basic` (`QuotientGroup.liftEquiv` and
+  `QuotientGroup.map`), and `Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs`
+  (matrix units used for coordinate lifts). The stage filtration comes from
+  `AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration`.

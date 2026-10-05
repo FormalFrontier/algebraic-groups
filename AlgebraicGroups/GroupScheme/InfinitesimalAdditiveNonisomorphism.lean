@@ -24,6 +24,25 @@ group-scheme isomorphism to a bialgebra equivalence, contradicting this obstruct
 This is an obstruction to an isomorphism **of group schemes**, not to an
 isomorphism of their underlying schemes. The positive-exponent hypothesis is
 essential: at `m = 0`, the infinitesimal coordinate itself vanishes.
+
+Milne's *Algebraic Groups*, item 2.5, asserts non-isomorphism without the
+necessary `m > 0` restriction. The proof here rules out *every* group-scheme
+isomorphism by transporting primitive elements through affine Hopf `Spec`;
+the tensor-diagonal argument for the absence of nonzero primitive elements
+in a monoid algebra is provided by `AlgebraicGroups.Algebra.MonoidAlgebraPrimitive`.
+Failure of the particular coordinate translation to preserve comultiplication
+alone would not establish this theorem.
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.5, p. 40 (the
+  group-nonisomorphism assertion, corrected here at `m = 0`).
+- `AlgebraicGroups.Algebra.MonoidAlgebraPrimitive` (the general
+  diagonal-coefficient argument for primitive elements).
+- Mathlib, `Mathlib.RingTheory.Bialgebra.Primitive`,
+  `Mathlib.RingTheory.Coalgebra.Primitive`, and
+  `Mathlib.AlgebraicGeometry.Group.Affine` (the primitive-element predicate,
+  preservation under coalgebra equivalences and fully faithful affine Hopf `Spec`).
 -/
 
 set_option warningAsError true
@@ -51,7 +70,9 @@ private theorem rootsOfUnity_primitive_eq_zero (K : Type u) [Field K]
 
 /-- In positive characteristic, no group-scheme isomorphism identifies the
 characteristic-power infinitesimal additive group with roots of unity of the
-same order. The restriction `0 < m` excludes the trivial, zero-coordinate case. -/
+same order. This is the corrected `0 < m` form of the assertion in Milne's
+*Algebraic Groups*, item 2.5: at `m = 0` the groups are isomorphic. The proof
+compares primitive elements, rather than only checking one coordinate translation. -/
 theorem infinitesimalAdditiveGroupScheme_not_iso_rootsOfUnity
     (K : Type u) [Field K] (p : ℕ) [Fact p.Prime] [CharP K p]
     (m : ℕ) (hm : 0 < m) :
@@ -82,9 +103,6 @@ theorem infinitesimalAdditiveGroupScheme_not_iso_rootsOfUnity
   apply hcoord
   apply (EquivLike.injective equiv)
   exact (rootsOfUnity_primitive_eq_zero K (p ^ m) _ he).trans (map_zero equiv).symm
-
-#print axioms rootsOfUnity_primitive_eq_zero
-#print axioms infinitesimalAdditiveGroupScheme_not_iso_rootsOfUnity
 
 end AlgebraicGeometry
 

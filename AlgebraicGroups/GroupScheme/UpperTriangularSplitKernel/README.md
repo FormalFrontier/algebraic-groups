@@ -41,9 +41,25 @@ examples include `Fin 0`, `Fin 1`, an independent-diagonal-units `Fin 2` shear,
 `ZMod 1`, a nonzero square-zero dual-number shear and noninjective reduction.
 The native U-first point-group semidirect decomposition is a different result:
 no group-scheme semidirect or direct-product theorem, normality in GL,
-arbitrary-base-change theorem, smoothness/dimension or source coverage is
-claimed here.
+arbitrary-base-change theorem or smoothness/dimension claim follows here.
 
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2.9 describes `T_n`, `D_n` and
+  `U_n` over a field and commutative coefficient algebras. Milne,
+  *Algebraic Groups* (course notes, version 2.00), §§2.20–2.21 gives the
+  field-base split triangular semidirect product; neither cited passage is
+  the arbitrary-base `CommRingCat` pushout or group-scheme kernel proof.
+* Mathlib, `Mathlib/AlgebraicGeometry/Pullbacks.lean`:
+  `isPullback_SpecMap_of_isPushout` converts the coordinate pushout to the
+  scheme pullback; `Mathlib/CategoryTheory/Limits/Constructions/Over/Connected.lean`
+  and `Mathlib/CategoryTheory/Monoidal/Cartesian/GrpLimits.lean` supply the
+  connected-limit and group-object limit creation used to lift the square.
+* `AlgebraicGroups/GroupTheory/UpperTriangular.lean` defines native
+  diagonal and section maps. The Hopf quotients and point comparisons in
+  `AlgebraicGroups/GroupScheme/UpperTriangular.lean`,
+  `AlgebraicGroups/GroupScheme/Diagonal.lean` and
+  `AlgebraicGroups/GroupScheme/Unitriangular.lean` are the represented inputs.
 
 For the pinned toolchain, matching mathlib cache and default-target commands,
 see the [build guide](../../../docs/BUILDING.md). Contributor and third-party

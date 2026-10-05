@@ -44,5 +44,24 @@ dependencies, fetch the matching mathlib cache with `lake exe cache get`
 and run `lake build AlgebraicGroupsTest.GroupScheme.AdditiveProductAffineSpace`
 to build this client.
 
-Formal Frontier Agents contributed the product argument and Lean proof.
-See [credits](../../../CREDITS.md) for collective attribution.
+## References
+
+Milne, *Algebraic Groups* (2017), item 2.1 describes the additive group.
+Item 2.6 gives a chosen-basis group-scheme isomorphism `Gₐ^n ≃ Vₐ` for a
+finite-dimensional vector space over a field, a published antecedent for
+finite additive products. The project's `VectorProduct` module formalizes
+this field/basis product as `vectorGroupSchemeProductIso`. The result here
+instead identifies the **underlying over-scheme** of the literal finite
+product with `Spec (MvPolynomial D K)` and affine `D`-space for arbitrary
+commutative `K`, without asserting a group-scheme isomorphism. The Lean
+construction follows Mathlib's `algΓAlgSpecAdjunction` for affine targets
+and global sections,
+`MvPolynomial.aeval` for freely chosen coordinates,
+`Limits.productIsProduct` and `Grp.forget` for genuine categorical products,
+and `AffineSpace.SpecIso` for the underlying affine-space identification.
+The local `Additive` and `AffineHomOver` modules provide the additive scheme
+and the over-scheme map/section equivalences used here.
+
+Formal Frontier Agents contributed this Lean comparison and proof, rather
+than claiming invention of the underlying mathematical constructions. See
+[credits and bibliography](../../../CREDITS.md) for the sources and attribution.

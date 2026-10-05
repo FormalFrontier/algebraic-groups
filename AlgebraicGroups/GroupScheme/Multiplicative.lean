@@ -17,12 +17,28 @@ represented by the Laurent polynomial Hopf algebra. Its affine points are
 naturally the groups of units, and its distinguished coordinate is invertible
 and group-like.
 
+Milne's *Algebraic Groups*, item 2.2, gives the units functor over a field,
+represented by `k[T,T⁻¹]` with `Δ(T) = T ⊗ T`. Here the construction and
+representability extend to any commutative base ring, including the zero ring.
+
 ## Main definitions
 
 - `AlgebraicGeometry.multiplicativeGroupScheme`
 - `AlgebraicGeometry.multiplicativeGroupMulEquivAlgHom`
 - `AlgebraicGeometry.multiplicativeGroupMulEquivPoints`
 - `AlgebraicGeometry.multiplicativeGroupPointsIso`
+
+## References
+
+- James S. Milne, *Algebraic Groups* (2017), item 2.2, p. 40 (the units
+  functor, Laurent coordinate ring, and comultiplication on its coordinate).
+- Mathlib, `Mathlib.Algebra.Polynomial.Laurent`,
+  `Mathlib.Algebra.MonoidAlgebra.Basic`,
+  `Mathlib.RingTheory.Bialgebra.MonoidAlgebra`, and
+  `Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra` (Laurent coordinates, lifted
+  algebra maps, convolution, and the Hopf-algebra structure).
+- Mathlib, `Mathlib.AlgebraicGeometry.Group.Affine` (the affine Hopf-algebra
+  construction and the affine `Spec` points/convolution equivalence used here).
 -/
 
 @[expose] public section
@@ -36,7 +52,8 @@ universe u
 
 namespace AlgebraicGeometry
 
-/-- The Laurent-polynomial coordinate ring of the multiplicative group. -/
+/-- The Laurent-polynomial coordinate ring of the multiplicative group,
+extending the field-base presentation in Milne's *Algebraic Groups*, item 2.2. -/
 abbrev multiplicativeGroupCoordinateRing
     (K : Type u) [CommRing K] := LaurentPolynomial K
 
@@ -74,7 +91,8 @@ instance multiplicativeGroupUnderlyingScheme_quasiCompact
     (algebraMap K (multiplicativeGroupCoordinateRing K))))
   infer_instance
 
-/-- The multiplicative group scheme over `K`. -/
+/-- The multiplicative group scheme over `K`, extending Milne's *Algebraic
+Groups*, item 2.2, from fields to commutative rings. -/
 abbrev multiplicativeGroupScheme
     (K : Type u) [CommRing K] : Grp (Over (Spec (.of K))) :=
   ⟨multiplicativeGroupUnderlyingScheme K⟩
@@ -100,7 +118,9 @@ abbrev multiplicativeGroupPointsFunctor
 variable (K R : Type u) [CommRing K] [CommRing R] [Algebra K R]
 
 /-- Units are multiplicatively equivalent to algebra maps out of the
-Laurent-polynomial coordinate ring, equipped with convolution. -/
+Laurent-polynomial coordinate ring, equipped with convolution. This realizes
+the representing algebra of Milne's *Algebraic Groups*, item 2.2, over
+arbitrary commutative base rings. -/
 def multiplicativeGroupMulEquivAlgHom :
     Rˣ ≃* WithConv (multiplicativeGroupCoordinateRing K →ₐ[K] R) where
   toFun u := WithConv.toConv
@@ -188,7 +208,8 @@ theorem multiplicativeGroupMulEquivAlgHom_naturality
       _ = f ↑(u ^ n) := Units.coe_map (f : R →* S) (u ^ n)
   · ext
 
-/-- The functor-of-points equivalence at a `K`-algebra `R`. -/
+/-- The functor-of-points equivalence at a `K`-algebra `R`, extending the
+units-valued points of Milne's *Algebraic Groups*, item 2.2. -/
 def multiplicativeGroupMulEquivPoints :
     Rˣ ≃* ((Spec (.of R)).asOver (Spec (.of K)) ⟶
       multiplicativeGroupUnderlyingScheme K) :=
@@ -205,7 +226,9 @@ theorem multiplicativeGroupMulEquivPoints_apply_left (u : Rˣ) :
         (multiplicativeGroupMulEquivAlgHom K R u).ofConv.toRingHom) :=
   rfl
 
-/-- The affine multiplicative group scheme represents the units functor. -/
+/-- The affine multiplicative group scheme represents the units functor.
+This extends Milne's *Algebraic Groups*, item 2.2, to arbitrary commutative
+base rings and makes the point equivalences natural in the test algebra. -/
 def multiplicativeGroupPointsIso
     (K : Type u) [CommRing K] :
     multiplicativeGroupFunctor K ≅ multiplicativeGroupPointsFunctor K :=
@@ -239,7 +262,9 @@ theorem multiplicativeGroupCoordinate_isUnit
     IsUnit (multiplicativeGroupCoordinate K) := by
   exact LaurentPolynomial.isUnit_T 1
 
-/-- Comultiplication sends the distinguished coordinate to its tensor square. -/
+/-- Comultiplication sends the distinguished coordinate to its tensor square,
+as in Milne's *Algebraic Groups*, item 2.2. This uses Mathlib's
+`LaurentPolynomial.comul_T`. -/
 @[simp]
 theorem multiplicativeGroupCoordinate_comul
     (K : Type u) [CommRing K] :

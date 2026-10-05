@@ -11,7 +11,30 @@ public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 
-/-! # The diagonal split quotient and unitriangular kernel of upper-triangular groups -/
+/-!
+# The diagonal split quotient and unitriangular kernel of upper-triangular groups
+
+The diagonal projection and its section are represented by maps of Hopf
+coordinate rings. The unitriangular inclusion is the fiber over the identity
+as a pullback of group schemes, proved from a pushout of coordinate rings for
+arbitrary compatible maps of commutative rings. The base and test algebras
+need not be fields, reduced, or nonzero.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2.9: the field-base triangular,
+  diagonal and unitriangular subgroups and their points over commutative
+  algebras. His *Algebraic Groups* (course notes, version 2.00), §§2.20–2.21
+  gives the field-base triangular semidirect-product antecedent; the cited
+  passages do not supply the arbitrary-base categorical kernel proof here.
+* Mathlib, `Mathlib.AlgebraicGeometry.Pullbacks`:
+  `isPullback_SpecMap_of_isPushout`; `Mathlib.CategoryTheory.Limits.Constructions.Over.Connected`
+  and `Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits`: connected-limit
+  creation for over objects and limit creation for group objects.
+* `AlgebraicGroups.GroupTheory.UpperTriangular` and the group-scheme modules
+  `UpperTriangular`, `Diagonal`, and `Unitriangular`: the native diagonal,
+  section and inclusions and their represented Hopf quotients.
+-/
 
 @[expose] public section
 
@@ -41,7 +64,7 @@ def upperTriangularDiagonalSectionCoordinateMap :
   upperTriangularFromGL K n _
     (Matrix.UpperTriangularGroup.diagonalSection (DiagonalCoordinateRing.universal K n))
 
-/-- The published unitriangular universal matrix gives a quotient of the upper-triangular
+/-- The unitriangular universal matrix gives a quotient of the upper-triangular
 coordinate ring. -/
 def upperTriangularUnitriangularCoordinateMap :
     UpperTriangularCoordinateRing.CoordinateRing K n →ₐ[K]
@@ -320,6 +343,9 @@ theorem upperTriangularDiagonalCoordinateMap_section :
   · simp only [hij, ite_false, map_zero]
     exact (DiagonalCoordinateRing.quotient_offDiagonal K n i j hij).symm
 
+/-- Diagonal section followed by projection is the identity on `D`, not on `T`.
+Compare the field-base split triangular group in Milne, *Algebraic Groups*
+(course notes, version 2.00), §2.20. -/
 theorem upperTriangularDiagonal_section :
     upperTriangularDiagonalSection K n ≫ upperTriangularDiagonalProjection K n =
       𝟙 (diagonalGroupScheme K n) := by
@@ -433,9 +459,13 @@ theorem upperTriangularDiagonalSquare_commutes :
   apply CommRingCat.hom_ext
   exact congrArg AlgHom.toRingHom (upperTriangularDiagonalSquare_alg K n)
 
-/-- The published unitriangular quotient is the pushout of the diagonal
+/-- The unitriangular quotient is the pushout of the diagonal
 projection's coordinate map along the diagonal Hopf counit, for arbitrary
-commutative target rings and arbitrary compatible scalar maps. -/
+commutative target rings and arbitrary compatible scalar maps. The proof
+kills the full lower-entry and diagonal-minus-one ideal and uses the base
+scalar compatibility; it is not a pointwise kernel argument. Compare the
+field-base triangular split in Milne, *Algebraic Groups* (course notes,
+version 2.00), §2.20. -/
 theorem upperTriangularDiagonalSquare_isPushout :
     IsPushout
       (CommRingCat.ofHom (upperTriangularDiagonalCoordinateMap K n).toRingHom)
@@ -568,8 +598,12 @@ def diagonalUnitGroupHom :
   Grp.homMk' (0 : Mon.trivial (Over (Spec (.of K))) ⟶
     (diagonalGroupScheme K n).toMon)
 
-/-- The published unitriangular group scheme is the genuine categorical kernel
-of the upper-triangular diagonal projection. -/
+/-- The unitriangular group scheme is the genuine categorical kernel of the
+upper-triangular diagonal projection over any commutative base ring. The
+coordinate pushout becomes a scheme pullback by Mathlib's
+`isPullback_SpecMap_of_isPushout`, then a group-object pullback by limit
+creation; Milne, *Algebraic Groups* (course notes, version 2.00), §2.20
+provides the field-base split triangular antecedent. -/
 theorem upperTriangularDiagonalSquare_isPullback_group :
     IsPullback (unitriangularToUpperTriangular K n)
       (unitriangularToTrivialGroupHom K n)

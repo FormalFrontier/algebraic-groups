@@ -18,6 +18,18 @@ Krull dimensions of the published determinant-localized general linear coordinat
 ring and determinant-one special linear Hopf quotient, as well as the topological
 Krull dimensions of their actual affine underlying schemes. The formula for SL
 uses natural-number subtraction: its rank-zero case has dimension zero.
+
+## References
+
+* J. S. Milne, *Algebraic Groups* (2017), §2.8: the determinant-localized
+  presentation of finite `GL` over a field and the finite `SL` subgroup.
+* J. S. Milne, *Basic Theory of Affine Group Schemes* (2012), XI §16,
+  Example 16.3: the positive-rank, field-base dimension of `SL_n`.
+* Mathlib, `RingTheory/KrullDimension/Polynomial` and
+  `RingTheory/KrullDimension/Regular`: polynomial dimensions, maximal-ideal
+  height increments and the conditional hypersurface dimension theorem. The proof also
+  uses this library's `MvPolynomial.height_ker_eval` and the coordinate-ring
+  equivalences, rather than a general dimension-of-open-subscheme formula.
 -/
 
 public section
@@ -176,14 +188,20 @@ private theorem dimension_sl_empty (hzero : Fintype.card n = 0) :
       rw [dimension_polynomialRing, hzero]
       simp
 
-/-- The actual determinant-localized coordinate ring has dimension `card(n)²`. -/
+/-- The determinant-localized coordinate ring has dimension `card(n)²` over any
+field, including finite fields and rank zero. This extends the finite `GL`
+presentation in Milne, *Algebraic Groups*, §2.8; the proof uses mathlib's
+polynomial evaluation heights and a regular-hypersurface quotient. -/
 theorem generalLinearCoordinateRing_ringKrullDim :
     ringKrullDim (GeneralLinearCoordinateRing.CoordinateRing K n) =
       ((Fintype.card n ^ 2 : ℕ) : WithBot ℕ∞) :=
   dimension_gl K n
 
 /-- The actual determinant-one Hopf quotient has dimension `card(n)² - 1`,
-with natural subtraction, including the empty index type. -/
+with natural subtraction, including the empty index type. Milne, *Basic Theory
+of Affine Group Schemes*, XI §16, Example 16.3 gives the positive-rank field
+dimension; the proof here uses mathlib's hypersurface theorem and treats rank
+zero separately. -/
 theorem specialLinearCoordinateRing_ringKrullDim :
     ringKrullDim (SpecialLinearCoordinateRing.CoordinateRing K n) =
       ((Fintype.card n ^ 2 - 1 : ℕ) : WithBot ℕ∞) := by
@@ -191,7 +209,8 @@ theorem specialLinearCoordinateRing_ringKrullDim :
   · exact dimension_sl_empty K n hzero
   · exact dimension_sl_positive K n (Nat.pos_of_ne_zero hzero)
 
-/-- The underlying affine scheme of `GL(n)` has dimension `card(n)²`. -/
+/-- The underlying affine scheme of `GL(n)` has dimension `card(n)²`, by the
+coordinate-ring calculation and mathlib's prime-spectrum dimension bridge. -/
 theorem generalLinearGroupUnderlyingScheme_topologicalKrullDim :
     topologicalKrullDim (generalLinearGroupUnderlyingScheme K n).left =
       ((Fintype.card n ^ 2 : ℕ) : WithBot ℕ∞) := by
@@ -200,7 +219,8 @@ theorem generalLinearGroupUnderlyingScheme_topologicalKrullDim :
   exact generalLinearCoordinateRing_ringKrullDim K n
 
 /-- The underlying affine scheme of `SL(n)` has dimension `card(n)² - 1`
-with natural subtraction. -/
+with natural subtraction, by the coordinate-ring calculation and mathlib's
+prime-spectrum dimension bridge. -/
 theorem specialLinearGroupUnderlyingScheme_topologicalKrullDim :
     topologicalKrullDim (specialLinearGroupUnderlyingScheme K n).left =
       ((Fintype.card n ^ 2 - 1 : ℕ) : WithBot ℕ∞) := by

@@ -19,6 +19,16 @@ reduction. The canonical inclusion is then a monoid-object homomorphism.
 No preservation of fibre products by scheme reduction is asserted here. The
 reducedness of the exact tensor object needed to restrict multiplication is an
 explicit hypothesis.
+
+## References
+
+- J. S. Milne, *Algebraic Groups*, Corollary 1.39, for the special case in
+  which the reduction of an algebraic group over a perfect field is a subgroup.
+  Here the base is any reduced scheme and reducedness of the self-product of
+  the reduction is an explicit extra hypothesis.
+- The Stacks Project, [Definition 26.12.5 (Tag 01J4)](https://stacks.math.columbia.edu/tag/01J4),
+  for scheme reduction; Mathlib's `Over`-category Cartesian monoidal structure
+  and group objects supply the setting for restricting the operations.
 -/
 
 public section
@@ -128,7 +138,9 @@ lemma Scheme.reductionOverInv_comp_ι (G : Over S) [GrpObj G] :
   exact Scheme.Hom.liftReduction_fac _
 
 /-- The reduction of a group scheme is a group scheme provided the base and the
-Cartesian square of the reduction are reduced. -/
+Cartesian square of the reduction are reduced. Milne, *Algebraic Groups*, Corollary 1.39
+gives the perfect-field algebraic-group case; no preservation of self-products by reduction
+is assumed here. -/
 noncomputable instance Scheme.reductionOver_grpObj (G : Over S) [GrpObj G] [IsReduced S]
     [IsReduced ((Scheme.reductionOver G ⊗ Scheme.reductionOver G).left)] :
     GrpObj (Scheme.reductionOver G) := by

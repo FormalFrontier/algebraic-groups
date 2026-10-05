@@ -17,6 +17,25 @@ public import Mathlib.LinearAlgebra.TensorProduct.Pi
 These are additive groups: `Multiplicative` is only the operation tag required by
 `GrpCat`. The matrix comparison works for arbitrary finite, possibly empty,
 index types and over every commutative algebra (including the zero ring).
+
+Milne's item 2.7 gives additive rectangular matrix groups with polynomial
+coordinates and the finite-dimensional additive End group via a chosen basis,
+over a field and with positive matrix dimensions. Here the matrix and End
+functors also cover empty finite indices and all commutative test algebras.
+Their tensor/base-change and coordinate presentations use Mathlib's product,
+matrix-basis, dual-basis and symmetric-algebra equivalences; the endomorphism
+comparison uses its finite-free `IsBaseChange.end`.
+
+## References
+
+- J. S. Milne, *Algebraic Groups* (2017), item 2.7 (additive matrix and
+  finite-dimensional endomorphism groups).
+- Mathlib, `Mathlib.LinearAlgebra.TensorProduct.Pi` (linear `TensorProduct.piRight`
+  and `TensorProduct.piScalarRight` for finite products),
+  `Mathlib.LinearAlgebra.Matrix.StdBasis` (matrix basis),
+  `Mathlib.LinearAlgebra.Dual.Basis` (dual-basis entries),
+  `Mathlib.LinearAlgebra.SymmetricAlgebra.Basis` (polynomial coordinates),
+  and `Mathlib.RingTheory.TensorProduct.IsBaseChangeHom` (endomorphism base change).
 -/
 
 public section
@@ -117,7 +136,9 @@ theorem matrixVectorMulEquiv_tmul (R : Type u) [CommRing R] [Algebra K R]
           simp only [map_add, hy, hz]
       exact congrArg Multiplicative.ofAdd (aux x.toAdd))
 
-/-- Representation by the already constructed affine vector-group scheme. -/
+/-- The additive rectangular matrix functor is represented by the affine
+vector-group scheme. This extends the positive-size matrix example in Milne,
+*Algebraic Groups* (2017), item 2.7, to empty finite index types. -/
 @[expose] def matrixGroupPointsIso :
     additiveMatrixFunctor K m n ≅ vectorGroupPointsFunctor K (Matrix m n K) :=
   (matrixVectorGroupIso K m n).symm ≪≫ vectorGroupPointsIso K (Matrix m n K)
@@ -313,7 +334,9 @@ theorem endVectorLinearEquiv_naturality (R S : Type u)
       exact endVectorLinearEquiv_naturality K V R S g.hom x)
 
 /-- The finite-dimensional additive End functor is represented by the existing
-basis-independent vector-group scheme and its finite-type coordinate ring. -/
+basis-independent vector-group scheme and its finite-type coordinate ring,
+refining the chosen-basis matrix comparison of Milne, *Algebraic Groups*
+(2017), item 2.7, without choosing a basis. -/
 @[expose] def endGroupPointsIso :
     additiveEndFunctor K V ≅ vectorGroupPointsFunctor K (Module.End K V) :=
   (endVectorGroupIso K V).symm ≪≫ vectorGroupPointsIso K (Module.End K V)
@@ -385,7 +408,9 @@ theorem endMatrixLinearEquiv_naturality (R S : Type u)
   | add x y hx hy =>
     simp only [map_add, hx, hy]
 
-/-- A chosen basis identifies the additive End functor with additive square matrices. -/
+/-- A chosen basis identifies the additive End functor with additive square
+matrices, as in Milne, *Algebraic Groups* (2017), item 2.7. This natural
+isomorphism also includes zero-dimensional spaces and all test algebras. -/
 @[expose] def endMatrixGroupIso : additiveEndFunctor K V ≅ additiveMatrixFunctor K i i :=
   NatIso.ofComponents
     (fun R ↦ ((endMatrixLinearEquiv K V i b R).toAddEquiv.toMultiplicative).toGrpIso)
