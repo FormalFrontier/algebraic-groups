@@ -13,30 +13,45 @@ public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
-# Finite-dimensional subcoalgebra containment
+# Finite right-coaction and coalgebra containment
 
-The fundamental theorem of coalgebras over a field says that every finite subset
-of a coalgebra is contained in a finite-dimensional subcoalgebra. We express
-containment using a submodule `D` and the image of the tensor inclusion
-`D ⊗ D → C ⊗ C`. Finiteness is module finite generation (`Submodule.FG`),
-not finite generation of an algebra. No multiplication on `C` is required.
+Over a commutative semiring `K`, let `C` be a coalgebra and `M` a module, both
+with additive commutative monoid structures and with independent universes.
+For a linear right coaction `ρ : M →ₗ[K] M ⊗[K] C` satisfying coassociativity
+and right counitality, projectivity of `C` gives finite containment:
+`exists_fg_submodule_coaction_right_closed_of_finite` places every finite subset
+of `M` in a submodule `U` with `U.FG` and
+`ρ x ∈ LinearMap.range (U.subtype.rTensor C)` for every `x ∈ U`.
+Neither projectivity of `M`, finite generation of either module, nor surjectivity
+of the counit is required.
 
-The finite right-coideal step works more generally over a commutative semiring
-when the ambient coalgebra module is projective, with only an additive commutative
-monoid structure. A global section of its canonical free presentation replaces
-an ambient basis; no finite-generation assumption on the ambient module is needed.
-Comultiplication lies in the image of the first-factor tensor inclusion for every
-member of the resulting finitely generated submodule.
-Over a field, the coefficients of a finite basis then produce two-factor
-closure. The automatic basis and ambient coordinate extensions in this later
-step are field-only. A right coideal alone need not have two-factor closure,
-and finite tensor support alone does not give either closure. The counit takes
-values in the scalar semiring, so it needs no additional closure condition.
+The coefficient argument uses a global section of the canonical free presentation
+of `C`, rather than a basis of `M` or `C`. Contracting the right counit recovers
+each element from its coefficients; contracting coassociativity gives image
+stability for every member of their span. This module supplies the image-stable
+submodule. `AlgebraicGroups.Algebra.Coalgebra.RightComodule` equips it with a
+subtype coaction and colinear inclusion using flatness of `C`.
+
+The regular case `M = C`, `ρ = comul` is
+`exists_fg_submodule_comul_right_closed_of_finite`: every finite subset lies in
+a finitely generated right coideal with image closure under `U ⊗ C → C ⊗ C`.
+It is a specialization of the same coefficient argument.
+
+The fundamental theorem of coalgebras over a field has a distinct two-factor
+step: the coefficients of a finite basis produce a submodule `D` with
+comultiplication in the image of `D ⊗ D → C ⊗ C` for every member.
+The automatic basis and ambient coordinate extensions in this later step are
+field-only. These statements use module finite generation (`Submodule.FG`),
+not algebra finite generation, and do not construct a coalgebra structure on
+the subtype. No multiplication on `C` is required. A right coideal alone need
+not have two-factor closure, and finite tensor support alone does not give
+either closure. The counit takes values in the scalar semiring, so it needs
+no additional closure condition.
 
 ## References
 
-* M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969, for the classical
-  theorem and coefficient-coalgebra method (bibliographic credit).
+* M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969, for classical
+  comodules, the field coalgebra theorem and coefficient method (bibliographic credit).
 * Mathlib's projective-module, coalgebra and tensor-product formalizations.
 * Formal Frontier's projective-coalgebra formalization, for the global-splitting
   version of the coefficient argument.
@@ -44,7 +59,7 @@ values in the scalar semiring, so it needs no additional closure condition.
 
 @[expose] public section
 
-universe u v
+universe u v w
 
 namespace Coalgebra
 
@@ -68,69 +83,86 @@ private lemma contractRight_tmul {M : Type*} [AddCommMonoid M] [Module K M]
 
 variable [Coalgebra K C]
 
-private lemma contractRight_counit_comul (x : C) :
-    contractRight (counit (R := K)) (comul x) = x := by
-  simp [contractRight]
+variable {M : Type w} [AddCommMonoid M] [Module K M]
+
+private lemma contractRight_counit_coaction (ρ : M →ₗ[K] M ⊗[K] C)
+    (hcounit : (counit (R := K) (A := C)).lTensor M ∘ₗ ρ =
+      (TensorProduct.rid K M).symm.toLinearMap) (x : M) :
+    contractRight (counit (R := K)) (ρ x) = x := by
+  change TensorProduct.rid K M ((counit (R := K)).lTensor M (ρ x)) = x
+  rw [show (counit (R := K)).lTensor M (ρ x) = (TensorProduct.rid K M).symm x
+    from LinearMap.congr_fun hcounit x]
+  exact (TensorProduct.rid K M).apply_symm_apply x
 
 -- Third-factor contraction of coassociativity. Both comparison identities are
 -- equalities of linear maps, checked on pure tensors (and pure triples).
-private lemma comul_contractRight (f : C →ₗ[K] K) (x : C) :
-    comul (contractRight f (comul x)) =
-      TensorProduct.map (LinearMap.id : C →ₗ[K] C) (contractRight f)
-        ((comul (R := K)).lTensor C (comul x)) := by
-  have h₁ : (comul (R := K) (A := C)) ∘ₗ contractRight (M := C) f =
-      contractRight (M := C ⊗[K] C) f ∘ₗ (comul (R := K) (A := C)).rTensor C := by
-    ext c d
+private lemma coaction_contractRight (ρ : M →ₗ[K] M ⊗[K] C)
+    (hcoassoc : TensorProduct.assoc K M C C ∘ₗ ρ.rTensor C ∘ₗ ρ =
+      (comul (R := K) (A := C)).lTensor M ∘ₗ ρ)
+    (f : C →ₗ[K] K) (x : M) :
+    ρ (contractRight f (ρ x)) =
+      TensorProduct.map (LinearMap.id : M →ₗ[K] M) (contractRight (M := C) f)
+        ((comul (R := K)).lTensor M (ρ x)) := by
+  have h₁ : ρ ∘ₗ contractRight (M := M) f =
+      contractRight (M := M ⊗[K] C) f ∘ₗ ρ.rTensor C := by
+    ext m c
     simp [contractRight_tmul]
-  have h₂ : contractRight f ∘ₗ (TensorProduct.assoc K C C C).symm.toLinearMap =
-      TensorProduct.map (LinearMap.id : C →ₗ[K] C) (contractRight f) := by
-    ext c d e
+  have h₂ : contractRight f ∘ₗ (TensorProduct.assoc K M C C).symm.toLinearMap =
+      TensorProduct.map (LinearMap.id : M →ₗ[K] M) (contractRight (M := C) f) := by
+    ext m c d
     simp [contractRight_tmul, TensorProduct.tmul_smul]
+  have hρ : (TensorProduct.assoc K M C C).symm
+      ((comul (R := K)).lTensor M (ρ x)) = ρ.rTensor C (ρ x) := by
+    rw [(TensorProduct.assoc K M C C).symm_apply_eq]
+    exact (LinearMap.congr_fun hcoassoc x).symm
   calc
-    comul (contractRight f (comul x)) =
-        contractRight f ((comul (R := K)).rTensor C (comul x)) :=
-      LinearMap.congr_fun h₁ (comul x)
-    _ = contractRight f ((TensorProduct.assoc K C C C).symm
-        ((comul (R := K)).lTensor C (comul x))) := by
-      rw [coassoc_symm_apply]
+    ρ (contractRight f (ρ x)) = contractRight f (ρ.rTensor C (ρ x)) :=
+      LinearMap.congr_fun h₁ (ρ x)
+    _ = contractRight f ((TensorProduct.assoc K M C C).symm
+        ((comul (R := K)).lTensor M (ρ x))) := by rw [hρ]
     _ = _ := LinearMap.congr_fun h₂ _
 
 variable [Module.Projective K C]
 
-private theorem exists_fg_right_coideal_single (x : C) :
-    ∃ U : Submodule K C, x ∈ U ∧ U.FG ∧
-      ∀ y ∈ U, comul (R := K) y ∈ LinearMap.range (U.subtype.rTensor C) := by
+private theorem exists_fg_coaction_stable_single (ρ : M →ₗ[K] M ⊗[K] C)
+    (hcoassoc : TensorProduct.assoc K M C C ∘ₗ ρ.rTensor C ∘ₗ ρ =
+      (comul (R := K) (A := C)).lTensor M ∘ₗ ρ)
+    (hcounit : (counit (R := K) (A := C)).lTensor M ∘ₗ ρ =
+      (TensorProduct.rid K M).symm.toLinearMap) (x : M) :
+    ∃ U : Submodule K M, x ∈ U ∧ U.FG ∧
+      ∀ y ∈ U, ρ y ∈ LinearMap.range (U.subtype.rTensor C) := by
   classical
   obtain ⟨σ, hσ⟩ := (inferInstance : Module.Projective K C).out
   have hsplit : (Finsupp.linearCombination K id).comp σ = LinearMap.id := by
     ext c
     exact hσ c
   obtain ⟨a, hrepr, hcoef⟩ := TensorProduct.exists_tensor_coefficients_of_split
-    (Finsupp.linearCombination K id) σ hsplit (comul x)
-  have hrepr' : (∑ i ∈ a.support, a i ⊗ₜ[K] i) = comul x := by
+    (Finsupp.linearCombination K id) σ hsplit (ρ x)
+  have hrepr' : (∑ i ∈ a.support, a i ⊗ₜ[K] i) = ρ x := by
     simpa using hrepr
-  have hcoef' (i : C) : a i = contractRight ((Finsupp.lapply i).comp σ) (comul x) :=
+  have hcoef' (i : C) : a i = contractRight ((Finsupp.lapply i).comp σ) (ρ x) :=
     hcoef i
   let t := a.support.image a
-  let U : Submodule K C := Submodule.span K (t : Set C)
+  let U : Submodule K M := Submodule.span K (t : Set M)
   have ha (i : C) (hi : i ∈ a.support) : a i ∈ U :=
     Submodule.subset_span (Finset.mem_image.mpr ⟨i, hi, rfl⟩)
   have hx : (∑ i ∈ a.support, counit (R := K) i • a i) = x := by
-    simpa only [map_sum, contractRight_tmul, contractRight_counit_comul]
+    have hx_counit := contractRight_counit_coaction ρ hcounit x
+    simpa only [map_sum, contractRight_tmul, hx_counit]
       using congrArg (contractRight (counit (R := K))) hrepr'
-  have hclosed : U ≤ (LinearMap.range (U.subtype.rTensor C)).comap (comul (R := K)) := by
+  have hclosed : U ≤ (LinearMap.range (U.subtype.rTensor C)).comap ρ := by
     apply Submodule.span_le.mpr
     rintro y hy
     obtain ⟨i, _hi, rfl⟩ := Finset.mem_image.mp hy
-    have hcomul : comul (R := K) (a i) = ∑ j ∈ a.support,
+    have hcoaction : ρ (a i) = ∑ j ∈ a.support,
         a j ⊗ₜ[K] contractRight ((Finsupp.lapply i).comp σ) (comul j) := by
-      have h := comul_contractRight ((Finsupp.lapply i).comp σ) x
+      have h := coaction_contractRight ρ hcoassoc ((Finsupp.lapply i).comp σ) x
       rw [← hcoef' i] at h
       conv_rhs at h => rw [← hrepr']
       simpa only [map_sum, LinearMap.lTensor_tmul, TensorProduct.map_tmul,
         LinearMap.id_apply] using h
-    change comul (R := K) (a i) ∈ LinearMap.range (U.subtype.rTensor C)
-    rw [hcomul]
+    change ρ (a i) ∈ LinearMap.range (U.subtype.rTensor C)
+    rw [hcoaction]
     apply Submodule.sum_mem
     intro j hj
     refine ⟨(⟨a j, ha j hj⟩ : U) ⊗ₜ[K]
@@ -139,6 +171,54 @@ private theorem exists_fg_right_coideal_single (x : C) :
   refine ⟨U, ?_, Submodule.fg_span t.finite_toSet, fun y hy ↦ hclosed hy⟩
   rw [← hx]
   exact U.sum_mem fun i hi ↦ U.smul_mem _ (ha i hi)
+
+/-- Every finite subset of a module with a right coaction of a projective
+coalgebra is contained in a finitely generated image-stable submodule.
+The hypotheses are the coassociativity and right counitality equations for the
+linear coaction. Neither projectivity nor finite generation of the coacted-on
+module is required. Image stability holds for every member of the submodule.
+This is the split-coordinate form of the classical coefficient method for
+comodules, credited bibliographically to Sweedler's *Hopf Algebras*. -/
+theorem exists_fg_submodule_coaction_right_closed_of_finite
+    (ρ : M →ₗ[K] M ⊗[K] C)
+    (hcoassoc : TensorProduct.assoc K M C C ∘ₗ ρ.rTensor C ∘ₗ ρ =
+      (comul (R := K) (A := C)).lTensor M ∘ₗ ρ)
+    (hcounit : (counit (R := K) (A := C)).lTensor M ∘ₗ ρ =
+      (TensorProduct.rid K M).symm.toLinearMap)
+    {s : Set M} (hs : s.Finite) :
+    ∃ U : Submodule K M,
+      s ⊆ (U : Set M) ∧ U.FG ∧
+      ∀ x ∈ U, ρ x ∈ LinearMap.range (U.subtype.rTensor C) := by
+  classical
+  induction s, hs using Set.Finite.induction_on with
+  | empty =>
+    refine ⟨⊥, Set.empty_subset _, Submodule.fg_bot, ?_⟩
+    intro x hx
+    have hx0 : x = 0 := (Submodule.mem_bot K).mp hx
+    simp [hx0]
+  | @insert x s hxs hs ih =>
+    obtain ⟨U, hx, hUfg, hU⟩ := exists_fg_coaction_stable_single ρ hcoassoc hcounit x
+    obtain ⟨V, hsV, hVfg, hV⟩ := ih
+    have hu_range : LinearMap.range (U.subtype.rTensor C) ≤
+        LinearMap.range ((U ⊔ V).subtype.rTensor C) := by
+      simpa only [LinearMap.rTensor_def] using
+        TensorProduct.range_map_mono (a := U.subtype) (b := (U ⊔ V).subtype)
+          (c := (LinearMap.id : C →ₗ[K] C)) (d := (LinearMap.id : C →ₗ[K] C))
+          (by simpa only [Submodule.range_subtype] using (le_sup_left : U ≤ U ⊔ V)) le_rfl
+    have hv_range : LinearMap.range (V.subtype.rTensor C) ≤
+        LinearMap.range ((U ⊔ V).subtype.rTensor C) := by
+      simpa only [LinearMap.rTensor_def] using
+        TensorProduct.range_map_mono (a := V.subtype) (b := (U ⊔ V).subtype)
+          (c := (LinearMap.id : C →ₗ[K] C)) (d := (LinearMap.id : C →ₗ[K] C))
+          (by simpa only [Submodule.range_subtype] using (le_sup_right : V ≤ U ⊔ V)) le_rfl
+    have hu : U ≤ (LinearMap.range ((U ⊔ V).subtype.rTensor C)).comap ρ :=
+      fun y hy ↦ hu_range (hU y hy)
+    have hv : V ≤ (LinearMap.range ((U ⊔ V).subtype.rTensor C)).comap ρ :=
+      fun y hy ↦ hv_range (hV y hy)
+    refine ⟨U ⊔ V, ?_, hUfg.sup hVfg, fun y hy ↦ (sup_le hu hv) hy⟩
+    rintro y (rfl | hy)
+    · exact (le_sup_left : U ≤ U ⊔ V) hx
+    · exact (le_sup_right : V ≤ U ⊔ V) (hsV hy)
 
 /-- Every finite subset of a coalgebra over a commutative semiring with projective
 underlying module is contained in a module-finitely-generated right coideal.
@@ -154,36 +234,8 @@ theorem exists_fg_submodule_comul_right_closed_of_finite
     ∃ U : Submodule K C,
       s ⊆ (U : Set C) ∧ U.FG ∧
       ∀ x ∈ U, comul (R := K) x ∈ LinearMap.range (U.subtype.rTensor C) := by
-  classical
-  induction s, hs using Set.Finite.induction_on with
-  | empty =>
-    refine ⟨⊥, Set.empty_subset _, Submodule.fg_bot, ?_⟩
-    intro x hx
-    have hx0 : x = 0 := (Submodule.mem_bot K).mp hx
-    simp [hx0]
-  | @insert x s hxs hs ih =>
-    obtain ⟨U, hx, hUfg, hU⟩ := exists_fg_right_coideal_single (K := K) x
-    obtain ⟨V, hsV, hVfg, hV⟩ := ih
-    have hu_range : LinearMap.range (U.subtype.rTensor C) ≤
-        LinearMap.range ((U ⊔ V).subtype.rTensor C) := by
-      simpa only [LinearMap.rTensor_def] using
-        TensorProduct.range_map_mono (a := U.subtype) (b := (U ⊔ V).subtype)
-          (c := (LinearMap.id : C →ₗ[K] C)) (d := (LinearMap.id : C →ₗ[K] C))
-          (by simpa only [Submodule.range_subtype] using (le_sup_left : U ≤ U ⊔ V)) le_rfl
-    have hv_range : LinearMap.range (V.subtype.rTensor C) ≤
-        LinearMap.range ((U ⊔ V).subtype.rTensor C) := by
-      simpa only [LinearMap.rTensor_def] using
-        TensorProduct.range_map_mono (a := V.subtype) (b := (U ⊔ V).subtype)
-          (c := (LinearMap.id : C →ₗ[K] C)) (d := (LinearMap.id : C →ₗ[K] C))
-          (by simpa only [Submodule.range_subtype] using (le_sup_right : V ≤ U ⊔ V)) le_rfl
-    have hu : U ≤ (LinearMap.range ((U ⊔ V).subtype.rTensor C)).comap (comul (R := K)) :=
-      fun y hy ↦ hu_range (hU y hy)
-    have hv : V ≤ (LinearMap.range ((U ⊔ V).subtype.rTensor C)).comap (comul (R := K)) :=
-      fun y hy ↦ hv_range (hV y hy)
-    refine ⟨U ⊔ V, ?_, hUfg.sup hVfg, fun y hy ↦ (sup_le hu hv) hy⟩
-    rintro y (rfl | hy)
-    · exact (le_sup_left : U ≤ U ⊔ V) hx
-    · exact (le_sup_right : V ≤ U ⊔ V) (hsV hy)
+  exact exists_fg_submodule_coaction_right_closed_of_finite (comul (R := K))
+    Coalgebra.coassoc Coalgebra.lTensor_counit_comp_comul hs
 
 end CommSemiring
 

@@ -9,9 +9,10 @@ project:
     kernels, closed unitriangular stages and their underlying affine-space
     presentations, finite additive products and positive-stage underlying
     projections and sections, unitriangular scalar base change and coherence, and selected
-    dimension and geometric results. Coalgebra results include finite
-    tensor-image containment, coefficient matrix units, counit ranges and
-    idempotent principal ideal constructors; split free presentations give
+    dimension and geometric results. Coalgebra APIs include right comodules
+    and finitely generated subcomodule containment, finite tensor-image
+    containment, coefficient matrix units, counit ranges and idempotent
+    principal ideal constructors; split free presentations give
     finite tensor coordinates. Precise hypotheses and exclusions are
     documented in README.md and the focused mathematical guides. This is not
     a complete formalization of any cited source.

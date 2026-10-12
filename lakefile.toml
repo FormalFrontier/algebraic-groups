@@ -47,6 +47,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.FiniteSubcoalgebra",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeSpan",
   "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdeal",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule",
   "AlgebraicGroupsTest.Algebra.LocalizedCoordinateQuotient",
   "AlgebraicGroupsTest.Algebra.FinitePolynomialLocalizationDimension",
   "AlgebraicGroupsTest.Algebra.UnitriangularBaseChange",

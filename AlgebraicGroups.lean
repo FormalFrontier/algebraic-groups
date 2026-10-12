@@ -13,6 +13,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCardinality
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
 public import AlgebraicGroups.Algebra.Coalgebra.IdempotentIdeal
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
 public import AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension
 public import AlgebraicGroups.Algebra.TensorProduct.Pi
@@ -142,9 +143,20 @@ public import AlgebraicGroups.Topology.KrullDimension
 /-!
 # Algebraic groups and group schemes
 
-Coalgebra APIs include finite right-coideal containment over commutative semirings
-with projective ambient module (including free modules), two-factor tensor-image
-containment over fields, coefficient spans and Hopf coefficient matrix units. The counit range is an
+Right comodules specify linear coactions `ρ : M →ₗ[R] M ⊗[R] C` over arbitrary
+commutative semirings, on modules with additive commutative monoid structures
+and independent scalar, coalgebra and module universes. The definitions impose
+no projectivity. Flatness of `C` gives induced subtype coactions from image
+stability, subcomodule extensionality and unique colinear factorization.
+Projectivity of `C` places every finite subset of `M` in a finitely generated
+subcomodule with a subtype coaction and colinear inclusion, hence image stability
+for every member. Neither module need be finitely generated; `M` need not be
+projective or free, and the counit need not be surjective.
+
+The regular coaction specializes this coefficient method to finite right-coideal
+containment for projective coalgebras (including free ones). The distinct field
+step gives two-factor tensor-image containment. Coalgebra APIs also include
+coefficient spans and Hopf coefficient matrix units. The counit range is an
 idempotent scalar ideal acting on the whole coalgebra, and idempotent principal
 ideals have explicit coalgebra constructors. Split free presentations supply
 finite tensor coordinates without freeness of the presented module.
@@ -164,9 +176,10 @@ the general- and special-linear constructions.
 
 ## References
 
-- M. E. Sweedler, *Hopf Algebras* (1969), for the classical field coalgebra
-  theorem and coefficient-coalgebra method (bibliographic credit); Mathlib for
-  coalgebra laws, antipodes, tensor coordinates and split free presentations.
+- M. E. Sweedler, *Hopf Algebras* (1969), for classical comodules, the field
+  coalgebra theorem and coefficient method (bibliographic credit); Mathlib for
+  coalgebra laws, antipodes, tensor coordinates, flatness, linear maps and split
+  free presentations.
 - J. S. Milne, *Algebraic Groups* (2017), selected items in §§1–2 and §6,
   for group functors, linear groups and unitriangular filtrations; and *Basic
   Theory of Affine Group Schemes* (2012), XI §16, Example 16.3 and XIII §3,

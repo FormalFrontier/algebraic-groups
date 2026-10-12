@@ -12,6 +12,26 @@ third-party and AI involvement.
 
 ## Headline results
 
+- **Finite right-subcomodule containment.** `Coalgebra.RightComodule R C M`
+  specifies a right linear coaction `ρ : M →ₗ[R] M ⊗[R] C` satisfying
+  coassociativity and right counitality. The scalars are an arbitrary commutative
+  semiring; `C` and `M` are modules with additive commutative monoid structures,
+  `C` is a coalgebra, and all three universes are independent. These definitions
+  need no projectivity. With only the additional hypothesis
+  `[Module.Projective R C]`, every finite subset of `M` lies in a
+  `RightComodule.Subcomodule` whose underlying submodule is finitely generated.
+  The witness carries a coaction on its subtype and a colinear inclusion;
+  every member has coaction in the image of `U ⊗ C → M ⊗ C`.
+  Neither `C` nor `M` need be finitely generated, and `M` need not be projective
+  or free. Under `[Module.Flat R C]`, image stability induces a unique subtype
+  coaction, with subcomodule extensionality and unique colinear factorization
+  through the inclusion. The counit need not be surjective. See the
+  [right-comodule API](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean) and
+  [coefficient engine](AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean).
+  The [examples](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean) include
+  the nonprojective `ℕ`-module `ℕ →₀ ZMod 2` and a coaction of the proper
+  projective ideal `(3)` in `ZMod 6`, with nonsurjective counit and coacting
+  generator satisfying `ε(e₃) = 3 ≠ 1`, so it is not group-like.
 - **Finite coalgebra containment.** Over a commutative semiring, every finite
   subset of a coalgebra with projective ambient module lies in a
   module-finitely-generated submodule `U` whose every member has comultiplication in the image of
@@ -215,6 +235,14 @@ geometry and dimension above are separately scoped results.
 ## Modules and examples
 
 Import `AlgebraicGroups` for the aggregate or a focused producer linked above.
+For right comodules, the focused import is
+`AlgebraicGroups.Algebra.Coalgebra.RightComodule`. Given `X : Coalgebra.RightComodule R C M`
+and `hs : s.Finite`, use `X.exists_fg_subcomodule_of_finite hs` when
+`[Module.Projective R C]` is available. Its witness `U` exposes `U.toSubmodule`,
+`U.comodule`, the bundled colinear inclusion `U.subtype` and every-member closure
+`U.coaction_mem`. For linear-map operations on a `Coalgebra.RightComoduleHom`,
+use its `toLinearMap` projection.
+
 [Split tensor coordinates](AlgebraicGroups/Algebra/TensorProduct/Split.lean)
 give finite-support reconstruction and all-index contraction formulas along an
 arbitrary split free presentation over a commutative semiring, without a basis
@@ -247,8 +275,9 @@ claims to cover entire sources. Module References and the focused guides give
 the precise passage-to-construction distinctions.
 
 - M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969: bibliographic credit
-  for the classical field coalgebra theorem and coefficient-coalgebra method.
-  The commutative-semiring result here is the projective-ambient-module
+  for classical comodules, the field coalgebra theorem and the coefficient method.
+  The commutative-semiring containment results use projectivity of the coacting
+  coalgebra, not of the coacted-on module. The regular case gives the
   right-coideal step, not a general two-factor semiring theorem.
 - J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
   over a Field*, Cambridge Studies in Advanced Mathematics 170, Cambridge
