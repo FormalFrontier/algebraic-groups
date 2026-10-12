@@ -102,6 +102,7 @@ roots = [
   "AlgebraicGroupsTest.LinearAlgebra.Matrix.UpperTriangularIndices",
   "AlgebraicGroupsTest.GroupScheme.UpperTriangularDimension",
   "AlgebraicGroupsTest.FiniteTypePointsCoexistence",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraDiagonal",
   "AlgebraicGroupsTest.Algebra.TensorProduct.Split",
   "AlgebraicGroupsTest.GroupLikeCardinality",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeHom",

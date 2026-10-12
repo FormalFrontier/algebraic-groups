@@ -8,6 +8,7 @@ public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
 public import AlgebraicGroups.Algebra.Coalgebra.Coefficients
 public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
+public import AlgebraicGroups.Algebra.Coalgebra.Equiv
 public import AlgebraicGroups.Algebra.Coalgebra.FiniteSubcoalgebra
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCardinality
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
@@ -139,6 +140,8 @@ public import AlgebraicGroups.Scheme.JointlySchemeTheoreticallyDominant
 public import AlgebraicGroups.Scheme.Reduction
 public import AlgebraicGroups.Scheme.Smooth
 public import AlgebraicGroups.Topology.KrullDimension
+public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
+public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finite
 
 /-!
 # Algebraic groups and group schemes
@@ -173,6 +176,13 @@ central filtration, successive quotients, exact nilpotency class under nontrivia
 all-stage lower-central-series identification and the derived series
 and sharp prime-power exponent bounds for the upper-unitriangular point group alongside
 the general- and special-linear constructions.
+
+The coalgebra API defines subcoalgebras over a field as subspaces closed under
+comultiplication into the image of their tensor square. Each subtype carries
+the restricted coalgebra, with a bundled inclusion and unique codomain
+restriction for homomorphisms. Every finitely generated subspace lies in a
+finite-dimensional subcoalgebra, without a finite-dimensionality assumption
+on the ambient coalgebra.
 
 ## References
 

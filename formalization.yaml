@@ -9,10 +9,10 @@ project:
     kernels, closed unitriangular stages and their underlying affine-space
     presentations, finite additive products and positive-stage underlying
     projections and sections, unitriangular scalar base change and coherence, and selected
-    dimension and geometric results. Coalgebra APIs include right comodules
-    and finitely generated subcomodule containment, finite tensor-image
-    containment, coefficient matrix units, counit ranges and idempotent
-    principal ideal constructors; split free presentations give
+    dimension and geometric results. Coalgebra APIs include field subcoalgebras
+    and finite-dimensional containment, right comodules and finitely generated
+    subcomodule containment, coefficient matrix units, counit ranges and
+    idempotent principal ideal constructors; split free presentations give
     finite tensor coordinates. Precise hypotheses and exclusions are
     documented in README.md and the focused mathematical guides. This is not
     a complete formalization of any cited source.
@@ -45,7 +45,8 @@ sources:
       Mathematical background for algebraic groups and group schemes. This
       library is organized independently of the book and does not claim complete
       coverage. Source text is not reproduced and no source-author endorsement
-      is claimed.
+      is claimed. The fundamental theorem of coalgebras over a field is a
+      mathematical antecedent for the finite-containment API.
   - title: Original algebraic-group and affine-localization constructions
     authors:
       - Formal Frontier Agents
@@ -64,6 +65,8 @@ related_formalizations:
       category theory, schemes and group objects. The exact Lake graph also
       declares separately maintained scheme-properties, finite-etale-algebras
       and coherent-modules dependencies; their credit and licenses are distinct.
+      Mathlib also supplies submodule, coalgebra, tensor-map, vector-space,
+      flatness and module-finiteness APIs for field subcoalgebras.
   - id: https://github.com/FormalFrontier/general-linear-groups/tree/ad7c50a0523441116537fb1d6e3c8d2a665af1fc
     relationship: builds-on
     note: >-
@@ -89,8 +92,9 @@ status:
     with projective ambient module lies in a module-finitely-generated submodule
     with every-member first-factor tensor-image closure, without ambient finite
     generation. Free modules are included. Over a field,
-    finite subsets have two-factor tensor-image containment; no restricted
-    coalgebra structure on the subtype is asserted. Finite biorthogonal
+    finite subsets have two-factor tensor-image containment. The restricted
+    coalgebra structures over a field are provided by the subcoalgebra API.
+    Finite biorthogonal
     ambient coordinates give coefficient-comultiplication and counit laws.
     Finite Hopf coefficient matrices satisfying both matrix laws are units
     with entrywise antipode inverse, including empty indices. For every
@@ -116,6 +120,13 @@ status:
     constructions include selected products, representations, finite
     geometry and dimension results. Unitriangular coordinate algebras and
     group schemes have base-change and identity/tower coherence comparisons.
+    Over a field, subcoalgebras are subspaces whose members' comultiplication
+    lies in the image of their tensor square. Their subtypes carry the restricted
+    coalgebra, with bundled inclusions and unique codomain restriction for
+    homomorphisms. Every finitely generated subspace, and every finite subset,
+    lies in a finite-dimensional subcoalgebra. No finite-dimensional ambient
+    module or algebra structure is required, and no least finite closure is
+    asserted.
     The library is not a blanket arbitrary-base classification or full
     quotient-effectivity theory,
     or complete formalization of Milne's book. Read exact limitations with
@@ -749,6 +760,23 @@ status:
       file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
     - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeIso_tower
       file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
+    - declaration: Subcoalgebra
+      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra.lean
+    - declaration: Subcoalgebra.mk'
+      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra.lean
+    - declaration: Subcoalgebra.coalgebra
+      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Coalgebra.lean
+    - declaration: Subcoalgebra.subtype
+      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean
+    - declaration: CoalgHom.codRestrict
+      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean
+    - declaration: CoalgHom.existsUnique_subtype_comp_iff
+      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean
+    - declaration: Coalgebra.exists_finite_subcoalgebra
+      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean
+    - declaration: Coalgebra.exists_finite_subcoalgebra_of_finite
+      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean
+    - file: AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraDiagonal.lean
 
 review:
   status: >-

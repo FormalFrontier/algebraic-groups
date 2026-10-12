@@ -1,10 +1,11 @@
 # Algebraic groups
 
 Reusable Lean definitions and theorems about matrix groups, affine group
-schemes and their coordinate algebras. This library is organized by mathematics,
-not by any one source. Its finite triangular and classical-group constructions
-build on mathlib and separately maintained project libraries. Results described
-below are not a claim to formalize an entire mathematical source.
+schemes and their coordinate algebras, and coalgebras over fields. This library
+is organized by mathematics, not by any one source. Its finite triangular and
+classical-group constructions build on mathlib and separately maintained
+project libraries. Results described below are not a claim to formalize an
+entire mathematical source.
 
 Authors: Formal Frontier Agents. Original project contributions use
 [Apache-2.0](LICENSE); see [credits and references](CREDITS.md) for contributor,
@@ -12,6 +13,24 @@ third-party and AI involvement.
 
 ## Headline results
 
+- **Subcoalgebras and finite containment over a field.** For a field `K` and
+  a `K`-coalgebra `C`, `Subcoalgebra K C` is a subspace `D` such that every
+  member's comultiplication lies in the image of
+  `D ⊗[K] D → C ⊗[K] C`. Its subtype carries the restricted comultiplication
+  and counit satisfying the coalgebra laws. The inclusion is a coalgebra
+  homomorphism, and any coalgebra homomorphism with values in `D` factors
+  uniquely through it. `Coalgebra.exists_finite_subcoalgebra` puts every
+  finitely generated subspace inside such a `D` with `Module.Finite K D`;
+  there is also a finite-subset variant. The ambient coalgebra need not be
+  finite-dimensional, no algebra or Hopf structure is required, and no least
+  finite closure is asserted. See the
+  [carrier](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra.lean),
+  [restricted coalgebra](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Coalgebra.lean),
+  [homomorphisms](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean) and
+  [finite containment](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean).
+  The [diagonal example](AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraDiagonal.lean)
+  uses the proper nonzero finite-dimensional subcoalgebra of `ℕ →₀ K`
+  supported on `{0, 1}`.
 - **Finite right-subcomodule containment.** `Coalgebra.RightComodule R C M`
   specifies a right linear coaction `ρ : M →ₗ[R] M ⊗[R] C` satisfying
   coassociativity and right counitality. The scalars are an arbitrary commutative
@@ -40,8 +59,9 @@ third-party and AI involvement.
   through Mathlib's free-to-projective instance. Over a field, every finite subset
   lies in a module-finitely-generated submodule `D` with every-member image closure
   under `D ⊗ D → C ⊗ C`.
-  These are tensor-image containment statements, not algebra finite generation
-  or a constructed coalgebra structure on the subtype. See
+  These theorems assert tensor-image containment, not algebra finite generation;
+  the restricted coalgebra structure over a field is constructed separately by
+  the subcoalgebra API above. See
   [finite containment](AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean),
   [coefficient spans with explicit ambient coordinate maps](AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean)
   and [group-like spans](AlgebraicGroups/Algebra/Coalgebra/GroupLikeSpan.lean).
@@ -294,6 +314,8 @@ the precise passage-to-construction distinctions.
   block endpoints antecede closed whole-superdiagonal stages over arbitrary
   rings, but these passages give only context for the separate whole-stage
   *underlying over-scheme* projection and its nonmultiplicative section.
+  The fundamental theorem of coalgebras over a field is also a mathematical
+  antecedent for the finite-containment API.
 - J. S. Milne, *Basic Theory of Affine Group Schemes* (2012, version 1.00;
   [author's course-notes address](https://www.jmilne.org/math/CourseNotes/AGS.pdf),
   which may serve a later version). VII §4 Proposition 4.1 and Example 4.3

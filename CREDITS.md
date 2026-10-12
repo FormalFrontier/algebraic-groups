@@ -45,6 +45,13 @@ The [product](AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace/README.md)
 and [stage-projection](AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge/README.md)
 guides document these mathematical interfaces.
 
+Formal Frontier Agents developed the field subcoalgebra carrier, restricted
+coalgebra structure, bundled inclusion and homomorphism factorization, finite
+subcoalgebra containment and the supported diagonal example. The finite
+containment construction uses the coefficient-coalgebra and split-tensor
+coordinate arguments in this library. These are project Lean implementations
+of classical coalgebra mathematics, not claims of mathematical invention.
+
 The proofs reuse mathlib and separately maintained project dependencies; their
 contributors and licenses remain distinct. In particular the determinant-section
 module retains Chris Birkbeck's authentic 2021 Apache-2.0 notice, and the
@@ -90,7 +97,8 @@ antecedes the closed stages and normality, while it supplies context rather
 than attribution for the separate whole-stage underlying projection or its
 nonmultiplicative section. Milne's other cited passages concern selected
 group-functor, finite-constant, triangular, component, quotient and density
-results, not the book as a whole.
+results, not the book as a whole. The fundamental theorem of coalgebras over
+a field is also a mathematical antecedent for finite subcoalgebra containment.
 
 The distinct 2012, version 1.00, *Basic Theory of Affine Group Schemes* gives
 field-base kernel, determinant, dimension and right-factor splitting
@@ -142,6 +150,14 @@ and Johan Commelin contributed to the wider tensor-product maps module.
 Other reused Mathlib APIs include Hopf quotients, matrix determinant
 and group-object operations, localization and faithfully flat descent,
 connected components, polynomial Krull dimension and standard smoothness.
+
+The coalgebra constructions reuse Mathlib's `Submodule`, `TensorProduct.mapIncl`,
+`LinearMap.codLift`, `LinearMap.codRestrict` and `CoalgHom` interfaces. Field
+freeness and tensor-inclusion injectivity use its vector-space and flat-module
+APIs. The coefficient argument uses `TensorProduct.equivFinsuppOfBasisRight`
+and projective free-presentation splittings; `Module.Finite.iff_fg` relates
+submodule finite generation to finite dimension. The supported diagonal example
+uses Mathlib's Finsupp coalgebra and `Finsupp.supportedEquivFinsupp`.
 
 The separately maintained [*SchemeProperties*](https://github.com/FormalFrontier/scheme-properties)
 supplies `FiniteTypePoints` (including restricted-Yoneda and finite-limit
