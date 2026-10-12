@@ -7,6 +7,12 @@ module
 public import AlgebraicGroups.GroupTheory.UnitriangularCentralFiltration
 public import Mathlib.Data.ZMod.Basic
 
+/-!
+# Unitriangular central-filtration tests
+
+These clients check commutator bounds and coefficient changes, including zero and nonreduced rings.
+-/
+
 public section
 
 set_option warningAsError true
@@ -86,7 +92,8 @@ private theorem nonreduced_case :
     Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin 3) (ZMod 4)) ≤ 2 :=
   three_class_le_two (ZMod 4)
 
-private theorem nonreduced_to_characteristic_two
+/-- A map from `ZMod 4` to `ZMod 2` preserves each superdiagonal stage in dimension three. -/
+public theorem _root_.Matrix.UnitriangularGroup.superdiagonalSubgroup_map_zmod_four_two
     (f : ZMod 4 →+* ZMod 2) (r : ℕ) :
     (Matrix.UnitriangularGroup.superdiagonalSubgroup 3 (ZMod 4) r).map
         (Matrix.UnitriangularGroup.map f) ≤

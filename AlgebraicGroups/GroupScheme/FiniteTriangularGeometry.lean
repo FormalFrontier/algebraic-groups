@@ -207,11 +207,12 @@ private theorem identity_geometricallyIntegral :
     (inv (pullback.snd (𝟙 (Spec (.of K)))
       (Spec.map (CommRingCat.ofHom (algebraMap K F)))))
 
-private theorem finiteMultiplicativeProductGeometry (index : Type u) [Fintype index] :
+private theorem finiteMultiplicativeProductGeometry (index : Type u) [Finite index] :
     Smooth (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom ∧
       GeometricallyIntegral
         (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom := by
   classical
+  letI : Fintype index := Fintype.ofFinite index
   refine Fintype.induction_empty_option
     (P := fun (index : Type u) [Fintype index] =>
       Smooth (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom ∧
@@ -227,8 +228,7 @@ private theorem finiteMultiplicativeProductGeometry (index : Type u) [Fintype in
     letI : GeometricallyIntegral
         (∏ᶜ fun _ : source => multiplicativeGroupUnderlyingScheme K).hom := ih.2
     exact ⟨smooth_of_iso iso.symm, geometricallyIntegral_of_iso iso.symm⟩
-  ·
-    let terminal : IsTerminal (∏ᶜ fun _ : PEmpty.{u+1} =>
+  · let terminal : IsTerminal (∏ᶜ fun _ : PEmpty.{u+1} =>
         multiplicativeGroupUnderlyingScheme K) :=
       (isLimitEquivIsTerminalOfIsEmpty (Over (Spec (.of K)))
         (Fan.mk (∏ᶜ fun _ : PEmpty.{u+1} => multiplicativeGroupUnderlyingScheme K)

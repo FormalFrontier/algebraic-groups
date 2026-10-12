@@ -47,7 +47,8 @@ private theorem testOrderedScalar (v : V) (r s : R) :
     r • sourceOrderedTmul K V R v s = sourceOrderedTmul K V R v (r * s) := by
   simp
 
-private theorem testEndBaseChangePure (g : R →ₐ[K] S) (f : Module.End R (R ⊗[K] V)) (s : S) (v : V) :
+private theorem testEndBaseChangePure (g : R →ₐ[K] S)
+    (f : Module.End R (R ⊗[K] V)) (s : S) (v : V) :
     endBaseChange K V R S g f (s ⊗ₜ[K] v) =
       s • (g.toLinearMap.rTensor V) (f (1 ⊗ₜ[K] v)) := by simp
 
@@ -88,20 +89,23 @@ variable (K V R S : Type u) [Field K] [AddCommGroup V] [Module K V]
   [finiteDimensional : FiniteDimensional K V] [CommRing R] [Algebra K R]
   [CommRing S] [Algebra K S]
 
-private def testEndVectorIso : vectorGroupFunctor K (Module.End K V) ≅ additiveEndFunctor K V :=
+private def testEndVectorIso :
+    vectorGroupFunctor K (Module.End K V) ≅ additiveEndFunctor K V :=
   endVectorGroupIso K V
 
-private def testEndPointsIso : additiveEndFunctor K V ≅ vectorGroupPointsFunctor K (Module.End K V) :=
+private def testEndPointsIso :
+    additiveEndFunctor K V ≅ vectorGroupPointsFunctor K (Module.End K V) :=
   endGroupPointsIso K V
 
-private theorem testEndFiniteType : Algebra.FiniteType K (vectorGroupCoordinateRing K (Module.End K V)) :=
-  inferInstance
+private theorem testEndFiniteType :
+    Algebra.FiniteType K (vectorGroupCoordinateRing K (Module.End K V)) := inferInstance
 
 private theorem testEndLocallyFiniteType : LocallyOfFiniteType
     (vectorGroupUnderlyingScheme K (Module.End K V)).hom := inferInstance
 
 omit finiteDimensional in
-/-- The original regression includes finite dimension even though quasi-compactness does not need it. -/
+/-- The original regression includes finite dimension even though quasi-compactness
+does not need it. -/
 @[nolint unusedArguments]
 private theorem testEndQuasiCompact [_finiteDimensional : FiniteDimensional K V] : QuasiCompact
     (vectorGroupUnderlyingScheme K (Module.End K V)).hom := inferInstance
@@ -125,31 +129,28 @@ variable (K m n R S : Type u) [Field K] [finiteM : Fintype m] [finiteN : Fintype
   [decidableM : DecidableEq m] [decidableN : DecidableEq n] [CommRing R] [Algebra K R]
   [CommRing S] [Algebra K S]
 
-private def testMatrixVectorIso : vectorGroupFunctor K (Matrix m n K) ≅ additiveMatrixFunctor K m n :=
+private def testMatrixVectorIso :
+    vectorGroupFunctor K (Matrix m n K) ≅ additiveMatrixFunctor K m n :=
   matrixVectorGroupIso K m n
 
 private def testMatrixPointsIso : additiveMatrixFunctor K m n ≅
     vectorGroupPointsFunctor K (Matrix m n K) := matrixGroupPointsIso K m n
 
-omit decidableM decidableN in
-/-- Preserve the original matrix test's decidable-equality hypotheses. -/
-@[nolint unusedArguments]
-private theorem testMatrixFiniteType [_decidableM : DecidableEq m] [_decidableN : DecidableEq n] : Algebra.FiniteType K (vectorGroupCoordinateRing K (Matrix m n K)) :=
+omit finiteM finiteN decidableM decidableN in
+/-- Finite row and column indices suffice for finite-type matrix coordinates. -/
+private theorem testMatrixFiniteType [Finite m] [Finite n] :
+    Algebra.FiniteType K (vectorGroupCoordinateRing K (Matrix m n K)) :=
   inferInstance
 
-omit decidableM decidableN in
-/-- Preserve the original matrix test's decidable-equality hypotheses. -/
-@[nolint unusedArguments]
-private theorem testMatrixLocallyFiniteType
-    [_decidableM : DecidableEq m] [_decidableN : DecidableEq n] : LocallyOfFiniteType
-    (vectorGroupUnderlyingScheme K (Matrix m n K)).hom := inferInstance
+omit finiteM finiteN decidableM decidableN in
+/-- Finite row and column indices suffice for a locally finite-type matrix scheme. -/
+private theorem testMatrixLocallyFiniteType [Finite m] [Finite n] :
+    LocallyOfFiniteType (vectorGroupUnderlyingScheme K (Matrix m n K)).hom := inferInstance
 
 omit finiteM finiteN decidableM decidableN in
-/-- Preserve the original finite-matrix testing context without strengthening the library theorem. -/
-@[nolint unusedArguments]
-private theorem testMatrixQuasiCompact [_finiteM : Fintype m] [_finiteN : Fintype n]
-    [_decidableM : DecidableEq m] [_decidableN : DecidableEq n] : QuasiCompact
-    (vectorGroupUnderlyingScheme K (Matrix m n K)).hom := inferInstance
+/-- Affine matrix schemes are quasi-compact for arbitrary row and column indices. -/
+private theorem testMatrixQuasiCompact :
+    QuasiCompact (vectorGroupUnderlyingScheme K (Matrix m n K)).hom := inferInstance
 
 private theorem testMatrixPointsAdd (A B : Matrix m n R) :
     (matrixGroupPointsIso K m n).hom.app (CommAlgCat.of K R) (.ofAdd (A + B)) =
@@ -168,18 +169,13 @@ private theorem testMatrixPointsInv (A : Matrix m n R) :
   ((matrixGroupPointsIso K m n).hom.app (CommAlgCat.of K R)).hom.map_inv (.ofAdd A)
 
 omit finiteM finiteN decidableM decidableN in
-/-- This regression intentionally retains the original finite-matrix context for the group law. -/
-@[nolint unusedArguments]
-private theorem testMatrixPointsAddInverse [_finiteM : Fintype m] [_finiteN : Fintype n]
-    [_decidableM : DecidableEq m] [_decidableN : DecidableEq n] (A : Matrix m n R) :
+/-- A matrix and its negative cancel for arbitrary row and column indices. -/
+private theorem testMatrixPointsAddInverse (A : Matrix m n R) :
     (.ofAdd A : Multiplicative (Matrix m n R)) * .ofAdd (-A) = 1 := by simp
 
 omit finiteM finiteN decidableM decidableN in
-/-- This regression intentionally retains the original finite-matrix context for coefficient maps. -/
-@[nolint unusedArguments]
-private theorem testMatrixFunctorMap [_finiteM : Fintype m] [_finiteN : Fintype n]
-    [_decidableM : DecidableEq m] [_decidableN : DecidableEq n]
-    (g : R →ₐ[K] S) (A : Matrix m n R) :
+/-- Coefficient maps act entrywise for arbitrary row and column indices. -/
+private theorem testMatrixFunctorMap (g : R →ₐ[K] S) (A : Matrix m n R) :
     (additiveMatrixFunctor K m n).map (CommAlgCat.ofHom g) (.ofAdd A) =
       .ofAdd (g.toAddMonoidHom.mapMatrix A) := rfl
 
@@ -193,7 +189,8 @@ private theorem testMatrixCoordinate (A : Matrix m n R) (row : m) (col : n) :
       (SymmetricAlgebra.ι K _ ((Matrix.stdBasis K m n).dualBasis (row, col))) =
       A row col := matrixCoordinateEval_ι K m n R A row col
 
-private theorem testMatrixCoordinateNaturality (g : R →ₐ[K] S) (A : Matrix m n R) (row : m) (col : n) :
+private theorem testMatrixCoordinateNaturality (g : R →ₐ[K] S)
+    (A : Matrix m n R) (row : m) (col : n) :
     matrixCoordinateEval K m n S (g.toAddMonoidHom.mapMatrix A)
       (SymmetricAlgebra.ι K _ ((Matrix.stdBasis K m n).dualBasis (row, col))) =
       g (matrixCoordinateEval K m n R A
@@ -247,7 +244,8 @@ private theorem testBasisCoordinatePure (r : R) (f : Module.End K V) (row col : 
         r * algebraMap K R (b.repr (f (b col)) row) :=
   endMatrixCoordinateEval_tmul K V i b R r f row col
 
-private theorem testBasisCoordinateNaturality (g : R →ₐ[K] S) (f : Module.End R (R ⊗[K] V)) (row col : i) :
+private theorem testBasisCoordinateNaturality (g : R →ₐ[K] S)
+    (f : Module.End R (R ⊗[K] V)) (row col : i) :
     endMatrixCoordinateEval K V i b S (endBaseChange K V R S g f)
       (SymmetricAlgebra.ι K _ ((Matrix.stdBasis K i i).dualBasis (row, col))) =
       g (endMatrixCoordinateEval K V i b R f
@@ -294,7 +292,8 @@ private def testEmptyEndMatrix : additiveEndFunctor (ZMod 2) (Fin 0 → ZMod 2) 
   endMatrixGroupIso (ZMod 2) (Fin 0 → ZMod 2) (Fin 0)
     (Pi.basisFun (ZMod 2) (Fin 0))
 
-private def testEndFiniteDimensional : vectorGroupFunctor (ZMod 2) (Module.End (ZMod 2) (Fin 1 → ZMod 2)) ≅
+private def testEndFiniteDimensional :
+    vectorGroupFunctor (ZMod 2) (Module.End (ZMod 2) (Fin 1 → ZMod 2)) ≅
     additiveEndFunctor (ZMod 2) (Fin 1 → ZMod 2) :=
   endVectorGroupIso (ZMod 2) (Fin 1 → ZMod 2)
 

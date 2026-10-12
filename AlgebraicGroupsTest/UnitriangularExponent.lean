@@ -17,11 +17,11 @@ theorem generic_matrix_nilpotence {ι R : Type*} [Fintype ι] [LinearOrder ι] [
     N ^ Fintype.card ι = 0 :=
   Matrix.pow_card_eq_zero_of_upperTriangular_diag_zero N hu hd
 
-example (R : Type) [CommRing R] (hp : Nat.Prime p) (hchar : (p : R) = 0)
+example (R : Type) [CommRing R] {p : ℕ} (hp : Nat.Prime p) (hchar : (p : R) = 0)
     (g : Matrix.UnitriangularGroup (Fin 0) R) : g ^ (p ^ 0) = 1 :=
   Matrix.UnitriangularGroup.pow_prime_pow_eq_one hp hchar (by omega) g
 
-example (R : Type) [CommRing R] (hp : Nat.Prime p) (hchar : (p : R) = 0)
+example (R : Type) [CommRing R] {p : ℕ} (hp : Nat.Prime p) (hchar : (p : R) = 0)
     (g : Matrix.UnitriangularGroup (Fin 1) R) : g ^ (p ^ 0) = 1 :=
   Matrix.UnitriangularGroup.pow_prime_pow_eq_one hp hchar (by simp) g
 

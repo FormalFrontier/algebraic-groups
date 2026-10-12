@@ -12,6 +12,53 @@ third-party and AI involvement.
 
 ## Headline results
 
+- **Finite coalgebra containment.** Over a commutative semiring, every finite
+  subset of a coalgebra with projective ambient module lies in a
+  module-finitely-generated submodule `U` whose every member has comultiplication in the image of
+  `U ⊗ C → C ⊗ C`; the ambient additive structure need only be a commutative
+  monoid. No ambient finite generation is required, and free modules are included
+  through Mathlib's free-to-projective instance. Over a field, every finite subset
+  lies in a module-finitely-generated submodule `D` with every-member image closure
+  under `D ⊗ D → C ⊗ C`.
+  These are tensor-image containment statements, not algebra finite generation
+  or a constructed coalgebra structure on the subtype. See
+  [finite containment](AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean),
+  [coefficient spans with explicit ambient coordinate maps](AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean)
+  and [group-like spans](AlgebraicGroups/Algebra/Coalgebra/GroupLikeSpan.lean).
+- **Idempotent principal ideal coalgebras.** For an idempotent `e` in any
+  commutative semiring `K`, the existing ideal `Ideal.span {e}` has counit
+  the scalar inclusion and comultiplication `d ↦ d ⊗ e`. The explicit
+  constructor includes zero and one and needs no freeness assumption. See
+  the [module](AlgebraicGroups/Algebra/Coalgebra/IdempotentIdeal.lean) and
+  [clients](AlgebraicGroupsTest/Algebra/Coalgebra/IdempotentIdeal.lean).
+  Independently, the [counit range](AlgebraicGroups/Algebra/Coalgebra/CounitRange.lean)
+  of any coalgebra over a commutative semiring is an idempotent scalar ideal
+  `I` satisfying `I • ⊤ = ⊤` on the coalgebra. No counit surjectivity, freeness
+  or finite generation is assumed; [examples](AlgebraicGroupsTest/Algebra/Coalgebra/CounitRange.lean)
+  include a proper nonzero range over `ZMod 6`.
+- **Hopf coefficient matrix units.** Over a commutative scalar semiring, a
+  finite square matrix `M` in a possibly noncommutative semiring Hopf algebra,
+  with `Δ(M i j) = ∑ k, M i k ⊗ M k j` and `ε(M i j) = δᵢⱼ`, is a unit
+  in the matrix semiring with entrywise antipode as two-sided inverse, without a transpose.
+  Empty indices are allowed. See the [construction and entry API](AlgebraicGroups/Algebra/Coalgebra/CoefficientMatrixUnit.lean)
+  and [integer-weight and empty-index clients](AlgebraicGroupsTest/Algebra/Coalgebra/CoefficientMatrixUnit.lean).
+- **Cardinality of group-like elements.** For a torsion-free coalgebra over a
+  commutative domain, the cardinality of Mathlib's `GroupLike` carrier is at most
+  the coalgebra's module rank. Rank strictly below `ℵ₀` gives bundled and
+  predicate-set finiteness and a `Nat.card` bound by `finrank`; module-finite
+  coalgebras have these consequences without freeness or a field hypothesis.
+  Integer diagonal coalgebras give sharp, zero and infinite examples. The
+  rank-two diagonal coalgebra over `ℤ × ℤ` admits four group-like elements,
+  demonstrating the domain hypothesis. See the
+  [module](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCardinality.lean) and
+  [clients](AlgebraicGroupsTest/GroupLikeCardinality.lean).
+- **Group-like elements and scalar-source coalgebra maps.** Over a commutative
+  semiring `R`, normalized group-like elements of an `R`-coalgebra `C` correspond
+  to coalgebra morphisms from the canonical scalar coalgebra `R` to `C`.
+  The forward map sends `r` to `r • g`; the inverse evaluates at `1`. No
+  multiplication on `C`, field hypothesis, basis or nontriviality is required.
+  See the [equivalence API](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean)
+  and [concrete clients](AlgebraicGroupsTest/Algebra/Coalgebra/GroupLikeHom.lean).
 - **Finite additive products over a ring.** For arbitrary commutative `K`
   and finite `D`, the *underlying* over-scheme of the literal categorical
   product of additive group schemes is affine `D`-space over `Spec K`.
@@ -168,6 +215,13 @@ geometry and dimension above are separately scoped results.
 ## Modules and examples
 
 Import `AlgebraicGroups` for the aggregate or a focused producer linked above.
+[Split tensor coordinates](AlgebraicGroups/Algebra/TensorProduct/Split.lean)
+give finite-support reconstruction and all-index contraction formulas along an
+arbitrary split free presentation over a commutative semiring, without a basis
+or finite-generation assumption on the presented module. The
+[clients](AlgebraicGroupsTest/Algebra/TensorProduct/Split.lean) include infinite
+free semiring modules, the nonfree ideal `(3)` in `ZMod 6`, its countable
+non-finitely-generated direct sum, empty indices and a nonsplit counterexample.
 Ordinary-import clients under `AlgebraicGroupsTest` exercise representative
 statements on generic rings and boundary cases. For a starting path, use
 [unitriangular scheme base change](docs/UnitriangularSchemeBaseChange.md),
@@ -192,6 +246,10 @@ These are selected mathematical antecedents and prior formalizations, not
 claims to cover entire sources. Module References and the focused guides give
 the precise passage-to-construction distinctions.
 
+- M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969: bibliographic credit
+  for the classical field coalgebra theorem and coefficient-coalgebra method.
+  The commutative-semiring result here is the projective-ambient-module
+  right-coideal step, not a general two-factor semiring theorem.
 - J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
   over a Field*, Cambridge Studies in Advanced Mathematics 170, Cambridge
   University Press, 2017. Items 2.1 and 2.6 describe the additive group and
@@ -246,7 +304,8 @@ the precise passage-to-construction distinctions.
   and [client](AlgebraicGroupsTest/MonoidAlgebraPrimitive.lean). An algebra
   equivalence alone does not give an additive-group-scheme or Hopf equivalence.
 - The mathlib community, [*Mathlib*](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5):
-  affine spectra, group objects and Hopf quotients, tensor and polynomial
+  coalgebra laws and tensor-basis decompositions, affine spectra, group objects
+  and Hopf quotients, tensor and polynomial
   coordinates, categorical products, affine space, dimension and smoothness
   APIs used by the constructions here. See [credits](CREDITS.md) for specific
   interfaces and contributor roles.

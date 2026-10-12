@@ -120,8 +120,9 @@ def localizedCoordinateForwardQuotient (f : MvPolynomial σ K) :
     exact RingHom.mem_ker.mp (h hx))
 
 theorem localizedCoordinateForwardQuotient_base (f p : MvPolynomial σ K) :
-    localizedCoordinateForwardQuotient K S f ((Ideal.Quotient.mkₐ K (localizedCoordinateIdeal K S f))
-      (algebraMap (MvPolynomial σ K) (Localization.Away f) p)) =
+    localizedCoordinateForwardQuotient K S f
+        ((Ideal.Quotient.mkₐ K (localizedCoordinateIdeal K S f))
+          (algebraMap (MvPolynomial σ K) (Localization.Away f) p)) =
       algebraMap (MvPolynomial S K) (Localization.Away (eraseCoordinates K S f))
         (eraseCoordinates K S p) := by
   rw [localizedCoordinateForwardQuotient, Ideal.Quotient.liftₐ_apply]

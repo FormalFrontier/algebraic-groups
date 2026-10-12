@@ -6,6 +6,14 @@ module
 
 public import AlgebraicGroups.GroupScheme.ArtinSchreierTwistedLine
 
+/-!
+# Examples for the Artin--Schreier twisted line
+
+These examples use the coordinate algebra, Hopf structure, base-change normal form and
+smoothness of the Artin--Schreier twisted line. The zero-twist disconnectedness example
+contrasts with connected nonzero twists over a field.
+-/
+
 set_option warningAsError true
 
 noncomputable section
@@ -183,6 +191,9 @@ private theorem testConnected (K : Type*) [Field K] {p : ℕ} (hp : p.Prime)
     [CharP K p] {t : K} (ht : t ≠ 0) :
     ConnectedSpace (scheme K p t).left := scheme_connectedSpace_of_ne_zero K hp ht
 
-private theorem testDisconnected (K : Type*) [Field K] {p : ℕ} (hp : p.Prime)
+/-- Over a field of prime characteristic, the zero-twist Artin--Schreier scheme is
+not connected. This is the boundary case for connectedness at nonzero twist. -/
+public theorem ArtinSchreierTwistedLine.zero_twist_not_connected
+    (K : Type*) [Field K] {p : ℕ} (hp : p.Prime)
     [CharP K p] : ¬ ConnectedSpace (scheme K p 0).left :=
   not_scheme_connectedSpace_zero K hp

@@ -42,7 +42,8 @@ private theorem testConvolutionAdds (f g : M →ₗ[K] R) :
         SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd g) :=
   (SymmetricAlgebra.linearMapMulEquivAlgHom K M R).map_mul (.ofAdd f) (.ofAdd g)
 
-private theorem testConvolutionZero : SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd 0) = 1 :=
+private theorem testConvolutionZero :
+    SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd 0) = 1 :=
   SymmetricAlgebra.linearMapMulEquivAlgHom_zero K M R
 
 private theorem testConvolutionLeftInverse (f : M →ₗ[K] R) :
@@ -72,9 +73,11 @@ variable (K : Type u) [Field K] (V : Type u) [AddCommGroup V] [Module K V]
   [FiniteDimensional K V]
   (R : Type u) [CommRing R] [Algebra K R]
 
-private theorem testCoordinateFiniteType : Algebra.FiniteType K (vectorGroupCoordinateRing K V) := inferInstance
+private theorem testCoordinateFiniteType :
+    Algebra.FiniteType K (vectorGroupCoordinateRing K V) := inferInstance
 
-private theorem testSchemeLocallyFiniteType : LocallyOfFiniteType (vectorGroupUnderlyingScheme K V).hom := inferInstance
+private theorem testSchemeLocallyFiniteType :
+    LocallyOfFiniteType (vectorGroupUnderlyingScheme K V).hom := inferInstance
 
 omit [FiniteDimensional K V] in
 private theorem testSchemeQuasiCompact [FiniteDimensional K V] :
@@ -108,7 +111,8 @@ private theorem testTensorNaturality {S : Type u} [CommRing S] [Algebra K S]
       f (vectorGroupTensorDualEquiv K V R x φ) :=
   vectorGroupTensorDualEquiv_naturality K V R S f x φ
 
-private theorem testTensorLinearMap (W : Type u) [AddCommGroup W] [Module K W] [FiniteDimensional K W]
+private theorem testTensorLinearMap (W : Type u) [AddCommGroup W] [Module K W]
+    [FiniteDimensional K W]
     (f : V →ₗ[K] W) (x : V ⊗[K] R) (φ : Module.Dual K W) :
     vectorGroupTensorDualEquiv K W R
       (TensorProduct.map f (LinearMap.id : R →ₗ[K] R) x) φ =
@@ -122,7 +126,8 @@ private theorem testCoordinatePullback [FiniteDimensional K V]
     vectorGroupCoordinateMap K V W f (SymmetricAlgebra.ι K _ φ) =
       SymmetricAlgebra.ι K _ (φ.comp f) := by simp
 
-private theorem testPointsLinearMap (W : Type u) [AddCommGroup W] [Module K W] [FiniteDimensional K W]
+private theorem testPointsLinearMap (W : Type u) [AddCommGroup W] [Module K W]
+    [FiniteDimensional K W]
     (f : V →ₗ[K] W) (x : V ⊗[K] R) :
     (vectorGroupMulEquivAlgHom K W R (.ofAdd
       (TensorProduct.map f (LinearMap.id : R →ₗ[K] R) x))).ofConv =
@@ -193,7 +198,8 @@ private theorem testZeroRingBaseChange (x : (Fin 1 → ZMod 2) ⊗[ZMod 2] ZMod 
 
 end FiniteField
 
-private theorem testZeroDimensionSubsingleton : Subsingleton (Multiplicative ((Fin 0 → K) ⊗[K] R)) :=
+private theorem testZeroDimensionSubsingleton :
+    Subsingleton (Multiplicative ((Fin 0 → K) ⊗[K] R)) :=
   inferInstance
 
 private theorem testZeroDimensionIdentity (x : Multiplicative ((Fin 0 → K) ⊗[K] R)) : x = 1 :=
@@ -206,7 +212,8 @@ private theorem testZeroDimensionEvaluation (x : (Fin 0 → K) ⊗[K] R)
   subst x
   simp
 
-private theorem testZeroDimensionFiniteType : Algebra.FiniteType K (vectorGroupCoordinateRing K (Fin 0 → K)) :=
+private theorem testZeroDimensionFiniteType :
+    Algebra.FiniteType K (vectorGroupCoordinateRing K (Fin 0 → K)) :=
   inferInstance
 
 private def testZeroDimensionIso : vectorGroupFunctor K (Fin 0 → K) ≅

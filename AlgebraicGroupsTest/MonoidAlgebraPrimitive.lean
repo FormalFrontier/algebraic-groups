@@ -51,16 +51,20 @@ open scoped TensorProduct
 
 variable {K M : Type*} [CommSemiring K] [Monoid M]
 
-private theorem persistentTestMonoidAlgebraPrimitive001 (x : MonoidAlgebra K M) : Bialgebra.IsPrimitiveElem K x ↔ x = 0 :=
+private theorem persistentTestMonoidAlgebraPrimitive001 (x : MonoidAlgebra K M) :
+    Bialgebra.IsPrimitiveElem K x ↔ x = 0 :=
   MonoidAlgebra.isPrimitiveElem_iff_eq_zero x
 
-private theorem persistentTestMonoidAlgebraPrimitive002 (x : MonoidAlgebra ℕ ℕ) : Bialgebra.IsPrimitiveElem ℕ x ↔ x = 0 :=
+private theorem persistentTestMonoidAlgebraPrimitive002 (x : MonoidAlgebra ℕ ℕ) :
+    Bialgebra.IsPrimitiveElem ℕ x ↔ x = 0 :=
   MonoidAlgebra.isPrimitiveElem_iff_eq_zero x
 
-private theorem persistentTestMonoidAlgebraPrimitive003 (x : MonoidAlgebra (ZMod 2) PUnit) : Bialgebra.IsPrimitiveElem (ZMod 2) x ↔
-    x = 0 := MonoidAlgebra.isPrimitiveElem_iff_eq_zero x
+private theorem persistentTestMonoidAlgebraPrimitive003 (x : MonoidAlgebra (ZMod 2) PUnit) :
+    Bialgebra.IsPrimitiveElem (ZMod 2) x ↔ x = 0 :=
+  MonoidAlgebra.isPrimitiveElem_iff_eq_zero x
 
-private theorem persistentTestMonoidAlgebraPrimitive004 (x : MonoidAlgebra (ZMod 1) (Equiv.Perm (Fin 3))) :
+private theorem persistentTestMonoidAlgebraPrimitive004
+    (x : MonoidAlgebra (ZMod 1) (Equiv.Perm (Fin 3))) :
     Bialgebra.IsPrimitiveElem (ZMod 1) x ↔ x = 0 :=
   MonoidAlgebra.isPrimitiveElem_iff_eq_zero x
 
@@ -115,11 +119,13 @@ theorem rootsOfUnityCoordinateRing_primitive_iff_zero (R : Type*) [CommRing R]
     Bialgebra.IsPrimitiveElem R x ↔ x = 0 :=
   additiveMonoidAlgebraPrimitive_iff_zero x
 
-private theorem persistentTestMonoidAlgebraPrimitive006 (x : AlgebraicGeometry.rootsOfUnityCoordinateRing (ZMod 1) 1) :
+private theorem persistentTestMonoidAlgebraPrimitive006
+    (x : AlgebraicGeometry.rootsOfUnityCoordinateRing (ZMod 1) 1) :
     Bialgebra.IsPrimitiveElem (ZMod 1) x ↔ x = 0 :=
   rootsOfUnityCoordinateRing_primitive_iff_zero (ZMod 1) 1 x
 
-private theorem persistentTestMonoidAlgebraPrimitive007 (R : Type*) [CommRing R] (x : AlgebraicGeometry.rootsOfUnityCoordinateRing R 1) :
+private theorem persistentTestMonoidAlgebraPrimitive007 (R : Type*) [CommRing R]
+    (x : AlgebraicGeometry.rootsOfUnityCoordinateRing R 1) :
     Bialgebra.IsPrimitiveElem R x ↔ x = 0 :=
   rootsOfUnityCoordinateRing_primitive_iff_zero R 1 x
 

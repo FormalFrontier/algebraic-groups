@@ -4,14 +4,15 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.GroupScheme.GeneralLinear
+public import AlgebraicGroups.GroupScheme.GeneralLinear
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 
 /-!
 # Finite-matrix general-linear regression clients
 
-Named private declarations retain the original examples, including empty index
-types, zero target rings, noncommuting matrices and polynomial evaluation.
+The named convolution-entry test records matrix multiplication on coordinates.
+Private clients include empty index types, zero target rings, noncommuting matrices
+and polynomial evaluation.
 -/
 
 set_option warningAsError true
@@ -100,12 +101,15 @@ private theorem testEvaluateNaturality {S : Type u} [CommRing S] [Algebra K S]
     evaluate (K := K) (Matrix.GeneralLinearGroup.map f.toRingHom g) =
       f.comp (evaluate (K := K) g) := evaluate_natural f g
 
-private theorem testConvolutionEntry (f g : CoordinateRing K n →ₐ[K] R) (i j : n) :
+/-- Convolution of coordinate algebra maps evaluates a matrix entry by matrix multiplication. -/
+public theorem generalLinearGroup_convolution_entry
+    (f g : CoordinateRing K n →ₐ[K] R) (i j : n) :
     ((WithConv.toConv f * WithConv.toConv g).ofConv) (matrix K n i j) =
       ∑ index : n, f (matrix K n i index) * g (matrix K n index j) :=
   generalLinearConvMul_matrix K n R f g i j
 
-/-- Retain the original stronger-context regression, although the equivalence works for any target. -/
+/-- Retain the original stronger-context regression,
+although the equivalence works for any target. -/
 @[nolint unusedArguments]
 private def testSubsingletonMulEquiv [Subsingleton R] : Matrix.GeneralLinearGroup n R ≃*
     WithConv (CoordinateRing K n →ₐ[K] R) :=

@@ -27,7 +27,8 @@ variable (K V R S T : Type u) [CommRing K] [AddCommGroup V] [Module K V]
   [CommRing R] [Algebra K R] [CommRing S] [Algebra K S]
   [CommRing T] [Algebra K T]
 
-private theorem persistentTestMatrixEndScheme001 (g : R →ₐ[K] S) (f : Module.End R (SourceOrderedTensor K V R)) :
+private theorem persistentTestMatrixEndScheme001 (g : R →ₐ[K] S)
+    (f : Module.End R (SourceOrderedTensor K V R)) :
     sourceOrderedEndBaseChangeAddHom K V R S g f =
       sourceOrderedEndBaseChange K V R S g f := rfl
 
@@ -43,7 +44,8 @@ private theorem persistentTestMatrixEndScheme002 (g : R →ₐ[K] S) :
       (0 : Module.End R (SourceOrderedTensor K V R)) = 0 :=
   (sourceOrderedEndBaseChangeAddHom K V R S g).map_zero
 
-private theorem persistentTestMatrixEndScheme003 (g : R →ₐ[K] S) (f : Module.End R (SourceOrderedTensor K V R)) :
+private theorem persistentTestMatrixEndScheme003 (g : R →ₐ[K] S)
+    (f : Module.End R (SourceOrderedTensor K V R)) :
     sourceOrderedEndBaseChange K V R S g (-f) =
       -sourceOrderedEndBaseChange K V R S g f :=
   (sourceOrderedEndBaseChangeAddHom K V R S g).map_neg f
@@ -57,7 +59,8 @@ private theorem persistentTestMatrixEndScheme004 (g : R →ₐ[K] S) (h : S →�
 private theorem persistentTestMatrixEndScheme005 (f : Module.End R (SourceOrderedTensor K V R)) :
     sourceOrderedEndBaseChange K V R R (AlgHom.id K R) f = f := by simp
 
-private theorem persistentTestMatrixEndScheme006 (g : R →ₐ[K] S) (f : Module.End R (SourceOrderedTensor K V R))
+private theorem persistentTestMatrixEndScheme006 (g : R →ₐ[K] S)
+    (f : Module.End R (SourceOrderedTensor K V R))
     (v : V) (s : S) :
     sourceOrderedCanonicalLinearEquiv K V S
         (sourceOrderedEndBaseChange K V R S g f (sourceOrderedTmul K V S v s)) =
@@ -73,16 +76,20 @@ section Functor
 variable (K V R S : Type u) [Field K] [AddCommGroup V] [Module K V]
   [CommRing R] [Algebra K R] [CommRing S] [Algebra K S]
 
-private noncomputable def persistentTestMatrixEndScheme007 : CommAlgCat K ⥤ GrpCat := sourceOrderedAdditiveEndFunctor K V
+private noncomputable def persistentTestMatrixEndScheme007 : CommAlgCat K ⥤ GrpCat :=
+  sourceOrderedAdditiveEndFunctor K V
 
-private noncomputable def persistentTestMatrixEndScheme008 : sourceOrderedAdditiveEndFunctor K V ≅ additiveEndFunctor K V :=
+private noncomputable def persistentTestMatrixEndScheme008 :
+    sourceOrderedAdditiveEndFunctor K V ≅ additiveEndFunctor K V :=
   sourceOrderedEndGroupIso K V
 
-private theorem persistentTestMatrixEndScheme009 (g : R →ₐ[K] S) (f : Module.End R (SourceOrderedTensor K V R)) :
+private theorem persistentTestMatrixEndScheme009 (g : R →ₐ[K] S)
+    (f : Module.End R (SourceOrderedTensor K V R)) :
     (sourceOrderedAdditiveEndFunctor K V).map (CommAlgCat.ofHom g) (.ofAdd f) =
       .ofAdd (sourceOrderedEndBaseChange K V R S g f) := rfl
 
-private theorem persistentTestMatrixEndScheme010 (g : R →ₐ[K] S) (f : Module.End R (SourceOrderedTensor K V R)) :
+private theorem persistentTestMatrixEndScheme010 (g : R →ₐ[K] S)
+    (f : Module.End R (SourceOrderedTensor K V R)) :
     (sourceOrderedEndGroupIso K V).hom.app (CommAlgCat.of K S)
       ((sourceOrderedAdditiveEndFunctor K V).map (CommAlgCat.ofHom g) (.ofAdd f)) =
       (additiveEndFunctor K V).map (CommAlgCat.ofHom g)
@@ -110,7 +117,8 @@ variable (K V R : Type u) [Field K] [AddCommGroup V] [Module K V]
 private noncomputable def persistentTestMatrixEndScheme012 : vectorGroupScheme K (Module.End K V) ≅
     vectorGroupScheme K (Matrix i i K) := endMatrixSchemeIso K V i b
 
-private noncomputable def persistentTestMatrixEndScheme013 : sourceOrderedAdditiveEndFunctor K V ≅ additiveMatrixFunctor K i i :=
+private noncomputable def persistentTestMatrixEndScheme013 :
+    sourceOrderedAdditiveEndFunctor K V ≅ additiveMatrixFunctor K i i :=
   sourceOrderedEndMatrixGroupIso K V i b
 
 private noncomputable def persistentTestMatrixEndScheme014 : sourceOrderedAdditiveEndFunctor K V ≅
@@ -125,13 +133,15 @@ private noncomputable def persistentTestMatrixEndScheme015 : vectorGroupScheme K
 equalities do not use it; retain that regression context explicitly. -/
 omit [FiniteDimensional K V] in
 @[nolint unusedArguments]
-private theorem persistentTestMatrixEndScheme016 [FiniteDimensional K V] : endMatrixSchemeBasisChangeIso K V i i b b =
+private theorem persistentTestMatrixEndScheme016 [FiniteDimensional K V] :
+    endMatrixSchemeBasisChangeIso K V i i b b =
     Iso.refl (vectorGroupScheme K (Matrix i i K)) :=
   endMatrixSchemeBasisChangeIso_refl K V i b
 
 omit [FiniteDimensional K V] in
 @[nolint unusedArguments]
-private theorem persistentTestMatrixEndScheme017 [FiniteDimensional K V] (l : Type u) [Fintype l] [DecidableEq l] (d : Module.Basis l K V) :
+private theorem persistentTestMatrixEndScheme017 [FiniteDimensional K V]
+    (l : Type u) [Fintype l] [DecidableEq l] (d : Module.Basis l K V) :
     endMatrixSchemeBasisChangeIso K V i j b c ≪≫
       endMatrixSchemeBasisChangeIso K V j l c d =
         endMatrixSchemeBasisChangeIso K V i l b d :=
@@ -200,7 +210,8 @@ private theorem persistentTestMatrixEndScheme021 (f : Module.End R (R ⊗[K] V))
 
 omit [FiniteDimensional K V] in
 @[nolint unusedArguments]
-private theorem persistentTestMatrixEndScheme022 [FiniteDimensional K V] : (endMatrixSchemeBasisChangeIso K V i j b c).hom.hom.hom.left =
+private theorem persistentTestMatrixEndScheme022 [FiniteDimensional K V] :
+    (endMatrixSchemeBasisChangeIso K V i j b c).hom.hom.hom.left =
     Spec.map (CommRingCat.ofHom
       (vectorGroupCoordinateMap K (Matrix i i K) (Matrix j j K)
         (endMatrixSchemeBasisLinearMap K V i j b c)).toRingHom) :=
@@ -215,7 +226,8 @@ local instance : Fact (Nat.Prime 2) := ⟨by decide⟩
 local instance zeroRingAlgebra : Algebra (ZMod 2) (ZMod 1) :=
   (ZMod.castHom (show 1 ∣ 2 by decide) (ZMod 1)).toAlgebra
 
-private noncomputable def persistentTestMatrixEndScheme023 : vectorGroupScheme (ZMod 2) (Module.End (ZMod 2) (Fin 0 → ZMod 2)) ≅
+private noncomputable def persistentTestMatrixEndScheme023 :
+    vectorGroupScheme (ZMod 2) (Module.End (ZMod 2) (Fin 0 → ZMod 2)) ≅
     vectorGroupScheme (ZMod 2) (Matrix (Fin 0) (Fin 0) (ZMod 2)) :=
   endMatrixSchemeIso (ZMod 2) (Fin 0 → ZMod 2) (Fin 0)
     (Pi.basisFun (ZMod 2) (Fin 0))

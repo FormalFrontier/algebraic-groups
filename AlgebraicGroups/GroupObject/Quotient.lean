@@ -75,7 +75,7 @@ variable [h : IsPointwiseNormal i]
 instance (X : C) : (i.app X).hom.range.Normal := h.normal X
 
 omit h in
-lemma map_range_le (f : X ⟶ Y) :
+lemma map_range_le {X Y : C} (f : X ⟶ Y) :
     (i.app X).hom.range ≤ ((i.app Y).hom.range).comap (G.map f).hom := by
   rintro _ ⟨x, rfl⟩
   refine ⟨H.map f x, ?_⟩

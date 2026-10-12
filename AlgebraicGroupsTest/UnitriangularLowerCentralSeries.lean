@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.GroupTheory.UnitriangularLowerCentralSeries
+public import AlgebraicGroups.GroupTheory.UnitriangularLowerCentralSeries
 import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -66,11 +66,10 @@ private theorem characteristic_two_generation :
   intro i j hij a hdist
   exact elementary_mem_superdiagonalSubgroup 4 (ZMod 2) i j hij a 3 hdist
 
-set_option linter.style.haveILetI false in
 private theorem nonreduced_generation :
     superdiagonalSubgroup 4 (ZMod 4) 2 ≤
       superdiagonalSubgroup 4 (ZMod 4) 2 := by
-  letI : Fact (1 < 4) := ⟨by decide⟩
+  have : Fact (1 < 4) := ⟨by decide⟩
   apply generic_generation 4 2 (ZMod 4) (by decide) _
   intro i j hij a hdist
   exact elementary_mem_superdiagonalSubgroup 4 (ZMod 4) i j hij a 2 hdist
@@ -102,7 +101,9 @@ private theorem four_large (R : Type) [CommRing R] :
     (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin 4) R)).lowerCentralSeries 9 =
       superdiagonalSubgroup 4 R 10 := generic_series 4 9 R
 
-private theorem arbitrary_root (R : Type) [CommRing R] (a : R) :
+/-- The root from zero to three lies in the second lower central subgroup in dimension four. -/
+public theorem _root_.Matrix.UnitriangularGroup.elementary_zero_three_mem_lowerCentralSeries_two
+    (R : Type) [CommRing R] (a : R) :
     elementary 4 R (0 : Fin 4) (3 : Fin 4) (by decide) a ∈
       (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin 4) R)).lowerCentralSeries 2 :=
   elementary_mem_lowerCentralSeries_of_distance 4 R 0 3 (by decide) a 2 (by decide)
@@ -120,11 +121,10 @@ private theorem characteristic_two_four :
     (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin 4) (ZMod 2))).lowerCentralSeries 2 =
       superdiagonalSubgroup 4 (ZMod 2) 3 := generic_series 4 2 (ZMod 2)
 
-set_option linter.style.haveILetI false in
 private theorem nonreduced_four :
     (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin 4) (ZMod 4))).lowerCentralSeries 1 =
       superdiagonalSubgroup 4 (ZMod 4) 2 := by
-  letI : Fact (1 < 4) := ⟨by decide⟩
+  have : Fact (1 < 4) := ⟨by decide⟩
   exact generic_series 4 1 (ZMod 4)
 
 private theorem zero_ring_empty :

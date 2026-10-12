@@ -4,14 +4,14 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.GroupScheme.InfinitesimalAdditive
-import Mathlib.Data.ZMod.Basic
+public import AlgebraicGroups.GroupScheme.InfinitesimalAdditive
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # Infinitesimal additive group regression checks
 
-Named private declarations retain the original examples in the compiled test
-without adding to the public mathematical API.
+Named private declarations retain the original examples in the compiled test.
+The polynomial-base coordinate nilpotence equation is also available to importers.
 -/
 
 set_option warningAsError true
@@ -28,9 +28,11 @@ namespace AlgebraicGeometry
 variable (K R : Type u) [CommRing K] [CommRing R] [Algebra K R]
   (p : ℕ) [Fact p.Prime] [CharP K p] (m : ℕ)
 
-private theorem testIdealIsHopfIdeal : Ideal.IsHopfIdeal K (infinitesimalAdditiveIdeal K p m) := inferInstance
+private theorem testIdealIsHopfIdeal :
+    Ideal.IsHopfIdeal K (infinitesimalAdditiveIdeal K p m) := inferInstance
 
-@[instance_reducible] private def testCoordinateRingHopfAlgebra : HopfAlgebra K (infinitesimalAdditiveCoordinateRing K p m) := inferInstance
+@[instance_reducible] private def testCoordinateRingHopfAlgebra :
+    HopfAlgebra K (infinitesimalAdditiveCoordinateRing K p m) := inferInstance
 
 /-- Compare the whole stored structure with the original instance-valued expression. -/
 private theorem testCoordinateRingHopfAlgebra_original
@@ -61,16 +63,19 @@ private theorem testCoordinatePow :
     infinitesimalAdditiveCoordinate K p m ^ (p ^ m) = 0 :=
   infinitesimalAdditiveCoordinate_pow K p m
 
-private theorem testCoordinateComul : CoalgebraStruct.comul (infinitesimalAdditiveCoordinate K p m) =
-    infinitesimalAdditiveCoordinate K p m ⊗ₜ[K] 1 +
-      1 ⊗ₜ[K] infinitesimalAdditiveCoordinate K p m :=
+private theorem testCoordinateComul :
+    CoalgebraStruct.comul (infinitesimalAdditiveCoordinate K p m) =
+      infinitesimalAdditiveCoordinate K p m ⊗ₜ[K] 1 +
+        1 ⊗ₜ[K] infinitesimalAdditiveCoordinate K p m :=
   infinitesimalAdditiveCoordinate_comul K p m
 
-private theorem testCoordinateCounit : CoalgebraStruct.counit (R := K) (infinitesimalAdditiveCoordinate K p m) = 0 :=
+private theorem testCoordinateCounit :
+    CoalgebraStruct.counit (R := K) (infinitesimalAdditiveCoordinate K p m) = 0 :=
   infinitesimalAdditiveCoordinate_counit K p m
 
-private theorem testCoordinateAntipode : (HopfAlgebraStruct.antipode K) (infinitesimalAdditiveCoordinate K p m) =
-    -infinitesimalAdditiveCoordinate K p m :=
+private theorem testCoordinateAntipode :
+    (HopfAlgebraStruct.antipode K) (infinitesimalAdditiveCoordinate K p m) =
+      -infinitesimalAdditiveCoordinate K p m :=
   infinitesimalAdditiveCoordinate_antipode K p m
 
 private def testSubgroupElement (r : R) (hr : r ^ (p ^ m) = 0) :
@@ -81,12 +86,14 @@ private theorem testAlgHomCoordinate (r : infinitesimalAdditiveSubgroup K p m R)
       (infinitesimalAdditiveCoordinate K p m) = r.val :=
   infinitesimalAdditiveMulEquivAlgHom_coordinate K p m R r
 
-private theorem testAlgHomSymmCoordinate (f : WithConv (infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R)) :
+private theorem testAlgHomSymmCoordinate
+    (f : WithConv (infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R)) :
     ((infinitesimalAdditiveMulEquivAlgHom K p m R).symm f).toAdd.val =
       f.ofConv (infinitesimalAdditiveCoordinate K p m) :=
   infinitesimalAdditiveMulEquivAlgHom_symm_coordinate K p m R f
 
-private theorem testAlgHomApplySymmApply (f : WithConv (infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R)) :
+private theorem testAlgHomApplySymmApply
+    (f : WithConv (infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R)) :
     infinitesimalAdditiveMulEquivAlgHom K p m R
         ((infinitesimalAdditiveMulEquivAlgHom K p m R).symm f) = f :=
   (infinitesimalAdditiveMulEquivAlgHom K p m R).apply_symm_apply f
@@ -110,7 +117,8 @@ private theorem testAlgHomNaturality {S : Type u} [CommRing S] [Algebra K S]
         f.comp (infinitesimalAdditiveMulEquivAlgHom K p m R (.ofAdd r)).ofConv :=
   infinitesimalAdditiveMulEquivAlgHom_naturality K p m R f r
 
-private def testPointsFunctorIso : infinitesimalAdditiveFunctor K p m ≅ infinitesimalAdditivePointsFunctor K p m :=
+private def testPointsFunctorIso :
+    infinitesimalAdditiveFunctor K p m ≅ infinitesimalAdditivePointsFunctor K p m :=
   infinitesimalAdditivePointsIso K p m
 
 private def testPointsEquiv : Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
@@ -142,13 +150,18 @@ private theorem testCoordinateFirstPower :
     infinitesimalAdditiveCoordinate K p 0 = 0 := by
   simpa using infinitesimalAdditiveCoordinate_pow K p 0
 
-private theorem testZModTwoCoordinatePow : infinitesimalAdditiveCoordinate (ZMod 2) 2 1 ^ (2 ^ 1) = 0 :=
+private theorem testZModTwoCoordinatePow :
+    infinitesimalAdditiveCoordinate (ZMod 2) 2 1 ^ (2 ^ 1) = 0 :=
   infinitesimalAdditiveCoordinate_pow (ZMod 2) 2 1
 
-private theorem testZModThreeCoordinatePow : infinitesimalAdditiveCoordinate (ZMod 3) 3 2 ^ (3 ^ 2) = 0 :=
+private theorem testZModThreeCoordinatePow :
+    infinitesimalAdditiveCoordinate (ZMod 3) 3 2 ^ (3 ^ 2) = 0 :=
   infinitesimalAdditiveCoordinate_pow (ZMod 3) 3 2
 
-private theorem testPolynomialCoordinatePow : infinitesimalAdditiveCoordinate (Polynomial (ZMod 2)) 2 2 ^ (2 ^ 2) = 0 :=
+/-- The infinitesimal additive coordinate over the nonfield base `(ZMod 2)[X]`
+vanishes to the fourth power. -/
+public theorem infinitesimalAdditiveCoordinate_polynomial_zmod_two_pow :
+    infinitesimalAdditiveCoordinate (Polynomial (ZMod 2)) 2 2 ^ (2 ^ 2) = 0 :=
   infinitesimalAdditiveCoordinate_pow (Polynomial (ZMod 2)) 2 2
 
 @[instance_reducible] private def testPolynomialHopfAlgebra : HopfAlgebra (Polynomial (ZMod 2))
@@ -165,18 +178,21 @@ private theorem testPolynomialHopfAlgebra_original :
 do not need `[Subsingleton R]`, but removing it would change the tested statements.
 Only these two declarations are exempt from `unusedArguments`. -/
 @[nolint unusedArguments]
-private def testSubsingletonAlgHomEquiv [Subsingleton R] : Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
-    WithConv (infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R) :=
+private def testSubsingletonAlgHomEquiv [Subsingleton R] :
+    Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
+      WithConv (infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R) :=
   infinitesimalAdditiveMulEquivAlgHom K p m R
 
 @[nolint unusedArguments]
-private def testSubsingletonPointsEquiv [Subsingleton R] : Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
-    ((Spec (.of R)).asOver (Spec (.of K)) ⟶
-      (infinitesimalAdditiveGroupScheme K p m).X) :=
+private def testSubsingletonPointsEquiv [Subsingleton R] :
+    Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
+      ((Spec (.of R)).asOver (Spec (.of K)) ⟶
+        (infinitesimalAdditiveGroupScheme K p m).X) :=
   infinitesimalAdditiveMulEquivPoints K p m R
 
-private def testZeroTargetAlgHomEquiv : Multiplicative (infinitesimalAdditiveSubgroup (ZMod 2) 2 1 PUnit) ≃*
-    WithConv (infinitesimalAdditiveCoordinateRing (ZMod 2) 2 1 →ₐ[ZMod 2] PUnit) :=
+private def testZeroTargetAlgHomEquiv :
+    Multiplicative (infinitesimalAdditiveSubgroup (ZMod 2) 2 1 PUnit) ≃*
+      WithConv (infinitesimalAdditiveCoordinateRing (ZMod 2) 2 1 →ₐ[ZMod 2] PUnit) :=
   infinitesimalAdditiveMulEquivAlgHom (ZMod 2) 2 1 PUnit
 
 /-- Compare the whole zero-target equivalence with its original literal right-hand side. -/
@@ -187,9 +203,10 @@ private theorem testZeroTargetAlgHomEquiv_original :
           WithConv (infinitesimalAdditiveCoordinateRing (ZMod 2) 2 1 →ₐ[ZMod 2] PUnit)) := by
   rfl
 
-private def testZeroTargetPointsEquiv : Multiplicative (infinitesimalAdditiveSubgroup (ZMod 3) 3 2 PUnit) ≃*
-    ((Spec (.of PUnit)).asOver (Spec (.of (ZMod 3))) ⟶
-      (infinitesimalAdditiveGroupScheme (ZMod 3) 3 2).X) :=
+private def testZeroTargetPointsEquiv :
+    Multiplicative (infinitesimalAdditiveSubgroup (ZMod 3) 3 2 PUnit) ≃*
+      ((Spec (.of PUnit)).asOver (Spec (.of (ZMod 3))) ⟶
+        (infinitesimalAdditiveGroupScheme (ZMod 3) 3 2).X) :=
   infinitesimalAdditiveMulEquivPoints (ZMod 3) 3 2 PUnit
 
 /-- Compare the whole zero-target points equivalence, including dependent and computational data. -/

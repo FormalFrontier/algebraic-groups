@@ -42,7 +42,9 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
   (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q] (e : Q ⟶ G)
   (hN : IsPullback i (toUnit N) q η[Q]) (he : e ≫ q = 𝟙 Q)
 
-example (f : T ⟶ N) (g : T ⟶ Q) :
+/-- The split-kernel product sends a pair of morphisms to the section-first product. -/
+public theorem _root_.CategoryTheory.splitKernelProductIso_hom_lift
+    (f : T ⟶ N) (g : T ⟶ Q) :
     lift f g ≫ (splitKernelProductIso i q e hN he).hom =
       (g ≫ e) * (f ≫ i) := by
   simp [splitKernelProductIso_hom, MonObj.comp_mul]

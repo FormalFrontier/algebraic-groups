@@ -10,11 +10,11 @@ public import SchemeProperties
 public import AlgebraicGroups
 
 /-!
-# Finite-type points coexistence client
+# Finite-type scheme points and group-valued points
 
-The defining modules and public aggregate roots share one import environment. Generic
-finite-type points are provided by Scheme Properties, with group-valued points supplied
-by Algebraic Groups.
+Finite-type scheme points are provided by Scheme Properties, with group-valued points
+supplied by Algebraic Groups. Representability of the underlying set-valued functor
+implies representability by a finite-type group scheme.
 -/
 
 set_option warningAsError true
@@ -55,7 +55,10 @@ private theorem underlyingEssImage_of_group
     (algebraicOverPoints K).essImage F.X :=
   (algebraicGroupPoints_essImage_iff K).mp h
 
-private theorem groupEssImage_of_underlying
+/-- A group-valued functor on finitely generated algebras over a field is represented
+by a finite-type group scheme whenever its underlying set-valued functor is represented
+by a finite-type scheme. -/
+public theorem algebraicGroupPoints_essImage_of_algebraicOverPoints
     (F : Grp ((((FGAlgCat K)ᵒᵖ)ᵒᵖ ⥤ Type u)))
     (h : (algebraicOverPoints K).essImage F.X) :
     (algebraicGroupPoints K).essImage F :=

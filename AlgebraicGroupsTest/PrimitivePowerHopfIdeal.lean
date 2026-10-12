@@ -4,9 +4,17 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal
-import AlgebraicGroups.GroupScheme.Additive
-import Mathlib.Data.ZMod.Basic
+public import AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal
+public import AlgebraicGroups.GroupScheme.Additive
+public import Mathlib.Data.ZMod.Basic
+
+/-!
+# Primitive characteristic-power Hopf ideal regression checks
+
+The private clients cover arbitrary commutative Hopf algebras, zero targets and
+symmetric generators. The additive-coordinate fourth-power Hopf ideal over
+`(ZMod 2)[X]` is also available to importers.
+-/
 
 set_option warningAsError true
 
@@ -17,7 +25,8 @@ open scoped TensorProduct
 variable {K A : Type*} [CommRing K] [CommRing A] [HopfAlgebra K A]
   {p : ℕ} [Fact p.Prime] [CharP K p] {a : A}
 
-private theorem persistentTestPrimitivePowerHopfIdeal001 (ha : Bialgebra.IsPrimitiveElem K a) (m : ℕ) :
+private theorem persistentTestPrimitivePowerHopfIdeal001
+    (ha : Bialgebra.IsPrimitiveElem K a) (m : ℕ) :
     Ideal.IsHopfIdeal K (Ideal.span {a ^ (p ^ m)}) :=
   ha.isHopfIdeal_span_pow_char_pow m
 
@@ -33,22 +42,26 @@ private theorem persistentTestPrimitivePowerHopfIdeal004 (ha : Bialgebra.IsPrimi
     Ideal.IsHopfIdeal K (Ideal.span {a ^ (p ^ 2)}) :=
   ha.isHopfIdeal_span_pow_char_pow 2
 
-private theorem persistentTestPrimitivePowerHopfIdeal005 (m : ℕ) : Ideal.IsHopfIdeal K (Ideal.span {(0 : A) ^ (p ^ m)}) := by
+private theorem persistentTestPrimitivePowerHopfIdeal005 (m : ℕ) :
+    Ideal.IsHopfIdeal K (Ideal.span {(0 : A) ^ (p ^ m)}) := by
   have hzero : Bialgebra.IsPrimitiveElem K (0 : A) := by
     constructor <;> simp
   exact hzero.isHopfIdeal_span_pow_char_pow m
 
-@[instance_reducible] private noncomputable def persistentTestPrimitivePowerHopfIdeal006 (ha : Bialgebra.IsPrimitiveElem K a) (m : ℕ) :
+@[instance_reducible] private noncomputable def persistentTestPrimitivePowerHopfIdeal006
+    (ha : Bialgebra.IsPrimitiveElem K a) (m : ℕ) :
     HopfAlgebra K (A ⧸ Ideal.span {a ^ (p ^ m)}) := by
   letI : Ideal.IsHopfIdeal K (Ideal.span {a ^ (p ^ m)}) :=
     ha.isHopfIdeal_span_pow_char_pow m
   infer_instance
 
-private theorem persistentTestPrimitivePowerHopfIdeal007 (K : Type*) [CommRing K] (B : Type*) [CommRing B] [Algebra K B]
+private theorem persistentTestPrimitivePowerHopfIdeal007 (K : Type*) [CommRing K]
+    (B : Type*) [CommRing B] [Algebra K B]
     [Subsingleton B] (I : Ideal K) (f : (K ⧸ I) →ₐ[K] B) (x : K) :
     f (Ideal.Quotient.mk I x) = 0 := Subsingleton.elim _ _
 
-private theorem persistentTestPrimitivePowerHopfIdeal008 (I : Ideal (ZMod 2)) (f : ((ZMod 2) ⧸ I) →ₐ[ZMod 2] PUnit)
+private theorem persistentTestPrimitivePowerHopfIdeal008 (I : Ideal (ZMod 2))
+    (f : ((ZMod 2) ⧸ I) →ₐ[ZMod 2] PUnit)
     (x : ZMod 2) : f (Ideal.Quotient.mk I x) = 0 := Subsingleton.elim _ _
 
 namespace SymmetricAlgebra
@@ -96,13 +109,16 @@ private theorem persistentTestPrimitivePowerHopfIdeal013 [Fact (Nat.Prime 3)] [C
     Ideal.IsHopfIdeal K (Ideal.span {(additiveGroupCoordinate K) ^ (3 ^ 2)}) :=
   (primitive_additiveGroupCoordinate K).isHopfIdeal_span_pow_char_pow 2
 
-private theorem persistentTestPrimitivePowerHopfIdeal014 : Ideal.IsHopfIdeal (Polynomial (ZMod 2))
-    (Ideal.span {(additiveGroupCoordinate (Polynomial (ZMod 2))) ^ (2 ^ 2)}) :=
+/-- The fourth power of the additive coordinate over `(ZMod 2)[X]` generates a Hopf ideal. -/
+public theorem additiveGroupCoordinate_polynomial_zmod_two_pow_isHopfIdeal :
+    Ideal.IsHopfIdeal (Polynomial (ZMod 2))
+      (Ideal.span {(additiveGroupCoordinate (Polynomial (ZMod 2))) ^ (2 ^ 2)}) :=
   (primitive_additiveGroupCoordinate (Polynomial (ZMod 2))).isHopfIdeal_span_pow_char_pow 2
 
-@[instance_reducible] private noncomputable def persistentTestPrimitivePowerHopfIdeal015 : HopfAlgebra (ZMod 3)
-    (additiveGroupCoordinateRing (ZMod 3) ⧸
-      Ideal.span {(additiveGroupCoordinate (ZMod 3)) ^ (3 ^ 2)}) := by
+@[instance_reducible] private noncomputable def persistentTestPrimitivePowerHopfIdeal015 :
+    HopfAlgebra (ZMod 3)
+      (additiveGroupCoordinateRing (ZMod 3) ⧸
+        Ideal.span {(additiveGroupCoordinate (ZMod 3)) ^ (3 ^ 2)}) := by
   letI : Ideal.IsHopfIdeal (ZMod 3)
       (Ideal.span {(additiveGroupCoordinate (ZMod 3)) ^ (3 ^ 2)}) :=
     (primitive_additiveGroupCoordinate (ZMod 3)).isHopfIdeal_span_pow_char_pow 2

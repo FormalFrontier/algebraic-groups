@@ -5,7 +5,13 @@ Authors: Formal Frontier Agents
 
 module
 
-import AlgebraicGroups.GroupScheme.Multiplicative
+public import AlgebraicGroups.GroupScheme.Multiplicative
+
+/-!
+# Multiplicative-group coordinate tests
+
+These clients check the unit-valued coordinate formula and include zero-ring targets.
+-/
 
 set_option warningAsError true
 
@@ -21,23 +27,28 @@ universe u
 variable (K R : Type u)
 variable [CommRing K] [CommRing R] [Algebra K R]
 
-private theorem persistentTestMultiplicative001 : Algebra.FiniteType K (multiplicativeGroupCoordinateRing K) :=
+private theorem persistentTestMultiplicative001 :
+    Algebra.FiniteType K (multiplicativeGroupCoordinateRing K) :=
   inferInstance
 
-private theorem persistentTestMultiplicative002 : LocallyOfFiniteType (multiplicativeGroupUnderlyingScheme K).hom :=
+private theorem persistentTestMultiplicative002 :
+    LocallyOfFiniteType (multiplicativeGroupUnderlyingScheme K).hom :=
   inferInstance
 
-private theorem persistentTestMultiplicative003 : QuasiCompact (multiplicativeGroupUnderlyingScheme K).hom :=
+private theorem persistentTestMultiplicative003 :
+    QuasiCompact (multiplicativeGroupUnderlyingScheme K).hom :=
   inferInstance
 
-private noncomputable def persistentTestMultiplicative004 : Rˣ ≃* WithConv (multiplicativeGroupCoordinateRing K →ₐ[K] R) :=
+private noncomputable def persistentTestMultiplicative004 :
+    Rˣ ≃* WithConv (multiplicativeGroupCoordinateRing K →ₐ[K] R) :=
   multiplicativeGroupMulEquivAlgHom K R
 
-private noncomputable def persistentTestMultiplicative005 : Rˣ ≃* ((Spec (.of R)).asOver (Spec (.of K)) ⟶
-    multiplicativeGroupUnderlyingScheme K) :=
+private noncomputable def persistentTestMultiplicative005 :
+    Rˣ ≃* ((Spec (.of R)).asOver (Spec (.of K)) ⟶ multiplicativeGroupUnderlyingScheme K) :=
   multiplicativeGroupMulEquivPoints K R
 
-private theorem persistentTestMultiplicative006 (u : Rˣ) :
+/-- The algebra map represented by a unit sends the multiplicative coordinate to that unit. -/
+public theorem multiplicativeGroup_coordinate_evaluation (u : Rˣ) :
     (multiplicativeGroupMulEquivAlgHom K R u).ofConv
         (multiplicativeGroupCoordinate K) = u :=
   multiplicativeGroupMulEquivAlgHom_coordinate K R u

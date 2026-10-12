@@ -46,7 +46,7 @@ namespace CategoryTheory.NatTrans
 variable {C : Type u} [Category.{v} C]
 variable {H G : Functor C GrpCat.{w}} (i : H ⟶ G)
 
-private lemma map_range_le (f : X ⟶ Y) :
+private lemma map_range_le {X Y : C} (f : X ⟶ Y) :
     (i.app X).hom.range ≤ ((i.app Y).hom.range).comap (G.map f).hom := by
   rintro _ ⟨x, rfl⟩
   refine ⟨H.map f x, ?_⟩

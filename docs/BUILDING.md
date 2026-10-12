@@ -7,7 +7,7 @@ packages and three direct requirements: mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5`, scheme-properties
 `c3ce429677a7c4a342b134a881f99cacfc62f71e`, and
 general-linear-groups `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`.
-Access to not-yet-public GitHub dependencies may be required. Use the matching
+The dependency sources are publicly available on GitHub. Use the matching
 precompiled mathlib cache before any build; a failed cache fetch is not a reason
 to rebuild mathlib from source silently.
 
@@ -18,41 +18,44 @@ lake build AlgebraicGroups AlgebraicGroupsTest
 ```
 
 The first target aggregates the library; the second builds its ordinary-import
-clients and examples, including zero-ring and empty-index cases. For a focused
-producer and matching client after fetching the cache, for example:
+clients and examples, including zero-ring and empty-index cases. To build a
+single library module and its corresponding test module after fetching the
+cache, for example:
 
 ```sh
 lake build AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct
 lake build AlgebraicGroupsTest.GroupScheme.UpperTriangularSchemeProduct
 ```
 
-Other producer/client pairs are linked from the [README](../README.md) and
+Other library/test pairs are linked from the [README](../README.md) and
 [focused mathematical guides](../AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md).
-These commands are reproduction instructions, not a claim of a new build or
-axiom audit. Build success alone does not establish semantic review or source
-coverage; a complete release proof check also audits transitive axioms of
-all declarations, including private/generated declarations, allowing only
-`propext`, `Classical.choice` and `Quot.sound`.
+Build success alone does not establish semantic review or source coverage.
+A complete proof-integrity check also enumerates every shipped module and
+declaration in the built environment, including private and generated
+declarations, and audits the axioms transitively used by those declarations.
+Only `propext`, `Classical.choice` and `Quot.sound` are allowed.
 
 ## Expected cost
 
 With the matching mathlib cache available, budget several minutes for compiling
 the library and tests, plus dependency preparation and the complete axiom audit.
 This is a planning estimate, not a bound or a portable minimum-resource promise.
-The following existing measurements give workload context; none is a fresh
-benchmark of this candidate.
+The following rounded measurements are observations of individual cached
+library-and-test build stages, not end-to-end benchmarks. They exclude dependency
+preparation, cache retrieval and the separate axiom audit. The builds used
+different library scopes and cache states, so these figures are workload context,
+not portable bounds or a fresh benchmark.
 
-| Workload | Observed wall time | Cache and scope |
+| Build stage | Observed wall time (cache/audit excluded) | Cache and workload |
 | --- | ---: | --- |
-| Earlier development compilation on September 26, 2026 | 593 s total | 53 staged/root/default invocations and two ordinary clients with cached dependencies and serial compiler dispatch; the final mostly warm default invocation alone took 4 s. |
-| Native library-and-test build on September 27, 2026 | 290.620 s | 3,468 Lake jobs after a successful 42.817 s matching-cache retrieval; not a cold end-to-end benchmark. |
-| Native library-and-test build on September 30, 2026 | 506.519 s | 3,917 Lake jobs after successful matching-cache retrieval; before the canonical finite-type-points import cleanup. This is the build stage only, excluding the separate axiom audit. |
+| Library and tests | 291 s | 3,468 Lake jobs; successful matching-cache retrieval took 43 s separately. |
+| Library and tests | 507 s | 3,917 Lake jobs; matching cache retrieved successfully. |
 
-The September 26 Linux worker had a 15 GiB aggregate memory cap, a 12 GiB
-virtual-address limit per compiler process, and serial Lean dispatch. These are
-execution limits, **not measured peak resident memory**. Memory-pressure events
-occurred, and two earlier attempts on different preparation states timed out
-after 240 s. CPU model, storage and network throughput were not standardized.
-Later timings do not establish a lower memory requirement. Cold or changed
+Recorded resource settings include a 15 GiB aggregate memory cap, a 12 GiB
+virtual-address limit per compiler process, and serial Lean compiler dispatch.
+These are configured execution limits, **not measured peak resident memory** or
+portable minimum requirements. Memory pressure was observed under constrained
+settings. CPU model, storage and network throughput were not standardized, and
+these timings do not establish a lower memory requirement. Cold or changed
 dependencies and higher parallelism can substantially increase time and memory
 needs; do not silently rebuild mathlib from source when cache preparation fails.

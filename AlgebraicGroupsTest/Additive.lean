@@ -5,13 +5,13 @@ Authors: Formal Frontier Agents
 
 module
 
-import AlgebraicGroups.GroupScheme.Additive
+public import AlgebraicGroups.GroupScheme.Additive
 
 /-!
-# Private additive-group regression clients
+# Additive-group regression clients
 
-These named, private declarations keep the original additive-group examples in
-the compiled test module without exporting an additional mathematical API.
+The coordinate-evaluation test records the value of the additive coordinate.
+The remaining clients are private and include zero-ring targets.
 -/
 
 set_option warningAsError true
@@ -60,7 +60,8 @@ private def testMultiplicativeAlgHomEquiv : Multiplicative R ≃*
     WithConv (additiveGroupCoordinateRing K →ₐ[K] R) :=
   additiveGroupMulEquivAlgHom K R
 
-private theorem testCoordinateEvaluation (r : R) :
+/-- The algebra map represented by an additive point sends the coordinate to that point. -/
+public theorem additiveGroup_coordinate_evaluation (r : R) :
     (additiveGroupMulEquivAlgHom K R (.ofAdd r)).ofConv
         (additiveGroupCoordinate K) = r :=
   additiveGroupMulEquivAlgHom_coordinate K R r

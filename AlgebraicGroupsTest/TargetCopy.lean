@@ -4,14 +4,13 @@ SPDX-License-Identifier: Apache-2.0
 -/
 module
 
-import AlgebraicGroups.RingTheory.TargetCopy
+public import AlgebraicGroups.RingTheory.TargetCopy
 
 /-!
 # Ordinary-import regression clients for the distinct target copy
 
-These persistent clients check the public reduction and scalar-transport API.
-They are deliberately private: this test module adds no downstream mathematical
-interface and must not re-export its implementation checks.
+The named map-evaluation test records transport of a ring homomorphism into the copy.
+The remaining reduction and scalar-transport clients are private.
 -/
 
 set_option warningAsError true
@@ -30,7 +29,8 @@ private theorem forward (x : TargetCopy S) :
 private theorem inverse (x : S) :
     TargetCopy.ringEquiv.symm x = TargetCopy.mk x := rfl
 
-private theorem transportedMap (f : R →+* S) (x : R) :
+/-- Transporting a ring homomorphism into the target copy preserves its value. -/
+public theorem _root_.TargetCopy.map_apply (f : R →+* S) (x : R) :
     TargetCopy.map f x = TargetCopy.mk (f x) := rfl
 
 private theorem scalarMap (f : R →+* S) (x : R) :
@@ -42,7 +42,7 @@ private theorem mapDownRewrite (f : R →+* S) (x : R) :
 
 private theorem mapDownSimp (f : R →+* S) (x : R) :
     (TargetCopy.map f x).down = f x := by
-  simp only [transportedMap]
+  simp only [TargetCopy.map_apply]
 
 variable {C : Type w} [CommRing C] [Algebra C R] [Algebra C S]
 

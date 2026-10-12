@@ -2,6 +2,12 @@ name = "algebraic-groups"
 version = "0.1.0"
 defaultTargets = ["AlgebraicGroups", "AlgebraicGroupsTest"]
 
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+weak.linter.mathlibStandardSet = true
+weak.linter.style.header = false
+
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4.git"
@@ -35,6 +41,12 @@ roots = [
   "AlgebraicGroupsTest.GroupScheme.UpperTriangularSplitKernel",
   "AlgebraicGroupsTest.GroupScheme.UpperTriangularSchemeProduct",
   "AlgebraicGroupsTest.AlgebraicallyClosedCommonZero",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.CoefficientMatrixUnit",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.Coefficients",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.CounitRange",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.FiniteSubcoalgebra",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeSpan",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdeal",
   "AlgebraicGroupsTest.Algebra.LocalizedCoordinateQuotient",
   "AlgebraicGroupsTest.Algebra.FinitePolynomialLocalizationDimension",
   "AlgebraicGroupsTest.Algebra.UnitriangularBaseChange",
@@ -89,4 +101,7 @@ roots = [
   "AlgebraicGroupsTest.LinearAlgebra.Matrix.UpperTriangularIndices",
   "AlgebraicGroupsTest.GroupScheme.UpperTriangularDimension",
   "AlgebraicGroupsTest.FiniteTypePointsCoexistence",
+  "AlgebraicGroupsTest.Algebra.TensorProduct.Split",
+  "AlgebraicGroupsTest.GroupLikeCardinality",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeHom",
 ]

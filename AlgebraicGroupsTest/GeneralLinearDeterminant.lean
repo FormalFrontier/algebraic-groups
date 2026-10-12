@@ -5,7 +5,14 @@ Authors: Formal Frontier Agents
 
 module
 
-import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
+public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
+
+/-!
+# Determinant-character tests
+
+These clients check coordinate and point formulas, empty indices, zero rings, and reduction
+of coefficients from the integers to `ZMod 2`.
+-/
 
 set_option warningAsError true
 
@@ -87,7 +94,9 @@ private theorem testZeroRingPoint (g : Matrix.GeneralLinearGroup (Fin 0) (ZMod 1
         (Matrix.GeneralLinearGroup.det g) :=
   generalLinearDeterminant_point (ZMod 1) (Fin 0) (ZMod 1) g
 
-private theorem testNonflatCoefficientNaturality (g : Matrix.GeneralLinearGroup (Fin 1) ℤ) :
+/-- Reduction of a one-by-one invertible integer matrix modulo two commutes with determinant. -/
+public theorem generalLinearGroup_det_map_int_zmod_two_fin_one
+    (g : Matrix.GeneralLinearGroup (Fin 1) ℤ) :
     Matrix.GeneralLinearGroup.det
         (Matrix.GeneralLinearGroup.map (algebraMap ℤ (ZMod 2)) g) =
       Units.map (algebraMap ℤ (ZMod 2)) (Matrix.GeneralLinearGroup.det g) :=

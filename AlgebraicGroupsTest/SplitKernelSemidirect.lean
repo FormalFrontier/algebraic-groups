@@ -75,7 +75,9 @@ example [IsMonHom e] (a a' : T ⟶ Q) (n : T ⟶ N) :
         splitKernelConj i q e hN he :=
   splitKernelConj_mul i q e hN he a a' n
 
-example [GrpObj N] [IsMonHom i] [IsMonHom e]
+/-- The section-first product identifies twisted multiplication with multiplication in the group. -/
+public theorem _root_.CategoryTheory.splitKernelProductIso_lift_mul
+    [GrpObj N] [IsMonHom i] [IsMonHom e]
     (n n' : T ⟶ N) (a a' : T ⟶ Q) :
     lift ((lift (a'⁻¹) n ≫ splitKernelConj i q e hN he) * n') (a * a') ≫
         (splitKernelProductIso i q e hN he).hom =

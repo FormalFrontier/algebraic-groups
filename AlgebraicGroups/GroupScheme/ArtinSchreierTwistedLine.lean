@@ -377,7 +377,7 @@ private noncomputable def preSubmersivePresentation (p : ℕ) (t : R) :
     (v := relationFamily R p t) relationVariable relationVariable_injective
   exact P.ofAlgEquiv (Ideal.quotientEquivAlgOfEq R (span_range_relationFamily R p t))
 
-private theorem preSubmersivePresentation_jacobiMatrix [CharP R p] (t : R) :
+private theorem preSubmersivePresentation_jacobiMatrix {p : ℕ} [CharP R p] (t : R) :
     (preSubmersivePresentation R p t).jacobiMatrix =
       Matrix.of (fun _ _ : Unit ↦ (-1 : MvPolynomial (Fin 2) R)) := by
   ext i j
@@ -385,7 +385,7 @@ private theorem preSubmersivePresentation_jacobiMatrix [CharP R p] (t : R) :
     Algebra.PreSubmersivePresentation.jacobiMatrix_naive, relationFamily, relationVariable,
     equation]
 
-private noncomputable def submersivePresentation [CharP R p] (t : R) :
+private noncomputable def submersivePresentation {p : ℕ} [CharP R p] (t : R) :
     Algebra.SubmersivePresentation R (CoordinateRing R p t) (Fin 2) Unit where
   toPreSubmersivePresentation := preSubmersivePresentation R p t
   jacobian_isUnit := by
@@ -395,12 +395,12 @@ private noncomputable def submersivePresentation [CharP R p] (t : R) :
     exact isUnit_neg_one.map (algebraMap _ _)
 
 /-- The coordinate ring is standard smooth over the base ring. -/
-theorem coordinateRing_isStandardSmooth [CharP R p] (t : R) :
+theorem coordinateRing_isStandardSmooth {p : ℕ} [CharP R p] (t : R) :
     Algebra.IsStandardSmooth R (CoordinateRing R p t) :=
   (submersivePresentation R t).isStandardSmooth
 
 /-- The coordinate ring is smooth over the base ring. -/
-theorem coordinateRing_smooth [CharP R p] (t : R) :
+theorem coordinateRing_smooth {p : ℕ} [CharP R p] (t : R) :
     Algebra.Smooth R (CoordinateRing R p t) := by
   let _ : Algebra.IsStandardSmooth R (CoordinateRing R p t) :=
     coordinateRing_isStandardSmooth R t
@@ -408,7 +408,7 @@ theorem coordinateRing_smooth [CharP R p] (t : R) :
 
 /-- The structure morphism is smooth: the defining relation has partial
 derivative `-1` with respect to `Y`. -/
-theorem scheme_smooth [CharP R p] (t : R) : Smooth (scheme R p t).hom := by
+theorem scheme_smooth {p : ℕ} [CharP R p] (t : R) : Smooth (scheme R p t).hom := by
   change Smooth (Spec.map (CommRingCat.ofHom (algebraMap R (CoordinateRing R p t))))
   rw [HasRingHomProperty.Spec_iff (P := @Smooth)]
   simpa only [CommRingCat.hom_ofHom] using

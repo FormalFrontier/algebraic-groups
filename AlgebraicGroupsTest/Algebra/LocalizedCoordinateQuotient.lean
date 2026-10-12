@@ -6,6 +6,13 @@ module
 
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
 
+/-!
+# Integer examples of coordinate elimination and localization
+
+The examples use coordinate elimination before and after localization over the integers.
+For the empty retained-coordinate set in two variables, the first coordinate is sent to zero.
+-/
+
 @[expose] public section
 
 set_option warningAsError true
@@ -65,7 +72,10 @@ example (f : MvPolynomial (Fin 2) ℤ) :
       Localization.Away (eraseCoordinates ℤ ∅ f) :=
   localizedCoordinateQuotientEquiv ℤ ∅ f
 
-example : eraseCoordinates ℤ (∅ : Set (Fin 2)) (X 0) = 0 := by
+/-- Erasing every coordinate in the two-variable polynomial ring over the integers
+sends its first variable to zero. -/
+public theorem _root_.MvPolynomial.eraseCoordinates_empty_fin_two :
+    eraseCoordinates ℤ (∅ : Set (Fin 2)) (X 0) = 0 := by
   exact eraseCoordinates_X_not_mem ℤ ∅ 0 (by simp)
 
 example :

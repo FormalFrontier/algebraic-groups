@@ -4,15 +4,16 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.Algebra.MatrixEndBaseChange
+public import AlgebraicGroups.Algebra.MatrixEndBaseChange
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Ordinary-import regressions for source-order tensor base change
 
-These named private clients exercise the existing public reductions and
-evaluation formulas without exporting mathematical declarations.
+The named tensor-sum test records the evaluation of base-changed endomorphisms.
+Private clients include source-order reductions, polynomial evaluation, empty modules,
+and zero rings.
 -/
 
 set_option warningAsError true
@@ -90,7 +91,8 @@ private theorem testNamedEvaluation (g : R →ₐ[K] S)
       s • (g.toLinearMap.rTensor V) (f (1 ⊗ₜ[K] v)) :=
   endBaseChange_tmul K V R S g f s v
 
-private theorem testTensorSums (g : R →ₐ[K] S)
+/-- A base-changed endomorphism evaluates a sum of pure tensors by the two evaluation formulas. -/
+public theorem endBaseChange_tensor_sums (g : R →ₐ[K] S)
     (f : Module.End R (SourceOrderTensor K V R)) (s t : S) (v w : V) :
     endBaseChange K V R S g f (s ⊗ₜ[K] v + t ⊗ₜ[K] w) =
       s • (g.toLinearMap.rTensor V) (f (1 ⊗ₜ[K] v)) +

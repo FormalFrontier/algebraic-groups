@@ -4,7 +4,13 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
+public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
+
+/-!
+# Common-zero tests over algebraically closed fields
+
+These clients include empty variable and equation families and mixed positive degrees.
+-/
 
 set_option warningAsError true
 
@@ -78,7 +84,10 @@ private theorem checks_no_equations_homogeneous (f : Empty → MvPolynomial (Fin
   · intro i
     exact isEmptyElim i
 
-private theorem checks_mixed_degrees (f : Bool → MvPolynomial (Fin 3) K)
+/-- A linear and a quadratic homogeneous polynomial in three variables
+have a nonzero common zero. -/
+public theorem exists_nonzero_common_zero_fin_three_of_degrees_one_two
+    (f : Bool → MvPolynomial (Fin 3) K)
     (hfalse : (f false).IsHomogeneous 1) (htrue : (f true).IsHomogeneous 2) :
     ∃ x : Fin 3 → K, x ≠ 0 ∧ ∀ i, eval x (f i) = 0 := by
   apply exists_nonzero_common_zero_of_isHomogeneous f

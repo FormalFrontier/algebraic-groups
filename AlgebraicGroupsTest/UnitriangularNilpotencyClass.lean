@@ -7,6 +7,12 @@ module
 public import AlgebraicGroups.GroupTheory.UnitriangularNilpotencyClass
 public import Mathlib.Data.ZMod.Basic
 
+/-!
+# Unitriangular commutator and nilpotency-class tests
+
+These clients include the elementary commutator in dimension three, empty indices, and zero rings.
+-/
+
 public section
 
 set_option warningAsError true
@@ -27,7 +33,9 @@ private theorem elementary_gl (R : Type) [CommRing R] (a : R) :
         Matrix.GeneralLinearGroup.elementaryUnit 0 1 (by decide) a :=
   Matrix.UnitriangularGroup.elementary_gl 3 R 0 1 (by decide) a
 
-private theorem elementary_commutator (R : Type) [CommRing R] (a b : R) :
+/-- The adjacent elementary roots in dimension three have commutator coefficient `a * b`. -/
+public theorem _root_.Matrix.UnitriangularGroup.elementary_commutator_fin_three
+    (R : Type) [CommRing R] (a b : R) :
     ⁅Matrix.UnitriangularGroup.elementary 3 R (0 : Fin 3) 1 (by decide) a,
       Matrix.UnitriangularGroup.elementary 3 R 1 2 (by decide) b⁆ =
         Matrix.UnitriangularGroup.elementary 3 R 0 2 (by decide) (a * b) := by
@@ -62,10 +70,9 @@ private theorem characteristic_two_four :
     Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin 4) (ZMod 2)) = 3 :=
   four_class (ZMod 2)
 
-set_option linter.style.haveILetI false in
 private theorem nonreduced_four :
     Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin 4) (ZMod 4)) = 3 := by
-  letI : Fact (1 < 4) := ⟨by decide⟩
+  have : Fact (1 < 4) := ⟨by decide⟩
   exact four_class (ZMod 4)
 
 private theorem zero_ring_three :

@@ -4,8 +4,17 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups
+public import AlgebraicGroups
+public import Mathlib.Data.ZMod.Basic
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+
+/-!
+# Examples of general linear groups under scalar extension
+
+The examples compare module automorphisms with their chosen-basis matrices under
+coefficient maps. Over the two-element field in rank two, coordinate evaluation sends
+the inverse-determinant coordinate to the inverse of the matrix determinant.
+-/
 
 set_option warningAsError true
 
@@ -214,7 +223,9 @@ private theorem zeroTargetNaturality
   generalLinearModuleMatrixEquiv_natural ℤ (Fin 2 → ℤ) (Fin 2)
     (Pi.basisFun ℤ (Fin 2)) ℤ (ZMod 1) (Algebra.ofId ℤ (ZMod 1)) f
 
-private theorem finiteFieldCoefficients
+/-- For a rank-two automorphism over the two-element field, evaluating the
+inverse-determinant coordinate gives the inverse determinant of its matrix. -/
+public theorem _root_.AlgebraicGeometry.generalLinearModule_detInverse_zmod_two_fin_two
     (f : LinearMap.GeneralLinearGroup (ZMod 2)
       (SourceOrderTensor (ZMod 2) (Fin 2 → ZMod 2) (ZMod 2))) :
     generalLinearModuleCoordinateEval (ZMod 2) (Fin 2 → ZMod 2) (Fin 2)
@@ -298,4 +309,4 @@ end AlgebraicGeometry.GeneralLinearModuleTest
 #print axioms AlgebraicGeometry.GeneralLinearModuleTest.zeroCoefficientAlgebra
 #print axioms AlgebraicGeometry.GeneralLinearModuleTest.zeroBaseAlgebra
 #print axioms AlgebraicGeometry.GeneralLinearModuleTest.zeroTargetNaturality
-#print axioms AlgebraicGeometry.GeneralLinearModuleTest.finiteFieldCoefficients
+#print axioms AlgebraicGeometry.generalLinearModule_detInverse_zmod_two_fin_two

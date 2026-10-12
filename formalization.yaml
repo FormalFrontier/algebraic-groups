@@ -9,7 +9,10 @@ project:
     kernels, closed unitriangular stages and their underlying affine-space
     presentations, finite additive products and positive-stage underlying
     projections and sections, unitriangular scalar base change and coherence, and selected
-    dimension and geometric results. Precise hypotheses and exclusions are
+    dimension and geometric results. Coalgebra results include finite
+    tensor-image containment, coefficient matrix units, counit ranges and
+    idempotent principal ideal constructors; split free presentations give
+    finite tensor coordinates. Precise hypotheses and exclusions are
     documented in README.md and the focused mathematical guides. This is not
     a complete formalization of any cited source.
   authors:
@@ -20,6 +23,17 @@ repository:
   role: substantive-development
 
 sources:
+  - title: Hopf Algebras
+    authors:
+      - Moss E. Sweedler
+    type: book
+    location: W. A. Benjamin, 1969
+    relationship: background
+    note: >-
+      Bibliographic credit for the classical field coalgebra theorem and
+      coefficient-coalgebra method. The projective-ambient commutative-semiring
+      result asserts first-factor tensor-image closure, not two-factor
+      closure over every semiring. No complete source coverage is claimed.
   - title: Algebraic Groups
     authors:
       - James S. Milne
@@ -70,9 +84,23 @@ status:
   scope: >-
     This repository contains reusable algebraic-group, group-scheme and
     coordinate-algebra definitions and results, with focused ordinary-import
-    clients. Native unitriangular point groups have central, lower-central
-    and derived series, superdiagonal quotient and exponent results with the
-    hypotheses described in their guides. Native closed superdiagonal stages
+    clients. Every finite subset of a coalgebra over a commutative semiring
+    with projective ambient module lies in a module-finitely-generated submodule
+    with every-member first-factor tensor-image closure, without ambient finite
+    generation. Free modules are included. Over a field,
+    finite subsets have two-factor tensor-image containment; no restricted
+    coalgebra structure on the subtype is asserted. Finite biorthogonal
+    ambient coordinates give coefficient-comultiplication and counit laws.
+    Finite Hopf coefficient matrices satisfying both matrix laws are units
+    with entrywise antipode inverse, including empty indices. For every
+    coalgebra over a commutative semiring, the counit range is an idempotent
+    ideal acting on the top submodule with image top. Idempotent principal
+    ideals have explicit coalgebra constructors, including nonfree examples.
+    Arbitrary split free presentations give finite tensor reconstruction and
+    all-index contraction formulas without assuming freeness or finite
+    generation of the presented module. Unitriangular point groups have
+    central, lower-central and derived series, superdiagonal quotient and exponent results with the
+    hypotheses described in their guides. Closed superdiagonal stages
     have Hopf coordinate quotients, multiplicative points, a polynomial-algebra
     presentation and underlying over-scheme affine-space isomorphisms over
     arbitrary commutative bases. These stages are normal; positive stages have
@@ -92,6 +120,40 @@ status:
     or complete formalization of Milne's book. Read exact limitations with
     each mathematical guide.
   main_results:
+    - declaration: Coalgebra.comul_mem_range_mapIncl_span_of_isGroupLikeElem
+      file: AlgebraicGroups/Algebra/Coalgebra/GroupLikeSpan.lean
+    - declaration: Coalgebra.span_le_span_coefficients
+      file: AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean
+    - declaration: Coalgebra.comul_coefficient
+      file: AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean
+    - declaration: Coalgebra.counit_coefficient
+      file: AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean
+    - declaration: Coalgebra.comul_mem_range_mapIncl_span_coefficients
+      file: AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean
+    - declaration: Coalgebra.exists_fg_submodule_comul_right_closed_of_finite
+      file: AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean
+    - declaration: Coalgebra.exists_basis_comul_coefficients
+      file: AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean
+    - declaration: Coalgebra.exists_fg_submodule_comul_closed_of_finite
+      file: AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean
+    - declaration: HopfAlgebra.coefficientMatrix_mul_antipode
+      file: AlgebraicGroups/Algebra/Coalgebra/CoefficientMatrixUnit.lean
+    - declaration: HopfAlgebra.antipode_mul_coefficientMatrix
+      file: AlgebraicGroups/Algebra/Coalgebra/CoefficientMatrixUnit.lean
+    - declaration: HopfAlgebra.coefficientMatrixUnit
+      file: AlgebraicGroups/Algebra/Coalgebra/CoefficientMatrixUnit.lean
+    - declaration: Coalgebra.counit_range_mul_self
+      file: AlgebraicGroups/Algebra/Coalgebra/CounitRange.lean
+    - declaration: Coalgebra.counit_range_smul_top
+      file: AlgebraicGroups/Algebra/Coalgebra/CounitRange.lean
+    - declaration: IsIdempotentElem.coalgebraSpan
+      file: AlgebraicGroups/Algebra/Coalgebra/IdempotentIdeal.lean
+    - declaration: TensorProduct.equivFinsuppOfBasisRight_lTensor_apply
+      file: AlgebraicGroups/Algebra/TensorProduct/Split.lean
+    - declaration: TensorProduct.sum_tmul_eq_of_split
+      file: AlgebraicGroups/Algebra/TensorProduct/Split.lean
+    - declaration: TensorProduct.exists_tensor_coefficients_of_split
+      file: AlgebraicGroups/Algebra/TensorProduct/Split.lean
     - declaration: AlgebraicGeometry.affineSpecHomOverEquiv
       file: AlgebraicGroups/GroupScheme/AffineHomOver.lean
     - declaration: AlgebraicGeometry.additiveGroupHomOverEquiv

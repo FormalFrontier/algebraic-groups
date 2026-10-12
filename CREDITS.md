@@ -59,7 +59,23 @@ notice. Coordinate base change uses Christian Merten's
 `MvPolynomial.scalarRTensorAlgEquiv` is a related prior formalization, not
 the equivalence used for this polynomial comparison.
 
+The idempotent principal ideal coalgebra uses Ali Ramsey and Eric Wieser’s
+Mathlib coalgebra laws and Finsupp coalgebra, Christopher Hoskin’s idempotent
+predicate API, and Mathlib’s ideal and tensor-product interfaces. Formal
+Frontier Agents contributed its construction and characteristic formulas.
+
 ## Mathematical sources
+
+M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969, is credited
+bibliographically for the classical field coalgebra theorem and
+coefficient-coalgebra method. Formal Frontier Agents developed the coalgebra
+proofs and examples using Mathlib's coalgebra laws, tensor-product maps and
+basis decompositions, linear extensions and finitely generated submodule APIs.
+The projective-ambient-module commutative-semiring right-coideal step is distinct
+from the field theorem's two-factor tensor-image closure. Its global-splitting
+argument follows Formal Frontier's earlier projective-coalgebra formalization
+and uses Kevin Buzzard and Antoine Labelle's Mathlib projective-module API in
+place of an ambient basis.
 
 J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type over
 a Field*, Cambridge Studies in Advanced Mathematics 170, Cambridge University
@@ -91,6 +107,22 @@ diagonal-coefficient idea. See the [root references](README.md#references) and
 module References for their precise locators and limitations.
 
 ## Prior formalizations
+
+The Hopf coefficient matrix unit adapts Mathlib's `Coalgebra.Repr` and its
+finite-sum antipode identities, using the matrix and units interfaces. Formal
+Frontier Agents developed the two inverse proofs, unit construction and
+integer-weight and empty-index examples on Mathlib's monoid-algebra Hopf structure.
+
+The split-free-presentation tensor coordinates reuse Jakob von Raumer's Mathlib
+`TensorProduct.equivFinsuppOfBasisRight` and its coefficient and inverse formulas,
+Johannes Hölzl's Finsupp basis, and Kevin Buzzard and Antoine Labelle's
+projective-module formalization. Tensoring linear maps uses Kenny Lau and Mario
+Carneiro's Mathlib interfaces. The nonfree examples also use Eric Wieser's
+Finsupp/DFinsupp equivalence and Mathlib's direct-sum projectivity and finiteness
+criteria. Formal Frontier's earlier coefficient-coalgebra formalizations inform
+the split-presentation argument and the idempotent-ideal examples. The mathematical
+coefficient method is credited to M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin,
+1969; these pure tensor-coordinate lemmas do not assert a coalgebra finiteness theorem.
 
 Prior Lean formalizations include the mathlib community's
 [*Mathlib*](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5):

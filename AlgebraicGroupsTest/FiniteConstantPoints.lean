@@ -5,7 +5,13 @@ Authors: Formal Frontier Agents
 
 module
 
-import AlgebraicGroups.GroupScheme.FiniteConstantPoints
+public import AlgebraicGroups.GroupScheme.FiniteConstantPoints
+
+/-!
+# Finite constant group-scheme point tests
+
+These clients check locally constant points, coefficient naturality, and zero-ring targets.
+-/
 
 set_option warningAsError true
 
@@ -41,7 +47,9 @@ private theorem persistentTestFiniteConstantPoints003 (g : Γ) :
         (finiteConstantGroupSchemePoint K Γ g).left :=
   finiteConstantLocallyConstantMulEquivPoints_const K Γ g
 
-private theorem persistentTestFiniteConstantPoints004 {S : Type u} [CommRing S] [Algebra K S] (a : R →ₐ[K] S)
+/-- Pulling back a locally constant function agrees with changing coefficients of its point. -/
+public theorem finiteConstantGroup_points_naturality {S : Type u} [CommRing S] [Algebra K S]
+    (a : R →ₐ[K] S)
     (f : LocallyConstant (PrimeSpectrum R) Γ) :
     finiteConstantLocallyConstantMulEquivPoints K Γ S
         (LocallyConstant.comap
@@ -51,7 +59,8 @@ private theorem persistentTestFiniteConstantPoints004 {S : Type u} [CommRing S] 
         finiteConstantLocallyConstantMulEquivPoints K Γ R f :=
   finiteConstantLocallyConstantMulEquivPoints_naturality K Γ R a f
 
-private noncomputable def persistentTestFiniteConstantPoints005 [Unique Γ] : FiniteGroupFunctions K Γ ≃ₐ[K] K :=
+private noncomputable def persistentTestFiniteConstantPoints005 [Unique Γ] :
+    FiniteGroupFunctions K Γ ≃ₐ[K] K :=
   FiniteGroupFunctions.uniqueAlgEquiv K Γ
 
 end AlgebraicGeometry

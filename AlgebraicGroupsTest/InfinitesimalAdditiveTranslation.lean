@@ -4,8 +4,15 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.GroupScheme.InfinitesimalAdditiveTranslation
+public import AlgebraicGroups.GroupScheme.InfinitesimalAdditiveTranslation
 import Mathlib.Algebra.Field.ZMod
+
+/-!
+# Infinitesimal-additive translation point tests
+
+These clients check translation by one on coordinates and points, including height zero
+and zero-ring targets.
+-/
 
 set_option warningAsError true
 
@@ -84,7 +91,8 @@ private theorem generic_inverse_naturality_test
       (f.comp rho).comp (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom :=
   infinitesimalAdditiveTranslation_point_symm_naturality K p m R S rho f
 
-private theorem existing_additive_point_coordinate_test
+/-- Translation by one sends the roots-of-unity generator to one plus the additive point. -/
+public theorem infinitesimalAdditiveTranslation_additive_point_generator
     (R : Type u) [CommRing R] [Algebra K R]
     (r : infinitesimalAdditiveSubgroup K p m R) :
     ((infinitesimalAdditiveMulEquivAlgHom K p m R (.ofAdd r)).ofConv.comp
@@ -162,7 +170,7 @@ private theorem zmod3_one_scheme_map_test :
 #print axioms generic_point_inverse_test
 #print axioms generic_naturality_test
 #print axioms generic_inverse_naturality_test
-#print axioms existing_additive_point_coordinate_test
+#print axioms infinitesimalAdditiveTranslation_additive_point_generator
 #print axioms existing_roots_point_coordinate_test
 #print axioms translation_test_fact_prime_two
 #print axioms translation_test_fact_prime_three

@@ -5,9 +5,18 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
+public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
+public import AlgebraicGroups.Algebra.Coalgebra.Coefficients
+public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
+public import AlgebraicGroups.Algebra.Coalgebra.FiniteSubcoalgebra
+public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCardinality
+public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
+public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
+public import AlgebraicGroups.Algebra.Coalgebra.IdempotentIdeal
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
 public import AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension
 public import AlgebraicGroups.Algebra.TensorProduct.Pi
+public import AlgebraicGroups.Algebra.TensorProduct.Split
 public import AlgebraicGroups.Algebra.Smooth
 public import AlgebraicGroups.Algebra.SymmetricAlgebra
 public import AlgebraicGroups.Algebra.SymmetricAlgebraPoints
@@ -133,17 +142,31 @@ public import AlgebraicGroups.Topology.KrullDimension
 /-!
 # Algebraic groups and group schemes
 
+Coalgebra APIs include finite right-coideal containment over commutative semirings
+with projective ambient module (including free modules), two-factor tensor-image
+containment over fields, coefficient spans and Hopf coefficient matrix units. The counit range is an
+idempotent scalar ideal acting on the whole coalgebra, and idempotent principal
+ideals have explicit coalgebra constructors. Split free presentations supply
+finite tensor coordinates without freeness of the presented module.
+
+Group-like elements of a coalgebra over a commutative semiring correspond to
+coalgebra morphisms from the canonical scalar coalgebra. Scalar multiplication
+constructs the morphism, and evaluation at `1` recovers the group-like element.
+
 The aggregate exposes the finite upper-unitriangular Hopf quotient, affine
-group scheme and underlying affine geometry, native closed superdiagonal
+group scheme and underlying affine geometry, closed superdiagonal
 stage Hopf quotients and underlying affine-space presentations, stage normality,
 positive-stage additive coordinates and the underlying over-scheme kernel,
 central filtration, successive quotients, exact nilpotency class under nontriviality, the
 all-stage lower-central-series identification and the derived series
-and sharp prime-power exponent bounds for the native point group alongside
+and sharp prime-power exponent bounds for the upper-unitriangular point group alongside
 the general- and special-linear constructions.
 
 ## References
 
+- M. E. Sweedler, *Hopf Algebras* (1969), for the classical field coalgebra
+  theorem and coefficient-coalgebra method (bibliographic credit); Mathlib for
+  coalgebra laws, antipodes, tensor coordinates and split free presentations.
 - J. S. Milne, *Algebraic Groups* (2017), selected items in §§1–2 and §6,
   for group functors, linear groups and unitriangular filtrations; and *Basic
   Theory of Affine Group Schemes* (2012), XI §16, Example 16.3 and XIII §3,

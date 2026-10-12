@@ -103,8 +103,7 @@ private theorem testAdditiveHomForward (X : Over (Spec (.of K)))
 
 section UnderlyingFanLift
 
-open Classical
-
+open Classical in
 private theorem testUnderlyingFanLift
     (s : Limits.Fan (fun _ : i ↦ (additiveGroupScheme K).X)) :
     (vectorGroupBasisFan_forget_isLimit K V b).lift s =
