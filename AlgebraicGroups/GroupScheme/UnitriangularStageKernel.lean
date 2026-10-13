@@ -13,11 +13,17 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 /-!
 # The positive-stage unitriangular kernel square
 
-The closed successor is the fiber of the actual product of additive
+The closed successor is the fiber of the product of additive
 superdiagonal coordinates over the unit section. The proof tests arbitrary
 schemes, using the adjunction between global sections and affine spectra.
 
-Its scheme factorization uses a quotient-spectrum lift and closed-immersion
+The scheme factorization helper applies at every natural stage, testing only
+strict-upper superdiagonal entries. At stage zero these tests are vacuous and
+the successor is an isomorphism, since the stage-zero and stage-one ideals
+are both zero. The positive-stage additive-coordinate and kernel constructions
+still require a positive stage.
+
+The factorization uses a quotient-spectrum lift and closed-immersion
 monicity, not the separate algebraic successor-factorization lemma.
 
 ## References
@@ -42,9 +48,7 @@ open scoped CategoryTheory CategoryTheory.MonObj
 
 namespace AlgebraicGeometry
 
-set_option maxHeartbeats 5000000
 set_option backward.isDefEq.respectTransparency false
-set_option linter.style.haveILetI false
 
 variable (K : Type) [CommRing K] (n r : ℕ)
 
@@ -58,13 +62,19 @@ private theorem preimage_spec_comp {A B : CommRingCat} {X : Scheme}
     ← Scheme.ΓSpecIso_inv_naturality, Category.assoc]
 
 /-- An arbitrary scheme map into a stage spectrum factors uniquely through
-the successor when all superdiagonal functions vanish on global sections.
-The factor is constructed with `Scheme.Hom.liftQuotient` and uniqueness
-uses the closed immersion, without an affineness assumption on the test scheme. -/
-theorem unitriangularStageSuccessor_existsUnique_scheme
-    (_hr : 1 ≤ r) {X : Scheme}
+the successor when its strict-upper superdiagonal coordinates vanish on global
+sections. This applies at every natural stage, without an affineness assumption
+on the test scheme. At a positive stage all indexed entries are strict upper.
+At stage zero the indices are diagonal, so the strict-upper condition is
+vacuous and the successor is an isomorphism; requiring every raw diagonal
+coordinate to vanish would instead force the test scheme to be empty at
+positive rank. The factor is constructed with `Scheme.Hom.liftQuotient` and
+uniqueness uses the closed immersion. -/
+theorem unitriangularStageSuccessor_existsUnique_of_coordinates
+    {X : Scheme}
     (f : X ⟶ Spec (.of (CoordinateRing K n r)))
     (hcoord : ∀ ij : Matrix.UnitriangularGroup.superdiagonalIndex n r,
+      ij.1.1 < ij.1.2 →
       (((Scheme.ΓSpecIso (.of (CoordinateRing K n r))).inv ≫ f.appTop).hom)
         (coordinate K n r ij) = 0) :
     ∃! g : X ⟶ Spec (.of (CoordinateRing K n (r + 1))),
@@ -91,7 +101,7 @@ theorem unitriangularStageSuccessor_existsUnique_scheme
     by_cases hsmall : j.val < i.val + r
     · rw [quotient_entry K n r i j hij hsmall, map_zero]
     · have heq : j.val = i.val + r := by omega
-      exact hcoord ⟨(i, j), heq⟩
+      exact hcoord ⟨(i, j), heq⟩ hij
   let lift : X ⟶ Spec (.of (CoordinateRing K n (r + 1))) :=
     Scheme.Hom.liftQuotient ambientMap (ideal K n (r + 1)) hI
   have hstage : (unitriangularStageSuccessor K n r).hom.hom.left ≫
@@ -104,7 +114,7 @@ theorem unitriangularStageSuccessor_existsUnique_scheme
   have hclosedAmbient : IsClosedImmersion
       (unitriangularStageInclusion K n r).hom.hom.left :=
     unitriangularStageInclusion_isClosedImmersion K n r
-  haveI : Mono (unitriangularStageInclusion K n r).hom.hom.left :=
+  have : Mono (unitriangularStageInclusion K n r).hom.hom.left :=
     (IsClosedImmersion.iff_isFinite_and_mono _).mp hclosedAmbient |>.2
   have hlift : lift ≫ (unitriangularStageSuccessor K n r).hom.hom.left = f := by
     apply (cancel_mono (unitriangularStageInclusion K n r).hom.hom.left).mp
@@ -120,10 +130,25 @@ theorem unitriangularStageSuccessor_existsUnique_scheme
   have hclosed : IsClosedImmersion
       (unitriangularStageSuccessor K n r).hom.hom.left :=
     unitriangularStageSuccessor_isClosedImmersion K n r
-  haveI : Mono (unitriangularStageSuccessor K n r).hom.hom.left :=
+  have : Mono (unitriangularStageSuccessor K n r).hom.hom.left :=
     (IsClosedImmersion.iff_isFinite_and_mono _).mp hclosed |>.2
   exact (cancel_mono (unitriangularStageSuccessor K n r).hom.hom.left).mp
     (hg.trans hlift.symm)
+
+/-- Positive-stage specialization of the scheme factorization theorem with
+vanishing of every superdiagonal coordinate. -/
+@[deprecated unitriangularStageSuccessor_existsUnique_of_coordinates
+  (since := "2026-10-13")]
+theorem unitriangularStageSuccessor_existsUnique_scheme
+    (_hr : 1 ≤ r) {X : Scheme}
+    (f : X ⟶ Spec (.of (CoordinateRing K n r)))
+    (hcoord : ∀ ij : Matrix.UnitriangularGroup.superdiagonalIndex n r,
+      (((Scheme.ΓSpecIso (.of (CoordinateRing K n r))).inv ≫ f.appTop).hom)
+        (coordinate K n r ij) = 0) :
+    ∃! g : X ⟶ Spec (.of (CoordinateRing K n (r + 1))),
+      g ≫ (unitriangularStageSuccessor K n r).hom.hom.left = f :=
+  unitriangularStageSuccessor_existsUnique_of_coordinates K n r f
+    (fun ij _ => hcoord ij)
 
 /-- The successor stage is the fiber over the unit of the superdiagonal
 coordinate product in `Over (Spec K)`, including nonaffine test schemes.
@@ -154,7 +179,7 @@ theorem unitriangularStageCoordinateMap_isPullback (hr : 1 ≤ r) :
     have hclosed : IsClosedImmersion
         (unitriangularStageSuccessor K n r).hom.hom.left :=
       unitriangularStageSuccessor_isClosedImmersion K n r
-    haveI : Mono (unitriangularStageSuccessor K n r).hom.hom.left :=
+    have : Mono (unitriangularStageSuccessor K n r).hom.hom.left :=
       (IsClosedImmersion.iff_isFinite_and_mono _).mp hclosed |>.2
     exact (cancel_mono (unitriangularStageSuccessor K n r).hom.hom.left).mp
       (congrArg Over.Hom.left hfirst)
@@ -227,7 +252,8 @@ theorem unitriangularStageCoordinateMap_isPullback (hr : 1 ≤ r) :
           RingHom.comp_apply] using heval'
       simpa only [hcoordinate, hzero, map_zero] using hcoordinateValue
     obtain ⟨factor, hfactor, _⟩ :=
-      unitriangularStageSuccessor_existsUnique_scheme K n r hr stagePoint.left hcoord
+      unitriangularStageSuccessor_existsUnique_of_coordinates K n r stagePoint.left
+        (fun ij _ => hcoord ij)
     have hbase : factor ≫ (unitriangularStageUnderlyingScheme K n (r + 1)).hom =
         T.hom := by
       calc

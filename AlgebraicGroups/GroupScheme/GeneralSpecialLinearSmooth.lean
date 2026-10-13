@@ -166,7 +166,6 @@ theorem specialLinearNormalizationSection_comp_quotient (pivot : n) :
   exact congrArg (fun g : Matrix.GeneralLinearGroup n
       (SpecialLinearCoordinateRing.CoordinateRing K n) ↦ g i j) normalized_quotient
 
-set_option linter.style.haveILetI false
 
 /-- The finite special linear coordinate algebra is smooth over any commutative
 base. For a nonempty index its quotient splits as an algebra map via left
@@ -179,7 +178,7 @@ instance specialLinearCoordinateRing_smooth :
     classical
     cases isEmpty_or_nonempty n with
     | inl emptyIndex =>
-      letI : IsEmpty n := emptyIndex
+      let : IsEmpty n := emptyIndex
       have determinant_one : (matrix K n).det = 1 := by
         exact Matrix.det_isEmpty
       have ideal_bot : SpecialLinearCoordinateRing.determinantOneIdeal K n = ⊥ := by

@@ -431,7 +431,6 @@ lemma relativeFppfQuotientPresheafMap_isLocallyInjective
   Presheaf.isLocallyInjective_of_injective _ _
     (relativeFppfQuotientPresheafMap_app_injective q h)
 
-set_option linter.style.haveILetI false in
 lemma relativeFppfQuotientPresheafMap_isLocallySurjective
     (h : IsPullback i (toUnit H) q η[Q])
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
@@ -441,22 +440,21 @@ lemma relativeFppfQuotientPresheafMap_isLocallySurjective
       (relativeFppfYonedaMapHom q) :=
     relativeFppfYonedaMapHom_isLocallySurjective q
   rw [← relativeFppfQuotientPresheafMk_comp_map q h] at hsurj
-  letI : Presheaf.IsLocallySurjective (relativeFppfTopology S)
+  let : Presheaf.IsLocallySurjective (relativeFppfTopology S)
       (relativeFppfQuotientPresheafMk i ≫
         relativeFppfQuotientPresheafMap q h) := hsurj
   exact Presheaf.isLocallySurjective_of_isLocallySurjective _
     (relativeFppfQuotientPresheafMk i)
     (relativeFppfQuotientPresheafMap q h)
 
-set_option linter.style.haveILetI false in
 lemma relativeFppfQuotientPresheafMap_W
     (h : IsPullback i (toUnit H) q η[Q])
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
     (relativeFppfTopology S).W (relativeFppfQuotientPresheafMap q h) := by
-  letI : Presheaf.IsLocallyInjective (relativeFppfTopology S)
+  let : Presheaf.IsLocallyInjective (relativeFppfTopology S)
       (relativeFppfQuotientPresheafMap q h) :=
     relativeFppfQuotientPresheafMap_isLocallyInjective q h
-  letI : Presheaf.IsLocallySurjective (relativeFppfTopology S)
+  let : Presheaf.IsLocallySurjective (relativeFppfTopology S)
       (relativeFppfQuotientPresheafMap q h) :=
     relativeFppfQuotientPresheafMap_isLocallySurjective q h
   exact (relativeFppfTopology S).W_of_isLocallyBijective _
@@ -480,7 +478,6 @@ lemma relativeFppfQuotientMk_comp_map
   apply Sheaf.hom_ext
   exact relativeFppfQuotientPresheafMk_comp_map q h
 
-set_option linter.style.haveILetI false in
 /-- If `H` is the kernel of a supplied fppf morphism `q : G ⟶ Q`, the
 induced map from the relative fppf quotient sheaf to the sheaf represented by
 `Q` is an isomorphism. The kernel pullback gives pointwise injectivity; the
@@ -494,14 +491,14 @@ lemma relativeFppfQuotientMap_isIso
   let f := relativeFppfQuotientPresheafMap q h
   have hw : (relativeFppfTopology S).W f :=
     relativeFppfQuotientPresheafMap_W q h
-  letI : IsIso ((presheafToSheaf (relativeFppfTopology S)
+  let : IsIso ((presheafToSheaf (relativeFppfTopology S)
       GrpCat.{u + 1}).map f) :=
     ((relativeFppfTopology S).W_iff f).1 hw
-  letI : IsIso (sheafifyMap (relativeFppfTopology S) f) := by
+  let : IsIso (sheafifyMap (relativeFppfTopology S) f) := by
     change IsIso ((sheafToPresheaf (relativeFppfTopology S) GrpCat.{u + 1}).map
       ((presheafToSheaf (relativeFppfTopology S) GrpCat.{u + 1}).map f))
     infer_instance
-  letI : IsIso (sheafifyLift (relativeFppfTopology S) (𝟙 _)
+  let : IsIso (sheafifyLift (relativeFppfTopology S) (𝟙 _)
       (relativeFppfYoneda Q).property) := by
     rw [← isoSheafify_inv]
     infer_instance

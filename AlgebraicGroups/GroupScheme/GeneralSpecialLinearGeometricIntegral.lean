@@ -39,7 +39,6 @@ after extension to every field, so both morphisms are geometrically integral.
 @[expose] public section
 
 set_option warningAsError true
-set_option linter.style.haveILetI false
 
 noncomputable section
 
@@ -92,7 +91,7 @@ private theorem specialLinearSection_split :
   unfold specialLinearSection
   split_ifs with nonemptyIndex
   · exact specialLinearNormalizationSection_comp_quotient K n _
-  · letI : IsEmpty n := ⟨fun index => nonemptyIndex ⟨index⟩⟩
+  · let : IsEmpty n := ⟨fun index => nonemptyIndex ⟨index⟩⟩
     rw [← emptySpecialLinearEquiv_quotient K n]
     exact AlgEquiv.comp_symm (emptySpecialLinearEquiv K n)
 
@@ -136,7 +135,7 @@ private theorem determinant_map (F : Type u) [CommRing F] [Algebra K F] :
 private theorem generalLinearTensor_isDomain (F : Type u) [Field F] [Algebra K F] :
     IsDomain (F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n) := by
   let polynomialEquiv := MvPolynomial.algebraTensorAlgEquiv (σ := n × n) K F
-  haveI : IsDomain (F ⊗[K] GeneralLinearCoordinateRing.PolynomialRing K n) :=
+  have : IsDomain (F ⊗[K] GeneralLinearCoordinateRing.PolynomialRing K n) :=
     polynomialEquiv.injective.isDomain polynomialEquiv.toRingHom
   have determinant_ne : (1 : F) ⊗ₜ[K] GeneralLinearCoordinateRing.determinant K n ≠ 0 := by
     intro equalZero
@@ -148,7 +147,7 @@ private theorem generalLinearTensor_isDomain (F : Type u) [Field F] [Algebra K F
         one_smul, determinant_map K n F]
     rw [mappedDet, map_zero] at mapped
     exact (Matrix.det_mvPolynomialX_ne_zero n F) mapped
-  haveI : IsDomain (Localization.Away
+  have : IsDomain (Localization.Away
       ((1 : F) ⊗ₜ[K] GeneralLinearCoordinateRing.determinant K n)) :=
     Localization.Away.isDomain determinant_ne
   let localizationEquiv := IsLocalization.Away.tensorProductEquivTMulRight K F
@@ -158,7 +157,7 @@ private theorem generalLinearTensor_isDomain (F : Type u) [Field F] [Algebra K F
 
 private theorem specialLinearTensor_isDomain (F : Type u) [Field F] [Algebra K F] :
     IsDomain (F ⊗[K] SpecialLinearCoordinateRing.CoordinateRing K n) := by
-  haveI : IsDomain (F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n) :=
+  have : IsDomain (F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n) :=
     generalLinearTensor_isDomain K n F
   let quotientTensor :
       F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[F]
@@ -183,7 +182,7 @@ private theorem integral_closedUnderIsomorphisms :
     ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral := by
   constructor
   intro X Y iso integral
-  letI : IsIntegral X := integral
+  let : IsIntegral X := integral
   exact IsIntegral.of_isIso iso.hom
 
 /-- Every geometric fiber of the genuine finite general linear structure morphism
@@ -193,7 +192,7 @@ mathlib's polynomial-tensor and localization equivalences, geometric-fiber
 criterion and affine-Spec pullback isomorphism. -/
 instance generalLinearGroupUnderlyingScheme_geometricallyIntegral :
     GeometricallyIntegral (generalLinearGroupUnderlyingScheme K n).hom := by
-  letI : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
+  let : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
     integral_closedUnderIsomorphisms
   refine ⟨(geometrically_iff_of_commRing_of_isClosedUnderIsomorphisms
     (P := IsIntegral)).2 ?_⟩
@@ -202,9 +201,9 @@ instance generalLinearGroupUnderlyingScheme_geometricallyIntegral :
     (Spec.map (CommRingCat.ofHom
       (algebraMap K (GeneralLinearCoordinateRing.CoordinateRing K n))))
     (Spec.map (CommRingCat.ofHom (algebraMap K F))))
-  haveI : IsDomain (F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n) :=
+  have : IsDomain (F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n) :=
     generalLinearTensor_isDomain K n F
-  haveI : IsDomain
+  have : IsDomain
       (GeneralLinearCoordinateRing.CoordinateRing K n ⊗[K] F) :=
     (Algebra.TensorProduct.comm K
       (GeneralLinearCoordinateRing.CoordinateRing K n) F).injective.isDomain
@@ -220,7 +219,7 @@ the explicit algebra-section identity and uses mathlib's geometric-fiber
 criterion and affine-Spec pullback isomorphism. -/
 instance specialLinearGroupUnderlyingScheme_geometricallyIntegral :
     GeometricallyIntegral (specialLinearGroupUnderlyingScheme K n).hom := by
-  letI : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
+  let : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
     integral_closedUnderIsomorphisms
   refine ⟨(geometrically_iff_of_commRing_of_isClosedUnderIsomorphisms
     (P := IsIntegral)).2 ?_⟩
@@ -229,9 +228,9 @@ instance specialLinearGroupUnderlyingScheme_geometricallyIntegral :
     (Spec.map (CommRingCat.ofHom
       (algebraMap K (SpecialLinearCoordinateRing.CoordinateRing K n))))
     (Spec.map (CommRingCat.ofHom (algebraMap K F))))
-  haveI : IsDomain (F ⊗[K] SpecialLinearCoordinateRing.CoordinateRing K n) :=
+  have : IsDomain (F ⊗[K] SpecialLinearCoordinateRing.CoordinateRing K n) :=
     specialLinearTensor_isDomain K n F
-  haveI : IsDomain
+  have : IsDomain
       (SpecialLinearCoordinateRing.CoordinateRing K n ⊗[K] F) :=
     (Algebra.TensorProduct.comm K
       (SpecialLinearCoordinateRing.CoordinateRing K n) F).injective.isDomain

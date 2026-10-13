@@ -255,7 +255,6 @@ lemma rationalComponentGroupEquivConnectedComponents_symm_point
   rw [Equiv.apply_symm_apply]
   exact (rationalComponentGroupEquivConnectedComponents_mk f x).symm
 
-set_option maxHeartbeats 800000 in
 lemma groupSchemePoint_comp_componentSchemeMap (x : groupSchemePoints f) :
     x ≫ componentSchemeMap f =
       finiteConstantGroupSchemePoint K (rationalComponentGroup f)
@@ -581,7 +580,6 @@ lemma identityComponentι_comp_componentSchemeMap :
   rw [hOne] at h
   exact h
 
-set_option maxHeartbeats 800000 in
 /-- The identity-component inclusion is the scheme-theoretic kernel of the
 component map: its square over the unit of the finite constant component group
 scheme is a pullback. This is the kernel assertion of Milne,

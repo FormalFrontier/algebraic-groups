@@ -116,9 +116,9 @@ theorem stageCoordinateAlgHom_eq_productPullback (hr : 1 ≤ r)
       (stageProductCoordinatePullback K n r hr).comp
         (additiveProductCoordinateAlgHom K
           (Matrix.UnitriangularGroup.superdiagonalIndex n r) ij) := by
-  letI : AddCommMonoid (CoordinateRing K n r) :=
+  let : AddCommMonoid (CoordinateRing K n r) :=
     (inferInstance : CommRing (CoordinateRing K n r)).toCommSemiring.toAddCommMonoid
-  letI : Module K (CoordinateRing K n r) := Algebra.toModule
+  let : Module K (CoordinateRing K n r) := Algebra.toModule
   apply SymmetricAlgebra.algHom_ext (R := K) (M := K)
     (A := CoordinateRing K n r)
   ext

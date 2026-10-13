@@ -75,7 +75,14 @@ third-party and AI involvement.
   of any coalgebra over a commutative semiring is an idempotent scalar ideal
   `I` satisfying `I • ⊤ = ⊤` on the coalgebra. No counit surjectivity, freeness
   or finite generation is assumed; [examples](AlgebraicGroupsTest/Algebra/Coalgebra/CounitRange.lean)
-  include a proper nonzero range over `ZMod 6`.
+  include proper nonzero ranges over `ZMod 6`. Tensor products multiply
+  counit ranges; orthogonal supports can give a subsingleton tensor product
+  even when both coalgebras are nontrivial.
+  Under extension of scalars
+  from `R` to a commutative `R`-algebra `S`, the counit ideal of `S ⊗[R] C` is
+  `Ideal.map (algebraMap R S)` of the original counit ideal, without flatness
+  or projectivity hypotheses. See [scalar extension](AlgebraicGroups/Algebra/Coalgebra/BaseChange.lean)
+  and [clients](AlgebraicGroupsTest/Algebra/Coalgebra/BaseChange.lean).
 - **Hopf coefficient matrix units.** Over a commutative scalar semiring, a
   finite square matrix `M` in a possibly noncommutative semiring Hopf algebra,
   with `Δ(M i j) = ∑ k, M i k ⊗ M k j` and `ε(M i j) = δᵢⱼ`, is a unit
@@ -99,6 +106,12 @@ third-party and AI involvement.
   multiplication on `C`, field hypothesis, basis or nontriviality is required.
   See the [equivalence API](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean)
   and [concrete clients](AlgebraicGroupsTest/Algebra/Coalgebra/GroupLikeHom.lean).
+- **Antipode compatibility of bialgebra maps.** Every bialgebra homomorphism
+  between Hopf algebras over a commutative semiring commutes with their
+  antipodes; the algebras need not be commutative or have additive inverses.
+  See the [homomorphism API](AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean)
+  and [semiring group-algebra examples](AlgebraicGroupsTest/Algebra/HopfAlgebra/Hom.lean).
+
 - **Finite additive products over a ring.** For arbitrary commutative `K`
   and finite `D`, the *underlying* over-scheme of the literal categorical
   product of additive group schemes is affine `D`-space over `Spec K`.
@@ -255,6 +268,19 @@ geometry and dimension above are separately scoped results.
 ## Modules and examples
 
 Import `AlgebraicGroups` for the aggregate or a focused producer linked above.
+For images under coalgebra homomorphisms over a field `K`, import
+[`AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map`](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Map.lean).
+`Subcoalgebra.map f D` has underlying submodule
+`Submodule.map f.toLinearMap D.toSubmodule`. Image membership means
+`∃ x ∈ D, f x = y`; containment in a target submodule means every member
+of `D` maps into it. The API also gives identity and composition laws,
+monotonicity for containment of underlying submodules, preservation of
+finite generation, and zero reflection: the image carrier is zero exactly
+when the source carrier is zero, even for a noninjective homomorphism.
+The [homomorphism API](AlgebraicGroups/Algebra/Coalgebra/Hom.lean) gives the
+underlying linear-map zero criterion over any commutative scalar semiring;
+only the source needs the coalgebra laws.
+
 For right comodules, the focused import is
 `AlgebraicGroups.Algebra.Coalgebra.RightComodule`. Given `X : Coalgebra.RightComodule R C M`
 and `hs : s.Finite`, use `X.exists_fg_subcomodule_of_finite hs` when
@@ -285,8 +311,10 @@ statements on generic rings and boundary cases. For a starting path, use
 [finite diagonal products](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md)
 and [native matrix groups](AlgebraicGroups/GroupTheory/UpperTriangular/README.md).
 For a broader survey of additional algebra, component and quotient APIs, see
-the [mathematical topic guide](docs/MATHEMATICS.md). The focused guides give
-declarations, proofs and limitations.
+the [mathematical topic guide](docs/MATHEMATICS.md), including
+[antipode involutivity](docs/MATHEMATICS.md#antipodes-of-commutative-hopf-algebras)
+over commutative semirings. The focused guides give declarations, proofs and
+limitations.
 
 ## References
 

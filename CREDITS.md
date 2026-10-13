@@ -16,7 +16,7 @@ Artin–Schreier and roots-of-unity work; the original proofs remain credited
 to their contributors.
 
 Formal Frontier Agents developed the closed unitriangular-stage Hopf quotients,
-native stage schemes, polynomial coordinates and underlying affine-space
+stage schemes, polynomial coordinates and underlying affine-space
 comparisons. Distinct agents contributed the Lean implementations and proofs;
 Lattice contributed mathematical planning and corrections. This contribution
 credit does not claim the underlying unitriangular mathematics originated here.
@@ -70,6 +70,9 @@ The idempotent principal ideal coalgebra uses Ali Ramsey and Eric Wieser’s
 Mathlib coalgebra laws and Finsupp coalgebra, Christopher Hoskin’s idempotent
 predicate API, and Mathlib’s ideal and tensor-product interfaces. Formal
 Frontier Agents contributed its construction and characteristic formulas.
+Counit ideals under scalar extension use Amelia Livingston and Andrew Yang’s
+Mathlib tensor-product coalgebra, Antoine Chambert-Loir’s tensor-range theorem,
+and Mathlib’s submodule scalar-extension and ideal-image APIs.
 
 ## Mathematical sources
 
@@ -147,6 +150,13 @@ bialgebra equivalence, convolution and Hopf–Spec constructions. The scalar
 comparison credited above also uses Merten's tensor cancellation, and
 `Algebra.TensorProduct.lid` uses Kevin Buzzard's Mathlib4 port; Kim Morrison
 and Johan Commelin contributed to the wider tensor-product maps module.
+Antipode involutivity uses the convolution group of algebra homomorphisms
+from Mathlib's `HopfAlgebra.Convolution`, by Yaël Dillies, Michał Mrugała
+and Yunzhou Xie, with Monica Omar's `WithConv` and Mathlib's group-inversion
+API. Kim Morrison's categorical commutative-Hopf-object antipode identity
+is a related prior formalization; the semiring algebra theorem here extracts
+the identity directly from the existing convolution group. Its group-algebra
+examples use Amelia Livingston's canonical Hopf instance and antipode formula.
 Other reused Mathlib APIs include Hopf quotients, matrix determinant
 and group-object operations, localization and faithfully flat descent,
 connected components, polynomial Krull dimension and standard smoothness.

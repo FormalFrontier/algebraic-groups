@@ -57,7 +57,6 @@ base; no product dimension formula is asserted here.
 @[expose] public section
 
 set_option warningAsError true
-set_option linter.style.haveILetI false
 set_option backward.isDefEq.respectTransparency false
 
 noncomputable section
@@ -73,11 +72,11 @@ variable (K : Type u) [CommRing K]
 
 private instance multiplicativeGroupCoordinateRing_standardSmooth :
     Algebra.IsStandardSmooth K (multiplicativeGroupCoordinateRing K) := by
-  letI : Algebra.IsStandardSmooth K K[X] :=
+  let : Algebra.IsStandardSmooth K K[X] :=
     Algebra.IsStandardSmooth.of_algEquiv (MvPolynomial.uniqueAlgEquiv K PUnit.{1})
-  letI : Algebra.IsStandardSmooth K[X] (LaurentPolynomial K) :=
+  let : Algebra.IsStandardSmooth K[X] (LaurentPolynomial K) :=
     Algebra.IsStandardSmooth.localization_away (Polynomial.X : K[X])
-  letI : IsScalarTower K K[X] (LaurentPolynomial K) :=
+  let : IsScalarTower K K[X] (LaurentPolynomial K) :=
     .of_algebraMap_eq' (by ext; simp [LaurentPolynomial.algebraMap_apply,
       LaurentPolynomial.algebraMap_eq_toLaurent, Polynomial.toLaurent_C])
   exact Algebra.IsStandardSmooth.trans K K[X] (LaurentPolynomial K)
@@ -105,17 +104,17 @@ identifies the scalar extension of its Laurent coordinate algebra with a
 group algebra over a field using Mathlib's `AddMonoidAlgebra.scalarTensorEquiv`. -/
 instance multiplicativeGroupUnderlyingScheme_geometricallyIntegral :
     GeometricallyIntegral (multiplicativeGroupUnderlyingScheme K).hom := by
-  letI : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
-    ⟨fun iso integral ↦ by letI := integral; exact IsIntegral.of_isIso iso.hom⟩
+  let : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
+    ⟨fun iso integral ↦ by let := integral; exact IsIntegral.of_isIso iso.hom⟩
   refine ⟨(geometrically_iff_of_commRing_of_isClosedUnderIsomorphisms
     (P := IsIntegral)).2 ?_⟩
   intro F _ _
   change IsIntegral (pullback
     (Spec.map (CommRingCat.ofHom (algebraMap K (multiplicativeGroupCoordinateRing K))))
     (Spec.map (CommRingCat.ofHom (algebraMap K F))))
-  haveI : IsDomain (F ⊗[K] multiplicativeGroupCoordinateRing K) :=
+  have : IsDomain (F ⊗[K] multiplicativeGroupCoordinateRing K) :=
     multiplicativeGroupTensor_isDomain K F
-  haveI : IsDomain (multiplicativeGroupCoordinateRing K ⊗[K] F) :=
+  have : IsDomain (multiplicativeGroupCoordinateRing K ⊗[K] F) :=
     (Algebra.TensorProduct.comm K (multiplicativeGroupCoordinateRing K) F).injective.isDomain
       (Algebra.TensorProduct.comm K (multiplicativeGroupCoordinateRing K) F).toRingHom
   exact IsIntegral.of_isIso
@@ -130,21 +129,21 @@ private theorem product_geometricallyIntegral {S : Scheme.{u}} (X Y : Over S)
     [Smooth X.hom] [Smooth Y.hom]
     [GeometricallyIntegral X.hom] [GeometricallyIntegral Y.hom] :
     GeometricallyIntegral (X ⊗ Y).hom := by
-  haveI : Smooth (X ⊗ Y).hom := product_smooth X Y
+  have : Smooth (X ⊗ Y).hom := product_smooth X Y
   rw [Over.tensorObj_hom]
-  haveI : UniversallyOpen X.hom := inferInstance
-  haveI : UniversallyOpen Y.hom := inferInstance
-  haveI : GeometricallyIrreducible (pullback.fst X.hom Y.hom ≫ X.hom) :=
+  have : UniversallyOpen X.hom := inferInstance
+  have : UniversallyOpen Y.hom := inferInstance
+  have : GeometricallyIrreducible (pullback.fst X.hom Y.hom ≫ X.hom) :=
     GeometricallyIrreducible.comp _ _
   exact GeometricallyIntegral.of_geometricallyReduced_of_geometricallyIrreducible _
 
 private theorem smooth_of_iso {S : Scheme.{u}} {X Y : Over S}
     (iso : X ≅ Y) [Smooth Y.hom] : Smooth X.hom := by
-  haveI : IsIso iso.hom := inferInstance
-  haveI : IsIso iso.hom.left := by
+  have : IsIso iso.hom := inferInstance
+  have : IsIso iso.hom.left := by
     change IsIso ((Over.forget S).map iso.hom)
     infer_instance
-  letI : MorphismProperty.RespectsIso (@Smooth) :=
+  let : MorphismProperty.RespectsIso (@Smooth) :=
     MorphismProperty.IsStableUnderBaseChange.respectsIso
   have h : Smooth (iso.hom.left ≫ Y.hom) :=
     (MorphismProperty.cancel_left_of_respectsIso
@@ -153,11 +152,11 @@ private theorem smooth_of_iso {S : Scheme.{u}} {X Y : Over S}
 
 private theorem geometricallyIntegral_of_iso {S : Scheme.{u}} {X Y : Over S}
     (iso : X ≅ Y) [GeometricallyIntegral Y.hom] : GeometricallyIntegral X.hom := by
-  haveI : IsIso iso.hom := inferInstance
-  haveI : IsIso iso.hom.left := by
+  have : IsIso iso.hom := inferInstance
+  have : IsIso iso.hom.left := by
     change IsIso ((Over.forget S).map iso.hom)
     infer_instance
-  letI : MorphismProperty.RespectsIso (@GeometricallyIntegral) :=
+  let : MorphismProperty.RespectsIso (@GeometricallyIntegral) :=
     MorphismProperty.IsStableUnderBaseChange.respectsIso
   have h : GeometricallyIntegral (iso.hom.left ≫ Y.hom) :=
     (MorphismProperty.cancel_left_of_respectsIso
@@ -196,12 +195,12 @@ private def optionProductIso {S : Scheme.{u}} {index : Type u} [Fintype index]
 
 private theorem identity_geometricallyIntegral :
     GeometricallyIntegral (𝟙 (Spec (.of K))) := by
-  letI : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
-    ⟨fun iso integral ↦ by letI := integral; exact IsIntegral.of_isIso iso.hom⟩
+  let : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
+    ⟨fun iso integral ↦ by let := integral; exact IsIntegral.of_isIso iso.hom⟩
   refine ⟨(geometrically_iff_of_commRing_of_isClosedUnderIsomorphisms
     (P := IsIntegral)).2 ?_⟩
   intro F _ _
-  haveI : IsIso (pullback.snd (𝟙 (Spec (.of K)))
+  have : IsIso (pullback.snd (𝟙 (Spec (.of K)))
       (Spec.map (CommRingCat.ofHom (algebraMap K F)))) := inferInstance
   exact IsIntegral.of_isIso
     (inv (pullback.snd (𝟙 (Spec (.of K)))
@@ -212,7 +211,7 @@ private theorem finiteMultiplicativeProductGeometry (index : Type u) [Finite ind
       GeometricallyIntegral
         (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom := by
   classical
-  letI : Fintype index := Fintype.ofFinite index
+  let : Fintype index := Fintype.ofFinite index
   refine Fintype.induction_empty_option
     (P := fun (index : Type u) [Fintype index] =>
       Smooth (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom ∧
@@ -220,12 +219,12 @@ private theorem finiteMultiplicativeProductGeometry (index : Type u) [Finite ind
         (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom)
     ?_ ?_ ?_ index
   · intro source target _ equivalence ih
-    letI : Fintype source := Fintype.ofEquiv target equivalence.symm
+    let : Fintype source := Fintype.ofEquiv target equivalence.symm
     let iso : (∏ᶜ fun _ : source => multiplicativeGroupUnderlyingScheme K) ≅
         (∏ᶜ fun _ : target => multiplicativeGroupUnderlyingScheme K) :=
       Pi.reindex equivalence (fun _ : target => multiplicativeGroupUnderlyingScheme K)
-    letI : Smooth (∏ᶜ fun _ : source => multiplicativeGroupUnderlyingScheme K).hom := ih.1
-    letI : GeometricallyIntegral
+    let : Smooth (∏ᶜ fun _ : source => multiplicativeGroupUnderlyingScheme K).hom := ih.1
+    let : GeometricallyIntegral
         (∏ᶜ fun _ : source => multiplicativeGroupUnderlyingScheme K).hom := ih.2
     exact ⟨smooth_of_iso iso.symm, geometricallyIntegral_of_iso iso.symm⟩
   · let terminal : IsTerminal (∏ᶜ fun _ : PEmpty.{u+1} =>
@@ -238,22 +237,22 @@ private theorem finiteMultiplicativeProductGeometry (index : Type u) [Finite ind
       IsTerminal.ofUniqueHom (fun Y => Over.homMk Y.hom)
         (fun Y morphism => Over.OverMorphism.ext (by simpa using morphism.w))
     let iso := terminal.uniqueUpToIso baseTerminal
-    haveI : Smooth (Over.mk (𝟙 (Spec (.of K)))).hom := by
+    have : Smooth (Over.mk (𝟙 (Spec (.of K)))).hom := by
       change Smooth (𝟙 (Spec (.of K)))
       infer_instance
-    haveI : GeometricallyIntegral (Over.mk (𝟙 (Spec (.of K)))).hom :=
+    have : GeometricallyIntegral (Over.mk (𝟙 (Spec (.of K)))).hom :=
       identity_geometricallyIntegral K
     exact ⟨smooth_of_iso iso, geometricallyIntegral_of_iso iso⟩
   · intro smaller _ ih
     let iso := optionProductIso
       (fun _ : Option smaller => multiplicativeGroupUnderlyingScheme K)
-    haveI : Smooth (∏ᶜ fun _ : smaller => multiplicativeGroupUnderlyingScheme K).hom := ih.1
-    haveI : GeometricallyIntegral
+    have : Smooth (∏ᶜ fun _ : smaller => multiplicativeGroupUnderlyingScheme K).hom := ih.1
+    have : GeometricallyIntegral
         (∏ᶜ fun _ : smaller => multiplicativeGroupUnderlyingScheme K).hom := ih.2
-    haveI : Smooth (multiplicativeGroupUnderlyingScheme K ⊗
+    have : Smooth (multiplicativeGroupUnderlyingScheme K ⊗
         (∏ᶜ fun _ : smaller => multiplicativeGroupUnderlyingScheme K)).hom :=
       product_smooth _ _
-    haveI : GeometricallyIntegral (multiplicativeGroupUnderlyingScheme K ⊗
+    have : GeometricallyIntegral (multiplicativeGroupUnderlyingScheme K ⊗
         (∏ᶜ fun _ : smaller => multiplicativeGroupUnderlyingScheme K)).hom :=
       product_geometricallyIntegral _ _
     exact ⟨smooth_of_iso iso, geometricallyIntegral_of_iso iso⟩
@@ -270,7 +269,7 @@ transported through the existing finite-product fan from multiplicative groups;
 compare Milne, *Algebraic Groups* (2017), item 2.9, over a field. -/
 instance diagonalGroupUnderlyingScheme_smooth (index : Type u) [Fintype index]
     [DecidableEq index] : Smooth (diagonalGroupUnderlyingScheme K index).hom := by
-  haveI : Smooth (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom :=
+  have : Smooth (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom :=
     (finiteMultiplicativeProductGeometry K index).1
   exact smooth_of_iso (diagonalUnderlyingProductIso K index)
 
@@ -281,7 +280,7 @@ geometric reduction) with geometric irreducibility; Milne, *Algebraic Groups*
 instance diagonalGroupUnderlyingScheme_geometricallyIntegral (index : Type u)
     [Fintype index] [DecidableEq index] :
     GeometricallyIntegral (diagonalGroupUnderlyingScheme K index).hom := by
-  haveI : GeometricallyIntegral
+  have : GeometricallyIntegral
       (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom :=
     (finiteMultiplicativeProductGeometry K index).2
   exact geometricallyIntegral_of_iso (diagonalUnderlyingProductIso K index)
@@ -306,7 +305,7 @@ give the field-case splitting; no direct-product group law is claimed. -/
 instance upperTriangularGroupUnderlyingScheme_smooth
     (n : Type u) [Fintype n] [LinearOrder n] :
     Smooth (upperTriangularGroupUnderlyingScheme K n).hom := by
-  haveI : Smooth (unitriangularGroupUnderlyingScheme K n ⊗
+  have : Smooth (unitriangularGroupUnderlyingScheme K n ⊗
       diagonalGroupUnderlyingScheme K n).hom := product_smooth _ _
   exact smooth_of_iso (upperTriangularSplitIso K n).symm
 
@@ -317,14 +316,14 @@ integrality; the arbitrary-base fiber argument uses Mathlib's geometric APIs. -/
 instance upperTriangularGroupUnderlyingScheme_geometricallyIntegral
     (n : Type u) [Fintype n] [LinearOrder n] :
     GeometricallyIntegral (upperTriangularGroupUnderlyingScheme K n).hom := by
-  haveI : GeometricallyIntegral (unitriangularGroupUnderlyingScheme K n ⊗
+  have : GeometricallyIntegral (unitriangularGroupUnderlyingScheme K n ⊗
       diagonalGroupUnderlyingScheme K n).hom := product_geometricallyIntegral _ _
   exact geometricallyIntegral_of_iso (upperTriangularSplitIso K n).symm
 
 private theorem integral_of_relative [IsDomain K] (X : Over (Spec (.of K)))
     [Smooth X.hom] [GeometricallyIntegral X.hom] : IsIntegral X.left := by
-  haveI : IsReduced X.left := Smooth.isReduced_of_isDomain X.hom
-  haveI : IrreducibleSpace X.left :=
+  have : IsReduced X.left := Smooth.isReduced_of_isDomain X.hom
+  have : IrreducibleSpace X.left :=
     GeometricallyIrreducible.irreducibleSpace (f := X.hom) X.hom.isOpenMap
   exact isIntegral_of_irreducibleSpace_of_isReduced _
 

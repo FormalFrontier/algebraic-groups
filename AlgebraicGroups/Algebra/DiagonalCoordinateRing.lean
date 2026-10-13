@@ -102,7 +102,6 @@ theorem universal_detInverse :
   rw [hdiag, Matrix.det_diagonal] at hm
   rwa [mul_comm] at hm
 
-set_option linter.style.haveILetI false in
 /-- The defining ideal is stable under counit, coproduct and antipode, by
 the GL coordinate formulas and Mathlib's `Ideal.IsHopfIdeal` criterion. -/
 theorem ideal_isHopfIdeal_proof : (ideal K ι).IsHopfIdeal K := by
@@ -111,7 +110,7 @@ theorem ideal_isHopfIdeal_proof : (ideal K ι).IsHopfIdeal K := by
       CoordinateRing K ι ⊗[K] CoordinateRing K ι :=
     (Algebra.TensorProduct.map q q).comp
       (Bialgebra.comulAlgHom K (GeneralLinearCoordinateRing.CoordinateRing K ι))
-  letI : CommRing (CoordinateRing K ι ⊗[K] CoordinateRing K ι) := inferInstance
+  let : CommRing (CoordinateRing K ι ⊗[K] CoordinateRing K ι) := inferInstance
   have counit_gen (i j : ι) :
       (Bialgebra.counitAlgHom K (GeneralLinearCoordinateRing.CoordinateRing K ι))
         (relation K ι i j) = 0 := by

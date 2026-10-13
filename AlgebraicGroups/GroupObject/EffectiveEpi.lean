@@ -163,14 +163,13 @@ open CategoryTheory
 
 variable {K : Type u} [Field K]
 
-set_option linter.style.haveILetI false in
 /-- The map from a nonempty quasi-compact scheme over a field to the terminal object of the
 over-category is an effective epimorphism. -/
 noncomputable instance effectiveEpi_toUnit_of_nonempty (H : Over (Spec (.of K)))
     [Nonempty H.left] [QuasiCompact H.hom] : EffectiveEpi (toUnit H) := by
   let _ : Surjective H.hom :=
     ⟨Function.surjective_to_subsingleton (α := H.left) (β := Spec (.of K)) _⟩
-  haveI : EffectiveEpi (toUnit H).left := by
+  have : EffectiveEpi (toUnit H).left := by
     change EffectiveEpi H.hom
     infer_instance
   infer_instance

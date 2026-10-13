@@ -1,8 +1,8 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-# Prime-power exponents of native upper-unitriangular groups
+# Prime-power exponents of upper-unitriangular groups
 
 Import `AlgebraicGroups.GroupTheory.UnitriangularExponent` to work with the
-existing `Matrix.UnitriangularGroup (Fin n) R`, a native matrix point group.
+existing `Matrix.UnitriangularGroup (Fin n) R`, a matrix point group.
 These results require no group-scheme construction or source-specific record.
 
 ## Public API
@@ -11,10 +11,10 @@ These results require no group-scheme construction or source-specific record.
   linearly ordered `ι`, `[CommRing R]`, upper-triangular `N` with zero diagonal,
   `N ^ Fintype.card ι = 0`. Empty indices and the zero ring are included.
 - `Matrix.UnitriangularGroup.pow_prime_pow_eq_one`: if `Nat.Prime p`,
-  `(p : R) = 0` and `n ≤ p ^ t`, every native `g` satisfies
+  `(p : R) = 0` and `n ≤ p ^ t`, every `g` satisfies
   `g ^ (p ^ t) = 1`, even at `n = 0` and over the zero ring.
 - `Matrix.UnitriangularGroup.exists_pow_ne_one_of_pos_lt`: for `[Nontrivial R]`
-  and `0 < q < n`, some native `g` satisfies `g ^ q ≠ 1`, independently of
+  and `0 < q < n`, some `g` satisfies `g ^ q ≠ 1`, independently of
   characteristic. The strict positive condition matters: `g ^ 0 = 1`.
 - `Matrix.UnitriangularGroup.forall_pow_prime_pow_eq_one_iff` and
   `Matrix.UnitriangularGroup.exponent_dvd_prime_pow_iff`: with `[Nontrivial R]`,
@@ -33,9 +33,9 @@ indices. A consecutive superdiagonal shift witnesses sharpness via the
 
 ## Build and examples
 
-The destination pins Lean `leanprover/lean4:v4.34.0-rc2`, mathlib
+The library uses Lean `leanprover/lean4:v4.34.0-rc2`, mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5`, and the official
-general-linear-groups release `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`.
+general-linear-groups release `8b3b07bf2744a870b53934542e4c5ed383765bd6`.
 Use the pinned toolchain and first fetch the matching mathlib cache before
 building the producer, ordinary-import client, or both default targets:
 

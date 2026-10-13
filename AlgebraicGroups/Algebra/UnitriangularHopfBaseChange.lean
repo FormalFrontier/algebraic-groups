@@ -6,7 +6,7 @@ module
 
 public import AlgebraicGroups.Algebra.UnitriangularBaseChange
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
-public import Mathlib.RingTheory.HopfAlgebra.Convolution
+public import AlgebraicGroups.Algebra.HopfAlgebra.Hom
 
 /-!
 # Hopf compatibility of unitriangular coordinate base change
@@ -40,9 +40,9 @@ applies over arbitrary commutative base rings.
   `Mathlib.RingTheory.HopfAlgebra.TensorProduct` (canonical tensor structures).
 * Yaël Dillies, Mathlib, `Mathlib.RingTheory.Bialgebra.Equiv`
   (`BialgEquiv.ofAlgEquiv`).
-* Yaël Dillies, Mathlib, `Mathlib.RingTheory.Bialgebra.Convolution`
-  (`AlgHom.convMul_comp_bialgHom_distrib`) and
-  `Mathlib.RingTheory.HopfAlgebra.Convolution` (`AlgHom.antipode_id_cancel`).
+* Yaël Dillies, Mathlib, `Mathlib.RingTheory.Coalgebra.Convolution`
+  (linear-map convolution) and
+  `Mathlib.RingTheory.HopfAlgebra.Convolution` (the antipode inverse identities).
   Michał Mrugała and Yunzhou Xie contributed to the wider Hopf-algebra
   convolution formalization.
 -/
@@ -93,8 +93,8 @@ private theorem algHom_ext_entries (B : Type u) [CommRing B] [Algebra S B]
           (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)) =
         g (1 ⊗ₜ[R] quotient R ι
           (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2))) : f = g := by
-  letI : Algebra R B := Algebra.compHom B (algebraMap R S)
-  letI : IsScalarTower R S B := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  let : Algebra R B := Algebra.compHom B (algebraMap R S)
+  let : IsScalarTower R S B := IsScalarTower.of_algebraMap_eq fun _ => rfl
   apply Algebra.TensorProduct.ext_ring
   have hp : ((f.restrictScalars R).comp Algebra.TensorProduct.includeRight).comp
         (freeEquiv R ι).toAlgHom =
@@ -171,8 +171,6 @@ theorem baseChange_comul :
   rw [baseChange_tmul_entry, baseChange_tmul_entry]
   simp only [map_one, one_mul]
 
-set_option maxHeartbeats 1000000
-
 /-- The scalar-extension algebra equivalence built from Christian Merten's
 Mathlib `MvPolynomial.algebraTensorAlgEquiv` respects the two independently
 given bialgebra structures, using Yaël Dillies's `BialgEquiv.ofAlgEquiv`. -/
@@ -207,42 +205,10 @@ private theorem bialgHom_antipode (K : Type*) [CommRing K]
     [HopfAlgebra K A] [HopfAlgebra K B]
     (f : A →ₐc[K] B) (x : A) :
     f (HopfAlgebra.antipode K x) = HopfAlgebra.antipode K (f x) := by
-  open WithConv in
-  let g : A →ₐ[K] B := f
-  have hunit : ((1 : WithConv (B →ₐ[K] B)).ofConv.comp g) =
-      (1 : WithConv (A →ₐ[K] B)).ofConv := by
-    apply AlgHom.ext
-    intro a
-    change algebraMap K B (Coalgebra.counit (R := K) (f a)) =
-      algebraMap K B (Coalgebra.counit (R := K) a)
-    rw [CoalgHomClass.counit_comp_apply]
-  have hleft : (WithConv.toConv ((HopfAlgebra.antipodeAlgHom K B).comp g) *
-      WithConv.toConv g : WithConv (A →ₐ[K] B)) = 1 := by
-    apply WithConv.ofConv_injective
-    calc
-      (WithConv.toConv ((HopfAlgebra.antipodeAlgHom K B).comp g) *
-          WithConv.toConv g : WithConv (A →ₐ[K] B)).ofConv =
-          ((WithConv.toConv (HopfAlgebra.antipodeAlgHom K B) *
-            WithConv.toConv (AlgHom.id K B)) : WithConv (B →ₐ[K] B)).ofConv.comp g := by
-            rw [AlgHom.convMul_comp_bialgHom_distrib]
-            rfl
-      _ = (1 : WithConv (B →ₐ[K] B)).ofConv.comp g := by
-        rw [AlgHom.antipode_id_cancel]
-      _ = (1 : WithConv (A →ₐ[K] B)).ofConv := hunit
-  have hright : (WithConv.toConv g *
-      WithConv.toConv (g.comp (HopfAlgebra.antipodeAlgHom K A)) :
-        WithConv (A →ₐ[K] B)) = 1 := by
-    change WithConv.toConv g * (WithConv.toConv g)⁻¹ = 1
-    exact mul_inv_cancel _
-  have heq : (HopfAlgebra.antipodeAlgHom K B).comp g =
-      g.comp (HopfAlgebra.antipodeAlgHom K A) :=
-    WithConv.toConv_injective (left_inv_eq_right_inv hleft hright)
-  exact (AlgHom.congr_fun heq x).symm
+  exact f.map_antipode x
 
 /-- The antipodes of the existing scalar-extension and quotient Hopf algebras
-intertwine under the algebra base-change map. The proof uses Yaël Dillies's
-`AlgHom.convMul_comp_bialgHom_distrib` from Mathlib's bialgebra convolution and
-`AlgHom.antipode_id_cancel` from Hopf-algebra convolution. -/
+intertwine under the algebra base-change map, by `BialgHom.map_antipode`. -/
 theorem baseChange_antipode (x : S ⊗[R] CoordinateRing R ι) :
     baseChange R S ι
         ((@HopfAlgebraStruct.antipode S (S ⊗[R] CoordinateRing R ι)

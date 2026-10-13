@@ -305,7 +305,6 @@ lemma quotientMap_faithfullyFlat_of_hasExpectedAlgebra
   rw [← quotientInvariantIso_hom_comp s t]
   exact hcomp
 
-set_option linter.style.haveILetI false in
 /-- Bijectivity of the tensor comparison identifies the square of coordinate
 rings as a pushout over the invariant ring. -/
 lemma invariantSquare_isPushout_of_hasExpectedAlgebra
@@ -316,7 +315,7 @@ lemma invariantSquare_isPushout_of_hasExpectedAlgebra
       (CommRingCat.ofHom (coordinateInvariantRing s t).val.toRingHom)
       (CommRingCat.ofHom (coordinateInvariantRing s t).val.toRingHom)
       s.hom.appTop t.hom.appTop := by
-  letI : Algebra (coordinateInvariantRing s t) Γ(R.obj, ⊤) :=
+  let : Algebra (coordinateInvariantRing s t) Γ(R.obj, ⊤) :=
     (s.hom.appTop.hom.toIntAlgHom.comp
       (coordinateInvariantRing s t).val).toRingHom.toAlgebra
   let k := Ring.kernelPairComparison

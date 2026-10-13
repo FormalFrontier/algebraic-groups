@@ -39,7 +39,6 @@ open scoped TensorProduct
 
 namespace UnitriangularStageCoordinateRing
 
-set_option linter.style.haveILetI false
 
 variable (K : Type) [CommRing K] (n r : ℕ)
 
@@ -93,10 +92,10 @@ theorem coordinate_comul (hr : 1 ≤ r)
     (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
     Coalgebra.comul (R := K) (coordinate K n r ij) =
       coordinate K n r ij ⊗ₜ[K] 1 + 1 ⊗ₜ[K] coordinate K n r ij := by
-  letI : AddCommMonoid (CoordinateRing K n r) :=
+  let : AddCommMonoid (CoordinateRing K n r) :=
     (inferInstance : CommRing (CoordinateRing K n r)).toCommSemiring.toAddCommMonoid
-  letI : Module K (CoordinateRing K n r) := Algebra.toModule
-  letI : CommRing (CoordinateRing K n r ⊗[K] CoordinateRing K n r) := inferInstance
+  let : Module K (CoordinateRing K n r) := Algebra.toModule
+  let : CommRing (CoordinateRing K n r ⊗[K] CoordinateRing K n r) := inferInstance
   let q := quotient K n r
   have h := BialgHom.map_comp_comulAlgHom (quotientBialgHom K n r)
   have hentry := congrArg

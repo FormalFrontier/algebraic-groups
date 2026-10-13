@@ -21,6 +21,8 @@ open scoped CategoryTheory.MonObj TensorProduct
 universe u
 
 set_option maxHeartbeats 1000000 in
+-- Kernel normalization of the iterated pullback point morphisms and their coordinate
+-- evaluations needs extra heartbeats.
 example (R S T U : Type)
     [CommRing R] [CommRing S] [CommRing T] [CommRing U]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]

@@ -48,7 +48,6 @@ namespace Matrix
 
 variable (ι : Type u) [Fintype ι] [LinearOrder ι] (R : Type u) [CommRing R]
 
-set_option linter.style.haveILetI false in
 /-- The subgroup of native invertible matrices corresponding to Milne's
 upper-triangular `T_n` (item 2.9), over any commutative ring. Inversion uses
 Mathlib's triangular-inverse theorem, not nonvanishing of the determinant. -/
@@ -61,7 +60,7 @@ def upperTriangularSubgroup : Subgroup (GeneralLinearGroup ι R) where
     exact upperLeft.mul upperRight
   inv_mem' := by
     intro matrix upper
-    haveI : Invertible (matrix : Matrix ι ι R) := Units.invertible matrix
+    have : Invertible (matrix : Matrix ι ι R) := Units.invertible matrix
     change ((matrix⁻¹ : GeneralLinearGroup ι R) : Matrix ι ι R).IsUpperTriangular
     rw [GeneralLinearGroup.coe_inv]
     exact Matrix.blockTriangular_inv_of_blockTriangular upper

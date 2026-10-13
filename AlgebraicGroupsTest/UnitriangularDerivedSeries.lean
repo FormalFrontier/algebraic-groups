@@ -116,11 +116,10 @@ private theorem zero_index_counterexample :
     omega
   exact hnot (heq.symm.trans hcomm)
 
-set_option linter.style.haveILetI false in
 private theorem four_stops_at_two :
     derivedSeries (Matrix.UnitriangularGroup (Fin 4) (ZMod 4)) 2 = ⊥ :=
   by
-    letI : Fact (1 < 4) := ⟨by decide⟩
+    let : Fact (1 < 4) := ⟨by decide⟩
     exact (derivedSeries_eq_bot_iff 4 (ZMod 4) 2).2 (by decide)
 
 private theorem four_not_at_one :

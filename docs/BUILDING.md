@@ -1,12 +1,12 @@
 # Building algebraic-groups
 
 Use the pinned Lean toolchain in [lean-toolchain](../lean-toolchain) and the
-exact official GitHub revisions in [lakefile.toml](../lakefile.toml) and
-[lake-manifest.json](../lake-manifest.json). The frozen graph has 13 resolved
+exact GitHub revisions in [lakefile.toml](../lakefile.toml) and
+[lake-manifest.json](../lake-manifest.json). The resolved dependency graph has 13 resolved
 packages and three direct requirements: mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5`, scheme-properties
 `c3ce429677a7c4a342b134a881f99cacfc62f71e`, and
-general-linear-groups `ad7c50a0523441116537fb1d6e3c8d2a665af1fc`.
+general-linear-groups `8b3b07bf2744a870b53934542e4c5ed383765bd6`.
 The dependency sources are publicly available on GitHub. Use the matching
 precompiled mathlib cache before any build; a failed cache fetch is not a reason
 to rebuild mathlib from source silently.

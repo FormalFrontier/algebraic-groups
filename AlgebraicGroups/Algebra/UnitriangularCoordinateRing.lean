@@ -117,7 +117,6 @@ theorem upper_mul_diag {R : Type u} [CommRing R]
 
 variable (K ι)
 
-set_option linter.style.haveILetI false in
 /-- The relations defining Milne's `U_n` (item 2.9) form a Hopf ideal over any
 commutative ring. Both quotient maps are applied in the coideal calculation;
 antipode stability uses the inverse of the quotient universal GL unit and the
@@ -128,7 +127,7 @@ theorem ideal_isHopfIdeal_proof : (ideal K ι).IsHopfIdeal K := by
       CoordinateRing K ι ⊗[K] CoordinateRing K ι :=
     (Algebra.TensorProduct.map q q).comp
       (Bialgebra.comulAlgHom K (GeneralLinearCoordinateRing.CoordinateRing K ι))
-  letI : CommRing (CoordinateRing K ι ⊗[K] CoordinateRing K ι) := inferInstance
+  let : CommRing (CoordinateRing K ι ⊗[K] CoordinateRing K ι) := inferInstance
   have counit_gen (i j : ι) :
       (Bialgebra.counitAlgHom K (GeneralLinearCoordinateRing.CoordinateRing K ι))
         (relation K ι i j) = 0 := by
@@ -189,7 +188,7 @@ theorem ideal_isHopfIdeal_proof : (ideal K ι).IsHopfIdeal K := by
     have hinv_upper :
         (((universal K ι)⁻¹ : Matrix.GeneralLinearGroup ι (CoordinateRing K ι)) :
           Matrix ι ι (CoordinateRing K ι)).IsUpperTriangular := by
-      haveI : Invertible (universal K ι : Matrix ι ι (CoordinateRing K ι)) :=
+      have : Invertible (universal K ι : Matrix ι ι (CoordinateRing K ι)) :=
         Units.invertible (universal K ι)
       simpa only [Matrix.GeneralLinearGroup.coe_inv] using
         Matrix.blockTriangular_inv_of_blockTriangular (universal_upper K ι)

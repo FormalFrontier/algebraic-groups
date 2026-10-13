@@ -95,7 +95,6 @@ private theorem diagonalGroupCoordinate_comul (j : n) :
       quotient_offDiagonal K n j index hindex.symm, TensorProduct.zero_tmul]
   · simp [Algebra.TensorProduct.map_tmul]
 
-set_option linter.style.haveILetI false in
 /-- Each diagonal entry is group-like, giving a Hopf-algebra projection to
 one `Gₘ` factor of Milne's diagonal product (*Algebraic Groups*, §12.d). -/
 def diagonalGroupProjectionBialgHom (j : n) :
@@ -107,7 +106,7 @@ def diagonalGroupProjectionBialgHom (j : n) :
         diagonalGroupProjection_coordinate, diagonalGroupCoordinate_counit,
         multiplicativeGroupCoordinate_counit])
     (by
-      letI : CommRing (DiagonalCoordinateRing.CoordinateRing K n ⊗[K]
+      let : CommRing (DiagonalCoordinateRing.CoordinateRing K n ⊗[K]
         DiagonalCoordinateRing.CoordinateRing K n) := inferInstance
       apply diagonalGroupLaurent_ext K
       simp only [AlgHom.comp_apply, Bialgebra.comulAlgHom_apply,

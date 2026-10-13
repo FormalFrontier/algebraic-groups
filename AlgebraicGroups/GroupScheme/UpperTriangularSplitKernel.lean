@@ -232,7 +232,7 @@ def upperTriangularDiagonalBialgHom :
         GeneralLinearCoordinateRing.native_counit_matrix]
       simp [hij])
     (by
-    letI : CommRing (UpperTriangularCoordinateRing.CoordinateRing K n ⊗[K]
+    let : CommRing (UpperTriangularCoordinateRing.CoordinateRing K n ⊗[K]
       UpperTriangularCoordinateRing.CoordinateRing K n) := inferInstance
     apply Ideal.Quotient.algHom_ext K
     apply GeneralLinearCoordinateRing.hom_ext (K := K) (n := n)

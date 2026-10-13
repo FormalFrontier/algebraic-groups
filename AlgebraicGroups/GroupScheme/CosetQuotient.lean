@@ -224,7 +224,6 @@ lemma relativeFppfCosetPresheafMap_isLocallyInjective :
   Presheaf.isLocallyInjective_of_injective _ _
     (relativeFppfCosetPresheafMap_app_injective q h)
 
-set_option linter.style.haveILetI false in
 lemma relativeFppfCosetPresheafMap_isLocallySurjective
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
     Presheaf.IsLocallySurjective (relativeFppfTopology S)
@@ -233,19 +232,18 @@ lemma relativeFppfCosetPresheafMap_isLocallySurjective
       (relativeFppfYonedaTypeMap q).hom :=
     relativeFppfYonedaTypeMap_isLocallySurjective q
   rw [← relativeFppfCosetPresheafMk_comp_map q h] at hsurj
-  letI : Presheaf.IsLocallySurjective (relativeFppfTopology S)
+  let : Presheaf.IsLocallySurjective (relativeFppfTopology S)
       (relativeFppfCosetPresheafMk i ≫ relativeFppfCosetPresheafMap q h) := hsurj
   exact Presheaf.isLocallySurjective_of_isLocallySurjective _
     (relativeFppfCosetPresheafMk i) (relativeFppfCosetPresheafMap q h)
 
-set_option linter.style.haveILetI false in
 lemma relativeFppfCosetPresheafMap_W
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
     (relativeFppfTopology S).W (relativeFppfCosetPresheafMap q h) := by
-  letI : Presheaf.IsLocallyInjective (relativeFppfTopology S)
+  let : Presheaf.IsLocallyInjective (relativeFppfTopology S)
       (relativeFppfCosetPresheafMap q h) :=
     relativeFppfCosetPresheafMap_isLocallyInjective q h
-  letI : Presheaf.IsLocallySurjective (relativeFppfTopology S)
+  let : Presheaf.IsLocallySurjective (relativeFppfTopology S)
       (relativeFppfCosetPresheafMap q h) :=
     relativeFppfCosetPresheafMap_isLocallySurjective q h
   exact (relativeFppfTopology S).W_of_isLocallyBijective _
@@ -264,7 +262,6 @@ lemma relativeFppfCosetMk_comp_map :
   apply Sheaf.hom_ext
   exact relativeFppfCosetPresheafMk_comp_map q h
 
-set_option linter.style.haveILetI false in
 /-- If an fppf morphism has self-pullback presented by the right action of
 `H`, the induced map from the relative fppf coset sheaf is an isomorphism.
 The pullback gives pointwise injectivity and the fppf singleton cover gives
@@ -277,15 +274,15 @@ lemma relativeFppfCosetMap_isIso
   let f := relativeFppfCosetPresheafMap q h
   have hw : (relativeFppfTopology S).W f :=
     relativeFppfCosetPresheafMap_W q h
-  letI : IsIso ((presheafToSheaf (relativeFppfTopology S)
+  let : IsIso ((presheafToSheaf (relativeFppfTopology S)
       (Type (u + 1))).map f) :=
     ((relativeFppfTopology S).W_iff f).1 hw
-  letI : IsIso (sheafifyMap (relativeFppfTopology S) f) := by
+  let : IsIso (sheafifyMap (relativeFppfTopology S) f) := by
     change IsIso ((sheafToPresheaf (relativeFppfTopology S)
       (Type (u + 1))).map
         ((presheafToSheaf (relativeFppfTopology S) (Type (u + 1))).map f))
     infer_instance
-  letI : IsIso (sheafifyLift (relativeFppfTopology S) (𝟙 _)
+  let : IsIso (sheafifyLift (relativeFppfTopology S) (𝟙 _)
       (relativeFppfYonedaType Q).property) := by
     rw [← isoSheafify_inv]
     infer_instance

@@ -42,7 +42,6 @@ open scoped CategoryTheory CategoryTheory.MonObj
 
 namespace AlgebraicGeometry
 
-set_option maxHeartbeats 1500000
 set_option backward.isDefEq.respectTransparency false
 
 variable (K : Type) [CommRing K] (n r : ℕ)

@@ -11,7 +11,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 /-!
 # Upper-unitriangular group schemes
 
-The universal group is the subgroup of the native matrix general linear group
+The universal group is the subgroup of the matrix general linear group
 with zeros below the diagonal and ones on the diagonal. Its affine group
 scheme is represented by a Hopf quotient of the determinant-localized GL
 coordinate ring. The construction and point comparison work over every
@@ -44,8 +44,7 @@ namespace Matrix
 
 variable (n : Type u) [Fintype n] [LinearOrder n] (R : Type u) [CommRing R]
 
-set_option linter.style.haveILetI false in
-/-- Upper-unitriangular elements of the native matrix general linear group. -/
+/-- Upper-unitriangular elements of the matrix general linear group. -/
 def unitriangularSubgroup : Subgroup (Matrix.GeneralLinearGroup n R) where
   carrier := {g | ((g : Matrix n n R).IsUpperTriangular) ∧ ∀ i, g i i = 1}
   one_mem' := by
@@ -60,7 +59,7 @@ def unitriangularSubgroup : Subgroup (Matrix.GeneralLinearGroup n R) where
     rw [UnitriangularCoordinateRing.upper_mul_diag ha.1 hb.1, ha.2, hb.2, one_mul]
   inv_mem' := by
     intro g hg
-    haveI : Invertible (g : Matrix n n R) := Units.invertible g
+    have : Invertible (g : Matrix n n R) := Units.invertible g
     have hinv : ((g⁻¹ : Matrix.GeneralLinearGroup n R) : Matrix n n R).IsUpperTriangular := by
       simpa only [Matrix.GeneralLinearGroup.coe_inv] using
         Matrix.blockTriangular_inv_of_blockTriangular hg.1
@@ -72,7 +71,7 @@ def unitriangularSubgroup : Subgroup (Matrix.GeneralLinearGroup n R) where
     simpa only [Matrix.GeneralLinearGroup.coe_mul, Matrix.GeneralLinearGroup.coe_one,
       Matrix.one_apply, ite_true, hg.2, one_mul] using hdiag.symm.trans hm
 
-/-- The group of upper-unitriangular native matrix units. -/
+/-- The group of upper-unitriangular matrices. -/
 abbrev UnitriangularGroup := unitriangularSubgroup n R
 
 namespace UnitriangularGroup
@@ -80,7 +79,7 @@ namespace UnitriangularGroup
 variable {n : Type u} [Fintype n] [LinearOrder n]
 variable {R S : Type u} [CommRing R] [CommRing S]
 
-/-- Entry-wise coefficient change, using native `GL.map`. -/
+/-- Entry-wise coefficient change, using `GL.map`. -/
 def map (f : R →+* S) : UnitriangularGroup n R →* UnitriangularGroup n S :=
   { toFun := fun g => ⟨Matrix.GeneralLinearGroup.map f g.1, by
       refine ⟨g.2.1.map f, ?_⟩
@@ -155,7 +154,7 @@ theorem unitriangularInclusion_isClosedImmersion :
 
 variable (R : Type u) [CommRing R] [Algebra K R]
 
-/-- Evaluate a point of the Hopf quotient as an upper-unitriangular native unit. -/
+/-- Evaluate a point of the Hopf quotient as an upper-unitriangular matrix. -/
 def unitriangularToGL
     (f : UnitriangularCoordinateRing.CoordinateRing K n →ₐ[K] R) :
     Matrix.UnitriangularGroup n R :=
@@ -172,7 +171,7 @@ def unitriangularToGL
     (f : UnitriangularCoordinateRing.CoordinateRing K n →ₐ[K] R) (i j : n) :
     (unitriangularToGL K n R f).1 i j = f (quotient K n (matrix K n i j)) := rfl
 
-/-- Evaluate a native unit on GL coordinates and descend through the relations. -/
+/-- Evaluate a unitriangular matrix on GL coordinates and descend through the relations. -/
 def unitriangularFromGL (s : Matrix.UnitriangularGroup n R) :
     UnitriangularCoordinateRing.CoordinateRing K n →ₐ[K] R :=
   Ideal.Quotient.liftₐ (ideal K n) (evaluate (K := K) s.1) (by
@@ -216,7 +215,7 @@ theorem unitriangularFromGL_comp_quotient (s : Matrix.UnitriangularGroup n R) :
   exact evaluate_toGL _
 
 /-- Every commutative `K`-algebra has a natural multiplicative identification
-between quotient points and the native upper-unitriangular subgroup. -/
+between quotient points and the upper-unitriangular subgroup. -/
 def unitriangularGroupMulEquivAlgHom :
     Matrix.UnitriangularGroup n R ≃*
       WithConv (UnitriangularCoordinateRing.CoordinateRing K n →ₐ[K] R) where
@@ -274,7 +273,7 @@ theorem unitriangularGroupPoint_preimage_entry
   rw [unitriangularGroupMulEquivPoints_apply_left, Spec.preimage_map]
   exact unitriangularGroupMulEquivAlgHom_entry K n R s i j
 
-/-- The actual scheme inclusion agrees with the native GL subgroup embedding
+/-- The scheme inclusion agrees with the GL subgroup embedding
 on every commutative coefficient algebra. -/
 theorem unitriangularInclusion_point (s : Matrix.UnitriangularGroup n R) :
     unitriangularGroupMulEquivPoints K n R s ≫
@@ -312,7 +311,7 @@ theorem unitriangularFromGL_natural {S : Type u} [CommRing S] [Algebra K S]
     unitriangularFromGL_comp_quotient]
   exact evaluate_natural v s.1
 
-/-- Native upper-unitriangular groups as a functor of `K`-algebras. -/
+/-- Upper-unitriangular groups as a functor of `K`-algebras. -/
 def unitriangularGroupFunctor : CommAlgCat K ⥤ GrpCat where
   obj R := GrpCat.of (Matrix.UnitriangularGroup n R)
   map f := GrpCat.ofHom (Matrix.UnitriangularGroup.map f.hom.toRingHom)
@@ -337,7 +336,7 @@ def unitriangularGroupFunctor : CommAlgCat K ⥤ GrpCat where
 abbrev unitriangularGroupPointsFunctor : CommAlgCat K ⥤ GrpCat :=
   (algSpec (.of K)).rightOp ⋙ yonedaGrp.obj (unitriangularGroupScheme K n)
 
-/-- Multiplicative and natural functorial identification of native group units
+/-- Multiplicative and natural functorial identification of upper-unitriangular matrices
 with the points of the finite-type upper-unitriangular group scheme, for all
 fixed-base coefficient-algebra maps. This extends the field-base functor of
 Milne, *Algebraic Groups* (2017), §§2.8–2.9 to commutative base rings. -/

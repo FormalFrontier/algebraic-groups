@@ -33,8 +33,6 @@ namespace UnitriangularStageCoordinateRing
 
 variable (K : Type) [CommRing K] (n r : ℕ)
 
-set_option maxHeartbeats 1500000
-
 /-- The underlying algebra map of a primitive coordinate is its symmetric-algebra lift. -/
 @[simp] theorem coordinateBialgHom_toAlgHom (hr : 1 ≤ r)
     (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
@@ -67,6 +65,9 @@ theorem ideal_succ_eq_sup (hr : 1 ≤ r) :
       have hij : ij.1.1 < ij.1.2 := by have := ij.2; omega
       exact entry_mem K n (r + 1) _ _ hij (by omega)
 
+set_option maxHeartbeats 1500000 in
+-- Extra heartbeats are needed for kernel normalization of the nested quotient-algebra
+-- structures in this universal-property factorization.
 /-- A stage evaluation extends uniquely across the closed successor precisely
 when its current superdiagonal coordinates vanish. Milne, *Algebraic Groups*
 (2017), §6.49 gives one-entry field-case additive quotients; this algebra-map

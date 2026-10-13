@@ -95,7 +95,6 @@ theorem universal_detInverse :
   rw [Matrix.det_of_isUpperTriangular (universal K ι).2] at hm
   rwa [mul_comm] at hm
 
-set_option linter.style.haveILetI false in
 /-- The lower-entry relations of Milne's `T_n` (item 2.9) form a Hopf ideal:
 the GL coproduct is tested after both quotient maps, and Mathlib's
 `Matrix.blockTriangular_inv_of_blockTriangular` handles the antipode through
@@ -106,7 +105,7 @@ theorem ideal_isHopfIdeal_proof : (ideal K ι).IsHopfIdeal K := by
       CoordinateRing K ι ⊗[K] CoordinateRing K ι :=
     (Algebra.TensorProduct.map q q).comp
       (Bialgebra.comulAlgHom K (GeneralLinearCoordinateRing.CoordinateRing K ι))
-  letI : CommRing (CoordinateRing K ι ⊗[K] CoordinateRing K ι) := inferInstance
+  let : CommRing (CoordinateRing K ι ⊗[K] CoordinateRing K ι) := inferInstance
   have counit_gen (i j : ι) :
       (Bialgebra.counitAlgHom K (GeneralLinearCoordinateRing.CoordinateRing K ι))
         (relation K ι i j) = 0 := by

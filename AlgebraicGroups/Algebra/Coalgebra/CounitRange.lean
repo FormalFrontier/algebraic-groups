@@ -5,7 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.RingTheory.Coalgebra.Hom
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -16,6 +17,9 @@ semiring `R`. Its square equals itself: the fact that the counit is a
 coalgebra homomorphism expresses each counit value as a sum of products of
 counit values. Tensor induction proves membership in the square without
 any freeness or finiteness assumption on the coalgebra.
+For a tensor product of coalgebras, the counit range is the product of the two
+scalar ideals. The counit is zero exactly when the coalgebra is subsingleton;
+in particular, orthogonal scalar supports give a zero tensor product.
 
 The counit range also generates the whole coalgebra under scalar multiplication:
 every element is a sum of terms `ε(x) • y` by the left counit identity. Thus its
@@ -28,6 +32,8 @@ a finite basis nor a ring or field structure on the scalars is required.
 
 Mathlib supplies the counit coalgebra homomorphism, tensor induction,
 free-module bases, ideal multiplication and submodule scalar action used here.
+The tensor-product range formula uses Mathlib's `TensorProduct.range_map` and
+`Submodule.mulMap_range`.
 -/
 
 @[expose] public section
@@ -35,7 +41,7 @@ free-module bases, ideal multiplication and submodule scalar action used here.
 set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
-universe u v
+universe u v w
 
 open scoped TensorProduct
 
@@ -53,21 +59,22 @@ variable [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
   apply le_antisymm Ideal.mul_le_right
   rintro r ⟨c, rfl⟩
   have h (t : C ⊗[R] C) :
-      TensorProduct.lid R R (TensorProduct.map (counit (R := R)) (counit (R := R)) t) ∈
+      _root_.TensorProduct.lid R R
+        (_root_.TensorProduct.map (counit (R := R)) (counit (R := R)) t) ∈
         I * I := by
-    induction t using TensorProduct.inductionOn with
+    induction t using _root_.TensorProduct.inductionOn with
     | tmul x y =>
-      simpa only [TensorProduct.map_tmul, TensorProduct.lid_tmul, smul_eq_mul] using
+      simpa only [_root_.TensorProduct.map_tmul, _root_.TensorProduct.lid_tmul, smul_eq_mul] using
         (Ideal.mul_mem_mul (LinearMap.mem_range_self (counit (R := R)) x)
           (LinearMap.mem_range_self (counit (R := R)) y))
     | add x y hx hy =>
       simpa only [map_add] using (I * I).add_mem hx hy
-  have hε : TensorProduct.map (counit (R := R)) (counit (R := R)) (comul c) =
+  have hε : _root_.TensorProduct.map (counit (R := R)) (counit (R := R)) (comul c) =
       (1 : R) ⊗ₜ[R] counit (R := R) c := by
     simpa only [CoalgHom.toLinearMap_eq_coe, counitCoalgHom_toLinearMap,
       LinearMap.comp_apply, CommSemiring.comul_apply] using
       (LinearMap.congr_fun (counitCoalgHom R C).map_comp_comul c)
-  simpa only [hε, TensorProduct.lid_tmul, one_smul] using h (comul c)
+  simpa only [hε, _root_.TensorProduct.lid_tmul, one_smul] using h (comul c)
 
 /-- The counit range generates the whole coalgebra under scalar multiplication.
 This does not require the counit range to be the whole scalar semiring. -/
@@ -78,16 +85,16 @@ This does not require the counit range to be the whole scalar semiring. -/
   apply top_unique
   intro c _
   have h (t : C ⊗[R] C) :
-      TensorProduct.lid R C ((counit (R := R)).rTensor C t) ∈
+      _root_.TensorProduct.lid R C ((counit (R := R)).rTensor C t) ∈
         I • (⊤ : Submodule R C) := by
-    induction t using TensorProduct.inductionOn with
+    induction t using _root_.TensorProduct.inductionOn with
     | tmul x y =>
-      simpa only [LinearMap.rTensor_tmul, TensorProduct.lid_tmul] using
+      simpa only [LinearMap.rTensor_tmul, _root_.TensorProduct.lid_tmul] using
         (Submodule.smul_mem_smul (LinearMap.mem_range_self (counit (R := R)) x)
           (Submodule.mem_top : y ∈ (⊤ : Submodule R C)))
     | add x y hx hy =>
       simpa only [map_add] using (I • (⊤ : Submodule R C)).add_mem hx hy
-  simpa only [rTensor_counit_comul, TensorProduct.lid_tmul, one_smul] using h (comul c)
+  simpa only [rTensor_counit_comul, _root_.TensorProduct.lid_tmul, one_smul] using h (comul c)
 
 /-- The counit range of a nontrivial coalgebra with free underlying module is the
 whole scalar semiring. No finiteness assumption on a basis is needed. -/
@@ -111,5 +118,46 @@ onto its commutative scalar semiring. -/
 theorem counit_surjective_of_free [Module.Free R C] [Nontrivial C] :
     Function.Surjective (counit (R := R) (A := C)) :=
   LinearMap.range_eq_top.mp (counit_range_eq_top_of_free R C)
+
+/-- The counit is zero exactly when the coalgebra is subsingleton.
+The left counit identity gives this without any freeness assumption. -/
+@[simp] theorem counit_eq_zero_iff :
+    counit (R := R) (A := C) = 0 ↔ Subsingleton C := by
+  constructor
+  · intro h
+    have hz (c : C) : c = 0 := by
+      have hc := congrArg (_root_.TensorProduct.lid R C) (rTensor_counit_comul (R := R) c)
+      simpa only [h, LinearMap.rTensor_zero, LinearMap.zero_apply, map_zero,
+        _root_.TensorProduct.lid_tmul, one_smul] using hc.symm
+    exact ⟨fun x y => (hz x).trans (hz y).symm⟩
+  · intro h
+    let := h
+    ext c
+    rw [Subsingleton.elim c 0]
+    simp
+
+variable (D : Type w) [AddCommMonoid D] [Module R D] [Coalgebra R D]
+
+/-- The scalar ideal given by the counit range of a tensor product is the product
+of the two counit ranges. No freeness or finiteness of either factor is required. -/
+theorem counit_range_tensorProduct :
+    (LinearMap.range (counit (R := R) (A := C ⊗[R] D)) : Ideal R) =
+      (LinearMap.range (counit (R := R) (A := C)) : Ideal R) *
+        LinearMap.range (counit (R := R) (A := D)) := by
+  let I : Ideal R := LinearMap.range (counit (R := R) (A := C))
+  let J : Ideal R := LinearMap.range (counit (R := R) (A := D))
+  have hε : counit (R := R) (A := C ⊗[R] D) =
+      Submodule.mulMap I J ∘ₗ
+        _root_.TensorProduct.map (counit (R := R) (A := C)).rangeRestrict
+          (counit (R := R) (A := D)).rangeRestrict := by
+    ext c d
+    simp [I, J, mul_comm]
+  have hrange : LinearMap.range
+      (_root_.TensorProduct.map (counit (R := R) (A := C)).rangeRestrict
+        (counit (R := R) (A := D)).rangeRestrict) = ⊤ := by
+    simp only [_root_.TensorProduct.range_map, LinearMap.range_rangeRestrict,
+      _root_.TensorProduct.map₂_mk_top_top_eq_top]
+  rw [hε, LinearMap.range_comp, hrange, Submodule.map_top]
+  exact Submodule.mulMap_range I J
 
 end Coalgebra

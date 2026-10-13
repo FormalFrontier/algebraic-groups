@@ -10,7 +10,7 @@ public import GeneralLinearGroups.ElementaryCommutator
 /-!
 # Exact nilpotency class of finite unitriangular groups
 
-Elementary units of the native unitriangular subgroup realize nonzero elements of
+Elementary units of the unitriangular subgroup realize nonzero elements of
 its lower central series. Together with the superdiagonal upper bound this gives
 the exact nilpotency class over every nontrivial commutative ring.
 This is a numerical *point-group* result. Milne proves unitriangular
@@ -37,7 +37,7 @@ namespace Matrix.UnitriangularGroup
 
 variable (n : ℕ) (R : Type) [CommRing R]
 
-/-- The elementary unit at a strictly upper-triangular position, in the native subgroup. -/
+/-- The elementary unit at a strictly upper-triangular position, in the unitriangular subgroup. -/
 def elementary (i j : Fin n) (hij : i < j) (a : R) :
     Matrix.UnitriangularGroup (Fin n) R := by
   refine ⟨Matrix.GeneralLinearGroup.elementaryUnit i j (ne_of_lt hij) a, ?_⟩
@@ -49,17 +49,17 @@ def elementary (i j : Fin n) (hij : i < j) (a : R) :
     have h : ¬ (i = k ∧ j = k) := fun h => (ne_of_lt hij) (h.1.trans h.2.symm)
     simp [Matrix.add_apply, h]
 
-/-- The image of a native elementary unit in the general linear group. -/
+/-- The image of an elementary unit in the general linear group. -/
 theorem elementary_gl (i j : Fin n) (hij : i < j) (a : R) :
     (elementary n R i j hij a).1 =
       Matrix.GeneralLinearGroup.elementaryUnit i j (ne_of_lt hij) a := rfl
 
-/-- The matrix of a native elementary unit. -/
+/-- The matrix of an elementary unit. -/
 theorem elementary_coe (i j : Fin n) (hij : i < j) (a : R) :
     ((elementary n R i j hij a).1 : Matrix (Fin n) (Fin n) R) =
       1 + Matrix.single i j a := rfl
 
-/-- The ordered Steinberg commutator relation inside the native unitriangular
+/-- The ordered Steinberg commutator relation inside the unitriangular
 group, transferred from `Matrix.GeneralLinearGroup.elementaryUnit_commutator`
 in `GeneralLinearGroups.ElementaryCommutator`. -/
 theorem elementary_commutator (i j k : Fin n)

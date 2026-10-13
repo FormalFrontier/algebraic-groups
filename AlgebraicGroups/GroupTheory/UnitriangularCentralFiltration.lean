@@ -205,7 +205,7 @@ theorem superdiagonalSubgroup_end : superdiagonalSubgroup n R n = ⊥ := by
     simpa only [matrix_one] using hmat
   exact Subgroup.mem_bot.mpr hunit
 
-/-- Each superdiagonal subgroup is normal in the existing native point group. -/
+/-- Each superdiagonal subgroup is normal in the unitriangular point group. -/
 instance superdiagonalSubgroup_normal (r : ℕ) : (superdiagonalSubgroup n R r).Normal where
   conj_mem := by
     intro g hg u
@@ -312,7 +312,7 @@ theorem descendingSeries_end : descendingSeries n R (n - 1) = ⊥ := by
   · have hindex : n - 1 + 1 = n := by omega
     simpa only [descendingSeries, hindex] using superdiagonalSubgroup_end n R
 
-/-- The native unitriangular point group is nilpotent over every commutative ring.
+/-- The unitriangular point group is nilpotent over every commutative ring.
 This uses Mathlib's finite-descending-central-series criterion; Milne,
 *Algebraic Groups* (2017), Example 6.36 and §6.49, prove unitriangular
 algebraic-group nilpotence by a central series, yielding the corresponding
@@ -350,7 +350,7 @@ theorem map_mem_superdiagonalSubgroup {S : Type} [CommRing S]
   simpa [Matrix.sub_apply, Matrix.one_apply, Matrix.UnitriangularGroup.map_apply]
     using congrArg f hz
 
-/-- The native coefficient-map group homomorphism maps each stage into its counterpart. -/
+/-- The coefficient-map group homomorphism maps each stage into its counterpart. -/
 theorem superdiagonalSubgroup_map {S : Type} [CommRing S]
     (f : R →+* S) (r : ℕ) :
     (superdiagonalSubgroup n R r).map (Matrix.UnitriangularGroup.map f) ≤

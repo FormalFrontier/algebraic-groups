@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
+public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
 public import AlgebraicGroups.Algebra.Coalgebra.Coefficients
 public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
@@ -22,6 +23,7 @@ public import AlgebraicGroups.Algebra.TensorProduct.Split
 public import AlgebraicGroups.Algebra.Smooth
 public import AlgebraicGroups.Algebra.SymmetricAlgebra
 public import AlgebraicGroups.Algebra.SymmetricAlgebraPoints
+public import AlgebraicGroups.Algebra.HopfAlgebra.Hom
 public import AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal
 public import AlgebraicGroups.Algebra.SpecialLinearCoordinateRing
 public import AlgebraicGroups.Algebra.UnitriangularCoordinateRing
@@ -31,6 +33,7 @@ public import AlgebraicGroups.Algebra.UnitriangularBaseChange
 public import AlgebraicGroups.Algebra.UnitriangularBaseChangeCoherence
 public import AlgebraicGroups.Algebra.UnitriangularHopfBaseChange
 public import AlgebraicGroups.Algebra.MonoidAlgebraPrimitive
+public import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
 public import AlgebraicGroups.Category.Extensive
 public import AlgebraicGroups.Category.EquivalenceRelation
 public import AlgebraicGroups.Category.Grp.FilteredColimits
@@ -141,6 +144,7 @@ public import AlgebraicGroups.Scheme.Reduction
 public import AlgebraicGroups.Scheme.Smooth
 public import AlgebraicGroups.Topology.KrullDimension
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
+public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finite
 
 /-!

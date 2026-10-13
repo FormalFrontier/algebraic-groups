@@ -10,7 +10,7 @@ public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 /-!
 # Closed superdiagonal stages of the unitriangular group scheme
 
-The native group objects below arise from quotient Hopf algebras, rather than
+The group objects below arise from quotient Hopf algebras, rather than
 from a group law transported across an affine-space presentation.
 
 Milne's finer filtration by individual entries gives closed algebraic subgroups
@@ -41,7 +41,7 @@ variable (K : Type) [CommRing K] (n r : ℕ)
 
 open UnitriangularStageCoordinateRing
 
-/-- The affine over-scheme represented by the actual stage quotient. -/
+/-- The affine over-scheme represented by the stage quotient. -/
 abbrev unitriangularStageUnderlyingScheme : Over (Spec (.of K)) :=
   (Spec (.of (CoordinateRing K n r))).asOver (Spec (.of K))
 
@@ -68,7 +68,7 @@ theorem unitriangularStageInclusion_isClosedImmersion :
   rw [unitriangularStageInclusion_left]
   exact IsClosedImmersion.spec_of_surjective _ Ideal.Quotient.mk_surjective
 
-/-- Coordinate map for the successor stage, preserving the native Hopf structure. -/
+/-- Coordinate map for the successor stage, preserving the quotient Hopf structure. -/
 def unitriangularStageSuccessorBialgHom :
     CoordinateRing K n r →ₐc[K] CoordinateRing K n (r + 1) := by
   apply BialgHom.ofAlgHom (successor K n r)
@@ -257,7 +257,7 @@ def unitriangularStagePointSuccessor
     Matrix.UnitriangularGroup.superdiagonalSubgroup n R r :=
   ⟨s.1, (Matrix.UnitriangularGroup.superdiagonalSubgroup_succ_le n R r) s.2⟩
 
-/-- The native successor map represents the usual inclusion at every algebra. -/
+/-- The successor quotient map represents the usual inclusion at every algebra. -/
 theorem unitriangularStageFromGL_successor
     (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R (r + 1)) :
     (unitriangularStageFromGL K n (r + 1) R s).comp (successor K n r) =
@@ -330,7 +330,7 @@ def unitriangularStageFunctor : CommAlgCat K ⥤ GrpCat where
     intro i j
     rfl
 
-/-- Represented group-valued point functor of a native Hopf quotient. -/
+/-- Represented group-valued point functor of a Hopf quotient. -/
 abbrev unitriangularStagePointsFunctor : CommAlgCat K ⥤ GrpCat :=
   (algSpec (.of K)).rightOp ⋙ yonedaGrp.obj (unitriangularStageScheme K n r)
 

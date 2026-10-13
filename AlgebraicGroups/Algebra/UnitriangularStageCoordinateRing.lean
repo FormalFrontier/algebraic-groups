@@ -193,9 +193,6 @@ theorem antipode_mem {x : Ambient K n} (hx : x ∈ ideal K n r) :
     (mem_stage_iff K n r _).mpr hantiPoint
   exact Ideal.Quotient.eq_zero_iff_mem.mp (RingHom.mem_ker.mp (hantiKer hx))
 
-set_option maxHeartbeats 500000
-set_option linter.style.haveILetI false
-
 theorem comul_entry (i j : Fin n) :
     Coalgebra.comul (R := K) (entry K n i j) =
       ∑ k : Fin n, entry K n i k ⊗ₜ[K] entry K n k j := by
@@ -209,10 +206,10 @@ theorem comul_entry (i j : Fin n) :
 theorem comul_zero {x : Ambient K n} (hx : x ∈ ideal K n r) :
     (Algebra.TensorProduct.map (quotient K n r) (quotient K n r))
       (Coalgebra.comul (R := K) x) = 0 := by
-  letI : AddCommMonoid (CoordinateRing K n r) :=
+  let : AddCommMonoid (CoordinateRing K n r) :=
     (inferInstance : CommRing (CoordinateRing K n r)).toCommSemiring.toAddCommMonoid
-  letI : Module K (CoordinateRing K n r) := Algebra.toModule
-  letI : CommRing (CoordinateRing K n r ⊗[K] CoordinateRing K n r) := inferInstance
+  let : Module K (CoordinateRing K n r) := Algebra.toModule
+  let : CommRing (CoordinateRing K n r ⊗[K] CoordinateRing K n r) := inferInstance
   let q := quotient K n r
   let comulQuotient : Ambient K n →ₐ[K]
       CoordinateRing K n r ⊗[K] CoordinateRing K n r :=

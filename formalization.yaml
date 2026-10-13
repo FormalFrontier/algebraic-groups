@@ -3,7 +3,7 @@ version: "v0.4"
 project:
   name: algebraic-groups
   description: >-
-    Reusable Lean formalization of native matrix point groups, finite
+    Reusable Lean formalization of matrix point groups, finite
     algebraic group schemes and their coordinate algebras. The library covers
     unitriangular and upper-triangular groups, diagonal products, split
     kernels, closed unitriangular stages and their underlying affine-space
@@ -67,12 +67,12 @@ related_formalizations:
       and coherent-modules dependencies; their credit and licenses are distinct.
       Mathlib also supplies submodule, coalgebra, tensor-map, vector-space,
       flatness and module-finiteness APIs for field subcoalgebras.
-  - id: https://github.com/FormalFrontier/general-linear-groups/tree/ad7c50a0523441116537fb1d6e3c8d2a665af1fc
+  - id: https://github.com/FormalFrontier/general-linear-groups/tree/8b3b07bf2744a870b53934542e4c5ed383765bd6
     relationship: builds-on
     note: >-
-      Exact official direct dependency supplying the general-linear elementary
+      Exact direct dependency supplying the general-linear elementary
       matrix unit and ordered elementary commutator identity. This library
-      transfers that identity into the native unitriangular point group and
+      transfers that identity into the unitriangular point group and
       derives its sharp nilpotency class using its own central-filtration bound.
       General-linear-groups retains distinct contributors, rights and license.
 

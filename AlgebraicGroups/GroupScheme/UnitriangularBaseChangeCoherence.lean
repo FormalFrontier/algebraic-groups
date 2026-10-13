@@ -358,6 +358,8 @@ private theorem affineCancel_fst_snd (R S T A : Type u)
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 1000000 in
+-- Kernel comparison of the nested affine pullback and tensor-cancellation morphisms
+-- in this compositor identity needs extra heartbeats.
 private theorem affineComp (R S T A : Type u)
     [CommRing R] [CommRing S] [CommRing T] [CommRing A]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
@@ -474,7 +476,6 @@ private theorem affineComp (R S T A : Type u)
                     (congrArg (fun f => f ≫ unitriangularBaseMap S T) hTransport))
           simpa only [Category.assoc, affineBaseChangeIso_hom_snd,
             affineAsOver_hom, Over.pullback_obj_hom] using hTotal.symm
-
   · simp only [Category.assoc, affineBaseChangeIso_hom_snd, Over.pullback_map_left,
       Over.pullback_obj_left, affineAsOver_hom]
     rw [pullback.lift_snd]
@@ -496,6 +497,8 @@ private theorem affineComp (R S T A : Type u)
     exact affineBaseChangeIso_hom_snd R T A
 
 set_option maxHeartbeats 1000000 in
+-- Kernel comparison of the group-object pullback compositor with its underlying
+-- scheme morphism needs extra heartbeats.
 private theorem towerIso_left (R S T : Type u)
     [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
@@ -554,7 +557,6 @@ theorem unitriangularGroupSchemeBaseChangeIso_self
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-set_option linter.style.haveILetI false in
 /-- Scalar extension from `R` to `T` agrees with successive extension through `S`.
 This follows from Mathlib's pullback compositor and tensor cancellation together
 with the coordinate-algebra tower law built from Christian Merten's
@@ -570,11 +572,11 @@ theorem unitriangularGroupSchemeBaseChangeIso_tower
         (Over.pullback (unitriangularBaseMap S T)).mapGrp.map
           (unitriangularGroupSchemeBaseChangeIso R S ι).hom ≫
         (unitriangularGroupSchemeBaseChangeIso S T ι).hom := by
-  letI : HopfAlgebra S (S ⊗[R] CoordinateRing R ι) := inferInstance
-  letI : CommRing (S ⊗[R] CoordinateRing R ι) := inferInstance
-  letI : Algebra S (S ⊗[R] CoordinateRing R ι) := inferInstance
-  letI : CommRing (T ⊗[S] CoordinateRing S ι) := inferInstance
-  letI : Algebra T (T ⊗[S] CoordinateRing S ι) := inferInstance
+  let : HopfAlgebra S (S ⊗[R] CoordinateRing R ι) := inferInstance
+  let : CommRing (S ⊗[R] CoordinateRing R ι) := inferInstance
+  let : Algebra S (S ⊗[R] CoordinateRing R ι) := inferInstance
+  let : CommRing (T ⊗[S] CoordinateRing S ι) := inferInstance
+  let : Algebra T (T ⊗[S] CoordinateRing S ι) := inferInstance
   have hFactor :
       (unitriangularGroupSchemeBaseChangeIso R S ι).hom.hom.hom =
         (affineAsOverIso R S (CoordinateRing R ι)).hom ≫

@@ -296,6 +296,22 @@ and [GL/SL dimension formulas](../AlgebraicGroups/GroupScheme/GeneralSpecialLine
   [guide](../AlgebraicGroups/GroupScheme/GeneralLinearDeterminantConjugation/README.md)
   and `AlgebraicGroupsTest.GeneralLinearDeterminantConjugation`.
 
+## Antipodes of commutative Hopf algebras
+
+For a commutative semiring `R` and a commutative semiring Hopf algebra `A`
+over `R`, `HopfAlgebra.antipode_involutive` states that the antipode is
+involutive. The pointwise simp lemma `HopfAlgebra.antipode_antipode` removes
+two successive antipodes. Import the focused
+[antipode module](../AlgebraicGroups/Algebra/HopfAlgebra/Antipode.lean).
+The proof uses Mathlib's convolution group of algebra endomorphisms and
+involutivity of group inversion; it requires neither cocommutativity nor
+finiteness, additive inverses or nontriviality. Commutativity of `A` is
+essential, and the theorem does not apply to arbitrary noncommutative Hopf
+algebras. The [ordinary-import examples](../AlgebraicGroupsTest/Algebra/HopfAlgebra/Antipode.lean)
+include arbitrary finite sums in the infinite group algebra `ℕ[ℤ]`, a
+basis element whose antipode differs from itself, zero-ring scalars and the
+matrix coordinates of `GL₂` over `ℚ`.
+
 ## Localization, descent and finite projective algebra
 
 The Stacks Project, tags [03BH](https://stacks.math.columbia.edu/tag/03BH),

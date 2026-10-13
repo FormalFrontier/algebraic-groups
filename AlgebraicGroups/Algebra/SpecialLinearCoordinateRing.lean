@@ -68,7 +68,6 @@ theorem quotient_det :
   rw [map_mul, map_one, quotient_det, one_mul] at h
   exact h
 
-set_option linter.style.haveILetI false in
 /-- The determinant-one ideal satisfies Mathlib's `Ideal.IsHopfIdeal` conditions:
 the counit kills `det - 1`, the comultiplication kills it after mapping into
 the tensor product of the *quotient* algebras, and the antipode sends it into
@@ -84,7 +83,7 @@ theorem determinantOneIdeal_isHopfIdeal_proof : (determinantOneIdeal K n).IsHopf
         (GeneralLinearCoordinateRing.CoordinateRing K n ⧸ ideal) :=
     (Algebra.TensorProduct.map quotientMap quotientMap).comp
       (Bialgebra.comulAlgHom K (GeneralLinearCoordinateRing.CoordinateRing K n))
-  letI : CommRing
+  let : CommRing
       ((GeneralLinearCoordinateRing.CoordinateRing K n ⧸ ideal) ⊗[K]
         (GeneralLinearCoordinateRing.CoordinateRing K n ⧸ ideal)) := inferInstance
   have hq : quotientMap (matrix K n).det = 1 := quotient_det K n
