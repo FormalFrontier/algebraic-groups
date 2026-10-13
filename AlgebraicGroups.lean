@@ -15,6 +15,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCardinality
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
 public import AlgebraicGroups.Algebra.Coalgebra.IdempotentIdeal
+public import AlgebraicGroups.Algebra.Coalgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
 public import AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension

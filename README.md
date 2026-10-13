@@ -13,6 +13,17 @@ third-party and AI involvement.
 
 ## Headline results
 
+- **Coalgebra morphisms on coideal quotients.** Over a commutative ring `R`,
+  for `R`-modules with additive commutative group structures and
+  `CoalgebraStruct`, `Submodule.liftQCoalgHom` descends a coalgebra morphism
+  vanishing on a coideal uniquely through its quotient projection.
+  `Submodule.mapQCoalgHom` sends a morphism carrying one coideal into another
+  to a morphism between their quotients, respecting identity and composition.
+  The universes are independent; no coalgebra-law, field, flatness or
+  projectivity assumption is required. These constructions use Mathlib's
+  quotient structures and linear universal property. See the
+  [quotient-morphism API](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean) and
+  [clients](AlgebraicGroupsTest/Algebra/Coalgebra/CoidealQuotient.lean).
 - **Subcoalgebras and finite containment over a field.** For a field `K` and
   a `K`-coalgebra `C`, `Subcoalgebra K C` is a subspace `D` such that every
   member's comultiplication lies in the image of
@@ -283,6 +294,10 @@ normality of `U` in `GL`, nor source-specific coverage. The finite triangular
 geometry and dimension above are separately scoped results.
 
 ## Modules and examples
+
+| API | Focused module | Examples |
+| --- | --- | --- |
+| Coideal quotient lifts and maps | [`AlgebraicGroups.Algebra.Coalgebra.Quotient`](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean) | [Quotient morphisms](AlgebraicGroupsTest/Algebra/Coalgebra/CoidealQuotient.lean) |
 
 Import `AlgebraicGroups` for the aggregate or a focused producer linked above.
 For images under coalgebra homomorphisms over a field `K`, import

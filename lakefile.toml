@@ -44,6 +44,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.BaseChange",
   "AlgebraicGroupsTest.Algebra.Coalgebra.CoefficientMatrixUnit",
   "AlgebraicGroupsTest.Algebra.Coalgebra.Coefficients",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.CoidealQuotient",
   "AlgebraicGroupsTest.Algebra.Coalgebra.CounitRange",
   "AlgebraicGroupsTest.Algebra.Coalgebra.FiniteSubcoalgebra",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeSpan",
