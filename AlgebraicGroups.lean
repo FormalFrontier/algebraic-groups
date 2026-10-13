@@ -34,6 +34,7 @@ public import AlgebraicGroups.Algebra.UnitriangularBaseChangeCoherence
 public import AlgebraicGroups.Algebra.UnitriangularHopfBaseChange
 public import AlgebraicGroups.Algebra.MonoidAlgebraPrimitive
 public import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
+public import AlgebraicGroups.Algebra.HopfAlgebra.Comultiplication
 public import AlgebraicGroups.Category.Extensive
 public import AlgebraicGroups.Category.EquivalenceRelation
 public import AlgebraicGroups.Category.Grp.FilteredColimits

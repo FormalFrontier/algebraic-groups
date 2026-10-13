@@ -312,6 +312,22 @@ include arbitrary finite sums in the infinite group algebra `ℕ[ℤ]`, a
 basis element whose antipode differs from itself, zero-ring scalars and the
 matrix coordinates of `GL₂` over `ℚ`.
 
+## Antipodes and comultiplication
+
+For a commutative semiring `R` and a possibly noncommutative semiring Hopf
+algebra `A`, `HopfAlgebra.comul_comp_antipode` states
+`Δ ∘ S = (S ⊗ S) ∘ τ ∘ Δ`. The pointwise simp lemma
+`HopfAlgebra.comul_antipode` rewrites `Δ(S(x))`. Import the focused
+[comultiplication module](../AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean).
+Neither cocommutativity nor additive inverses, finiteness or nontriviality is
+assumed; the scalar and algebra universes are independent. The flip `τ` is
+essential even for commutative algebras such as the coordinates of `GL₂`.
+The proof compares left and right convolution inverses of `Δ`, contracting
+balanced fourfold tensors by coassociativity, antipode and counit laws.
+The [examples](../AlgebraicGroupsTest/Algebra/HopfAlgebra/Comultiplication.lean)
+use arbitrary finite sums over `ℕ`, a noncommutative symmetric-group algebra,
+and products of arbitrary `GL₂` coordinates over `ℚ`.
+
 ## Localization, descent and finite projective algebra
 
 The Stacks Project, tags [03BH](https://stacks.math.columbia.edu/tag/03BH),

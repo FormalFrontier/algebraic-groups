@@ -18,6 +18,11 @@ subcoalgebra factors uniquely through this inclusion, using `CoalgHom.codRestric
 Restriction recovers the identity from the inclusion and commutes with precomposition.
 The source coalgebra can lie in a universe independent of the ambient coalgebra.
 
+The source modules need only `AddCommMonoid`, `Module`, and `CoalgebraStruct`:
+these maps preserve comultiplication and counit without requiring coalgebra laws on
+the sources. The ambient coalgebra and its subcoalgebra retain their full coalgebra
+structures over a field.
+
 ## References
 
 The bundled maps and their extensionality and composition API follow
@@ -98,7 +103,7 @@ theorem subtype_apply (D : Subcoalgebra K C) (x : D) : D.subtype x = (x : C) :=
 theorem subtype_injective (D : Subcoalgebra K C) : Function.Injective D.subtype :=
   coe_injective
 
-variable {A : Type w} [AddCommGroup A] [Module K A] [Coalgebra K A]
+variable {A : Type w} [AddCommMonoid A] [Module K A] [CoalgebraStruct K A]
 
 /-- Coalgebra homomorphisms into a subcoalgebra are determined by their ambient values. -/
 theorem coalgHom_ext {D : Subcoalgebra K C} {f g : A →ₗc[K] D}
@@ -122,7 +127,7 @@ namespace CoalgHom
 
 variable {K : Type u} {C : Type v} {A : Type w}
 variable [Field K] [AddCommGroup C] [Module K C] [Coalgebra K C]
-variable [AddCommGroup A] [Module K A] [Coalgebra K A]
+variable [AddCommMonoid A] [Module K A] [CoalgebraStruct K A]
 
 /-- Restrict the codomain of a coalgebra homomorphism to a subcoalgebra containing its values. -/
 noncomputable def codRestrict (f : A →ₗc[K] C) (D : Subcoalgebra K C)
@@ -223,7 +228,7 @@ theorem existsUnique_subtype_comp_iff (f : A →ₗc[K] C) (D : Subcoalgebra K C
     exact ⟨f.codRestrict D h, subtype_comp_codRestrict f D h,
       fun g hg => codRestrict_unique f D h g hg⟩
 
-variable {B : Type w₁} [AddCommGroup B] [Module K B] [Coalgebra K B]
+variable {B : Type w₁} [AddCommMonoid B] [Module K B] [CoalgebraStruct K B]
 
 /-- Codomain restriction commutes with precomposition by a coalgebra homomorphism. -/
 @[simp]

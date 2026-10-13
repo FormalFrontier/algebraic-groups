@@ -31,6 +31,18 @@ third-party and AI involvement.
   The [diagonal example](AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraDiagonal.lean)
   uses the proper nonzero finite-dimensional subcoalgebra of `ℕ →₀ K`
   supported on `{0, 1}`.
+- **Subcoalgebra image equivalences.** For a field `K` and `K`-coalgebras
+  `C`, `C'` in independent universes, `Subcoalgebra.equivMapOfInjOn f D hf`
+  identifies `D` with its canonical image `Subcoalgebra.map f D` as a
+  coalgebra. It assumes only `hf : Set.InjOn f (D : Set C)` for the coalgebra
+  homomorphism `f`, not ambient injectivity. Under this local hypothesis, the
+  image carrier is finitely generated exactly when the source carrier is;
+  likewise `Module.Finite K (Subcoalgebra.map f D) ↔ Module.Finite K D`.
+  `CoalgEquiv.subcoalgebraCongr` transports subcoalgebras along an ambient
+  coalgebra equivalence as an ordinary `Equiv` (not a bundled order
+  isomorphism), preserving and reflecting `Module.Finite`. No ambient
+  finiteness is assumed. See the [API](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Equiv.lean) and the
+  [infinite-dimensional, globally noninjective but locally injective example](AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraImageEquiv.lean).
 - **Finite right-subcomodule containment.** `Coalgebra.RightComodule R C M`
   specifies a right linear coaction `ρ : M →ₗ[R] M ⊗[R] C` satisfying
   coassociativity and right counitality. The scalars are an arbitrary commutative
@@ -111,6 +123,11 @@ third-party and AI involvement.
   antipodes; the algebras need not be commutative or have additive inverses.
   See the [homomorphism API](AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean)
   and [semiring group-algebra examples](AlgebraicGroupsTest/Algebra/HopfAlgebra/Hom.lean).
+  The [comultiplication API](AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean)
+  gives the complementary identity `Δ ∘ S = (S ⊗ S) ∘ τ ∘ Δ` for every Hopf
+  algebra over a commutative semiring, without cocommutativity or commutative
+  multiplication; [examples](AlgebraicGroupsTest/Algebra/HopfAlgebra/Comultiplication.lean)
+  use natural-number group algebras and `GL₂` coordinates.
 
 - **Finite additive products over a ring.** For arbitrary commutative `K`
   and finite `D`, the *underlying* over-scheme of the literal categorical

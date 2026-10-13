@@ -7,6 +7,7 @@ module
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
@@ -28,12 +29,22 @@ For a nontrivial coalgebra whose underlying module is free, a basis coordinate
 maps this identity to the scalar semiring, so the counit is surjective. Neither
 a finite basis nor a ring or field structure on the scalars is required.
 
+Over a commutative ring, a finitely generated counit image also equals the whole
+ring when the scalar action on the coalgebra is faithful. The finiteness premise
+concerns only the image ideal, not the underlying module. Mathlib's theorem on
+finitely generated idempotent ideals supplies an idempotent generator; the counit
+identity makes it act identically, and faithfulness identifies it with one.
+Faithfulness alone does not give this conclusion without finite generation of
+the image ideal.
+
 ## References
 
 Mathlib supplies the counit coalgebra homomorphism, tensor induction,
 free-module bases, ideal multiplication and submodule scalar action used here.
 The tensor-product range formula uses Mathlib's `TensorProduct.range_map` and
-`Submodule.mulMap_range`.
+`Submodule.mulMap_range`. The faithful-action criterion reuses Mathlib's
+`Ideal.isIdempotentElem_iff_of_fg`, singleton-ideal scalar action and
+`FaithfulSMul.eq_of_smul_eq_smul`.
 -/
 
 @[expose] public section
@@ -46,6 +57,8 @@ universe u v w
 open scoped TensorProduct
 
 namespace Coalgebra
+
+section CommSemiring
 
 variable (R : Type u) (C : Type v)
 variable [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
@@ -159,5 +172,51 @@ theorem counit_range_tensorProduct :
       _root_.TensorProduct.map₂_mk_top_top_eq_top]
   rw [hε, LinearMap.range_comp, hrange, Submodule.map_top]
   exact Submodule.mulMap_range I J
+
+end CommSemiring
+
+section CommRing
+
+variable (R : Type u) (C : Type v)
+variable [CommRing R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
+variable [FaithfulSMul R C]
+
+open scoped Pointwise in
+/-- A finitely generated counit image is the whole scalar ring if the scalar action
+on the coalgebra is faithful. Only the image ideal needs to be finitely generated;
+no finiteness, freeness or projectivity of the underlying module is required. -/
+theorem counit_range_eq_top_of_faithfulSMul_of_fg
+    (hfg : (LinearMap.range (counit (R := R) (A := C)) : Ideal R).FG) :
+    (LinearMap.range (counit (R := R) (A := C)) : Ideal R) = ⊤ := by
+  obtain ⟨e, he, hspan⟩ :=
+    (Ideal.isIdempotentElem_iff_of_fg
+      (LinearMap.range (counit (R := R) (A := C)) : Ideal R) hfg).mp
+        (counit_range_mul_self R C)
+  rw [Ideal.submodule_span_eq] at hspan
+  have htop : e • (⊤ : Submodule R C) = ⊤ := by
+    rw [← Submodule.ideal_span_singleton_smul, ← hspan]
+    exact counit_range_smul_top R C
+  have he_smul (c : C) : e • c = c := by
+    have hc : c ∈ e • (⊤ : Submodule R C) := by
+      rw [htop]
+      exact Submodule.mem_top
+    obtain ⟨y, _, hy⟩ := (Submodule.mem_smul_pointwise_iff_exists c e ⊤).mp hc
+    calc
+      e • c = e • (e • y) := congrArg (e • ·) hy.symm
+      _ = (e * e) • y := (mul_smul e e y).symm
+      _ = e • y := by rw [he.eq]
+      _ = c := hy
+  have he_one : e = 1 := eq_of_smul_eq_smul (α := C) fun c ↦ by
+    rw [he_smul c, one_smul]
+  simpa only [he_one, Ideal.span_singleton_one] using hspan
+
+/-- The counit is surjective for a coalgebra with faithful scalar action and
+finitely generated counit image ideal. The underlying module may be infinite. -/
+theorem counit_surjective_of_faithfulSMul_of_fg
+    (hfg : (LinearMap.range (counit (R := R) (A := C)) : Ideal R).FG) :
+    Function.Surjective (counit (R := R) (A := C)) :=
+  LinearMap.range_eq_top.mp (counit_range_eq_top_of_faithfulSMul_of_fg R C hfg)
+
+end CommRing
 
 end Coalgebra

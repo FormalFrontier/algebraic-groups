@@ -70,6 +70,10 @@ The idempotent principal ideal coalgebra uses Ali Ramsey and Eric Wieser’s
 Mathlib coalgebra laws and Finsupp coalgebra, Christopher Hoskin’s idempotent
 predicate API, and Mathlib’s ideal and tensor-product interfaces. Formal
 Frontier Agents contributed its construction and characteristic formulas.
+The counit surjectivity criterion for faithful scalar action and finitely
+generated image uses Mario Carneiro and Kevin Buzzard’s Mathlib theorem on
+idempotent finitely generated ideals, together with Mathlib’s singleton-ideal
+action and faithful-action APIs.
 Counit ideals under scalar extension use Amelia Livingston and Andrew Yang’s
 Mathlib tensor-product coalgebra, Antoine Chambert-Loir’s tensor-range theorem,
 and Mathlib’s submodule scalar-extension and ideal-image APIs.
@@ -157,6 +161,11 @@ API. Kim Morrison's categorical commutative-Hopf-object antipode identity
 is a related prior formalization; the semiring algebra theorem here extracts
 the identity directly from the existing convolution group. Its group-algebra
 examples use Amelia Livingston's canonical Hopf instance and antipode formula.
+Antipode reversal of comultiplication follows Kim Morrison's categorical
+Hopf-object convolution inverse-uniqueness strategy and reuses the concrete
+`LinearMap.comul_right_inv` of Dillies, Mrugała and Xie. The balanced-tensor
+contraction uses Kenny Lau and Mario Carneiro's tensor maps, associators and
+permutations, with Ali Ramsey and Eric Wieser's coalgebra laws.
 Other reused Mathlib APIs include Hopf quotients, matrix determinant
 and group-object operations, localization and faithfully flat descent,
 connected components, polynomial Krull dimension and standard smoothness.

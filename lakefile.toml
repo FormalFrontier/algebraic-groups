@@ -50,6 +50,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdeal",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Antipode",
+  "AlgebraicGroupsTest.Algebra.HopfAlgebra.Comultiplication",
   "AlgebraicGroupsTest.Algebra.LocalizedCoordinateQuotient",
   "AlgebraicGroupsTest.Algebra.FinitePolynomialLocalizationDimension",
   "AlgebraicGroupsTest.Algebra.UnitriangularBaseChange",
@@ -109,7 +110,10 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.MonoidAlgebraCollapse",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraMapBoundaries",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraMapSupported",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraImageEquiv",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraImageFiniteGeneration",
   "AlgebraicGroupsTest.Algebra.TensorProduct.Split",
   "AlgebraicGroupsTest.GroupLikeCardinality",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeHom",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraCodRestrict",
 ]
