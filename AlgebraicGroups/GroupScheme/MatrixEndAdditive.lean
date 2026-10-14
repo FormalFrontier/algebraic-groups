@@ -26,6 +26,11 @@ Their tensor/base-change and coordinate presentations use Mathlib's product,
 matrix-basis, dual-basis and symmetric-algebra equivalences; the endomorphism
 comparison uses its finite-free `IsBaseChange.end`.
 
+The standard-basis coefficient formula works over any semiring, and the dual
+entry formula over any commutative semiring, independently of the field used
+for the group functors. Both use Mathlib's finite matrix basis and its
+representation and dual-basis APIs.
+
 ## References
 
 - J. S. Milne, *Algebraic Groups* (2017), item 2.7 (additive matrix and
@@ -48,6 +53,30 @@ open scoped CategoryTheory.MonObj TensorProduct
 universe u
 
 namespace AlgebraicGeometry
+
+section MatrixBasis
+
+universe uK um un
+
+/-- The standard-basis coefficient of a rectangular matrix is its corresponding entry. -/
+@[simp]
+theorem matrixStdBasis_repr
+    (K : Type uK) (m : Type um) (n : Type un)
+    [Semiring K] [Fintype m] [Finite n]
+    (A : Matrix m n K) (i : m) (j : n) :
+    (Matrix.stdBasis K m n).repr A (i, j) = A i j := by
+  simp [Matrix.stdBasis]
+
+/-- Evaluation at a dual standard-basis vector reads the corresponding matrix entry. -/
+theorem matrixStdBasis_dual_apply
+    (K : Type uK) (m : Type um) (n : Type un)
+    [CommSemiring K] [Fintype m] [Finite n] [DecidableEq (m × n)]
+    (A : Matrix m n K) (i : m) (j : n) :
+    (Matrix.stdBasis K m n).dualBasis (i, j) A = A i j := by
+  rw [Module.Basis.dualBasis_apply]
+  exact matrixStdBasis_repr K m n A i j
+
+end MatrixBasis
 
 variable (K : Type u) [Field K]
 
@@ -166,16 +195,6 @@ theorem matrixGroupPointsIso_apply_left (R : CommAlgCat K) (A : Matrix m n R) :
     ((matrixGroupPointsIso K m n).hom.app R (.ofAdd A)).left =
       Spec.map (CommRingCat.ofHom (matrixCoordinateEval K m n R A).toRingHom) :=
   rfl
-
-theorem matrixStdBasis_dual_apply (A : Matrix m n K) (i : m) (j : n) :
-    (Matrix.stdBasis K m n).dualBasis (i, j) A = A i j := by
-  rw [Module.Basis.dualBasis_apply]
-  simp [Matrix.stdBasis]
-
-@[simp]
-theorem matrixStdBasis_repr (A : Matrix m n K) (i : m) (j : n) :
-    (Matrix.stdBasis K m n).repr A (i, j) = A i j := by
-  simpa only [Module.Basis.dualBasis_apply] using matrixStdBasis_dual_apply K m n A i j
 
 /-- Basis-dual evaluation reads the corresponding rectangular matrix entry. -/
 theorem matrixTensorEntry (R : Type u) [CommRing R] [Algebra K R]

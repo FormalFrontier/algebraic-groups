@@ -339,3 +339,240 @@ end Boundaries
 end AlgebraicGeometry
 
 #lint
+
+/-!
+## Matrix-coordinate values over semirings
+
+The matrix-unit basis of the full matrix space uses finite row and column
+indices. Scalar multiplication and representation already work over semirings;
+the dual basis uses commutative semirings. Empty indices and the zero ring are
+included, alongside nonzero rectangular matrices over the natural numbers.
+-/
+
+namespace AlgebraicGeometry.MatrixCoordinateValues
+
+universe r s t
+
+/-- The standard matrix basis with finite row and column types. -/
+def basis (R : Type r) [Semiring R] (m : Type s) (n : Type t)
+    [Finite m] [Finite n] : Module.Basis (m × n) R (Matrix m n R) := by
+  classical
+  letI := Fintype.ofFinite m
+  exact Matrix.stdBasis R m n
+
+/-- The dual of the standard matrix basis over a commutative semiring. -/
+def dualBasis (R : Type r) [CommSemiring R] (m : Type s) (n : Type t)
+    [Finite m] [Finite n] :
+    Module.Basis (m × n) R (Module.Dual R (Matrix m n R)) := by
+  classical
+  exact (basis R m n).dualBasis
+
+/-- A scalar multiple of a matrix basis vector has the supplied coefficient. -/
+theorem basis_smul_repr (R : Type r) [Semiring R] (m : Type s) (n : Type t)
+    [Finite m] [Finite n] (p : m × n) (c : R) :
+    (basis R m n).repr (c • basis R m n p) p = c := by
+  classical
+  simp [-matrixStdBasis_repr]
+
+/-- The matching dual matrix coordinate evaluates a scalar multiple of a basis vector. -/
+theorem dualBasis_smul (R : Type r) [CommSemiring R] (m : Type s) (n : Type t)
+    [Finite m] [Finite n] (p : m × n) (c : R) :
+    dualBasis R m n p (c • basis R m n p) = c := by
+  classical
+  simp [-matrixStdBasis_repr, dualBasis]
+
+/-- A two-by-three matrix over the natural numbers with distinct positive entries. -/
+def naturalRectangle : Matrix (Fin 2) (Fin 3) ℕ :=
+  fun row col ↦ 3 * row.val + col.val + 1
+
+/-- The bottom-right entry of the natural-number rectangle is nonzero. -/
+theorem naturalRectangle_entry : naturalRectangle 1 2 = 6 ∧ naturalRectangle 1 2 ≠ 0 := by
+  simp [naturalRectangle]
+
+/-- A matrix basis vector has value one at its index and zero at a different index. -/
+theorem naturalBasis_values :
+    basis ℕ (Fin 2) (Fin 3) (1, 2) 1 2 = 1 ∧
+      basis ℕ (Fin 2) (Fin 3) (1, 2) 0 0 = 0 := by
+  classical
+  simp [basis, Matrix.stdBasis_eq_single]
+
+/-- The bottom-right dual coordinate of the natural-number rectangle is six. -/
+theorem naturalRectangle_dual :
+    dualBasis ℕ (Fin 2) (Fin 3) (1, 2) naturalRectangle = 6 := by
+  classical
+  simp [-matrixStdBasis_repr, dualBasis, basis,
+    Matrix.stdBasis, naturalRectangle]
+
+/-- The bottom-right basis coefficient of the natural-number rectangle is six. -/
+theorem naturalRectangle_repr :
+    (basis ℕ (Fin 2) (Fin 3)).repr naturalRectangle (1, 2) = 6 := by
+  classical
+  simp [-matrixStdBasis_repr, basis, Matrix.stdBasis, naturalRectangle]
+
+/-- A rectangular dual coordinate reads the sum of entries of arbitrary natural matrices. -/
+theorem naturalRectangle_add_dual (A B : Matrix (Fin 2) (Fin 3) ℕ) :
+    dualBasis ℕ (Fin 2) (Fin 3) (1, 2) (A + B) = A 1 2 + B 1 2 := by
+  classical
+  simp [-matrixStdBasis_repr, dualBasis, basis, Matrix.stdBasis]
+
+/-- Every empty-row matrix has zero finitely-supported coefficients. -/
+theorem emptyRows_repr (A : Matrix (Fin 0) (Fin 3) ℕ) :
+    (basis ℕ (Fin 0) (Fin 3)).repr A = 0 := by
+  ext p
+  exact Fin.elim0 p.1
+
+/-- Every empty-column matrix has zero finitely-supported coefficients. -/
+theorem emptyColumns_repr (A : Matrix (Fin 2) (Fin 0) ℕ) :
+    (basis ℕ (Fin 2) (Fin 0)).repr A = 0 := by
+  ext p
+  exact Fin.elim0 p.2
+
+/-- The empty-row basis reconstructs the zero matrix from zero coefficients. -/
+theorem emptyRows_reconstruction :
+    (basis ℕ (Fin 0) (Fin 3)).repr.symm 0 = 0 :=
+  map_zero _
+
+/-- Every functional on empty-row matrices has zero dual-basis coefficients. -/
+theorem emptyRows_dual_repr (φ : Module.Dual ℕ (Matrix (Fin 0) (Fin 3) ℕ)) :
+    (dualBasis ℕ (Fin 0) (Fin 3)).repr φ = 0 := by
+  ext p
+  exact Fin.elim0 p.1
+
+/-- A rectangular basis vector over the zero ring is the zero matrix. -/
+theorem zeroRing_basis : basis (ZMod 1) (Fin 2) (Fin 3) (1, 2) = 0 :=
+  Subsingleton.elim _ _
+
+/-- The dual coordinate of the constant-one zero-ring matrix is zero. -/
+theorem zeroRing_dual :
+    dualBasis (ZMod 1) (Fin 2) (Fin 3) (1, 2) (fun _ _ ↦ 1) = 0 :=
+  Subsingleton.elim _ _
+
+/-- The basis coefficient of the constant-one zero-ring matrix is zero. -/
+theorem zeroRing_repr :
+    (basis (ZMod 1) (Fin 2) (Fin 3)).repr (fun _ _ ↦ 1) (1, 2) = 0 :=
+  Subsingleton.elim _ _
+
+/-- A rectangle with independently lifted row, column and scalar universes. -/
+def liftedRectangle :
+    Matrix (ULift.{r} (Fin 2)) (ULift.{s} (Fin 3)) (ULift.{t} ℕ) :=
+  fun row col ↦ ⟨3 * row.down.val + col.down.val + 1⟩
+
+/-- The lifted rectangle's dual coordinate is the lifted natural number six. -/
+theorem liftedRectangle_dual :
+    dualBasis (ULift.{t} ℕ) (ULift.{r} (Fin 2)) (ULift.{s} (Fin 3))
+      (⟨1⟩, ⟨2⟩) liftedRectangle = ⟨6⟩ := by
+  classical
+  simp [-matrixStdBasis_repr, dualBasis, basis,
+    Matrix.stdBasis, liftedRectangle]
+
+/-- The lifted rectangle's basis coefficient is the lifted natural number six. -/
+theorem liftedRectangle_repr :
+    (basis (ULift.{t} ℕ) (ULift.{r} (Fin 2)) (ULift.{s} (Fin 3))).repr
+      liftedRectangle (⟨1⟩, ⟨2⟩) = ⟨6⟩ := by
+  classical
+  simp [-matrixStdBasis_repr, basis, Matrix.stdBasis, liftedRectangle]
+
+section Field
+
+/-- The dual value and representation coefficient with field matrix coordinates. -/
+def fieldEntries (K m n : Type r) [Field K] [Fintype m] [Fintype n]
+    [DecidableEq m] [DecidableEq n] (A : Matrix m n K) (row : m) (col : n) : K × K :=
+  ((Matrix.stdBasis K m n).dualBasis (row, col) A,
+    (Matrix.stdBasis K m n).repr A (row, col))
+
+/-- The two field-coordinate descriptions give the same matrix-entry value. -/
+theorem fieldEntries_apply (K m n : Type r) [Field K] [Fintype m] [Fintype n]
+    [DecidableEq m] [DecidableEq n] (A : Matrix m n K) (row : m) (col : n) :
+    fieldEntries K m n A row col = (A row col, A row col) := by
+  exact Prod.ext (matrixStdBasis_dual_apply K m n A row col)
+    (matrixStdBasis_repr K m n A row col)
+
+local instance : Fact (Nat.Prime 2) := ⟨Nat.prime_two⟩
+
+/-- A nonzero two-by-three binary matrix with a nonzero last column. -/
+def binaryRectangle : Matrix (Fin 2) (Fin 3) (ZMod 2) :=
+  fun row col ↦ if row = 1 then 1 else if col = 2 then 1 else 0
+
+/-- Dual and representation field coordinates evaluate the binary rectangle to one. -/
+theorem binaryRectangle_entries :
+    fieldEntries (ZMod 2) (Fin 2) (Fin 3) binaryRectangle 1 2 = (1, 1) := by
+  rw [fieldEntries_apply]
+  simp [binaryRectangle]
+
+/-- The binary rectangle has a nonzero selected entry and a zero opposite corner. -/
+theorem binaryRectangle_values : binaryRectangle 1 2 ≠ 0 ∧ binaryRectangle 0 0 = 0 := by
+  simp [binaryRectangle]
+
+/-- Symmetric-coordinate evaluation returns one on the binary rectangle. -/
+theorem binaryRectangle_coordinate :
+    matrixCoordinateEval (ZMod 2) (Fin 2) (Fin 3) (ZMod 2) binaryRectangle
+      (SymmetricAlgebra.ι (ZMod 2) _
+        ((Matrix.stdBasis (ZMod 2) (Fin 2) (Fin 3)).dualBasis (1, 2))) = 1 := by
+  rw [matrixCoordinateEval_ι]
+  simp [binaryRectangle]
+
+attribute [local instance] AlgebraicGeometry.zeroRingAlgebra
+
+/-- Symmetric-coordinate evaluation also takes a zero-ring value. -/
+theorem zeroRing_coordinate :
+    matrixCoordinateEval (ZMod 2) (Fin 2) (Fin 3) (ZMod 1) (fun _ _ ↦ 1)
+      (SymmetricAlgebra.ι (ZMod 2) _
+        ((Matrix.stdBasis (ZMod 2) (Fin 2) (Fin 3)).dualBasis (1, 2))) = 0 := by
+  exact Subsingleton.elim _ _
+
+end Field
+
+end AlgebraicGeometry.MatrixCoordinateValues
+
+namespace AlgebraicGeometry.MatrixEntryValues
+
+universe r s t
+
+/-- Matrix representation respects left scalar multiplication and addition over a semiring. -/
+theorem repr_smul_add (R : Type r) (m : Type s) (n : Type t) [Semiring R]
+    [Fintype m] [Finite n] (c : R) (A B : Matrix m n R) (i : m) (j : n) :
+    (Matrix.stdBasis R m n).repr (c • A + B) (i, j) = c * A i j + B i j := by
+  rw [matrixStdBasis_repr]
+  rfl
+
+/-- Dual matrix coordinates read sums with only decidable equality on the product index. -/
+theorem dual_add (R : Type r) (m : Type s) (n : Type t) [CommSemiring R]
+    [Fintype m] [Finite n] [DecidableEq (m × n)]
+    (A B : Matrix m n R) (i : m) (j : n) :
+    (Matrix.stdBasis R m n).dualBasis (i, j) (A + B) = A i j + B i j := by
+  rw [matrixStdBasis_dual_apply]
+  rfl
+
+/-- The representation API reads six from the positive natural-number rectangle. -/
+theorem naturalRectangle_repr :
+    (Matrix.stdBasis ℕ (Fin 2) (Fin 3)).repr
+      MatrixCoordinateValues.naturalRectangle (1, 2) = 6 := by
+  rw [matrixStdBasis_repr]
+  exact MatrixCoordinateValues.naturalRectangle_entry.1
+
+/-- The dual-coordinate API reads six from the same natural-number rectangle. -/
+theorem naturalRectangle_dual :
+    (Matrix.stdBasis ℕ (Fin 2) (Fin 3)).dualBasis (1, 2)
+      MatrixCoordinateValues.naturalRectangle = 6 := by
+  rw [matrixStdBasis_dual_apply]
+  exact MatrixCoordinateValues.naturalRectangle_entry.1
+
+/-- A rectangular matrix with a nonzero off-diagonal matrix as every scalar coefficient. -/
+def matrixScalarRectangle : Matrix (Fin 2) (Fin 3) (Matrix (Fin 2) (Fin 2) ℕ) :=
+  Matrix.of fun _ _ ↦ Matrix.single 0 1 3
+
+/-- Matrix-valued representation preserves the off-diagonal coefficient. -/
+theorem matrixScalarRectangle_repr :
+    (Matrix.stdBasis (Matrix (Fin 2) (Fin 2) ℕ) (Fin 2) (Fin 3)).repr
+      matrixScalarRectangle (1, 2) = Matrix.single 0 1 3 := by
+  rw [matrixStdBasis_repr]
+  rfl
+
+/-- The represented coefficient has off-diagonal entry three over the noncommutative semiring. -/
+theorem matrixScalarRectangle_repr_entry :
+    ((Matrix.stdBasis (Matrix (Fin 2) (Fin 2) ℕ) (Fin 2) (Fin 3)).repr
+      matrixScalarRectangle (1, 2)) 0 1 = 3 := by
+  rw [matrixStdBasis_repr]
+  simp [matrixScalarRectangle]
+
+end AlgebraicGeometry.MatrixEntryValues
