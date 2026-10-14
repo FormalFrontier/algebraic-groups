@@ -38,11 +38,14 @@ identity makes it act identically, and faithfulness identifies it with one.
 Faithfulness alone does not give this conclusion without finite generation of
 the image ideal.
 
-Over a commutative ring, the counit is also surjective when the underlying module
-is faithfully flat. The counit-law action on the top submodule, together with
-Mathlib's ideal-top reflection criterion, makes the range the whole scalar ring.
-This criterion requires neither finite generation nor nontriviality; faithful
-flatness is assumed on the coalgebra carrier, not on a separate scalar extension.
+Over a commutative ring, the underlying module is faithfully flat exactly when
+it is flat and its counit is surjective, or equivalently has range the whole
+scalar ring. In the forward direction, the counit-law action on the top submodule
+and Mathlib's ideal-top reflection criterion make the range the whole ring.
+Conversely, a surjective counit transports ideal scalar action to the scalar ring,
+where ideal multiplication gives the same reflection criterion. No finite
+generation or nontriviality is required; flatness concerns the coalgebra carrier,
+not a separate scalar extension.
 
 ## References
 
@@ -53,7 +56,9 @@ The tensor-product range formula uses Mathlib's `TensorProduct.range_map` and
 `Ideal.isIdempotentElem_iff_of_fg`, singleton-ideal scalar action and
 `FaithfulSMul.eq_of_smul_eq_smul`. The faithfully flat criterion combines
 `counit_range_smul_top` with Mathlib's
-`Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top`.
+`Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top`. Its converse uses Mathlib's
+`Submodule.map_smul''`, `Submodule.map_top`, `LinearMap.range_eq_top` and
+`Ideal.smul_eq_mul` to transport ideal scalar action along the counit.
 -/
 
 @[expose] public section
@@ -247,5 +252,40 @@ theorem counit_surjective_of_faithfullyFlat :
   LinearMap.range_eq_top.mp (counit_range_eq_top_of_faithfullyFlat R C)
 
 end CommRingFaithfullyFlat
+
+/-- The underlying module of a coalgebra over a commutative ring is faithfully flat
+exactly when it is flat and its counit is surjective. Flatness is a separate
+module-theoretic requirement. -/
+theorem faithfullyFlat_iff_flat_and_counit_surjective
+    (R : Type u) (C : Type v)
+    [CommRing R] [AddCommGroup C] [Module R C] [Coalgebra R C] :
+    Module.FaithfullyFlat R C ↔
+      Module.Flat R C ∧
+        Function.Surjective (Coalgebra.counit (R := R) (A := C)) := by
+  constructor
+  · intro hFF
+    let := hFF
+    exact ⟨inferInstance, counit_surjective_of_faithfullyFlat R C⟩
+  · rintro ⟨hflat, hsurj⟩
+    refine (Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top R C).mpr ⟨hflat, ?_⟩
+    intro I hI
+    have hrange : LinearMap.range (counit (R := R) (A := C)) = ⊤ :=
+      LinearMap.range_eq_top.mpr hsurj
+    have h := congrArg (Submodule.map (counit (R := R) (A := C))) hI
+    rw [Submodule.map_smul'', Submodule.map_top, hrange, Ideal.smul_eq_mul,
+      Ideal.mul_top] at h
+    exact h
+
+/-- The underlying module of a coalgebra over a commutative ring is faithfully flat
+exactly when it is flat and the scalar ideal given by its counit range is the
+whole ring. -/
+theorem faithfullyFlat_iff_flat_and_counit_range_eq_top
+    (R : Type u) (C : Type v)
+    [CommRing R] [AddCommGroup C] [Module R C] [Coalgebra R C] :
+    Module.FaithfullyFlat R C ↔
+      Module.Flat R C ∧
+        (LinearMap.range (Coalgebra.counit (R := R) (A := C)) : Ideal R) = ⊤ := by
+  simpa only [LinearMap.range_eq_top] using
+    (faithfullyFlat_iff_flat_and_counit_surjective R C)
 
 end Coalgebra
