@@ -8,6 +8,7 @@ public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
 public import AlgebraicGroups.Algebra.Coalgebra.Coefficients
+public import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
 public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
 public import AlgebraicGroups.Algebra.Coalgebra.Equiv
 public import AlgebraicGroups.Algebra.Coalgebra.FiniteSubcoalgebra
@@ -19,6 +20,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
 public import AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension
+public import AlgebraicGroups.Algebra.GeneralLinearCoordinateRing.Dimension
 public import AlgebraicGroups.Algebra.TensorProduct.Pi
 public import AlgebraicGroups.Algebra.TensorProduct.Split
 public import AlgebraicGroups.Algebra.Smooth

@@ -6,6 +6,21 @@ focused guides explain the most involved constructions. Source-specific
 passage correspondence is maintained separately.
 
 
+## Guide directory
+
+- [Coalgebras and comodules](COALGEBRAS.md): finite containment, intrinsic
+  coefficients, counit ideals, group-like elements and API walkthroughs.
+- [Vector groups](#vector-groups-matrix-groups-and-functors),
+  [closed stages](#closed-unitriangular-stages),
+  [unitriangular base change](#unitriangular-base-change),
+  [triangular coordinates and geometry](#triangular-geometry-and-coordinates)
+  and [GL/SL](#general-and-special-linear-geometry).
+- [Antipodes](#antipode-involutivity),
+  [localization and descent](#localization-descent-and-finite-projective-algebra),
+  [quotients](#representability-group-schemes-and-quotient-constructions),
+  [components and density](#dimension-components-and-density).
+- [Building and focused targets](BUILDING.md); [credits and references](../CREDITS.md).
+
 ## Vector groups, matrix groups and functors
 
 Milne, *Algebraic Groups* (2017), items 2.1 and 2.6–2.7, gives the additive,
@@ -148,6 +163,132 @@ does not turn its coordinate algebra equivalence into a Hopf equivalence.
   fiber above the product's unit, using an ideal equality and universal
   algebra/scheme factorization. It asserts neither a quotient nor a
   group-homomorphic section. See the [kernel guide](../AlgebraicGroups/GroupScheme/UnitriangularStageKernel/README.md).
+
+The rank-three stage-two quotient retains the `(0,2)` entry; exhausted stages,
+empty ranks and zero rings remain allowed. Its polynomial presentation is not
+an additive-group or Hopf identification. The underlying projection and section
+are in the [projection module](../AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge.lean).
+
+## Unitriangular base change
+
+- **Unitriangular coordinate-algebra base change.** For arbitrary commutative
+  rings `R`, `S` with `[Algebra R S]` and finite linearly ordered `ι`, scalar
+  extension of the actual unitriangular GL quotient is `S`-algebra equivalent
+  to its quotient over `S`, including the zero ring and empty indices. Its
+  presentation, coefficient and all-entry laws are in the
+  [base-change guide](../AlgebraicGroups/Algebra/UnitriangularBaseChange/README.md).
+
+- **Canonical unitriangular Hopf base change.** Over the same arbitrary
+  commutative base rings and finite linearly ordered indices, the algebra
+  comparison preserves the counit and coproduct of the independently given
+  tensor-product and quotient Hopf structures, hence gives a bialgebra
+  equivalence and intertwines their antipodes. The all-entry coproduct
+  formula and nonprimitive `Fin 3` client are in the
+  [Hopf base-change guide](../AlgebraicGroups/Algebra/UnitriangularHopfBaseChange/README.md).
+
+- **Unitriangular base-change coherence.** The actual quotient comparison
+  agrees with the tensor unit along the identity and with tensor cancellation
+  along a commutative scalar tower, as equalities of algebra equivalences.
+  See the [coherence guide](../AlgebraicGroups/Algebra/UnitriangularBaseChangeCoherence/README.md).
+
+- **Native unitriangular group-scheme base change.** Over arbitrary same-universe
+  commutative rings and finite linearly ordered indices, the actual pulled-back
+  unitriangular group object is isomorphic to the group scheme over the new
+  base. The forward map and base projection have readbacks; an ordinary-import
+  `Fin 3` client retains the group-product cross term. See the
+  [standalone scheme base-change guide](../docs/UnitriangularSchemeBaseChange.md).
+
+- **Unitriangular group-scheme identity and tower coherence.** The native
+  one-step base-change map agrees with the canonical pullback identity unit
+  and direct-to-iterated scalar-tower compositor. An ordinary-import `Fin 2`
+  client checks the inverse coordinate through both routes. See the
+  [standalone group-scheme coherence guide](../docs/UnitriangularSchemeBaseChangeCoherence.md).
+
+## Triangular geometry and coordinates
+
+- **Finite triangular geometry and native dimension.** Over any commutative
+  ring, the native multiplicative, finite diagonal and finite upper-triangular
+  schemes are smooth with geometrically integral *fibers* over `Spec K`; their
+  total underlying schemes are integral when `K` is a domain. Empty index
+  types and zero rings are allowed for the relative assertions. Independently
+  importable diagonal/strict/retained-index equivalences split weakly ordered
+  pairs without finiteness and count finite pairs as `card ι + (card ι).choose 2`.
+  For the **actual native** upper-triangular GL quotient, both ideal inclusions
+  and the localized coordinate equivalence identify native retained entries
+  and polynomial variables in both directions over *any* commutative ring.
+  Its identity-determinant point gives native ring and affine `Spec` dimension
+  `card ι + (card ι).choose 2` over every field, including finite fields and
+  empty indices; no arbitrary-base or general product-dimension formula follows.
+  See the [geometry guide](../AlgebraicGroups/GroupScheme/FiniteTriangularGeometry/README.md),
+  [indices guide](../AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices/README.md)
+  and [native dimension guide](../AlgebraicGroups/GroupScheme/UpperTriangularDimension/README.md),
+  each linking its focused producer and ordinary-import client.
+
+- **Coordinate elimination and finite diagonal dimension.** For any commutative
+  ring, `MvPolynomial.localizedCoordinateQuotientEquiv` identifies a polynomial
+  localization modulo eliminated coordinates with localization at the erased
+  polynomial, even if that polynomial erases to zero or the base ring is trivial.
+  Over any field and finite variable type, the independent theorem
+  `MvPolynomial.ringKrullDim_localizationAway_of_eval_ne_zero` gives dimension
+  `Fintype.card σ` when a *supplied* field-valued point does not annihilate the
+  denominator; a nonzero denominator alone need not supply that nonvanishing
+  field-valued point over a finite field. This limitation concerns the supplied-point
+  hypothesis, not the general full-dimension formula for a nonzero denominator.
+  Applying both APIs to the **actual** finite diagonal Hopf quotient,
+  `DiagonalCoordinateRing.localizedPolynomialEquiv` identifies both directions
+  of its retained coordinates, and
+  `AlgebraicGeometry.diagonalGroupUnderlyingScheme_topologicalKrullDim` gives
+  dimension `Fintype.card ι` for every field and finite decidable `ι`, including
+  empty indices. Use the independent [elimination guide](../AlgebraicGroups/Algebra/LocalizedCoordinateQuotient/README.md),
+  [localization-dimension guide](../AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension/README.md)
+  and [native diagonal guide](../AlgebraicGroups/GroupScheme/DiagonalDimension/README.md),
+  with their focused producer modules and `AlgebraicGroupsTest` ordinary clients.
+
+- **Represented U-first upper-triangular coordinates.** For any commutative
+  ring `K` and same-universe finite linearly ordered index type `n`, the
+  unitriangular scheme `U`, diagonal scheme `D` and upper-triangular scheme
+  `T` over `Spec K` admit a categorical isomorphism of underlying schemes
+  `U ⊗ D ≅ T` in `Over (Spec K)`. Its forward arrow is `i(u)e(d)`; its inverse
+  recovers the diagonal by projection and the unitriangular factor by right
+  (column) normalization. The represented diagonal action on the actual
+  scheme-theoretic identity fiber sends the `(i,j)` entry of `u` to
+  `d_i * u_ij * d_j⁻¹`. For arbitrary test schemes, multiplication in these
+  coordinates is `(u,d)*(u',d') = (u*α(d,u'), d*d')`: the categorical product
+  does **not** carry the canonical direct-product group law under this iso.
+  Point readbacks hold over every commutative `K`-algebra, including zero and
+  nonreduced rings; empty indices and noninjective coefficient maps need no
+  exception. Import
+  `AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct`; see its
+  [producer](../AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean),
+  [ordinary-import client](../AlgebraicGroupsTest/GroupScheme/UpperTriangularSchemeProduct.lean)
+  and [mathematical guide](../AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md).
+
+- **Split identity fiber and finite diagonal product.** The diagonal
+  projection `T ⟶ D` has a section, and the closed unitriangular subgroup
+  identifies with its *scheme-theoretic* identity fiber. See the
+  [split producer](../AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean)
+  and [split guide](../AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md).
+  For finite decidable same-universe `n`, `D` is the categorical product of
+  copies of `Gₘ` over `Spec K`, including the empty-index terminal case;
+  see the [diagonal-product guide](../AlgebraicGroups/GroupScheme/DiagonalProduct/README.md).
+  Earlier [native triangular](../AlgebraicGroups/GroupTheory/UpperTriangular/README.md),
+  [represented triangular](../AlgebraicGroups/GroupScheme/UpperTriangular/README.md),
+  [unitriangular](../AlgebraicGroups/GroupScheme/Unitriangular/README.md) and
+  [common-zero](../AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md)
+  interfaces remain available under their documented hypotheses.
+
+- **Unitriangular point-group series.** Over an arbitrary commutative ring,
+  superdiagonal subgroups of native finite unitriangular matrix groups give
+  central and lower-central series, successive additive quotients, a derived
+  series and sharp nilpotency bounds under the guides' stated hypotheses. In
+  prime characteristic the exponent results have their own coefficient and
+  size conditions. See the [point-group guides](../AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration/README.md)
+  and [exact-class guide](../AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass/README.md).
+
+The represented-product assertions are over the fixed base `Spec K`; they assert
+neither a global transported group-object instance, arbitrary-base change,
+normality of `U` in `GL`, nor source-specific coverage. The finite triangular
+geometry and dimension above are separately scoped results.
 
 ## General and special linear geometry
 
@@ -296,6 +437,26 @@ and [GL/SL dimension formulas](../AlgebraicGroups/GroupScheme/GeneralSpecialLine
   [guide](../AlgebraicGroups/GroupScheme/GeneralLinearDeterminantConjugation/README.md)
   and `AlgebraicGroupsTest.GeneralLinearDeterminantConjugation`.
 
+- **Infinite vector-space dimension of general linear coordinates.** Over any
+  field `K` and nonempty finite decidable index type `n`, the powers of any
+  universal matrix entry are linearly independent. Thus the determinant-localized
+  coordinate algebra `GeneralLinearCoordinateRing.CoordinateRing K n` satisfies
+  `¬ Module.Finite K (GeneralLinearCoordinateRing.CoordinateRing K n)`.
+  This is vector-space nonfiniteness, not merely carrier infinitude or a
+  ring/scheme Krull-dimension assertion; the empty-index coordinate algebra is
+  the base field. See the [dimension API](../AlgebraicGroups/Algebra/GeneralLinearCoordinateRing/Dimension.lean)
+  and [rational GL₂ example](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsGL2Infinite.lean).
+
+## Antipode involutivity
+
+For a full Hopf algebra over a commutative semiring, either commutative
+multiplication or cocommutative comultiplication suffices for the all-element
+identity `S² = id`. These are two sufficient alternatives, not a
+characterization and not a requirement that both hold. The scalar and algebra
+universes are independent. Neither branch needs a field, additive inverses,
+finiteness, flatness or nontriviality; neither asserts involutivity for an
+arbitrary noncommutative Hopf algebra without cocommutativity.
+
 ## Antipodes of commutative Hopf algebras
 
 For a commutative semiring `R` and a commutative semiring Hopf algebra `A`
@@ -305,12 +466,62 @@ two successive antipodes. Import the focused
 [antipode module](../AlgebraicGroups/Algebra/HopfAlgebra/Antipode.lean).
 The proof uses Mathlib's convolution group of algebra endomorphisms and
 involutivity of group inversion; it requires neither cocommutativity nor
-finiteness, additive inverses or nontriviality. Commutativity of `A` is
-essential, and the theorem does not apply to arbitrary noncommutative Hopf
-algebras. The [ordinary-import examples](../AlgebraicGroupsTest/Algebra/HopfAlgebra/Antipode.lean)
+finiteness, additive inverses or nontriviality. Commutativity of `A` is a
+hypothesis of this named theorem; the cocommutative alternative below uses a
+different argument. The [ordinary-import examples](../AlgebraicGroupsTest/Algebra/HopfAlgebra/Antipode.lean)
 include arbitrary finite sums in the infinite group algebra `ℕ[ℤ]`, a
 basis element whose antipode differs from itself, zero-ring scalars and the
 matrix coordinates of `GL₂` over `ℚ`.
+
+## Antipodes of cocommutative Hopf algebras
+
+For `R : Type u` and `A : Type v`, the hypotheses are exactly
+`[CommSemiring R] [Semiring A] [HopfAlgebra R A] [Coalgebra.IsCocomm R A]`.
+Thus multiplication in `A` may be noncommutative; cocommutativity is the
+identity `τ ∘ Δ = Δ` for its comultiplication. In the same focused
+[antipode module](../AlgebraicGroups/Algebra/HopfAlgebra/Antipode.lean),
+`HopfAlgebra.antipode_involutive_of_isCocomm` proves
+`Function.Involutive (HopfAlgebra.antipode R)`, and the pointwise simp lemma
+`HopfAlgebra.antipode_antipode_of_isCocomm` gives `S(S(a)) = a` for every
+`a : A`, not only group-like or basis elements. These are theorems for full
+Hopf algebras, not structures specifying only a comultiplication and counit.
+
+The proof uses convolution on linear endomorphisms, rather than the
+commutative branch's convolution group of algebra endomorphisms.
+Postcomposing `S ⋆ id = 1` by `S`, antipode antimultiplicativity together
+with tensor symmetry and cocommutativity gives `S ⋆ S² = 1`. Comparing
+this with `id ⋆ S = 1` by uniqueness of left and right inverses yields
+`S² = id`. The formalization uses Mathlib's
+[Hopf convolution API](https://github.com/leanprover-community/mathlib4/blob/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/RingTheory/HopfAlgebra/Convolution.lean)
+for antimultiplicativity and antipode inverse identities, its
+[linear convolution API](https://github.com/leanprover-community/mathlib4/blob/83abb3e776bdefcbc447a1e44d0debe4010039e5/Mathlib/RingTheory/Coalgebra/Convolution.lean)
+for multiplication and the unit, and its coalgebra and tensor-map APIs for
+cocommutativity and symmetry. The producer's References credit these
+Mathlib providers and their contributors, as well as `WithConv` and
+inverse uniqueness.
+
+The [cocommutative clients](../AlgebraicGroupsTest/Algebra/HopfAlgebra/CocommutativeAntipode.lean)
+apply the theorem to arbitrary elements of `ℕ[S₃]`, using Mathlib's canonical
+group-algebra Hopf and cocommutative structures. The basis elements of the
+adjacent transpositions `(0 1)` and `(1 2)` have unequal products, so this
+algebra genuinely has noncommutative multiplication. Generic clients obtain
+bijection and elementwise identities from involutivity; the same group
+algebra over `ZMod 1` supplies a zero-ring boundary. The finite group is an
+example, not a finiteness hypothesis, and the natural-number scalars show
+that additive inverses are not needed.
+
+## Bialgebra maps and antipodes
+
+- **Antipode compatibility of bialgebra maps.** Every bialgebra homomorphism
+  between Hopf algebras over a commutative semiring commutes with their
+  antipodes; the algebras need not be commutative or have additive inverses.
+  See the [homomorphism API](../AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean)
+  and [semiring group-algebra examples](../AlgebraicGroupsTest/Algebra/HopfAlgebra/Hom.lean).
+  The [comultiplication API](../AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean)
+  gives the complementary identity `Δ ∘ S = (S ⊗ S) ∘ τ ∘ Δ` for every Hopf
+  algebra over a commutative semiring, without cocommutativity or commutative
+  multiplication; [examples](../AlgebraicGroupsTest/Algebra/HopfAlgebra/Comultiplication.lean)
+  use natural-number group algebras and `GL₂` coordinates.
 
 ## Antipodes and comultiplication
 

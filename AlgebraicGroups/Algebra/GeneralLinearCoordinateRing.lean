@@ -47,11 +47,11 @@ noncomputable section
 
 open scoped TensorProduct
 
-universe u
+universe u v w x
 
 namespace GeneralLinearCoordinateRing
 
-variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
+variable (K : Type u) [CommRing K] (n : Type v) [Fintype n] [DecidableEq n]
 
 /-- The polynomial ring in the entries of a square matrix. -/
 abbrev PolynomialRing := MvPolynomial (n × n) K
@@ -170,7 +170,7 @@ variable {K n}
 
 /-- An algebra map out of the coordinate ring is determined by the entries
 of the universal matrix, without any nontriviality assumption. -/
-theorem hom_ext {R : Type u} [CommRing R] [Algebra K R]
+theorem hom_ext {R : Type w} [CommRing R] [Algebra K R]
     {f g : CoordinateRing K n →ₐ[K] R}
     (h : ∀ i j, f (matrix K n i j) = g (matrix K n i j)) : f = g := by
   apply IsLocalization.algHom_ext (Submonoid.powers (determinant K n))
@@ -179,7 +179,7 @@ theorem hom_ext {R : Type u} [CommRing R] [Algebra K R]
   exact h i j
 
 /-- Evaluation of coordinates at an invertible matrix. -/
-def evaluate {R : Type u} [CommRing R] [Algebra K R]
+def evaluate {R : Type w} [CommRing R] [Algebra K R]
     (g : Matrix.GeneralLinearGroup n R) : CoordinateRing K n →ₐ[K] R :=
   IsLocalization.Away.liftAlgHom (determinant K n)
     (f := MvPolynomial.aeval fun ij : n × n ↦ (g : Matrix n n R) ij.1 ij.2)
@@ -191,7 +191,7 @@ def evaluate {R : Type u} [CommRing R] [Algebra K R]
         Matrix.GeneralLinearGroup.val_det_apply] using
         (Matrix.GeneralLinearGroup.det g).isUnit)
 
-theorem evaluate_matrix {R : Type u} [CommRing R] [Algebra K R]
+theorem evaluate_matrix {R : Type w} [CommRing R] [Algebra K R]
     (g : Matrix.GeneralLinearGroup n R) (i j : n) :
     evaluate g (matrix K n i j) = g i j := by
   change (IsLocalization.Away.liftAlgHom (determinant K n)
@@ -199,7 +199,7 @@ theorem evaluate_matrix {R : Type u} [CommRing R] [Algebra K R]
     (algebraMap (PolynomialRing K n) (CoordinateRing K n) (MvPolynomial.X (i, j))) = _
   simp [IsLocalization.Away.liftAlgHom, IsLocalization.Away.lift_eq]
 
-@[simp] theorem evaluate_detInverse {R : Type u} [CommRing R] [Algebra K R]
+@[simp] theorem evaluate_detInverse {R : Type w} [CommRing R] [Algebra K R]
     (g : Matrix.GeneralLinearGroup n R) :
     evaluate g (detInverse K n) = ↑(Matrix.GeneralLinearGroup.det g)⁻¹ := by
   have e : evaluate g (matrix K n).det = (g : Matrix n n R).det := by
@@ -215,7 +215,7 @@ theorem evaluate_matrix {R : Type u} [CommRing R] [Algebra K R]
   exact (Matrix.GeneralLinearGroup.det g).isUnit.mul_left_cancel
     (h.trans h'.symm)
 
-theorem evaluate_det {R : Type u} [CommRing R] [Algebra K R]
+theorem evaluate_det {R : Type w} [CommRing R] [Algebra K R]
     (g : Matrix.GeneralLinearGroup n R) :
     evaluate (K := K) g (matrix K n).det = (g : Matrix n n R).det := by
   rw [AlgHom.map_det]
@@ -224,17 +224,17 @@ theorem evaluate_det {R : Type u} [CommRing R] [Algebra K R]
   exact evaluate_matrix g i j
 
 /-- Evaluation of the universal matrix gives an invertible matrix. -/
-def toGL {R : Type u} [CommRing R] [Algebra K R]
+def toGL {R : Type w} [CommRing R] [Algebra K R]
     (f : CoordinateRing K n →ₐ[K] R) : Matrix.GeneralLinearGroup n R :=
   Matrix.GeneralLinearGroup.map f.toRingHom (universal K n)
 
-@[simp] theorem toGL_apply {R : Type u} [CommRing R] [Algebra K R]
+@[simp] theorem toGL_apply {R : Type w} [CommRing R] [Algebra K R]
     (f : CoordinateRing K n →ₐ[K] R) (i j : n) :
     toGL f i j = f (matrix K n i j) := rfl
 
 /-- The universal invertible-matrix property of the determinant localization
 (Milne, *Algebraic Groups*, item 2.8), for every commutative coefficient algebra. -/
-def homEquiv {R : Type u} [CommRing R] [Algebra K R] :
+def homEquiv {R : Type w} [CommRing R] [Algebra K R] :
     (CoordinateRing K n →ₐ[K] R) ≃ Matrix.GeneralLinearGroup n R where
   toFun := toGL
   invFun := evaluate
@@ -247,15 +247,15 @@ def homEquiv {R : Type u} [CommRing R] [Algebra K R] :
     intro i j
     exact evaluate_matrix g i j
 
-@[simp] theorem toGL_evaluate {R : Type u} [CommRing R] [Algebra K R]
+@[simp] theorem toGL_evaluate {R : Type w} [CommRing R] [Algebra K R]
     (g : Matrix.GeneralLinearGroup n R) : toGL (evaluate (K := K) g) = g :=
   (homEquiv (K := K) (n := n)).apply_symm_apply g
 
-@[simp] theorem evaluate_toGL {R : Type u} [CommRing R] [Algebra K R]
+@[simp] theorem evaluate_toGL {R : Type w} [CommRing R] [Algebra K R]
     (f : CoordinateRing K n →ₐ[K] R) : evaluate (toGL f) = f :=
   (homEquiv (K := K) (n := n)).symm_apply_apply f
 
-theorem toGL_comp {R S : Type u} [CommRing R] [CommRing S]
+theorem toGL_comp {R : Type w} {S : Type x} [CommRing R] [CommRing S]
     [Algebra K R] [Algebra K S] (f : CoordinateRing K n →ₐ[K] R)
     (g : R →ₐ[K] S) :
     toGL (g.comp f) = Matrix.GeneralLinearGroup.map g.toRingHom (toGL f) := by
@@ -264,7 +264,7 @@ theorem toGL_comp {R S : Type u} [CommRing R] [CommRing S]
   rfl
 
 /-- Evaluation commutes with arbitrary homomorphisms of test algebras. -/
-theorem evaluate_natural {R S : Type u} [CommRing R] [CommRing S]
+theorem evaluate_natural {R : Type w} {S : Type x} [CommRing R] [CommRing S]
     [Algebra K R] [Algebra K S] (g : R →ₐ[K] S)
     (x : Matrix.GeneralLinearGroup n R) :
     evaluate (K := K) (Matrix.GeneralLinearGroup.map g.toRingHom x) =
@@ -414,7 +414,7 @@ instance hopfAlgebra : HopfAlgebra K (CoordinateRing K n) :=
       simp only [AlgHom.comp_apply]
       rw [comul_matrix]
       simp only [map_sum]
-      show (∑ index : n,
+      change (∑ index : n,
           (Algebra.TensorProduct.lift (antipode K n) (AlgHom.id K _)
             (fun _ _ ↦ Commute.all _ _))
             (matrix K n i index ⊗ₜ[K] matrix K n index j)) =

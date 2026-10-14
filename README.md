@@ -1,447 +1,192 @@
 # Algebraic groups
 
-Reusable Lean definitions and theorems about matrix groups, affine group
-schemes and their coordinate algebras, and coalgebras over fields. This library
-is organized by mathematics, not by any one source. Its finite triangular and
-classical-group constructions build on mathlib and separately maintained
-project libraries. Results described below are not a claim to formalize an
-entire mathematical source.
-
-Authors: Formal Frontier Agents. Original project contributions use
-[Apache-2.0](LICENSE); see [credits and references](CREDITS.md) for contributor,
-third-party and AI involvement.
+Lean definitions and theorems about matrix groups, affine group schemes and their
+coordinate algebras, and coalgebras. The library builds on Mathlib and separately
+maintained project libraries; it does not claim to formalize an entire source.
 
 ## Headline results
 
-- **Coalgebra morphisms on coideal quotients.** Over a commutative ring `R`,
-  for `R`-modules with additive commutative group structures and
-  `CoalgebraStruct`, `Submodule.liftQCoalgHom` descends a coalgebra morphism
-  vanishing on a coideal uniquely through its quotient projection.
-  `Submodule.mapQCoalgHom` sends a morphism carrying one coideal into another
-  to a morphism between their quotients, respecting identity and composition.
-  The universes are independent; no coalgebra-law, field, flatness or
-  projectivity assumption is required. These constructions use Mathlib's
-  quotient structures and linear universal property. See the
-  [quotient-morphism API](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean) and
-  [clients](AlgebraicGroupsTest/Algebra/Coalgebra/CoidealQuotient.lean).
-- **Subcoalgebras and finite containment over a field.** For a field `K` and
-  a `K`-coalgebra `C`, `Subcoalgebra K C` is a subspace `D` such that every
-  member's comultiplication lies in the image of
-  `D ⊗[K] D → C ⊗[K] C`. Its subtype carries the restricted comultiplication
-  and counit satisfying the coalgebra laws. The inclusion is a coalgebra
-  homomorphism, and any coalgebra homomorphism with values in `D` factors
-  uniquely through it. `Coalgebra.exists_finite_subcoalgebra` puts every
-  finitely generated subspace inside such a `D` with `Module.Finite K D`;
-  there is also a finite-subset variant. The ambient coalgebra need not be
-  finite-dimensional, no algebra or Hopf structure is required, and no least
-  finite closure is asserted. See the
-  [carrier](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra.lean),
-  [restricted coalgebra](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Coalgebra.lean),
-  [homomorphisms](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean) and
-  [finite containment](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean).
-  The [diagonal example](AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraDiagonal.lean)
-  uses the proper nonzero finite-dimensional subcoalgebra of `ℕ →₀ K`
-  supported on `{0, 1}`.
-- **Subcoalgebra image equivalences.** For a field `K` and `K`-coalgebras
-  `C`, `C'` in independent universes, `Subcoalgebra.equivMapOfInjOn f D hf`
-  identifies `D` with its canonical image `Subcoalgebra.map f D` as a
-  coalgebra. It assumes only `hf : Set.InjOn f (D : Set C)` for the coalgebra
-  homomorphism `f`, not ambient injectivity. Under this local hypothesis, the
-  image carrier is finitely generated exactly when the source carrier is;
-  likewise `Module.Finite K (Subcoalgebra.map f D) ↔ Module.Finite K D`.
-  `CoalgEquiv.subcoalgebraCongr` transports subcoalgebras along an ambient
-  coalgebra equivalence as an ordinary `Equiv` (not a bundled order
-  isomorphism), preserving and reflecting `Module.Finite`. No ambient
-  finiteness is assumed. See the [API](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Equiv.lean) and the
-  [infinite-dimensional, globally noninjective but locally injective example](AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraImageEquiv.lean).
-- **Finite right-subcomodule containment.** `Coalgebra.RightComodule R C M`
-  specifies a right linear coaction `ρ : M →ₗ[R] M ⊗[R] C` satisfying
-  coassociativity and right counitality. The scalars are an arbitrary commutative
-  semiring; `C` and `M` are modules with additive commutative monoid structures,
-  `C` is a coalgebra, and all three universes are independent. These definitions
-  need no projectivity. With only the additional hypothesis
-  `[Module.Projective R C]`, every finite subset of `M` lies in a
-  `RightComodule.Subcomodule` whose underlying submodule is finitely generated.
-  The witness carries a coaction on its subtype and a colinear inclusion;
-  every member has coaction in the image of `U ⊗ C → M ⊗ C`.
-  Neither `C` nor `M` need be finitely generated, and `M` need not be projective
-  or free. Under `[Module.Flat R C]`, image stability induces a unique subtype
-  coaction, with subcomodule extensionality and unique colinear factorization
-  through the inclusion. The counit need not be surjective. See the
-  [right-comodule API](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean) and
-  [coefficient engine](AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean).
-  The [examples](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean) include
-  the nonprojective `ℕ`-module `ℕ →₀ ZMod 2` and a coaction of the proper
-  projective ideal `(3)` in `ZMod 6`, with nonsurjective counit and coacting
-  generator satisfying `ε(e₃) = 3 ≠ 1`, so it is not group-like.
-- **Finite coalgebra containment.** Over a commutative semiring, every finite
-  subset of a coalgebra with projective ambient module lies in a
-  module-finitely-generated submodule `U` whose every member has comultiplication in the image of
-  `U ⊗ C → C ⊗ C`; the ambient additive structure need only be a commutative
-  monoid. No ambient finite generation is required, and free modules are included
-  through Mathlib's free-to-projective instance. Over a field, every finite subset
-  lies in a module-finitely-generated submodule `D` with every-member image closure
-  under `D ⊗ D → C ⊗ C`.
-  These theorems assert tensor-image containment, not algebra finite generation;
-  the restricted coalgebra structure over a field is constructed separately by
-  the subcoalgebra API above. See
-  [finite containment](AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean),
-  [coefficient spans with explicit ambient coordinate maps](AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean)
-  and [group-like spans](AlgebraicGroups/Algebra/Coalgebra/GroupLikeSpan.lean).
-- **Idempotent principal ideal coalgebras.** For an idempotent `e` in any
-  commutative semiring `K`, the existing ideal `Ideal.span {e}` has counit
-  the scalar inclusion and comultiplication `d ↦ d ⊗ e`. The explicit
-  constructor includes zero and one and needs no freeness assumption. See
-  the [module](AlgebraicGroups/Algebra/Coalgebra/IdempotentIdeal.lean) and
-  [clients](AlgebraicGroupsTest/Algebra/Coalgebra/IdempotentIdeal.lean).
-  Independently, the [counit range](AlgebraicGroups/Algebra/Coalgebra/CounitRange.lean)
-  of any coalgebra over a commutative semiring is an idempotent scalar ideal
-  `I` satisfying `I • ⊤ = ⊤` on the coalgebra. No counit surjectivity, freeness
-  or finite generation is assumed; [examples](AlgebraicGroupsTest/Algebra/Coalgebra/CounitRange.lean)
-  include proper nonzero ranges over `ZMod 6`. Tensor products multiply
-  counit ranges; orthogonal supports can give a subsingleton tensor product
-  even when both coalgebras are nontrivial. Over a commutative ring `R`, a
-  lawful `R`-coalgebra carrier `C` with additive commutative group structure
-  satisfies `Module.FaithfullyFlat R C` exactly when it satisfies
-  `Module.Flat R C` and its counit is surjective, equivalently has range the
-  whole scalar ring. Flatness is a separate requirement; no finite generation,
-  freeness, projectivity or nontriviality is required. See the
-  [counit criteria](AlgebraicGroups/Algebra/Coalgebra/CounitRange.lean), combining
-  the counit-law action, ideal transport and Mathlib's ideal-top reflection criterion.
-  Under extension of scalars
-  from `R` to a commutative `R`-algebra `S`, the counit ideal of `S ⊗[R] C` is
-  `Ideal.map (algebraMap R S)` of the original counit ideal, without flatness
-  or projectivity hypotheses. See [scalar extension](AlgebraicGroups/Algebra/Coalgebra/BaseChange.lean)
-  and [clients](AlgebraicGroupsTest/Algebra/Coalgebra/BaseChange.lean).
-- **Hopf coefficient matrix units.** Over a commutative scalar semiring, a
-  finite square matrix `M` in a possibly noncommutative semiring Hopf algebra,
-  with `Δ(M i j) = ∑ k, M i k ⊗ M k j` and `ε(M i j) = δᵢⱼ`, is a unit
-  in the matrix semiring with entrywise antipode as two-sided inverse, without a transpose.
-  Empty indices are allowed. See the [construction and entry API](AlgebraicGroups/Algebra/Coalgebra/CoefficientMatrixUnit.lean)
-  and [integer-weight and empty-index clients](AlgebraicGroupsTest/Algebra/Coalgebra/CoefficientMatrixUnit.lean).
-- **Cardinality of group-like elements.** For a torsion-free coalgebra over a
-  commutative domain, the cardinality of Mathlib's `GroupLike` carrier is at most
-  the coalgebra's module rank. Rank strictly below `ℵ₀` gives bundled and
-  predicate-set finiteness and a `Nat.card` bound by `finrank`; module-finite
-  coalgebras have these consequences without freeness or a field hypothesis.
-  Integer diagonal coalgebras give sharp, zero and infinite examples. The
-  rank-two diagonal coalgebra over `ℤ × ℤ` admits four group-like elements,
-  demonstrating the domain hypothesis. See the
-  [module](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCardinality.lean) and
-  [clients](AlgebraicGroupsTest/GroupLikeCardinality.lean).
-- **Group-like elements and scalar-source coalgebra maps.** Over a commutative
-  semiring `R`, normalized group-like elements of an `R`-coalgebra `C` correspond
-  to coalgebra morphisms from the canonical scalar coalgebra `R` to `C`.
-  The forward map sends `r` to `r • g`; the inverse evaluates at `1`. No
-  multiplication on `C`, field hypothesis, basis or nontriviality is required.
-  See the [equivalence API](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean)
-  and [concrete clients](AlgebraicGroupsTest/Algebra/Coalgebra/GroupLikeHom.lean).
-- **Antipode compatibility of bialgebra maps.** Every bialgebra homomorphism
-  between Hopf algebras over a commutative semiring commutes with their
-  antipodes; the algebras need not be commutative or have additive inverses.
-  See the [homomorphism API](AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean)
-  and [semiring group-algebra examples](AlgebraicGroupsTest/Algebra/HopfAlgebra/Hom.lean).
-  The [comultiplication API](AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean)
-  gives the complementary identity `Δ ∘ S = (S ⊗ S) ∘ τ ∘ Δ` for every Hopf
-  algebra over a commutative semiring, without cocommutativity or commutative
-  multiplication; [examples](AlgebraicGroupsTest/Algebra/HopfAlgebra/Comultiplication.lean)
-  use natural-number group algebras and `GL₂` coordinates.
+### Coalgebras and Hopf algebras
 
-- **Finite additive products over a ring.** For arbitrary commutative `K`
-  and finite `D`, the *underlying* over-scheme of the literal categorical
-  product of additive group schemes is affine `D`-space over `Spec K`.
-  The polynomial-spectrum comparison preserves genuine projections, and
-  its cone is limiting against every over-scheme, including nonaffine ones.
-  Empty indices and zero rings are included; no group/Hopf isomorphism is
-  asserted. See the [module](AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean)
-  and [finite-product guide](AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace/README.md).
-- **Positive-stage underlying projection and section.** For `1 ≤ r` over
-  any commutative base, the entire underlying stage-coordinate arrow is
-  identified with the scheme projection from the affine space of surviving coordinates
-  onto the current-superdiagonal coordinates. Its coordinate-ring pullback
-  runs oppositely, from current-variable polynomials into the stage ring.
-  Sending higher variables to zero defines the pullback of a section of
-  this underlying over-scheme arrow, **not** a group-scheme section.
-  See the [module](AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge.lean)
-  and [projection guide](AlgebraicGroups/GroupScheme/UnitriangularStageProjectionBridge/README.md).
-- **Native closed unitriangular stages.** The actual quotient by forbidden
-  strict-upper entries is a Hopf algebra over any commutative base, with
-  closed stage and successor group-scheme arrows and multiplicative point
-  equivalences over every coefficient algebra. Its quotient is also a
-  polynomial `K`-algebra on surviving entries; the underlying scheme is
-  affine space *over* `Spec K`, without asserting an additive-group or Hopf
-  isomorphism. Rank-three/stage-two retains `(0,2)`, and zero rings, empty
-  ranks and exhausted stages are allowed. See the
-  [closed-stage guide](AlgebraicGroups/GroupScheme/UnitriangularStages/README.md),
-  [polynomial guide](AlgebraicGroups/Algebra/UnitriangularStagePolynomial/README.md)
-  and [underlying affine-space guide](AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace/README.md).
-- **Normal stages and positive-stage coordinates.** Each closed stage is a
-  normal subgroup object over an arbitrary commutative base, with a genuine
-  over-scheme conjugation factor and all-algebra matrix-point readback. For
-  `1 ≤ r`, primitive `r`-th superdiagonal entries give a group-scheme map
-  `S_r → Gₐ^J`, zero on `S_(r+1)`; the successor is precisely its underlying
-  over-scheme pullback along the unit. This holds for zero rings and empty
-  index types, but does not assert a quotient or an additive-group splitting.
-  See the [normality](AlgebraicGroups/GroupScheme/UnitriangularStageNormality/README.md),
-  [coordinates](AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates/README.md)
-  and [kernel](AlgebraicGroups/GroupScheme/UnitriangularStageKernel/README.md) guides.
-- **Unitriangular group-scheme identity and tower coherence.** The native
-  one-step base-change map agrees with the canonical pullback identity unit
-  and direct-to-iterated scalar-tower compositor. An ordinary-import `Fin 2`
-  client checks the inverse coordinate through both routes. See the
-  [standalone group-scheme coherence guide](docs/UnitriangularSchemeBaseChangeCoherence.md).
-- **Native unitriangular group-scheme base change.** Over arbitrary same-universe
-  commutative rings and finite linearly ordered indices, the actual pulled-back
-  unitriangular group object is isomorphic to the group scheme over the new
-  base. The forward map and base projection have readbacks; an ordinary-import
-  `Fin 3` client retains the group-product cross term. See the
-  [standalone scheme base-change guide](docs/UnitriangularSchemeBaseChange.md).
-- **Unitriangular coordinate-algebra base change.** For arbitrary commutative
-  rings `R`, `S` with `[Algebra R S]` and finite linearly ordered `ι`, scalar
-  extension of the actual unitriangular GL quotient is `S`-algebra equivalent
-  to its quotient over `S`, including the zero ring and empty indices. Its
-  presentation, coefficient and all-entry laws are in the
-  [base-change guide](AlgebraicGroups/Algebra/UnitriangularBaseChange/README.md).
-- **Canonical unitriangular Hopf base change.** Over the same arbitrary
-  commutative base rings and finite linearly ordered indices, the algebra
-  comparison preserves the counit and coproduct of the independently given
-  tensor-product and quotient Hopf structures, hence gives a bialgebra
-  equivalence and intertwines their antipodes. The all-entry coproduct
-  formula and nonprimitive `Fin 3` client are in the
-  [Hopf base-change guide](AlgebraicGroups/Algebra/UnitriangularHopfBaseChange/README.md).
-- **Unitriangular base-change coherence.** The actual quotient comparison
-  agrees with the tensor unit along the identity and with tensor cancellation
-  along a commutative scalar tower, as equalities of algebra equivalences.
-  See the [coherence guide](AlgebraicGroups/Algebra/UnitriangularBaseChangeCoherence/README.md).
-- **Finite triangular geometry and native dimension.** Over any commutative
-  ring, the native multiplicative, finite diagonal and finite upper-triangular
-  schemes are smooth with geometrically integral *fibers* over `Spec K`; their
-  total underlying schemes are integral when `K` is a domain. Empty index
-  types and zero rings are allowed for the relative assertions. Independently
-  importable diagonal/strict/retained-index equivalences split weakly ordered
-  pairs without finiteness and count finite pairs as `card ι + (card ι).choose 2`.
-  For the **actual native** upper-triangular GL quotient, both ideal inclusions
-  and the localized coordinate equivalence identify native retained entries
-  and polynomial variables in both directions over *any* commutative ring.
-  Its identity-determinant point gives native ring and affine `Spec` dimension
-  `card ι + (card ι).choose 2` over every field, including finite fields and
-  empty indices; no arbitrary-base or general product-dimension formula follows.
-  See the [geometry guide](AlgebraicGroups/GroupScheme/FiniteTriangularGeometry/README.md),
-  [indices guide](AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices/README.md)
-  and [native dimension guide](AlgebraicGroups/GroupScheme/UpperTriangularDimension/README.md),
-  each linking its focused producer and ordinary-import client.
-- **Coordinate elimination and finite diagonal dimension.** For any commutative
-  ring, `MvPolynomial.localizedCoordinateQuotientEquiv` identifies a polynomial
-  localization modulo eliminated coordinates with localization at the erased
-  polynomial, even if that polynomial erases to zero or the base ring is trivial.
-  Over any field and finite variable type, the independent theorem
-  `MvPolynomial.ringKrullDim_localizationAway_of_eval_ne_zero` gives dimension
-  `Fintype.card σ` when a *supplied* field-valued point does not annihilate the
-  denominator; a nonzero denominator alone need not supply that nonvanishing
-  field-valued point over a finite field. This limitation concerns the supplied-point
-  hypothesis, not the general full-dimension formula for a nonzero denominator.
-  Applying both APIs to the **actual** finite diagonal Hopf quotient,
-  `DiagonalCoordinateRing.localizedPolynomialEquiv` identifies both directions
-  of its retained coordinates, and
-  `AlgebraicGeometry.diagonalGroupUnderlyingScheme_topologicalKrullDim` gives
-  dimension `Fintype.card ι` for every field and finite decidable `ι`, including
-  empty indices. Use the independent [elimination guide](AlgebraicGroups/Algebra/LocalizedCoordinateQuotient/README.md),
-  [localization-dimension guide](AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension/README.md)
-  and [native diagonal guide](AlgebraicGroups/GroupScheme/DiagonalDimension/README.md),
-  with their focused producer modules and `AlgebraicGroupsTest` ordinary clients.
-- **Represented U-first upper-triangular coordinates.** For any commutative
-  ring `K` and same-universe finite linearly ordered index type `n`, the
-  unitriangular scheme `U`, diagonal scheme `D` and upper-triangular scheme
-  `T` over `Spec K` admit a categorical isomorphism of underlying schemes
-  `U ⊗ D ≅ T` in `Over (Spec K)`. Its forward arrow is `i(u)e(d)`; its inverse
-  recovers the diagonal by projection and the unitriangular factor by right
-  (column) normalization. The represented diagonal action on the actual
-  scheme-theoretic identity fiber sends the `(i,j)` entry of `u` to
-  `d_i * u_ij * d_j⁻¹`. For arbitrary test schemes, multiplication in these
-  coordinates is `(u,d)*(u',d') = (u*α(d,u'), d*d')`: the categorical product
-  does **not** carry the canonical direct-product group law under this iso.
-  Point readbacks hold over every commutative `K`-algebra, including zero and
-  nonreduced rings; empty indices and noninjective coefficient maps need no
-  exception. Import
-  `AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct`; see its
-  [producer](AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean),
-  [ordinary-import client](AlgebraicGroupsTest/GroupScheme/UpperTriangularSchemeProduct.lean)
-  and [mathematical guide](AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md).
-- **Split identity fiber and finite diagonal product.** The diagonal
-  projection `T ⟶ D` has a section, and the closed unitriangular subgroup
-  identifies with its *scheme-theoretic* identity fiber. See the
-  [split producer](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean)
-  and [split guide](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md).
-  For finite decidable same-universe `n`, `D` is the categorical product of
-  copies of `Gₘ` over `Spec K`, including the empty-index terminal case;
-  see the [diagonal-product guide](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md).
-  Earlier [native triangular](AlgebraicGroups/GroupTheory/UpperTriangular/README.md),
-  [represented triangular](AlgebraicGroups/GroupScheme/UpperTriangular/README.md),
-  [unitriangular](AlgebraicGroups/GroupScheme/Unitriangular/README.md) and
-  [common-zero](AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md)
-  interfaces remain available under their documented hypotheses.
+- **Coideal quotient morphisms.** Over a commutative ring, coalgebra morphisms
+  vanishing on a coideal descend uniquely; maps preserving coideals induce
+  quotient maps respecting identity and composition. Additive-group modules with
+  `CoalgebraStruct` suffice, in independent universes; no coalgebra laws, flatness,
+  projectivity or field hypothesis. [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean).
+- **Finite subcoalgebras.** Over a field, every finitely generated subspace or
+  finite subset of a coalgebra lies in a finite-dimensional subcoalgebra, with
+  restricted coalgebra laws, bundled inclusion and unique morphism factorization.
+  No ambient finite dimension, algebra/Hopf structure or least finite closure is
+  assumed. [Modules and example](docs/COALGEBRAS.md#subcoalgebras-and-finite-containment-over-a-field).
+- **Subcoalgebra images.** Over a field, injectivity of a coalgebra map only on
+  a subcoalgebra gives an equivalence with its image, preserving and reflecting
+  module-finiteness and finite generation. Ambient equivalences transport these
+  carriers as an ordinary `Equiv`, not an order isomorphism; no ambient finiteness.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Equiv.lean).
+- **Finite right subcomodules.** Over a commutative semiring, for additive-monoid
+  modules, projectivity of the coacting coalgebra alone gives finite-subset
+  containment in finitely generated subcomodules. Neither module need be finite,
+  nor the coacted-on module projective. Flatness of the coacting coalgebra suffices
+  for unique subtype coactions from image stability and unique colinear
+  factorization; the counit need not be onto. [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean).
+- **Intrinsic coefficients.** Coefficient spans exist over commutative semirings.
+  Over a field they form a subcoalgebra: unique full corestriction of a coaction
+  to `D` on the **same module** is equivalent to coefficient-span containment in
+  `D`. No ambient finite dimension is needed; module-finiteness of the comodule
+  gives module-finite coefficients, not algebra finite generation.
+  [Module and GL₂ model](docs/COALGEBRAS.md#intrinsic-coefficient-coalgebras).
+- **Finite tensor-image containment.** Over a commutative semiring, a projective
+  coalgebra's finite subsets lie in finitely generated `U` with `Δ(U)` in the
+  image of `U ⊗ C`; over a field one obtains `D ⊗ D`. These are module, not
+  algebra, finiteness assertions, with no ambient finiteness; semiring carriers
+  need only additive monoids. [Module](AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean).
+- **Algebra-generating coefficient matrices.** A finite-type, possibly
+  noncommutative semiring algebra over a field, with a coalgebra on its canonical
+  module, has a finite square matrix satisfying `Δ(aᵢⱼ) = Σₖ aᵢₖ ⊗ aₖⱼ` and
+  `ε(aᵢⱼ) = δᵢⱼ`, whose entries generate the algebra. Size zero is allowed; no
+  module-finiteness or multiplicative compatibility is required.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean).
+- **Counit ideals.** Over a commutative semiring, an idempotent principal ideal
+  has coalgebra `Δ(d) = d ⊗ e`, with inclusion counit, including `e = 0, 1`.
+  Any coalgebra's counit range is idempotent and acts with `I • ⊤ = ⊤`;
+  tensor products multiply ranges and scalar extension maps the range ideal.
+  No surjectivity, freeness or finite generation is assumed. Over a commutative
+  ring, an additive-group coalgebra is faithfully flat **iff flat and its counit
+  is onto**; flatness is separate, with no projectivity or nontriviality required.
+  [Modules and proper-range examples](docs/COALGEBRAS.md#idempotent-principal-ideal-coalgebras).
+- **Hopf coefficient matrix units.** Over a commutative semiring, any finite
+  square coefficient matrix in a possibly noncommutative semiring Hopf algebra,
+  with the coproduct and counit equations above, is a unit with entrywise
+  antipode as two-sided inverse, **without transpose**; empty indices are allowed.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/CoefficientMatrixUnit.lean).
+- **Group-like cardinality and maps.** For a torsion-free coalgebra over a
+  commutative domain, group-likes have cardinality at most module rank; rank
+  below `ℵ₀` gives finiteness and a `finrank` bound, in particular for module-finite
+  coalgebras, without freeness or a field. Separately, over any commutative
+  semiring, normalized group-likes correspond to scalar-source coalgebra maps
+  by `g ↦ (r ↦ r • g)` and evaluation at `1`, without multiplication or
+  nontriviality. [Cardinality](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCardinality.lean),
+  [maps](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean).
+- **Antipodes.** For full Hopf algebras over a commutative semiring, either
+  commutative multiplication **or** cocommutative comultiplication suffices for
+  `S² = id`; these are alternatives, not an iff or simultaneous requirements.
+  Neither branch needs additive inverses, finiteness or nontriviality. Bialgebra
+  maps commute with antipodes, and `Δ ∘ S = (S ⊗ S) ∘ τ ∘ Δ` holds without
+  either commutativity assumption. [Involutivity](AlgebraicGroups/Algebra/HopfAlgebra/Antipode.lean),
+  [maps](AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean),
+  [comultiplication](AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean).
 
-- **Unitriangular point-group series.** Over an arbitrary commutative ring,
-  superdiagonal subgroups of native finite unitriangular matrix groups give
-  central and lower-central series, successive additive quotients, a derived
-  series and sharp nilpotency bounds under the guides' stated hypotheses. In
-  prime characteristic the exponent results have their own coefficient and
-  size conditions. See the [point-group guides](AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration/README.md)
-  and [exact-class guide](AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass/README.md).
-- **Finite general and special linear schemes.** Over any field, the actual
-  coordinate rings and affine schemes have dimensions `N²` and `N² - 1`
-  respectively, with subtraction in naturals before casting (rank zero has
-  dimension zero in both cases). See [dimension](AlgebraicGroups/GroupScheme/GeneralSpecialLinearDimension/README.md)
-  and [geometric-integrality](AlgebraicGroups/GroupScheme/GeneralSpecialLinearGeometricIntegral/README.md)
-  for exact assumptions and related geometry.
+### Matrix groups and group schemes
 
-The represented-product assertions are over the fixed base `Spec K`; they assert
-neither a global transported group-object instance, arbitrary-base change,
-normality of `U` in `GL`, nor source-specific coverage. The finite triangular
-geometry and dimension above are separately scoped results.
+- **Finite additive products.** Over any commutative ring, the underlying
+  over-scheme of the literal finite product of additive group schemes is affine
+  space, preserving projections and the universal property against all schemes.
+  Empty indices and zero rings are allowed; no group/Hopf isomorphism is asserted.
+  [Module](AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean).
+- **Closed unitriangular stages.** Over any commutative ring, native finite
+  stage quotients are Hopf algebras with closed stage/successor group-scheme
+  arrows and multiplicative points over every coefficient algebra. Their
+  polynomial coordinates identify the underlying schemes with affine spaces
+  over the base, **not** additive groups or Hopf algebras; zero rings, empty ranks
+  and exhausted stages are included. [Modules and guides](docs/MATHEMATICS.md#closed-unitriangular-stages).
+- **Stage normality, coordinates and kernel.** All stages are normal subgroup
+  objects with conjugation and matrix-point readbacks. For `1 ≤ r`, primitive
+  superdiagonal coordinates define `S_r → Gₐ^J`, with successor its underlying
+  fiber over the unit. The entire underlying arrow is an affine-space projection;
+  setting higher variables to zero sections that arrow, **not** the group map.
+  Zero rings and empty indices are allowed; no quotient or additive splitting.
+  [Modules and guides](docs/MATHEMATICS.md#closed-unitriangular-stages).
+- **Unitriangular base change.** For arbitrary same-universe commutative rings
+  `R → S` and finite linearly ordered indices, scalar extension of the actual
+  GL quotient is the quotient over `S`. The comparison preserves the independently
+  given coproduct, counit and antipode and induces an isomorphism of the actual
+  pulled-back group object. Identity and scalar-tower laws agree with tensor
+  unit/cancellation and canonical pullback compositors (direct to iterated).
+  Zero rings and empty indices are included, without flatness or injectivity.
+  [Algebra modules](docs/MATHEMATICS.md#unitriangular-base-change),
+  [scheme comparison](docs/UnitriangularSchemeBaseChange.md),
+  [scheme coherence](docs/UnitriangularSchemeBaseChangeCoherence.md).
+- **Triangular geometry and dimension.** Over any commutative ring, native
+  multiplicative, finite diagonal and finite upper-triangular schemes are smooth
+  with geometrically integral **fibers**; total spaces are integral over a domain.
+  Empty indices and zero rings are included in the relative results. Over every
+  field the actual diagonal and upper-triangular ring/scheme dimensions are `N`
+  and `N + N.choose 2`. No arbitrary-base or general product-dimension formula.
+  [Modules, retained indices and coordinate readbacks](docs/MATHEMATICS.md#triangular-geometry-and-coordinates).
+- **Coordinate elimination.** Over any commutative ring, eliminating polynomial
+  coordinates commutes with localization, even if the erased denominator is zero.
+  Over a field with finitely many variables, a **supplied field-valued point**
+  not annihilating the denominator gives full localization dimension; nonzero
+  alone need not supply that point over a finite field. This is a limitation of
+  the supplied-point hypothesis, not of the general nonzero-denominator formula.
+  [Elimination](AlgebraicGroups/Algebra/LocalizedCoordinateQuotient/README.md),
+  [dimension](AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension/README.md).
+- **Represented triangular products.** Over any commutative ring, for finite
+  same-universe linearly ordered indices, `U ⊗ D ≅ T` as schemes over `Spec K`.
+  The forward map is `i(u)e(d)`; the inverse uses diagonal projection and column
+  normalization. Conjugation on the actual identity fiber is `dᵢ uᵢⱼ dⱼ⁻¹`,
+  and multiplication is `(u,d)(u',d') = (u α(d,u'), dd')`, **not** a direct-product
+  group law. Readbacks allow all coefficient algebras, zero/nonreduced rings,
+  empty indices and noninjective base maps. The diagonal projection splits with
+  scheme-theoretic fiber `U`; for finite decidable same-universe indices, `D`
+  is a product of `Gₘ`, including the empty terminal case. No global transported
+  group instance, arbitrary-base change or normality of `U` in `GL` is asserted.
+  [Modules and limits](docs/MATHEMATICS.md#triangular-geometry-and-coordinates).
+- **Unitriangular point-group series.** Over a commutative ring, finite native
+  unitriangular groups have central/lower-central series, successive additive
+  quotients, derived series and sharp nilpotency bounds under the stated
+  hypotheses. Prime-characteristic exponent results have separate coefficient
+  and size conditions. [Series](AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration/README.md),
+  [exact class](AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass/README.md).
+- **GL and SL dimensions.** Over every field and finite decidable indices,
+  the actual coordinate rings and affine schemes have dimensions `N²` and
+  `N² - 1`, with natural subtraction before casting; rank zero gives zero in both.
+  [Dimension](AlgebraicGroups/GroupScheme/GeneralSpecialLinearDimension/README.md),
+  [related geometry](AlgebraicGroups/GroupScheme/GeneralSpecialLinearGeometricIntegral/README.md).
+- **Infinite vector-space dimension of GL coordinates.** Over a field and
+  nonempty finite decidable indices, powers of any universal matrix entry are
+  linearly independent, so the coordinate algebra is not module-finite. This
+  is not just carrier infinitude or Krull dimension; empty indices give the field.
+  [Module and GL₂ example](docs/MATHEMATICS.md#general-and-special-linear-geometry).
 
 ## Modules and examples
 
-| API | Focused module | Examples |
-| --- | --- | --- |
-| Coideal quotient lifts and maps | [`AlgebraicGroups.Algebra.Coalgebra.Quotient`](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean) | [Quotient morphisms](AlgebraicGroupsTest/Algebra/Coalgebra/CoidealQuotient.lean) |
+| Module / target | Contents |
+| --- | --- |
+| [`AlgebraicGroups`](AlgebraicGroups.lean) | Library aggregate; focused imports are linked above. |
+| [`AlgebraicGroupsTest`](AlgebraicGroupsTest/) | Test library: ordinary-import clients and boundary examples. |
 
-Import `AlgebraicGroups` for the aggregate or a focused producer linked above.
-For images under coalgebra homomorphisms over a field `K`, import
-[`AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map`](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Map.lean).
-`Subcoalgebra.map f D` has underlying submodule
-`Submodule.map f.toLinearMap D.toSubmodule`. Image membership means
-`∃ x ∈ D, f x = y`; containment in a target submodule means every member
-of `D` maps into it. The API also gives identity and composition laws,
-monotonicity for containment of underlying submodules, preservation of
-finite generation, and zero reflection: the image carrier is zero exactly
-when the source carrier is zero, even for a noninjective homomorphism.
-The [homomorphism API](AlgebraicGroups/Algebra/Coalgebra/Hom.lean) gives the
-underlying linear-map zero criterion over any commutative scalar semiring;
-only the source needs the coalgebra laws.
-
-For right comodules, the focused import is
-`AlgebraicGroups.Algebra.Coalgebra.RightComodule`. Given `X : Coalgebra.RightComodule R C M`
-and `hs : s.Finite`, use `X.exists_fg_subcomodule_of_finite hs` when
-`[Module.Projective R C]` is available. Its witness `U` exposes `U.toSubmodule`,
-`U.comodule`, the bundled colinear inclusion `U.subtype` and every-member closure
-`U.coaction_mem`. For linear-map operations on a `Coalgebra.RightComoduleHom`,
-use its `toLinearMap` projection.
-
-[Split tensor coordinates](AlgebraicGroups/Algebra/TensorProduct/Split.lean)
-give finite-support reconstruction and all-index contraction formulas along an
-arbitrary split free presentation over a commutative semiring, without a basis
-or finite-generation assumption on the presented module. The
-[clients](AlgebraicGroupsTest/Algebra/TensorProduct/Split.lean) include infinite
-free semiring modules, the nonfree ideal `(3)` in `ZMod 6`, its countable
-non-finitely-generated direct sum, empty indices and a nonsplit counterexample.
-Ordinary-import clients under `AlgebraicGroupsTest` exercise representative
-statements on generic rings and boundary cases. For a starting path, use
-[unitriangular scheme base change](docs/UnitriangularSchemeBaseChange.md),
-[its identity/tower laws](docs/UnitriangularSchemeBaseChangeCoherence.md),
-[closed unitriangular stages](AlgebraicGroups/GroupScheme/UnitriangularStages/README.md),
-[stage polynomial coordinates](AlgebraicGroups/Algebra/UnitriangularStagePolynomial/README.md),
-[stage underlying affine space](AlgebraicGroups/GroupScheme/UnitriangularStageAffineSpace/README.md),
-[stage normality](AlgebraicGroups/GroupScheme/UnitriangularStageNormality/README.md),
-[positive-stage coordinates](AlgebraicGroups/GroupScheme/UnitriangularStageCoordinates/README.md),
-[positive-stage kernel](AlgebraicGroups/GroupScheme/UnitriangularStageKernel/README.md),
-[represented upper-triangular products](AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md),
-[the split kernel](AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md),
-[finite diagonal products](AlgebraicGroups/GroupScheme/DiagonalProduct/README.md)
-and [native matrix groups](AlgebraicGroups/GroupTheory/UpperTriangular/README.md).
-For a broader survey of additional algebra, component and quotient APIs, see
-the [mathematical topic guide](docs/MATHEMATICS.md), including
-[antipode involutivity](docs/MATHEMATICS.md#antipodes-of-commutative-hopf-algebras)
-over commutative semirings. The focused guides give declarations, proofs and
-limitations.
-
-## References
-
-These are selected mathematical antecedents and prior formalizations, not
-claims to cover entire sources. Module References and the focused guides give
-the precise passage-to-construction distinctions.
-
-- M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969: bibliographic credit
-  for classical comodules, the field coalgebra theorem and the coefficient method.
-  The commutative-semiring containment results use projectivity of the coacting
-  coalgebra, not of the coacted-on module. The regular case gives the
-  right-coideal step, not a general two-factor semiring theorem.
-- J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
-  over a Field*, Cambridge Studies in Advanced Mathematics 170, Cambridge
-  University Press, 2017. Items 2.1 and 2.6 describe the additive group and
-  the chosen-basis `Gₐ^n ≃ Vₐ` group-scheme isomorphism **over a field**, a
-  direct antecedent for finite additive products; the comparison here is of
-  their underlying over-scheme with affine space over an arbitrary commutative
-  ring, not an additive-group-scheme or Hopf isomorphism. Item 2.3 concerns
-  finite constant groups; their points here have locally constant labels, not
-  unrestricted constant labels. Selected passages on group functors, matrix
-  and triangular groups, components, quotients and schematic density also
-  inform the corresponding modules. Items 2.9 and 6.49 describe the
-  field-case unitriangular group and its finer one-entry filtration: the
-  block endpoints antecede closed whole-superdiagonal stages over arbitrary
-  rings, but these passages give only context for the separate whole-stage
-  *underlying over-scheme* projection and its nonmultiplicative section.
-  The fundamental theorem of coalgebras over a field is also a mathematical
-  antecedent for the finite-containment API.
-- J. S. Milne, *Basic Theory of Affine Group Schemes* (2012, version 1.00;
-  [author's course-notes address](https://www.jmilne.org/math/CourseNotes/AGS.pdf),
-  which may serve a later version). VII §4 Proposition 4.1 and Example 4.3
-  give field-kernel/determinant antecedents, XI §16 Example 16.3 the field
-  positive-rank special-linear dimension, and XIII §3 **item 3.14** a
-  field-base *right*-diagonal determinant splitting. The represented
-  arbitrary-ring left-normalized section-first product has a twisted group
-  law, not a direct-product splitting; its kernel and scheme-level laws require
-  separate arguments.
-- J. S. Milne, preliminary *Algebraic Groups* course notes, version 2.00
-  (2015), Definition 2.20 and Proposition 2.21: field-base triangular
-  splitting and its split-kernel criterion. These locators belong to the 2015
-  preliminary notes, not the 2017 book; neither source is cited here for an
-  arbitrary-base group-scheme splitting.
-- The Stacks Project: [tags 022W](https://stacks.math.columbia.edu/tag/022W)
-  and [022X](https://stacks.math.columbia.edu/tag/022X) for general linear
-  coordinates and determinant; [03BH](https://stacks.math.columbia.edu/tag/03BH),
-  [03BI](https://stacks.math.columbia.edu/tag/03BI) and
-  [03BM](https://stacks.math.columbia.edu/tag/03BM) for affine groupoid
-  integrality, invariant rank and the setting of a conditional quotient bridge,
-  not full quotient existence or effectivity. Section 26.17, Lemma 26.17.2
-  concerns affine pullbacks; [03C4](https://stacks.math.columbia.edu/tag/03C4)
-  finite-presentation descent, [02C8](https://stacks.math.columbia.edu/tag/02C8)
-  localization,
-  [033B](https://stacks.math.columbia.edu/tag/033B) reducedness,
-  [056V](https://stacks.math.columbia.edu/tag/056V) dense smooth loci, and
-  [00OP](https://stacks.math.columbia.edu/tag/00OP) and
-  [0B7I](https://stacks.math.columbia.edu/tag/0B7I) dimension arguments.
-- Darij Grinberg and Victor Reiner, *Hopf algebras in combinatorics* (2020),
-  Proposition 1.4.17, **as cited by Mathlib** for the primitive counit
-  consequence. The general monoid-algebra primitive-vanishing theorem is
-  proved separately in [this library](AlgebraicGroups/Algebra/MonoidAlgebraPrimitive.lean).
-- Formal Frontier, *Alpha-power versus roots of unity: scheme isomorphism,
-  not group isomorphism*, § “No group-scheme isomorphism for positive
-  exponent”: a finite-cyclic diagonal-coefficient argument developed further
-  in the [primitive module](AlgebraicGroups/Algebra/MonoidAlgebraPrimitive.lean)
-  and [client](AlgebraicGroupsTest/MonoidAlgebraPrimitive.lean). An algebra
-  equivalence alone does not give an additive-group-scheme or Hopf equivalence.
-- The mathlib community, [*Mathlib*](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5):
-  coalgebra laws and tensor-basis decompositions, affine spectra, group objects
-  and Hopf quotients, tensor and polynomial
-  coordinates, categorical products, affine space, dimension and smoothness
-  APIs used by the constructions here. See [credits](CREDITS.md) for specific
-  interfaces and contributor roles.
-- Formal Frontier's separately maintained [*SchemeProperties*](https://github.com/FormalFrontier/scheme-properties)
-  for the finite-type restricted functor of points and connected-component,
-  component-scheme and component-fibre APIs used here.
-- Formal Frontier's separately maintained [*GeneralLinearGroups*](https://github.com/FormalFrontier/general-linear-groups)
-  for `ElementaryCommutator`, used in the elementary-unit arguments for the
-  unitriangular lower and derived series of **point groups**.
+The [coalgebra guide](docs/COALGEBRAS.md) gives API walkthroughs and models;
+[mathematical topics](docs/MATHEMATICS.md) cover vector groups, triangular groups,
+localization, quotients, components and density, with focused module/guide links.
 
 ## Use and build
 
-The repository pins Lean `v4.34.0-rc2` and exact official GitHub dependencies in
+Add the library to your `lakefile.toml`:
+
+```toml
+[[require]]
+name = "algebraic-groups"
+git = "https://github.com/FormalFrontier/algebraic-groups.git"
+rev = "main"
+```
+
+GitHub `main` contains reviewed releases; Lake records the resolved commit in
+`lake-manifest.json`. Use a commit from that history to pin a particular release.
+Import `AlgebraicGroups` or a focused module linked above. For example:
+
+```lean
+import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
+#check HopfAlgebra.antipode_involutive
+```
+
+Lean `v4.34.0-rc2` and exact GitHub dependencies are pinned in
 [lean-toolchain](lean-toolchain), [lakefile.toml](lakefile.toml) and
-[lake-manifest.json](lake-manifest.json). Building requires access to the
-separately maintained dependencies. At the project root, install the pinned
-toolchain and fetch the matching precompiled
-mathlib cache successfully **before** building both targets:
+[lake-manifest.json](lake-manifest.json). Direct requirements are Mathlib,
+SchemeProperties, GeneralLinearGroups and CoherentModules; building requires
+access to them.
+At the root, install the pinned toolchain and fetch the matching cache **before**
+building both library and test targets:
 
 ```sh
 elan toolchain install leanprover/lean4:v4.34.0-rc2
@@ -449,7 +194,20 @@ lake exe cache get
 lake build AlgebraicGroups AlgebraicGroupsTest
 ```
 
-See [building and focused targets](docs/BUILDING.md) for dependency and
-client details. Mathematical background and rights notices are
-in [credits](CREDITS.md); [formalization.yaml](formalization.yaml) lists the
-metadata and result declarations for this tree.
+See [building and focused targets](docs/BUILDING.md) for dependency/resource details
+and [formalization metadata](formalization.yaml) for result declarations.
+
+## References
+
+Selected antecedents are Sweedler's *Hopf Algebras* (1969), Milne's *Algebraic
+Groups* (2017) and distinct 2012/2015 notes, the Stacks Project, and the prior
+formalizations in Mathlib and project dependencies. [References and scope](CREDITS.md#mathematical-sources)
+give precise locators, qualifications and further sources; none asserts whole-source coverage.
+
+## Credits and license
+
+Authors: Formal Frontier Agents. AI agents developed the proofs and examples under
+human project direction, reusing Mathlib and project libraries. Original project
+contributions use [Apache-2.0](LICENSE). [CREDITS.md](CREDITS.md) preserves contributor
+roles, mathematical-method credit and authentic third-party notices separately
+from redistribution rights.

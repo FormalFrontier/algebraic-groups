@@ -11,6 +11,8 @@ public import Mathlib.RingTheory.Coalgebra.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.Data.Matrix.Basic
 
 /-!
 # Finite right-coaction and coalgebra containment
@@ -311,5 +313,46 @@ theorem exists_fg_submodule_comul_closed_of_finite
   exact comul_mem_range_mapIncl_span_coefficients (f := f) hΔ hf hx
 
 end Field
+
+end Coalgebra
+
+namespace Coalgebra
+
+open scoped TensorProduct
+
+section FiniteType
+
+variable {K : Type u} {A : Type v}
+variable [Field K] [Semiring A] [Algebra K A] [Coalgebra K A]
+variable [Algebra.FiniteType K A]
+
+/-- A finite-type algebra carrying a coalgebra structure over a field admits a
+finite coefficient matrix whose entries generate the algebra. Comultiplication
+satisfies the coefficient-matrix identity, and the counits form the identity
+matrix over the field. The algebra need not be commutative or finite-dimensional,
+and the matrix size may be zero. The coefficient method for finite right coideals
+is credited to Sweedler's *Hopf Algebras*. -/
+theorem exists_coefficientMatrix_adjoin_eq_top :
+    ∃ (n : ℕ) (a : Matrix (Fin n) (Fin n) A),
+      (∀ i j, Coalgebra.comul (R := K) (a i j) = ∑ k, a i k ⊗ₜ[K] a k j) ∧
+      (∀ i j, Coalgebra.counit (R := K) (a i j) = if i = j then 1 else 0) ∧
+      Algebra.adjoin K (Set.range (Function.uncurry a)) = ⊤ := by
+  classical
+  let : AddCommGroup A := Module.addCommMonoidToAddCommGroup K
+  obtain ⟨s, hs⟩ := (inferInstance : Algebra.FiniteType K A).out
+  obtain ⟨U, hsU, hUfg, hUclosed⟩ :=
+    exists_fg_submodule_comul_right_closed_of_finite (K := K) s.finite_toSet
+  obtain ⟨b, f, a, _hfcomp, hf, hΔ, hspan⟩ :=
+    exists_basis_comul_coefficients U hUfg hUclosed
+  have hUcoeff : U ≤ Submodule.span K (Set.range (Function.uncurry a)) :=
+    hspan.ge.trans (span_le_span_coefficients hΔ)
+  refine ⟨Module.finrank K U, a, fun i j ↦ comul_coefficient hΔ hf i j,
+    fun i j ↦ counit_coefficient hΔ hf i j, ?_⟩
+  apply top_unique
+  rw [← hs]
+  exact Algebra.adjoin_le fun x hx ↦
+    Algebra.span_le_adjoin K _ (hUcoeff (hsU hx))
+
+end FiniteType
 
 end Coalgebra

@@ -23,6 +23,11 @@ name = "general-linear-groups"
 git = "https://github.com/FormalFrontier/general-linear-groups.git"
 rev = "8b3b07bf2744a870b53934542e4c5ed383765bd6"
 
+[[require]]
+name = "coherent-modules"
+git = "https://github.com/FormalFrontier/coherent-modules.git"
+rev = "1112034c447b07049c12402ce0f3f25c4cffb5e4"
+
 [[lean_lib]]
 name = "AlgebraicGroups"
 
@@ -45,15 +50,23 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.CoefficientMatrixUnit",
   "AlgebraicGroupsTest.Algebra.Coalgebra.Coefficients",
   "AlgebraicGroupsTest.Algebra.Coalgebra.CoidealQuotient",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.ComoduleCoefficientsGL2",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.ComoduleCoefficientsGL2Infinite",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.ComoduleCoefficientsBoundaries",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.ComoduleCoefficientsUse",
   "AlgebraicGroupsTest.Algebra.Coalgebra.CounitRange",
   "AlgebraicGroupsTest.Algebra.Coalgebra.CounitKernel",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.CounitScalarAction",
   "AlgebraicGroupsTest.Algebra.Coalgebra.FiniteSubcoalgebra",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.FiniteAlgebraGenerators",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.FiniteAlgebraGeneratorsNoncommutative",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeSpan",
   "AlgebraicGroupsTest.Algebra.Coalgebra.Hom",
   "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdeal",
   "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdealTensor",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Antipode",
+  "AlgebraicGroupsTest.Algebra.HopfAlgebra.CocommutativeAntipode",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Comultiplication",
   "AlgebraicGroupsTest.Algebra.LocalizedCoordinateQuotient",
   "AlgebraicGroupsTest.Algebra.FinitePolynomialLocalizationDimension",

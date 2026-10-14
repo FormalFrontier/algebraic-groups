@@ -91,35 +91,82 @@ argument follows Formal Frontier's earlier projective-coalgebra formalization
 and uses Kevin Buzzard and Antoine Labelle's Mathlib projective-module API in
 place of an ambient basis.
 
-J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type over
-a Field*, Cambridge Studies in Advanced Mathematics 170, Cambridge University
-Press, 2017: item 2.1 describes the additive group; item 2.6 gives the
-chosen-basis group-scheme isomorphism `Gₐ^n ≃ Vₐ` over a field, a direct
-published antecedent for finite additive products; item 2.9 discusses
-unitriangular groups, and item 6.49 their filtration. The present comparison
-instead identifies the underlying over-scheme of the actual product with
-`Spec (MvPolynomial D K)` and affine space over an arbitrary commutative ring;
-that result is not attributed to those passages. The field-case filtration
-antecedes the closed stages and normality, while it supplies context rather
-than attribution for the separate whole-stage underlying projection or its
-nonmultiplicative section. Milne's other cited passages concern selected
-group-functor, finite-constant, triangular, component, quotient and density
-results, not the book as a whole. The fundamental theorem of coalgebras over
-a field is also a mathematical antecedent for finite subcoalgebra containment.
+These are selected mathematical antecedents and prior formalizations, not
+claims to cover entire sources. Module References and the focused guides give
+the precise passage-to-construction distinctions.
 
-The distinct 2012, version 1.00, *Basic Theory of Affine Group Schemes* gives
-field-base kernel, determinant, dimension and right-factor splitting
-antecedents (XIII §3 **item 3.14**, not an example). The preliminary *Algebraic
-Groups* course notes, version 2.00 (2015), give field triangular splitting
-and a split-kernel criterion. The Stacks Project supplies the cited affine
-groupoid, faithfully-flat descent, localization, reducedness and dimension
-ideas; its quotient antecedents do not establish general existence or
-effectivity here. The Grinberg–Reiner primitive counit consequence is credited
-**as cited by Mathlib**, not as a source for this library's general monoid-algebra primitive
-theorem. Formal Frontier's *Alpha-power versus roots of unity: scheme
-isomorphism, not group isomorphism* contributes the finite-cyclic
-diagonal-coefficient idea. See the [root references](README.md#references) and
-module References for their precise locators and limitations.
+- M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969: bibliographic credit
+  for classical comodules, the field coalgebra theorem and the coefficient method.
+  The commutative-semiring containment results use projectivity of the coacting
+  coalgebra, not of the coacted-on module. The regular case gives the
+  right-coideal step, not a general two-factor semiring theorem.
+- J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
+  over a Field*, Cambridge Studies in Advanced Mathematics 170, Cambridge
+  University Press, 2017. Items 2.1 and 2.6 describe the additive group and
+  the chosen-basis `Gₐ^n ≃ Vₐ` group-scheme isomorphism **over a field**, a
+  direct antecedent for finite additive products; the comparison here is of
+  their underlying over-scheme with affine space over an arbitrary commutative
+  ring, not an additive-group-scheme or Hopf isomorphism. Item 2.3 concerns
+  finite constant groups; their points here have locally constant labels, not
+  unrestricted constant labels. Selected passages on group functors, matrix
+  and triangular groups, components, quotients and schematic density also
+  inform the corresponding modules. Items 2.9 and 6.49 describe the
+  field-case unitriangular group and its finer one-entry filtration: the
+  block endpoints antecede closed whole-superdiagonal stages over arbitrary
+  rings, but these passages give only context for the separate whole-stage
+  *underlying over-scheme* projection and its nonmultiplicative section.
+  The fundamental theorem of coalgebras over a field is also a mathematical
+  antecedent for the finite-containment API.
+- J. S. Milne, *Basic Theory of Affine Group Schemes* (2012, version 1.00;
+  [author's course-notes address](https://www.jmilne.org/math/CourseNotes/AGS.pdf),
+  which may serve a later version). VII §4 Proposition 4.1 and Example 4.3
+  give field-kernel/determinant antecedents, XI §16 Example 16.3 the field
+  positive-rank special-linear dimension, and XIII §3 **item 3.14** a
+  field-base *right*-diagonal determinant splitting. The represented
+  arbitrary-ring left-normalized section-first product has a twisted group
+  law, not a direct-product splitting; its kernel and scheme-level laws require
+  separate arguments.
+- J. S. Milne, preliminary *Algebraic Groups* course notes, version 2.00
+  (2015), Definition 2.20 and Proposition 2.21: field-base triangular
+  splitting and its split-kernel criterion. These locators belong to the 2015
+  preliminary notes, not the 2017 book; neither source is cited here for an
+  arbitrary-base group-scheme splitting.
+- The Stacks Project: [tags 022W](https://stacks.math.columbia.edu/tag/022W)
+  and [022X](https://stacks.math.columbia.edu/tag/022X) for general linear
+  coordinates and determinant; [03BH](https://stacks.math.columbia.edu/tag/03BH),
+  [03BI](https://stacks.math.columbia.edu/tag/03BI) and
+  [03BM](https://stacks.math.columbia.edu/tag/03BM) for affine groupoid
+  integrality, invariant rank and the setting of a conditional quotient bridge,
+  not full quotient existence or effectivity. Section 26.17, Lemma 26.17.2
+  concerns affine pullbacks; [03C4](https://stacks.math.columbia.edu/tag/03C4)
+  finite-presentation descent, [02C8](https://stacks.math.columbia.edu/tag/02C8)
+  localization,
+  [033B](https://stacks.math.columbia.edu/tag/033B) reducedness,
+  [056V](https://stacks.math.columbia.edu/tag/056V) dense smooth loci, and
+  [00OP](https://stacks.math.columbia.edu/tag/00OP) and
+  [0B7I](https://stacks.math.columbia.edu/tag/0B7I) dimension arguments.
+- Darij Grinberg and Victor Reiner, *Hopf algebras in combinatorics* (2020),
+  Proposition 1.4.17, **as cited by Mathlib** for the primitive counit
+  consequence. The general monoid-algebra primitive-vanishing theorem is
+  proved separately in [this library](AlgebraicGroups/Algebra/MonoidAlgebraPrimitive.lean).
+- Formal Frontier, *Alpha-power versus roots of unity: scheme isomorphism,
+  not group isomorphism*, § “No group-scheme isomorphism for positive
+  exponent”: a finite-cyclic diagonal-coefficient argument developed further
+  in the [primitive module](AlgebraicGroups/Algebra/MonoidAlgebraPrimitive.lean)
+  and [client](AlgebraicGroupsTest/MonoidAlgebraPrimitive.lean). An algebra
+  equivalence alone does not give an additive-group-scheme or Hopf equivalence.
+- The mathlib community, [*Mathlib*](https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5):
+  coalgebra laws and tensor-basis decompositions, affine spectra, group objects
+  and Hopf quotients, tensor and polynomial
+  coordinates, categorical products, affine space, dimension and smoothness
+  APIs used by the constructions here. See [credits](CREDITS.md) for specific
+  interfaces and contributor roles.
+- Formal Frontier's separately maintained [*SchemeProperties*](https://github.com/FormalFrontier/scheme-properties)
+  for the finite-type restricted functor of points and connected-component,
+  component-scheme and component-fibre APIs used here.
+- Formal Frontier's separately maintained [*GeneralLinearGroups*](https://github.com/FormalFrontier/general-linear-groups)
+  for `ElementaryCommutator`, used in the elementary-unit arguments for the
+  unitriangular lower and derived series of **point groups**.
 
 ## Prior formalizations
 
@@ -183,6 +230,10 @@ supplies `FiniteTypePoints` (including restricted-Yoneda and finite-limit
 interfaces), `ConnectedComponents`, `ComponentScheme` and `ComponentFibers`.
 The separately maintained [*GeneralLinearGroups*](https://github.com/FormalFrontier/general-linear-groups)
 supplies `ElementaryCommutator` for the unitriangular point-group arguments.
+The separately maintained [*CoherentModules*](https://github.com/FormalFrontier/coherent-modules)
+supplies `Module.FaithfullyFlat.of_surjective` for the converse counit
+characterization of faithfully flat coalgebras. Its general module-theoretic
+criterion uses Mathlib's ideal scalar-action and submodule-map interfaces.
 Their contributors and licenses are separate from this project's original
 contributions and Mathlib's. The local `VectorProduct` formalizes the
 field/basis group-scheme product as

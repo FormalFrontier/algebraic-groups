@@ -20,6 +20,10 @@ flatness, projectivity or freeness.
 
 ## Main definitions and results
 
+* `RightComodule.coaction_injective` follows from the counit normal form.
+  Equality and zero simp lemmas cancel the coaction, and
+  `RightComodule.coaction_eq_zero_iff` characterizes the zero coaction map by
+  `Subsingleton M`.
 * `RightComoduleHom` is a linear map intertwining the specified coactions, with
   underlying map `toLinearMap`, identities and composition.
 * `RightComodule.IsStable` describes image stability for every member of an
@@ -118,6 +122,41 @@ variable [AddCommMonoid M] [Module R M]
 @[simp] theorem rid_counit_coaction (X : RightComodule R C M) (m : M) :
     TensorProduct.rid R M ((counit (R := R)).lTensor M (X.coaction m)) = m := by
   simp
+
+/-- The coaction is injective: applying the counit and right unitor cancels it. -/
+theorem coaction_injective (X : RightComodule R C M) : Function.Injective X.coaction := by
+  intro m n h
+  simpa only [X.rid_counit_coaction] using
+    congrArg (fun t : M ⊗[R] C ↦
+      TensorProduct.rid R M ((counit (R := R)).lTensor M t)) h
+
+/-- Equality of coactions is equality of elements. -/
+@[simp] theorem coaction_inj (X : RightComodule R C M) {m n : M} :
+    X.coaction m = X.coaction n ↔ m = n :=
+  X.coaction_injective.eq_iff
+
+/-- A coaction vanishes at an element exactly when that element is zero. -/
+@[simp] theorem coaction_eq_zero (X : RightComodule R C M) {m : M} :
+    X.coaction m = 0 ↔ m = 0 :=
+  X.coaction.map_eq_zero_iff X.coaction_injective
+
+/-- Zero equals an element's coaction exactly when zero equals that element. -/
+@[simp] theorem zero_eq_coaction (X : RightComodule R C M) {m : M} :
+    0 = X.coaction m ↔ 0 = m := by
+  rw [eq_comm, X.coaction_eq_zero, eq_comm]
+
+/-- The coaction map is zero exactly when its underlying module is subsingleton. -/
+@[simp] theorem coaction_eq_zero_iff (X : RightComodule R C M) :
+    X.coaction = 0 ↔ Subsingleton M := by
+  constructor
+  · intro h
+    have hz (m : M) : m = 0 := X.coaction_eq_zero.mp (LinearMap.congr_fun h m)
+    exact ⟨fun m n ↦ (hz m).trans (hz n).symm⟩
+  · intro h
+    let := h
+    ext m
+    rw [Subsingleton.elim m 0]
+    exact map_zero X.coaction
 
 /-- The regular right comodule of a coalgebra, with coaction its comultiplication. -/
 def regular (R : Type u) (C : Type v)

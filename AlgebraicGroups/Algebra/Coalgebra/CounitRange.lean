@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import CoherentModules.RingTheory.Flat.FaithfullyFlat
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
@@ -26,9 +27,14 @@ in particular, orthogonal scalar supports give a zero tensor product.
 The counit range also generates the whole coalgebra under scalar multiplication:
 every element is a sum of terms `ε(x) • y` by the left counit identity. Thus its
 action on the top submodule is top, even when the counit range is a proper ideal.
+The counit range detects equality of scalar actions: two scalars act identically
+on the coalgebra exactly when they act identically on its counit range. Hence the
+scalar action on the coalgebra is faithful if and only if its action on the
+counit range is faithful. No finiteness or freeness assumption is required.
+
 For a nontrivial coalgebra whose underlying module is free, a basis coordinate
-maps this identity to the scalar semiring, so the counit is surjective. Neither
-a finite basis nor a ring or field structure on the scalars is required.
+maps the spanning identity to the scalar semiring, so the counit is surjective.
+Neither a finite basis nor a ring or field structure on the scalars is required.
 
 Over a commutative ring, a finitely generated counit image also equals the whole
 ring when the scalar action on the coalgebra is faithful. The finiteness premise
@@ -42,23 +48,28 @@ Over a commutative ring, the underlying module is faithfully flat exactly when
 it is flat and its counit is surjective, or equivalently has range the whole
 scalar ring. In the forward direction, the counit-law action on the top submodule
 and Mathlib's ideal-top reflection criterion make the range the whole ring.
-Conversely, a surjective counit transports ideal scalar action to the scalar ring,
-where ideal multiplication gives the same reflection criterion. No finite
-generation or nontriviality is required; flatness concerns the coalgebra carrier,
-not a separate scalar extension.
+Conversely, CoherentModules' general constructor for a flat module surjecting onto
+a faithfully flat module applies to the counit, since the scalar ring is faithfully
+flat over itself. No finite generation or nontriviality is required; flatness
+concerns the coalgebra carrier, not a separate scalar extension.
 
 ## References
 
 Mathlib supplies the counit coalgebra homomorphism, tensor induction,
 free-module bases, ideal multiplication and submodule scalar action used here.
 The tensor-product range formula uses Mathlib's `TensorProduct.range_map` and
-`Submodule.mulMap_range`. The faithful-action criterion reuses Mathlib's
+`Submodule.mulMap_range`. Equality of scalar actions uses the surjectivity of
+`LinearMap.rangeRestrict`, linearity and the left counit identity. The finitely
+generated faithful-action criterion reuses Mathlib's
 `Ideal.isIdempotentElem_iff_of_fg`, singleton-ideal scalar action and
 `FaithfulSMul.eq_of_smul_eq_smul`. The faithfully flat criterion combines
 `counit_range_smul_top` with Mathlib's
-`Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top`. Its converse uses Mathlib's
-`Submodule.map_smul''`, `Submodule.map_top`, `LinearMap.range_eq_top` and
-`Ideal.smul_eq_mul` to transport ideal scalar action along the counit.
+`Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top`. Its converse uses
+CoherentModules' public `Module.FaithfullyFlat.of_surjective` from
+`CoherentModules.RingTheory.Flat.FaithfullyFlat` with Mathlib's
+`Module.FaithfullyFlat.self`. The generic constructor transports ideal scalar
+action using Mathlib's `Submodule.map_smul''`, `Submodule.map_top` and
+`LinearMap.range_eq_top`.
 -/
 
 @[expose] public section
@@ -122,6 +133,43 @@ This does not require the counit range to be the whole scalar semiring. -/
     | add x y hx hy =>
       simpa only [map_add] using (I • (⊤ : Submodule R C)).add_mem hx hy
   simpa only [rTensor_counit_comul, _root_.TensorProduct.lid_tmul, one_smul] using h (comul c)
+
+/-- Two scalars act identically on a coalgebra if and only if they act identically
+on the range of its counit. This holds over a commutative semiring without any
+finiteness or freeness assumption. -/
+theorem smul_eq_smul_iff_on_counit_range {r s : R} :
+    (∀ c : C, r • c = s • c) ↔
+      ∀ x : LinearMap.range (counit (R := R) (A := C)), r • x = s • x := by
+  constructor
+  · intro h x
+    obtain ⟨c, rfl⟩ := (counit (R := R) (A := C)).surjective_rangeRestrict x
+    simpa only [map_smul] using congrArg (counit (R := R) (A := C)).rangeRestrict (h c)
+  · intro h c
+    have hε (x : C) : r * counit (R := R) x = s * counit (R := R) x := by
+      simpa only [Submodule.coe_smul, smul_eq_mul, LinearMap.codRestrict_apply] using
+        congrArg Subtype.val (h ((counit (R := R) (A := C)).rangeRestrict x))
+    have ht (t : C ⊗[R] C) :
+        r • _root_.TensorProduct.lid R C ((counit (R := R)).rTensor C t) =
+          s • _root_.TensorProduct.lid R C ((counit (R := R)).rTensor C t) := by
+      induction t using _root_.TensorProduct.inductionOn with
+      | tmul x y =>
+        simpa only [LinearMap.rTensor_tmul, _root_.TensorProduct.lid_tmul, ← mul_smul] using
+          congrArg (fun a : R ↦ a • y) (hε x)
+      | add x y hx hy =>
+        simpa only [map_add, smul_add] using congrArg₂ (· + ·) hx hy
+    simpa only [rTensor_counit_comul, _root_.TensorProduct.lid_tmul, one_smul] using ht (comul c)
+
+/-- The scalar action on a coalgebra is faithful if and only if the scalar action
+on the range of its counit is faithful. -/
+theorem faithfulSMul_iff_counit_range :
+    FaithfulSMul R C ↔ FaithfulSMul R (LinearMap.range (counit (R := R) (A := C))) := by
+  constructor
+  · intro h
+    exact ⟨fun {r s} hrs ↦ h.eq_of_smul_eq_smul
+      ((smul_eq_smul_iff_on_counit_range R C (r := r) (s := s)).mpr hrs)⟩
+  · intro h
+    exact ⟨fun {r s} hrs ↦ h.eq_of_smul_eq_smul
+      ((smul_eq_smul_iff_on_counit_range R C (r := r) (s := s)).mp hrs)⟩
 
 /-- The counit range of a nontrivial coalgebra with free underlying module is the
 whole scalar semiring. No finiteness assumption on a basis is needed. -/
@@ -267,14 +315,8 @@ theorem faithfullyFlat_iff_flat_and_counit_surjective
     let := hFF
     exact ⟨inferInstance, counit_surjective_of_faithfullyFlat R C⟩
   · rintro ⟨hflat, hsurj⟩
-    refine (Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top R C).mpr ⟨hflat, ?_⟩
-    intro I hI
-    have hrange : LinearMap.range (counit (R := R) (A := C)) = ⊤ :=
-      LinearMap.range_eq_top.mpr hsurj
-    have h := congrArg (Submodule.map (counit (R := R) (A := C))) hI
-    rw [Submodule.map_smul'', Submodule.map_top, hrange, Ideal.smul_eq_mul,
-      Ideal.mul_top] at h
-    exact h
+    let : Module.Flat R C := hflat
+    exact Module.FaithfullyFlat.of_surjective (counit (R := R) (A := C)) hsurj
 
 /-- The underlying module of a coalgebra over a commutative ring is faithfully flat
 exactly when it is flat and the scalar ideal given by its counit range is the

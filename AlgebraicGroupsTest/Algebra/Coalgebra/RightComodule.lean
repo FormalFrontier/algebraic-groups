@@ -17,6 +17,8 @@ The scalar coalgebra `ℕ` coacts on `ℕ →₀ ZMod 2` by `m ↦ m ⊗ 1`.
 The ambient module is infinite, not module-finite, not projective and not free.
 Its submodule supported on `{0, 1}` is specified, proper, nonzero and finitely
 generated. Its subtype coaction is the inverse right unitor directly.
+Coaction cancellation separates a supported coordinate vector from one outside
+this submodule, and zero reflection preserves the nonzero torsion vector.
 
 The projective ideal `(3)` in `ZMod 6` coacts on its countable direct sum by
 `m ↦ m ⊗ e₃`. Here the counit of `e₃` is three, not one: counitality follows
@@ -142,6 +144,28 @@ theorem torsionVector_ne_zero : (Finsupp.single 0 (1 : ZMod 2) : TorsionAmbient)
   intro h
   exact (one_ne_zero : (1 : ZMod 2) ≠ 0)
     (by simpa using congrArg (fun f : TorsionAmbient ↦ f 0) h)
+
+/-- Coaction cancellation distinguishes a supported coordinate from one outside the support. -/
+theorem torsionSupported_coaction_ne_outside :
+    torsionComodule.coaction (Finsupp.single 0 (1 : ZMod 2)) ≠
+      torsionComodule.coaction (Finsupp.single 2 (1 : ZMod 2)) := by
+  intro h
+  have hm : Finsupp.single 2 (1 : ZMod 2) ∈ torsionSupported :=
+    (torsionComodule.coaction_inj.mp h) ▸ torsionSupported_contains_coordinates.1
+  have hz := (mem_torsionSupported _).mp hm 2 (by simp)
+  simp at hz
+
+/-- The coaction does not kill the nonzero characteristic-two coordinate vector. -/
+theorem torsionVector_coaction_ne_zero :
+    torsionComodule.coaction (Finsupp.single 0 (1 : ZMod 2)) ≠ 0 := by
+  intro h
+  exact torsionVector_ne_zero (torsionComodule.coaction_eq_zero.mp h)
+
+/-- The coaction on the countable torsion module is not the zero linear map. -/
+theorem torsionComodule_coaction_ne_zero : torsionComodule.coaction ≠ 0 := by
+  intro h
+  let := torsionComodule.coaction_eq_zero_iff.mp h
+  exact torsionVector_ne_zero (Subsingleton.elim _ _)
 
 /-- Doubling the specified nonzero torsion vector gives zero. -/
 theorem two_smul_torsionVector :
@@ -338,6 +362,14 @@ noncomputable def zeroAmbientComodule : RightComodule ℕ ℕ (Empty →₀ ℕ)
 /-- The empty-index coalgebra has its regular zero right comodule. -/
 noncomputable def zeroCoalgebraComodule : RightComodule ℕ (Empty →₀ ℕ) (Empty →₀ ℕ) :=
   RightComodule.regular ℕ _
+
+/-- The scalar coaction on the empty-index ambient module is the zero linear map. -/
+theorem zeroAmbientComodule_coaction_eq_zero : zeroAmbientComodule.coaction = 0 :=
+  zeroAmbientComodule.coaction_eq_zero_iff.mpr inferInstance
+
+/-- The regular coaction on the empty-index coalgebra is the zero linear map. -/
+theorem zeroCoalgebraComodule_coaction_eq_zero : zeroCoalgebraComodule.coaction = 0 :=
+  zeroCoalgebraComodule.coaction_eq_zero_iff.mpr inferInstance
 
 /-- Trivial scalars are permitted by the right-comodule definition. -/
 def trivialScalarComodule : RightComodule PUnit PUnit PUnit := RightComodule.scalar PUnit PUnit

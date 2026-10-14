@@ -34,7 +34,7 @@ indices. A consecutive superdiagonal shift witnesses sharpness via the
 ## Build and examples
 
 The library uses Lean `leanprover/lean4:v4.34.0-rc2`, mathlib
-`83abb3e776bdefcbc447a1e44d0debe4010039e5`, and the official
+`83abb3e776bdefcbc447a1e44d0debe4010039e5`, and the
 general-linear-groups release `8b3b07bf2744a870b53934542e4c5ed383765bd6`.
 Use the pinned toolchain and first fetch the matching mathlib cache before
 building the producer, ordinary-import client, or both default targets:
