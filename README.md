@@ -100,7 +100,11 @@ third-party and AI involvement.
   or finite generation is assumed; [examples](AlgebraicGroupsTest/Algebra/Coalgebra/CounitRange.lean)
   include proper nonzero ranges over `ZMod 6`. Tensor products multiply
   counit ranges; orthogonal supports can give a subsingleton tensor product
-  even when both coalgebras are nontrivial.
+  even when both coalgebras are nontrivial. Over a commutative ring `R`, the
+  counit is surjective whenever the coalgebra carrier `C`, with additive
+  commutative group structure, satisfies `Module.FaithfullyFlat R C`; no
+  finite generation, freeness or nontriviality is required. This combines
+  the counit-law action with Mathlib's ideal-top reflection criterion.
   Under extension of scalars
   from `R` to a commutative `R`-algebra `S`, the counit ideal of `S ⊗[R] C` is
   `Ideal.map (algebraMap R S)` of the original counit ideal, without flatness

@@ -7,6 +7,7 @@ module
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Ideal.IdempotentFG
 public import Mathlib.RingTheory.Ideal.Operations
 
@@ -37,6 +38,12 @@ identity makes it act identically, and faithfulness identifies it with one.
 Faithfulness alone does not give this conclusion without finite generation of
 the image ideal.
 
+Over a commutative ring, the counit is also surjective when the underlying module
+is faithfully flat. The counit-law action on the top submodule, together with
+Mathlib's ideal-top reflection criterion, makes the range the whole scalar ring.
+This criterion requires neither finite generation nor nontriviality; faithful
+flatness is assumed on the coalgebra carrier, not on a separate scalar extension.
+
 ## References
 
 Mathlib supplies the counit coalgebra homomorphism, tensor induction,
@@ -44,7 +51,9 @@ free-module bases, ideal multiplication and submodule scalar action used here.
 The tensor-product range formula uses Mathlib's `TensorProduct.range_map` and
 `Submodule.mulMap_range`. The faithful-action criterion reuses Mathlib's
 `Ideal.isIdempotentElem_iff_of_fg`, singleton-ideal scalar action and
-`FaithfulSMul.eq_of_smul_eq_smul`.
+`FaithfulSMul.eq_of_smul_eq_smul`. The faithfully flat criterion combines
+`counit_range_smul_top` with Mathlib's
+`Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top`.
 -/
 
 @[expose] public section
@@ -218,5 +227,25 @@ theorem counit_surjective_of_faithfulSMul_of_fg
   LinearMap.range_eq_top.mp (counit_range_eq_top_of_faithfulSMul_of_fg R C hfg)
 
 end CommRing
+
+section CommRingFaithfullyFlat
+
+variable (R : Type u) (C : Type v)
+variable [CommRing R] [AddCommGroup C] [Module R C] [Coalgebra R C]
+variable [Module.FaithfullyFlat R C]
+
+/-- The counit range is the whole scalar ring when the underlying module is
+faithfully flat. Mathlib's ideal-top reflection applies to the counit-law action. -/
+@[simp] theorem counit_range_eq_top_of_faithfullyFlat :
+    (LinearMap.range (counit (R := R) (A := C)) : Ideal R) = ⊤ := by
+  exact ((Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top R C).mp inferInstance).2 _
+    (counit_range_smul_top R C)
+
+/-- The counit is surjective when the underlying module is faithfully flat. -/
+theorem counit_surjective_of_faithfullyFlat :
+    Function.Surjective (counit (R := R) (A := C)) :=
+  LinearMap.range_eq_top.mp (counit_range_eq_top_of_faithfullyFlat R C)
+
+end CommRingFaithfullyFlat
 
 end Coalgebra
