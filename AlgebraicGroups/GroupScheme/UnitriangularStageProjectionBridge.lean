@@ -376,8 +376,7 @@ theorem unitriangularStageCoordinateSectionOver_preimage (hr : 1 ≤ r)
         unitriangularStageCoordinateSectionOver K n r hr =
       stageProductSpecKill K n r hr ≫
         (unitriangularStageUnderlyingSpecIso K n r).inv := by
-    simp only [unitriangularStageCoordinateSectionOver, Category.assoc,
-      Iso.inv_hom_id_assoc, Category.id_comp]
+    simp only [unitriangularStageCoordinateSectionOver, Iso.inv_hom_id_assoc]
   rw [hcancel, Over.comp_left, Spec.preimage_comp]
   change Spec.preimage (stageProductSpecKill K n r hr).left
       (Spec.preimage (unitriangularStageUnderlyingSpecIso K n r).inv.left f) = _
@@ -428,7 +427,7 @@ theorem unitriangularStageCoordinateSectionOver_comp (hr : 1 ≤ r) :
   rw [Category.id_comp, Category.assoc,
     unitriangularStageCoordinateMap_underlying_spec]
   unfold unitriangularStageCoordinateSectionOver
-  simp only [Category.assoc, Iso.inv_hom_id_assoc, Category.comp_id]
+  simp only [Category.assoc, Iso.inv_hom_id_assoc]
   rw [stageProductSpecKill_comp_rename, Category.comp_id]
 
 end AlgebraicGeometry

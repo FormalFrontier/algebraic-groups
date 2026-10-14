@@ -49,8 +49,10 @@ maintained project libraries; it does not claim to formalize an entire source.
 - **Counit ideals.** Over a commutative semiring, an idempotent principal ideal
   has coalgebra `Δ(d) = d ⊗ e`, with inclusion counit, including `e = 0, 1`.
   Any coalgebra's counit range is idempotent and acts with `I • ⊤ = ⊤`;
-  tensor products multiply ranges and scalar extension maps the range ideal.
-  No surjectivity, freeness or finite generation is assumed. Over a commutative
+  tensor ranges multiply and the tensor counit is onto iff both factor counits
+  are onto, already for BOTH `CoalgebraStruct`s on additive-monoid modules over
+  a commutative semiring in independent universes. Scalar extension maps the
+  range ideal. No surjectivity, freeness or finite generation is assumed. Over a commutative
   ring, an additive-group coalgebra is faithfully flat **iff flat and its counit
   is onto**; flatness is separate, with no projectivity or nontriviality required.
   [Modules and proper-range examples](docs/COALGEBRAS.md#idempotent-principal-ideal-coalgebras).
@@ -66,7 +68,9 @@ maintained project libraries; it does not claim to formalize an entire source.
   semiring, normalized group-likes correspond to scalar-source coalgebra maps
   by `g ↦ (r ↦ r • g)` and evaluation at `1`, without multiplication or
   nontriviality. [Cardinality](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCardinality.lean),
-  [maps](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean).
+  [maps](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean). For full coalgebras
+  on additive-group modules over a commutative semiring, group-like differences
+  are ordered skew primitives; see [the theorem and ordinary-permutation clients](docs/COALGEBRAS.md#ordered-group-like-differences-and-translations).
 - **Antipodes.** For full Hopf algebras over a commutative semiring, either
   commutative multiplication **or** cocommutative comultiplication suffices for
   `S² = id`; these are alternatives, not an iff or simultaneous requirements.

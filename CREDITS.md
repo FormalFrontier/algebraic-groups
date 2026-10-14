@@ -73,7 +73,14 @@ Frontier Agents contributed its construction and characteristic formulas.
 The counit surjectivity criterion for faithful scalar action and finitely
 generated image uses Mario Carneiro and Kevin Buzzard’s Mathlib theorem on
 idempotent finitely generated ideals, together with Mathlib’s singleton-ideal
-action and faithful-action APIs.
+action and faithful-action APIs; finite generation concerns the actual counit
+image ideal, not the ambient module. The weak tensor range-product formula
+uses Mathlib's `TensorProduct.range_map` and `Submodule.mulMap_range`; counit
+surjectivity iff both factor counits are surjective uses `LinearMap.range_eq_top`,
+`Ideal.isUnit_iff` and `IsUnit.mul_iff`, without coalgebra laws. For lawful
+coalgebras, the faithfully flat forward criterion combines the counit-law action
+with Mathlib's `Module.FaithfullyFlat.iff_flat_and_ideal_smul_eq_top`; the converse
+uses the CoherentModules constructor credited below.
 Counit ideals under scalar extension use Amelia Livingston and Andrew Yang’s
 Mathlib tensor-product coalgebra, Antoine Chambert-Loir’s tensor-range theorem,
 and Mathlib’s submodule scalar-extension and ideal-image APIs.
@@ -149,6 +156,10 @@ the precise passage-to-construction distinctions.
   Proposition 1.4.17, **as cited by Mathlib** for the primitive counit
   consequence. The general monoid-algebra primitive-vanishing theorem is
   proved separately in [this library](AlgebraicGroups/Algebra/MonoidAlgebraPrimitive.lean).
+- P. Etingof, S. Gelaki, D. Nikshych and V. Ostrik, *Tensor Categories* (2015),
+  as referenced by Mathlib's primitive module for skew-primitive terminology;
+  this is bibliographic attribution through Mathlib, not a claim to have
+  formalized a particular book passage.
 - Formal Frontier, *Alpha-power versus roots of unity: scheme isomorphism,
   not group isomorphism*, § “No group-scheme isomorphism for positive
   exponent”: a finite-cyclic diagonal-coefficient argument developed further
@@ -213,6 +224,12 @@ Hopf-object convolution inverse-uniqueness strategy and reuses the concrete
 `LinearMap.comul_right_inv` of Dillies, Mrugała and Xie. The balanced-tensor
 contraction uses Kenny Lau and Mario Carneiro's tensor maps, associators and
 permutations, with Ali Ramsey and Eric Wieser's coalgebra laws.
+The ordered group-like difference and ordinary-translation examples reuse
+Robert Hawkins's skew-primitive formalization and Yaël Dillies and Michał
+Mrugała's group-like formalization. Their monoid-algebra coalgebra and bialgebra
+structures are by Amelia Livingston, Dillies and Mrugała; the module and basis
+APIs are by Johannes Hölzl, Yury Kudryashov and Kim Morrison, and the non-finiteness
+argument uses Johan Commelin's finite-module API.
 Other reused Mathlib APIs include Hopf quotients, matrix determinant
 and group-object operations, localization and faithfully flat descent,
 connected components, polynomial Krull dimension and standard smoothness.
@@ -233,7 +250,9 @@ supplies `ElementaryCommutator` for the unitriangular point-group arguments.
 The separately maintained [*CoherentModules*](https://github.com/FormalFrontier/coherent-modules)
 supplies `Module.FaithfullyFlat.of_surjective` for the converse counit
 characterization of faithfully flat coalgebras. Its general module-theoretic
-criterion uses Mathlib's ideal scalar-action and submodule-map interfaces.
+criterion uses Mathlib's ideal scalar-action and submodule-map interfaces,
+with Mathlib's `Module.FaithfullyFlat.self` for the scalar target and the given
+flatness of the source coalgebra carrier.
 Their contributors and licenses are separate from this project's original
 contributions and Mathlib's. The local `VectorProduct` formalizes the
 field/basis group-scheme product as

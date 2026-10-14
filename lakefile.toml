@@ -65,6 +65,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdeal",
   "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdealTensor",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.SkewPrimitive",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Antipode",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.CocommutativeAntipode",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Comultiplication",

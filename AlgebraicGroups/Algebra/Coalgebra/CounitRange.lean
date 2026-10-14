@@ -20,9 +20,13 @@ semiring `R`. Its square equals itself: the fact that the counit is a
 coalgebra homomorphism expresses each counit value as a sum of products of
 counit values. Tensor induction proves membership in the square without
 any freeness or finiteness assumption on the coalgebra.
-For a tensor product of coalgebras, the counit range is the product of the two
-scalar ideals. The counit is zero exactly when the coalgebra is subsingleton;
-in particular, orthogonal scalar supports give a zero tensor product.
+For a tensor product, the counit range is the product of the two scalar ideals,
+and its counit is surjective exactly when both factor counits are surjective.
+These two statements require only `CoalgebraStruct` on each factor, not the
+coalgebra identities. The idempotence and scalar-action results do use those
+identities. For a coalgebra satisfying them, the counit is zero exactly when
+the coalgebra is subsingleton; in particular, orthogonal scalar supports give
+a zero tensor product of coalgebras.
 
 The counit range also generates the whole coalgebra under scalar multiplication:
 every element is a sum of terms `ε(x) • y` by the left counit identity. Thus its
@@ -58,9 +62,10 @@ concerns the coalgebra carrier, not a separate scalar extension.
 Mathlib supplies the counit coalgebra homomorphism, tensor induction,
 free-module bases, ideal multiplication and submodule scalar action used here.
 The tensor-product range formula uses Mathlib's `TensorProduct.range_map` and
-`Submodule.mulMap_range`. Equality of scalar actions uses the surjectivity of
-`LinearMap.rangeRestrict`, linearity and the left counit identity. The finitely
-generated faithful-action criterion reuses Mathlib's
+`Submodule.mulMap_range`; the surjectivity criterion uses `LinearMap.range_eq_top`,
+`Ideal.isUnit_iff` and `IsUnit.mul_iff`. Equality of scalar actions uses the
+surjectivity of `LinearMap.rangeRestrict`, linearity and the left counit identity.
+The finitely generated faithful-action criterion reuses Mathlib's
 `Ideal.isIdempotentElem_iff_of_fg`, singleton-ideal scalar action and
 `FaithfulSMul.eq_of_smul_eq_smul`. The faithfully flat criterion combines
 `counit_range_smul_top` with Mathlib's
@@ -211,10 +216,18 @@ The left counit identity gives this without any freeness assumption. -/
     rw [Subsingleton.elim c 0]
     simp
 
-variable (D : Type w) [AddCommMonoid D] [Module R D] [Coalgebra R D]
+end CommSemiring
+
+section TensorProduct
+
+variable (R : Type u) (C : Type v) (D : Type w)
+variable [CommSemiring R]
+variable [AddCommMonoid C] [Module R C] [CoalgebraStruct R C]
+variable [AddCommMonoid D] [Module R D] [CoalgebraStruct R D]
 
 /-- The scalar ideal given by the counit range of a tensor product is the product
-of the two counit ranges. No freeness or finiteness of either factor is required. -/
+of the two counit ranges. Only the structure maps on each factor are required,
+not the coalgebra identities, freeness or finiteness. -/
 theorem counit_range_tensorProduct :
     (LinearMap.range (counit (R := R) (A := C ⊗[R] D)) : Ideal R) =
       (LinearMap.range (counit (R := R) (A := C)) : Ideal R) *
@@ -235,7 +248,17 @@ theorem counit_range_tensorProduct :
   rw [hε, LinearMap.range_comp, hrange, Submodule.map_top]
   exact Submodule.mulMap_range I J
 
-end CommSemiring
+/-- The tensor-product counit is surjective exactly when both factor counits are
+surjective. Only `CoalgebraStruct` on each factor is required. -/
+theorem counit_surjective_tensorProduct_iff :
+    Function.Surjective (counit (R := R) (A := C ⊗[R] D)) ↔
+      Function.Surjective (counit (R := R) (A := C)) ∧
+        Function.Surjective (counit (R := R) (A := D)) := by
+  rw [← LinearMap.range_eq_top, counit_range_tensorProduct, ← Ideal.isUnit_iff,
+    IsUnit.mul_iff, Ideal.isUnit_iff, Ideal.isUnit_iff,
+    LinearMap.range_eq_top, LinearMap.range_eq_top]
+
+end TensorProduct
 
 section CommRing
 

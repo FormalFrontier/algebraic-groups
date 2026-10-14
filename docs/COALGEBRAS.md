@@ -136,20 +136,50 @@ the scalar inclusion and comultiplication `d ↦ d ⊗ e`. The explicit
 constructor includes zero and one and needs no freeness assumption. See
 the [module](../AlgebraicGroups/Algebra/Coalgebra/IdempotentIdeal.lean) and
 [clients](../AlgebraicGroupsTest/Algebra/Coalgebra/IdempotentIdeal.lean).
-Independently, the [counit range](../AlgebraicGroups/Algebra/Coalgebra/CounitRange.lean)
-of any coalgebra over a commutative semiring is an idempotent scalar ideal
-`I` satisfying `I • ⊤ = ⊤` on the coalgebra. No counit surjectivity, freeness
-or finite generation is assumed; [examples](../AlgebraicGroupsTest/Algebra/Coalgebra/CounitRange.lean)
-include proper nonzero ranges over `ZMod 6`. Tensor products multiply
-counit ranges; orthogonal supports can give a subsingleton tensor product
-even when both coalgebras are nontrivial. Over a commutative ring `R`, a
-lawful `R`-coalgebra carrier `C` with additive commutative group structure
-satisfies `Module.FaithfullyFlat R C` exactly when it satisfies
-`Module.Flat R C` and its counit is surjective, equivalently has range the
-whole scalar ring. Flatness is a separate requirement; no finite generation,
-freeness, projectivity or nontriviality is required. See the
-[counit criteria](../AlgebraicGroups/Algebra/Coalgebra/CounitRange.lean), combining
-the counit-law action, ideal transport and Mathlib's ideal-top reflection criterion.
+For a lawful coalgebra over a commutative semiring, the
+[counit range](../AlgebraicGroups/Algebra/Coalgebra/CounitRange.lean) is an
+idempotent scalar ideal `I` satisfying `I • ⊤ = ⊤` on the coalgebra. Its counit
+is zero exactly when the carrier is subsingleton. These statements use the
+coalgebra laws, with no surjectivity, freeness or finite-generation premise.
+
+In contrast, tensor counit ranges multiply, and the tensor counit is surjective
+**if and only if both factor counits are surjective**, already for
+`[CommSemiring R]`, additive commutative monoid modules in independent universes,
+and **only `CoalgebraStruct` on each factor**. Neither statement needs coalgebra
+laws, flatness or tensor-inclusion injectivity. The
+[clients](../AlgebraicGroupsTest/Algebra/Coalgebra/CounitRange.lean) equip the
+natural-number ideals `(2)` and `(3)` with zero comultiplications and inclusion
+counits. Their tensor counit has image `(6)` and is not surjective; a nonzero
+generator tensor and an explicit failure of the left counit identity distinguish
+these chosen structures from lawful coalgebras.
+
+For lawful coalgebras, orthogonal supports can make the tensor product
+subsingleton even when both factors are nontrivial: the ideals `(3)` and `(4)`
+in `ZMod 6` have proper nonzero, orthogonal counit ranges. Tensoring `(3)` with
+itself retains its proper nonzero range. Projectivity gives flatness, not
+surjectivity: `(3)` is a nonfree projective module with nonsurjective counit.
+For a nontrivial free coalgebra the counit is surjective, without a finite-basis
+assumption; the free zero module over `ℕ` shows why nontriviality matters.
+Infinite diagonal coalgebras over `ℕ` and `ℚ`, zero ideal coalgebras and the
+empty diagonal coalgebra over a trivial ring retain the infinite and degenerate
+boundaries rather than imposing finite generation or nonzero scalars.
+
+Separately, over a commutative ring `R`, a lawful `[Coalgebra R C]` on an
+additive commutative group module satisfies `Module.FaithfullyFlat R C`
+**if and only if `Module.Flat R C` AND its counit is surjective**, equivalently
+has range the whole scalar ring. Thus faithful flatness gives both full range
+and surjectivity; flatness is a separate requirement, with no finite generation,
+freeness, projectivity or nontriviality premise. The forward proof combines the
+counit-law action, ideal transport and Mathlib's ideal-top reflection criterion.
+The converse uses CoherentModules' public `Module.FaithfullyFlat.of_surjective`:
+source flatness is supplied by the hypothesis on `C`, while Mathlib's
+`Module.FaithfullyFlat.self` supplies the target scalar ring's faithful flatness.
+This is not a scalar-extension flatness assumption or a new global instance.
+Faithful scalar action together with finite generation of the **actual counit
+image ideal** also gives surjectivity; it does not require the ambient module
+to be finite, and faithfulness alone does not suffice. The infinite coalgebra
+`ℕ →₀ ℚ` has finitely generated counit image but is not a finite module.
+
 Under extension of scalars
 from `R` to a commutative `R`-algebra `S`, the counit ideal of `S ⊗[R] C` is
 `Ideal.map (algebraMap R S)` of the original counit ideal, without flatness
@@ -187,6 +217,36 @@ The forward map sends `r` to `r • g`; the inverse evaluates at `1`. No
 multiplication on `C`, field hypothesis, basis or nontriviality is required.
 See the [equivalence API](../AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean)
 and [concrete clients](../AlgebraicGroupsTest/Algebra/Coalgebra/GroupLikeHom.lean).
+
+## Ordered group-like differences and translations
+
+For `[CommSemiring R]`, `[AddCommGroup C]`, `[Module R C]` and a full
+`[Coalgebra R C]`, in independent universes, group-like `g, h : C` have
+`ε(g - h) = 0` and
+`Δ(g - h) = g ⊗ (g - h) + (g - h) ⊗ h`. The endpoints are ordered `(g, h)`.
+The [difference theorem](../AlgebraicGroups/Algebra/Coalgebra/SkewPrimitive.lean)
+uses the canonical full-class predicates, not a `CoalgebraStruct`-only API;
+no multiplication on the carrier is required.
+
+The [complete clients](../AlgebraicGroupsTest/Algebra/Coalgebra/SkewPrimitive.lean)
+work over a commutative ring for the submodule and translation statements.
+Writing `S` for the skew-primitive submodule and `D = span {g - h}`, they give
+`D ≤ S` and both directions of membership under `a ↦ a + t • (g - h)` for
+arbitrary `a, t`, without assuming membership of `a` or invertibility of `t`.
+On `S`, the stock `Equiv.addRight` is an **ordinary permutation**, with inverse
+`x ↦ x - t • (g - h)` and both inverse-composition identities. It is not an
+additive, linear or coalgebra equivalence.
+
+The wrapped diagonal `ℤ[ℤ]` model has distinct normalized group-like endpoints,
+a nonzero difference, and a nonidentity translation which moves zero. Both `S`
+and `D` are proper nonzero submodules; the third basis vector `δ₂` lies outside
+`S`. The integer-indexed basis makes the ambient module not finitely generated,
+despite each vector's finite support. Only `D ≤ S` is asserted, not `S = D` or
+an extension-class classification. Coincident endpoints, zero translation
+scalar, the scalar-self coalgebra and zero scalars give collapsing cases.
+The zero carrier over nontrivial scalars has no normalized group-like endpoints
+and is not a positive witness; these examples do not supply a structure-only
+translation equivalence.
 
 ## Modules and examples
 
