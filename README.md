@@ -13,6 +13,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   quotient maps respecting identity and composition. Additive-group modules with
   `CoalgebraStruct` suffice, in independent universes; no coalgebra laws, flatness,
   projectivity or field hypothesis. [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean).
+- **Kernels over a field.** The linear kernel of any coalgebra morphism is a
+  coideal, without surjectivity. Both source and target need only
+  `CoalgebraStruct` on additive-group modules, in independent universes; no
+  coalgebra laws or finite-dimensionality hypothesis is required. The field
+  makes the quotient by the kernel flat; flatness of the ambient modules alone
+  is not sufficient over general commutative rings.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean),
+  [noninjective, nonsurjective example](AlgebraicGroupsTest/Algebra/Coalgebra/MonoidAlgebraCollapse.lean).
 - **Finite subcoalgebras.** Over a field, every finitely generated subspace or
   finite subset of a coalgebra lies in a finite-dimensional subcoalgebra, with
   restricted coalgebra laws, bundled inclusion and unique morphism factorization.

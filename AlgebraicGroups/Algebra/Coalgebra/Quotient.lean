@@ -8,6 +8,9 @@ public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.Quotient
 
+import Mathlib.LinearAlgebra.Basis.VectorSpace
+import Mathlib.RingTheory.Flat.Basic
+
 /-!
 # Coideal images, joins and coalgebra morphisms on quotients
 
@@ -27,11 +30,20 @@ quotient projection by `Submodule.liftQCoalgHom`. A coalgebra homomorphism carry
 one coideal into another induces `Submodule.mapQCoalgHom` between their quotients.
 The latter construction respects identity and composition.
 
-These constructions use Mathlib's quotient coalgebra structure and linear quotient
-maps. The scalars are a commutative ring, the modules are additive commutative
-groups, and the scalar, source and target universes are independent. Preservation
-of counit and comultiplication requires only `CoalgebraStruct`, not the coalgebra
-laws. No algebra structure, field hypothesis, flatness or projectivity is required.
+These coideal-image, join and quotient-map constructions use Mathlib's quotient coalgebra structure and
+linear quotient maps. The scalars are a commutative ring, the modules are additive
+commutative groups, and the scalar, source and target universes are independent.
+Preservation of counit and comultiplication requires only `CoalgebraStruct`, not
+the coalgebra laws. For these constructions, no algebra structure, field
+hypothesis, flatness or projectivity is required.
+
+Over a field, `CoalgHomClass.ker_isCoideal` states that the linear kernel of any
+coalgebra morphism is a coideal. Both source and target need only
+`CoalgebraStruct`, in independent universes, and the morphism need not be
+surjective. No finite-dimensionality assumption is made. The field hypothesis
+ensures flatness of the target and of the module quotient by the kernel, as used
+in tensor-square cancellation for the ordinary linear quotient lift. Flatness of
+the two ambient modules alone does not suffice over a general commutative ring.
 
 ## References
 
@@ -42,6 +54,10 @@ laws. No algebra structure, field hypothesis, flatness or projectivity is requir
 - `Mathlib.LinearAlgebra.Quotient.Basic` supplies `Submodule.liftQ`,
   `Submodule.mapQ` and the linear quotient universal property.
 - `Mathlib.LinearAlgebra.TensorProduct.Map` supplies tensor-map composition.
+- The tensor-cancellation method for field kernels uses
+  `TensorProduct.map_injective_of_flat_flat` from `Mathlib.RingTheory.Flat.Basic`,
+  with vector-space freeness supplied by `Module.Free.of_divisionRing` from
+  `Mathlib.LinearAlgebra.Basis.VectorSpace` and flatness by `Module.Flat.of_free`.
 -/
 
 @[expose] public section
@@ -354,3 +370,45 @@ theorem quotientQuotientCoalgEquivQuotientSup_comp_mkQCoalgHom (I J : Submodule 
 end
 
 end Submodule
+
+namespace CoalgHomClass
+
+section Field
+
+variable {K : Type u} [Field K]
+variable {C : Type v} [AddCommGroup C] [Module K C] [CoalgebraStruct K C]
+variable {D : Type w} [AddCommGroup D] [Module K D] [CoalgebraStruct K D]
+variable {F : Type z} [FunLike F C D] [CoalgHomClass F K C D]
+
+/-- Over a field, the linear kernel of a coalgebra morphism is a coideal, without
+surjectivity or coalgebra laws on either module. -/
+theorem ker_isCoideal (f : F) :
+    (LinearMap.ofClass f : C →ₗ[K] D).ker.IsCoideal := by
+  let g : C →ₗ[K] D := LinearMap.ofClass f
+  let I := g.ker
+  let h : (C ⧸ I) →ₗ[K] D := I.liftQ g le_rfl
+  have h_injective : Function.Injective h :=
+    LinearMap.ker_eq_bot.mp (I.ker_liftQ_eq_bot g le_rfl le_rfl)
+  have hq : h.comp I.mkQ = g := I.liftQ_mkQ g le_rfl
+  -- The quotient lift is injective, and over a field its tensor square is too.
+  -- Thus the coideal condition can be checked after mapping to the target tensor square.
+  have h_tensor_injective : Function.Injective (TensorProduct.map h h) :=
+    TensorProduct.map_injective_of_flat_flat h h h_injective h_injective
+  constructor
+  · intro x hx
+    have hxg : f x = 0 := LinearMap.mem_ker.mp hx
+    rw [← counit_comp_apply f x, hxg, map_zero]
+  · intro x hx
+    have hxg : f x = 0 := LinearMap.mem_ker.mp hx
+    apply h_tensor_injective
+    calc
+      TensorProduct.map h h (TensorProduct.map I.mkQ I.mkQ (comul x)) =
+          TensorProduct.map g g (comul x) := by
+        rw [TensorProduct.map_map, hq]
+      _ = comul (f x) := map_comp_comul_apply f x
+      _ = 0 := by rw [hxg, map_zero]
+      _ = TensorProduct.map h h 0 := (map_zero _).symm
+
+end Field
+
+end CoalgHomClass

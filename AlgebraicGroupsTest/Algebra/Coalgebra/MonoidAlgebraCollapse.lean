@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.Coalgebra.Quotient
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Finiteness.Cardinality
 
@@ -26,6 +27,12 @@ The morphism is the coalgebra homomorphism underlying
 The range calculations concern its underlying linear map and do not construct a
 subcoalgebra image.
 
+Its kernel is a coideal: in the linear quotient by the kernel, every standard
+basis vector has the same class, so projected comultiplication is the counit
+followed by the linear map sending `1` to the tensor square of that class. This
+direct calculation uses only the stock coideal definition. The field kernel
+theorem also applies to this same noninjective, nonsurjective morphism.
+
 ## References
 
 The bundled index map and group-like elements are those of Mathlib's
@@ -33,7 +40,8 @@ The bundled index map and group-like elements are those of Mathlib's
 `AddMonoidAlgebra.basis`, and infinite dimensionality uses
 `Module.not_finite_of_infinite_basis`. The range computation uses the basis span
 and `Submodule.map_span`; finite dimensionality uses `Submodule.fg_span_singleton`
-and `Module.Finite.iff_fg`.
+and `Module.Finite.iff_fg`. The coideal calculation uses `Basis.ext`,
+`Submodule.Quotient.eq`, and the two fields of Mathlib's `Submodule.IsCoideal`.
 -/
 
 @[expose] public section
@@ -177,5 +185,56 @@ theorem mapDomainBialgHom_zero_range_finite :
   exact ⟨collapse_range K, collapse_range_ne_bot K, collapse_range_ne_top K,
     single_zero_mem_range K, single_one_not_mem_range K, collapse_range_fg K,
     collapse_range_finite K, not_finite_nat_monoidAlgebra K⟩
+
+private lemma collapse_quotient_basis (i : ℕ) :
+    (LinearMap.ker (collapse K).toLinearMap).mkQ (basis ℕ K i) =
+      (LinearMap.ker (collapse K).toLinearMap).mkQ (basis ℕ K 0) := by
+  apply (Submodule.Quotient.eq _).2
+  rw [LinearMap.mem_ker]
+  change collapse K (basis ℕ K i - basis ℕ K 0) = 0
+  rw [map_sub, collapse_basis, collapse_basis, sub_self]
+
+/-- The kernel of index collapse is a coideal by a direct calculation on the
+standard basis. Projected comultiplication factors through the counit because
+all basis vectors have the same class in the linear quotient by the kernel. -/
+theorem mapDomainBialgHom_zero_ker_isCoideal :
+    let f := (mapDomainBialgHom K (0 : ℕ →+ ℕ)).toCoalgHom
+    (LinearMap.ker f.toLinearMap).IsCoideal := by
+  let I := LinearMap.ker (collapse K).toLinearMap
+  let q := I.mkQ
+  have hq (i : ℕ) : q (basis ℕ K i) = q (basis ℕ K 0) :=
+    collapse_quotient_basis K i
+  have hcomul :
+      (TensorProduct.map q q).comp (Coalgebra.comul (R := K)) =
+        (LinearMap.toSpanSingleton K _
+          (q (basis ℕ K 0) ⊗ₜ[K] q (basis ℕ K 0))).comp
+            (Coalgebra.counit (R := K)) := by
+    apply (basis ℕ K).ext
+    intro i
+    have hi := isGroupLikeElem_basis K i
+    simp only [LinearMap.comp_apply, hi.comul_eq_tmul_self,
+      TensorProduct.map_tmul, hq i, hi.counit_eq_one,
+      LinearMap.toSpanSingleton_apply_one]
+  have hcounit (x : AddMonoidAlgebra K ℕ) (hx : x ∈ I) :
+      Coalgebra.counit (R := K) x = 0 := by
+    have hx0 : collapse K x = 0 := hx
+    rw [← CoalgHomClass.counit_comp_apply (collapse K) x, hx0, map_zero]
+  refine ⟨?_, ?_⟩
+  · intro x hx
+    exact hcounit x hx
+  · intro x hx
+    change TensorProduct.map q q (Coalgebra.comul x) = 0
+    simpa only [LinearMap.comp_apply, hcounit x hx, map_zero] using
+      LinearMap.congr_fun hcomul x
+
+/-- The field kernel theorem applies to index collapse despite its nonzero
+kernel and proper range, witnessed by the preceding basis and range results. -/
+theorem mapDomainBialgHom_zero_ker_coideal_not_injective_not_surjective :
+    let f := (mapDomainBialgHom K (0 : ℕ →+ ℕ)).toCoalgHom
+    (LinearMap.ker f.toLinearMap).IsCoideal ∧
+      ¬ Function.Injective f ∧ ¬ Function.Surjective f := by
+  refine ⟨CoalgHomClass.ker_isCoideal (collapse K), collapse_not_injective K, ?_⟩
+  intro h
+  exact single_one_not_mem_range K (h _)
 
 end AddMonoidAlgebra
