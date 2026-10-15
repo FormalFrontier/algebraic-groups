@@ -142,4 +142,6 @@ roots = [
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.GroupLikeUnits",
   "AlgebraicGroupsTest.Algebra.Bialgebra.GroupLike",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.GroupLikeUnitsUse",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinatesModels",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinatesUse",
 ]

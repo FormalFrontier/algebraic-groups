@@ -86,6 +86,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   For full coalgebras on additive-group modules over a commutative semiring,
   group-like differences are ordered skew primitives; see
   [the theorem and ordinary-permutation clients](docs/COALGEBRAS.md#ordered-group-like-differences-and-translations).
+- **Group-like coalgebra coordinates.** Over a commutative semiring, arbitrary
+  families of group-like elements in additive-commutative-monoid module coalgebras correspond
+  to coalgebra maps from the free diagonal monoid-algebra coalgebra; the index needs
+  no monoid structure. Over a field, evaluation is a coalgebra equivalence onto the
+  group-like span, with diagonal coproduct and counit equal to the coefficient sum.
+  No target multiplication, finite dimension or nonempty group-like family is required.
+  [Extension](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean),
+  [span coordinates](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoordinates.lean).
 - **Antipodes.** For full Hopf algebras over a commutative semiring, either
   commutative multiplication **or** cocommutative comultiplication suffices for
   `S² = id`; these are alternatives, not an iff or simultaneous requirements.
@@ -177,6 +185,8 @@ maintained project libraries; it does not claim to formalize an entire source.
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
 | [`AlgebraicGroups.Algebra.Bialgebra.GroupLike`](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean) | Monoid homomorphism `BialgHom.groupLikeMap` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |
 | [`AlgebraicGroups.Algebra.HopfAlgebra.GroupLike`](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean) | Injectivity, image characterization and pointwise/monoid-homomorphism `Units.map` naturality of Mathlib's `GroupLike.toUnits` for possibly noncommutative semiring Hopf algebras over a commutative semiring. |
+| [`AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra`](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean) | Universal extension of group-like families and diagonal structural formulas. |
+| [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoordinates`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoordinates.lean) | Group-like-span subcoalgebra and structure-preserving coordinates over a field. |
 
 The [coalgebra guide](docs/COALGEBRAS.md) gives API walkthroughs and models;
 [mathematical topics](docs/MATHEMATICS.md) cover vector groups, triangular groups,
@@ -229,7 +239,9 @@ give precise locators, qualifications and further sources; none asserts whole-so
 ## Credits and license
 
 Authors: Formal Frontier Agents. AI agents developed the proofs and examples under
-human project direction, reusing Mathlib and project libraries. Original project
+human project direction, reusing Mathlib and project libraries. Group-like coalgebra
+coordinates combine Mathlib's diagonal coalgebra and linear-independence APIs with
+this library's span-closure and restricted-subcoalgebra constructions. Original project
 contributions use [Apache-2.0](LICENSE). [CREDITS.md](CREDITS.md) preserves contributor
 roles, mathematical-method credit and authentic third-party notices separately
 from redistribution rights.
