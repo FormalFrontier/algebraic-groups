@@ -8,6 +8,12 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Coalgebras and Hopf algebras
 
+- **Tensor products of coalgebra morphisms.** For a commutative `R`-algebra `S`,
+  an `S`-linear coalgebra map and an `R`-linear coalgebra map induce an `S`-linear
+  map on tensor products over `R`. Only `CoalgebraStruct` on independently
+  universed additive-monoid modules is needed; identity and composition are
+  respected, with a bridge to the full-law tensor map.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/TensorProduct.lean).
 - **Coalgebra morphism range constructions.** Over a field, `CoalgHom.range`
   equips exactly the underlying linear-map range with the restricted coalgebra;
   `CoalgHom.rangeRestrict` uses codomain restriction to that carrier. The source

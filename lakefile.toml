@@ -146,4 +146,5 @@ roots = [
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.GroupLikeUnitsUse",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinatesModels",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinatesUse",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.TensorProduct",
 ]
