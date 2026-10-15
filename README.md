@@ -8,6 +8,12 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Coalgebras and Hopf algebras
 
+- **Group-like elements and scalar extension.** The counit-one and tensor-square
+  equations are preserved by extension of commutative semirings and reflected by
+  faithfully flat extension of commutative rings, requiring only weak coalgebra
+  data. The full group-like predicate has corresponding corollaries, with no
+  flatness or finiteness assumption on the coalgebra module.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/GroupLikeBaseChange.lean).
 - **Tensor products of coalgebra morphisms.** For a commutative `R`-algebra `S`,
   an `S`-linear coalgebra map and an `R`-linear coalgebra map induce an `S`-linear
   map on tensor products over `R`. Only `CoalgebraStruct` on independently

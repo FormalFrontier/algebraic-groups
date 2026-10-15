@@ -62,6 +62,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.FiniteSubcoalgebra",
   "AlgebraicGroupsTest.Algebra.Coalgebra.FiniteAlgebraGenerators",
   "AlgebraicGroupsTest.Algebra.Coalgebra.FiniteAlgebraGeneratorsNoncommutative",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeBaseChange",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinates",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeSpan",
   "AlgebraicGroupsTest.Algebra.Coalgebra.Hom",
