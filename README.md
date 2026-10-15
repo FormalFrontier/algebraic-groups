@@ -161,6 +161,13 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Connected group schemes.** A connected group scheme of finite type over any
+  field is geometrically irreducible, even without reducedness. If it is also
+  geometrically reduced, it is geometrically integral. Finite type is expressed
+  by local finite type and quasi-compactness; no properness, perfectness or
+  separate separatedness hypothesis is needed.
+  [Module](AlgebraicGroups/GroupScheme/GeometricallyIntegral.lean),
+  [multiplicative-group examples](AlgebraicGroupsTest/GroupScheme/GeometricallyIntegral.lean).
 - **Finite additive products.** Over any commutative ring, the underlying
   over-scheme of the literal finite product of additive group schemes is affine
   space, preserving projections and the universal property against all schemes.

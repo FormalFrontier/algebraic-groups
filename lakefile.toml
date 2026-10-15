@@ -142,6 +142,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeHom",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraCodRestrict",
   "AlgebraicGroupsTest.GroupScheme.IdentityComponentBaseChange",
+  "AlgebraicGroupsTest.GroupScheme.GeometricallyIntegral",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.GroupLikeUnits",
   "AlgebraicGroupsTest.Algebra.Bialgebra.GroupLike",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.GroupLikeUnitsUse",
