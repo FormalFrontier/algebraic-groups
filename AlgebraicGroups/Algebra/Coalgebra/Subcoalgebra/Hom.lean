@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.RingTheory.Flat.Basic
 
 /-!
-# Subcoalgebra inclusions and factorization
+# Subcoalgebra inclusions, morphism ranges and factorization
 
 The inclusion `Subcoalgebra.subtype` is a coalgebra homomorphism for the restricted
 coalgebra structure on a subcoalgebra. A coalgebra homomorphism whose values lie in a
@@ -23,6 +23,12 @@ these maps preserve comultiplication and counit without requiring coalgebra laws
 the sources. The ambient coalgebra and its subcoalgebra retain their full coalgebra
 structures over a field.
 
+`CoalgHom.range` equips the underlying linear-map range with this restricted coalgebra
+structure, and `CoalgHom.rangeRestrict` factors the homomorphism through its range. The
+carrier is the existing submodule subtype. Membership, linear-map, evaluation and
+factorization equations describe these constructions. Generic `CoalgHomClass` callers use
+Mathlib's named `CoalgHomClass.toCoalgHom` conversion and the same constructions.
+
 ## References
 
 The bundled maps and their extensionality and composition API follow
@@ -30,12 +36,16 @@ The bundled maps and their extensionality and composition API follow
 `LinearMap.subtype_comp_codRestrict` from `Mathlib.Algebra.Module.Submodule.LinearMap`.
 The comultiplication compatibility follows from tensor-map composition in
 `Mathlib.LinearAlgebra.TensorProduct.Map` and injectivity of tensor inclusions over a
-field, as in `Mathlib.RingTheory.Flat.Basic`.
+field, as in `Mathlib.RingTheory.Flat.Basic`. The range carrier and its linear restriction
+are Mathlib's `LinearMap.range` and `LinearMap.rangeRestrict`. The coalgebra on that carrier
+uses `Subcoalgebra.mk'` and the counit restriction and comultiplication lift from
+`AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Coalgebra`. Unique factorization uses this
+module's `CoalgHom.codRestrict_unique` and `Subcoalgebra.subtype_comp_injective`.
 -/
 
 @[expose] public section
 
-universe u v w w₁
+universe u v w w₁ uF
 
 open scoped TensorProduct
 
@@ -238,3 +248,155 @@ theorem codRestrict_comp (f : B →ₗc[K] C) (g : A →ₗc[K] B) (D : Subcoalg
   CoalgHom.ext fun _ => Subtype.ext rfl
 
 end CoalgHom
+
+namespace CoalgHom
+
+section ImageClosure
+
+variable {R : Type u} {A : Type v} {B : Type w}
+variable [CommSemiring R]
+variable [AddCommMonoid A] [Module R A] [CoalgebraStruct R A]
+variable [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
+
+private theorem mapIncl_map_linearRangeRestrict_comul (f : A →ₗc[R] B) (x : A) :
+    TensorProduct.mapIncl (LinearMap.range f.toLinearMap) (LinearMap.range f.toLinearMap)
+        (TensorProduct.map f.toLinearMap.rangeRestrict f.toLinearMap.rangeRestrict
+          (Coalgebra.comul (R := R) (A := A) x)) =
+      Coalgebra.comul (R := R) (A := B) (f x) := by
+  simp only [TensorProduct.mapIncl, TensorProduct.map_map,
+    LinearMap.subtype_comp_rangeRestrict]
+  exact LinearMap.congr_fun f.map_comp_comul x
+
+end ImageClosure
+
+section Range
+
+variable {K : Type u} {A : Type v} {B : Type w}
+variable [Field K]
+variable [AddCommMonoid A] [Module K A] [CoalgebraStruct K A]
+variable [AddCommGroup B] [Module K B] [Coalgebra K B]
+
+/-- The range of a coalgebra homomorphism, with the restricted coalgebra structure on its
+underlying linear-map range. The source need not satisfy the coalgebra laws. -/
+def range (f : A →ₗc[K] B) : Subcoalgebra K B :=
+  Subcoalgebra.mk' (LinearMap.range f.toLinearMap) (by
+    rintro y ⟨x, rfl⟩
+    exact ⟨TensorProduct.map f.toLinearMap.rangeRestrict f.toLinearMap.rangeRestrict
+      (Coalgebra.comul (R := K) (A := A) x), mapIncl_map_linearRangeRestrict_comul f x⟩)
+
+/-- The underlying submodule of a coalgebra homomorphism's range is its linear-map range. -/
+@[simp]
+theorem range_toSubmodule (f : A →ₗc[K] B) :
+    f.range.toSubmodule = LinearMap.range f.toLinearMap := by
+  rfl
+
+/-- The carrier of a coalgebra homomorphism's range is its set-theoretic range. -/
+@[simp]
+theorem coe_range (f : A →ₗc[K] B) : (f.range : Set B) = Set.range f := by
+  exact LinearMap.coe_range f.toLinearMap
+
+/-- Membership in the range is equivalent to having a preimage. -/
+@[simp]
+theorem mem_range {f : A →ₗc[K] B} {y : B} : y ∈ f.range ↔ ∃ x, f x = y := by
+  exact LinearMap.mem_range (f := f.toLinearMap)
+
+/-- A coalgebra homomorphism with codomain restricted to its range. -/
+noncomputable def rangeRestrict (f : A →ₗc[K] B) : A →ₗc[K] f.range :=
+  f.codRestrict f.range (fun x => LinearMap.mem_range_self f.toLinearMap x)
+
+/-- Forgetting the coalgebra structure gives the linear map restricted to its range. -/
+@[simp]
+theorem rangeRestrict_toLinearMap (f : A →ₗc[K] B) :
+    f.rangeRestrict.toLinearMap = f.toLinearMap.rangeRestrict := by
+  exact codRestrict_toLinearMap f f.range (fun x => LinearMap.mem_range_self f.toLinearMap x)
+
+/-- Range restriction sends an element to its image, viewed as a range member. -/
+theorem rangeRestrict_apply (f : A →ₗc[K] B) (x : A) :
+    f.rangeRestrict x = ⟨f x, LinearMap.mem_range_self f.toLinearMap x⟩ := by
+  exact codRestrict_apply f f.range (fun y => LinearMap.mem_range_self f.toLinearMap y) x
+
+/-- Range restriction does not change the ambient value. -/
+@[simp]
+theorem coe_rangeRestrict (f : A →ₗc[K] B) (x : A) : (f.rangeRestrict x : B) = f x := by
+  exact coe_codRestrict f f.range (fun y => LinearMap.mem_range_self f.toLinearMap y) x
+
+/-- Inclusion after range restriction recovers the homomorphism. -/
+@[simp]
+theorem subtype_comp_rangeRestrict (f : A →ₗc[K] B) :
+    f.range.subtype.comp f.rangeRestrict = f := by
+  exact subtype_comp_codRestrict f f.range (fun x => LinearMap.mem_range_self f.toLinearMap x)
+
+/-- Range restriction is surjective. -/
+theorem surjective_rangeRestrict (f : A →ₗc[K] B) : Function.Surjective f.rangeRestrict := by
+  change Function.Surjective f.rangeRestrict.toLinearMap
+  rw [rangeRestrict_toLinearMap]
+  exact LinearMap.surjective_rangeRestrict f.toLinearMap
+
+/-- Every factorization through the range inclusion is the range restriction. -/
+theorem rangeRestrict_unique (f : A →ₗc[K] B) (g : A →ₗc[K] f.range)
+    (hg : f.range.subtype.comp g = f) : g = f.rangeRestrict := by
+  exact codRestrict_unique f f.range (fun x => LinearMap.mem_range_self f.toLinearMap x) g hg
+
+/-- Containment of the range in a submodule is equivalent to containment of every image. -/
+theorem range_le_iff {f : A →ₗc[K] B} {S : Submodule K B} :
+    f.range.toSubmodule ≤ S ↔ ∀ x, f x ∈ S := by
+  rw [range_toSubmodule]
+  constructor
+  · intro h x
+    exact h (LinearMap.mem_range_self f.toLinearMap x)
+  · rintro h y ⟨x, rfl⟩
+    exact h x
+
+variable {D : Type w₁} [AddCommMonoid D] [Module K D] [CoalgebraStruct K D]
+
+/-- Precomposition by range restriction is injective on coalgebra homomorphisms. -/
+theorem rangeRestrict_comp_injective (f : A →ₗc[K] B) :
+    Function.Injective (fun g : f.range →ₗc[K] D => g.comp f.rangeRestrict) := by
+  intro g h hcomp
+  apply CoalgHom.ext
+  intro y
+  obtain ⟨x, rfl⟩ := f.surjective_rangeRestrict y
+  exact CoalgHom.congr_fun hcomp x
+
+end Range
+
+end CoalgHom
+
+namespace CoalgHomClass
+
+section LinearMap
+
+variable {R : Type u} {A : Type v} {B : Type w} {F : Type uF}
+variable [CommSemiring R]
+variable [AddCommMonoid A] [Module R A] [CoalgebraStruct R A]
+variable [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
+variable [FunLike F A B] [CoalgHomClass F R A B]
+
+/-- The named bundled conversion preserves the linear map supplied by the morphism class. -/
+@[simp]
+theorem toCoalgHom_toLinearMap (f : F) :
+    (CoalgHomClass.toCoalgHom (F := F) (R := R) (A := A) (B := B) f).toLinearMap =
+      (LinearMap.ofClass f : A →ₗ[R] B) := by
+  apply LinearMap.ext
+  intro x
+  exact congrFun
+    ((CoalgHom.coe_toLinearMap
+      (CoalgHomClass.toCoalgHom (F := F) (R := R) (A := A) (B := B) f)).trans
+      ((CoalgHom.coe_coe (R := R) f).trans
+        (LinearMap.coe_ofClass (σ := RingHom.id R) (f := f)).symm)) x
+
+end LinearMap
+
+variable {K : Type u} {A : Type v} {B : Type w} {F : Type uF}
+variable [Field K]
+variable [AddCommMonoid A] [Module K A] [CoalgebraStruct K A]
+variable [AddCommGroup B] [Module K B] [Coalgebra K B]
+variable [FunLike F A B] [CoalgHomClass F K A B]
+
+/-- The range restriction of the bundled conversion agrees with linear range restriction. -/
+theorem toCoalgHom_rangeRestrict_toLinearMap (f : F) :
+    (CoalgHomClass.toCoalgHom (F := F) (R := K) (A := A) (B := B) f).rangeRestrict.toLinearMap =
+      (LinearMap.ofClass f : A →ₗ[K] B).rangeRestrict := by
+  rfl
+
+end CoalgHomClass

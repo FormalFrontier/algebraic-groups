@@ -8,6 +8,15 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Coalgebras and Hopf algebras
 
+- **Coalgebra morphism range constructions.** Over a field, `CoalgHom.range`
+  equips exactly the underlying linear-map range with the restricted coalgebra;
+  `CoalgHom.rangeRestrict` uses codomain restriction to that carrier. The source
+  needs only `AddCommMonoid`, `Module` and `CoalgebraStruct`; the target has an
+  additive commutative group and a full coalgebra. No source coalgebra laws or
+  finite-dimensionality assumptions are used. The characteristic membership,
+  evaluation and unique-factorization laws are stated alongside the constructions.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean),
+  [infinite monoid-algebra example](AlgebraicGroupsTest/Algebra/Coalgebra/MonoidAlgebraCollapse.lean).
 - **Coideal quotient morphisms.** Over a commutative ring, coalgebra morphisms
   vanishing on a coideal descend uniquely; maps preserving coideals induce
   quotient maps respecting identity and composition. Additive-group modules with

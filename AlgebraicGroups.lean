@@ -154,6 +154,7 @@ public import AlgebraicGroups.Topology.KrullDimension
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finite
+public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Equiv
 
 /-!
 # Algebraic groups and group schemes

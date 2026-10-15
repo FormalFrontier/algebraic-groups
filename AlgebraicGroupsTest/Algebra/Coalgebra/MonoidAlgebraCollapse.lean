@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.Quotient
+public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Finiteness.Cardinality
 
@@ -24,8 +25,9 @@ their standard basis is indexed by `ℕ`.
 
 The morphism is the coalgebra homomorphism underlying
 `AddMonoidAlgebra.mapDomainBialgHom`; no coalgebra structure or instance is added.
-The range calculations concern its underlying linear map and do not construct a
-subcoalgebra image.
+The linear range calculations also describe `CoalgHom.range` on this same morphism.
+Its `CoalgHom.rangeRestrict` gives the surjective factor in the factorization through the
+range inclusion.
 
 Its kernel is a coideal: in the linear quotient by the kernel, every standard
 basis vector has the same class, so projected comultiplication is the counit
@@ -42,6 +44,8 @@ The bundled index map and group-like elements are those of Mathlib's
 and `Submodule.map_span`; finite dimensionality uses `Submodule.fg_span_singleton`
 and `Module.Finite.iff_fg`. The coideal calculation uses `Basis.ext`,
 `Submodule.Quotient.eq`, and the two fields of Mathlib's `Submodule.IsCoideal`.
+The subcoalgebra range and unique factorization use
+`AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom`.
 -/
 
 @[expose] public section
@@ -236,5 +240,52 @@ theorem mapDomainBialgHom_zero_ker_coideal_not_injective_not_surjective :
   refine ⟨CoalgHomClass.ker_isCoideal (collapse K), collapse_not_injective K, ?_⟩
   intro h
   exact single_one_not_mem_range K (h _)
+
+/-- The coalgebra range of the index-collapse morphism has the same nonzero proper
+one-dimensional carrier as its linear range, although its source and target are infinite
+dimensional. -/
+theorem mapDomainBialgHom_zero_subcoalgebra_range :
+    let f := (mapDomainBialgHom K (0 : ℕ →+ ℕ)).toCoalgHom
+    f.range.toSubmodule =
+        Submodule.span K ({basis ℕ K 0} : Set (AddMonoidAlgebra K ℕ)) ∧
+      f.range.toSubmodule ≠ ⊥ ∧
+      f.range.toSubmodule ≠ ⊤ ∧
+      single 0 (1 : K) ∈ f.range ∧
+      single 1 (1 : K) ∉ f.range ∧
+      Module.Finite K f.range ∧
+      ¬ Module.Finite K (AddMonoidAlgebra K ℕ) := by
+  dsimp only
+  rcases mapDomainBialgHom_zero_range_finite K with
+    ⟨hrange, hbot, htop, hzero, hone, hfg, _, hinfinite⟩
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_, hinfinite⟩
+  · simpa only [CoalgHom.range_toSubmodule] using hrange
+  · simpa only [CoalgHom.range_toSubmodule] using hbot
+  · simpa only [CoalgHom.range_toSubmodule] using htop
+  · exact CoalgHom.mem_range.mpr (LinearMap.mem_range.mp hzero)
+  · intro hx
+    exact hone (LinearMap.mem_range.mpr (CoalgHom.mem_range.mp hx))
+  · change Module.Finite K ((collapse K).range.toSubmodule)
+    apply Module.Finite.iff_fg.mpr
+    simpa only [CoalgHom.range_toSubmodule] using hfg
+
+/-- The index-collapse morphism factors through its coalgebra range by a surjection and an
+injection. The factor has unchanged ambient values and is the unique factor through this
+inclusion, even though the original morphism has a nonzero kernel. -/
+theorem mapDomainBialgHom_zero_range_factorization :
+    let f := (mapDomainBialgHom K (0 : ℕ →+ ℕ)).toCoalgHom
+    (∀ x, (f.rangeRestrict x : AddMonoidAlgebra K ℕ) = f x) ∧
+      f.range.subtype.comp f.rangeRestrict = f ∧
+      Function.Surjective f.rangeRestrict ∧
+      Function.Injective f.range.subtype ∧
+      (∀ g : AddMonoidAlgebra K ℕ →ₗc[K] f.range,
+        f.range.subtype.comp g = f → g = f.rangeRestrict) ∧
+      (single 0 (1 : K) - single 1 (1 : K) : AddMonoidAlgebra K ℕ) ≠ 0 ∧
+      f (single 0 (1 : K) - single 1 (1 : K)) = 0 := by
+  dsimp only
+  refine ⟨CoalgHom.coe_rangeRestrict _, CoalgHom.subtype_comp_rangeRestrict _,
+    CoalgHom.surjective_rangeRestrict _, Subcoalgebra.subtype_injective _,
+    ?_, kernel_vector_ne_zero K, collapse_kernel_vector K⟩
+  intro g hg
+  exact CoalgHom.rangeRestrict_unique _ g hg
 
 end AddMonoidAlgebra
