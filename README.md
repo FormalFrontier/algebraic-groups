@@ -65,12 +65,27 @@ maintained project libraries; it does not claim to formalize an entire source.
   commutative domain, group-likes have cardinality at most module rank; rank
   below `ℵ₀` gives finiteness and a `finrank` bound, in particular for module-finite
   coalgebras, without freeness or a field. Separately, over any commutative
-  semiring, normalized group-likes correspond to scalar-source coalgebra maps
-  by `g ↦ (r ↦ r • g)` and evaluation at `1`, without multiplication or
-  nontriviality. [Cardinality](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCardinality.lean),
-  [maps](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean). For full coalgebras
-  on additive-group modules over a commutative semiring, group-like differences
-  are ordered skew primitives; see [the theorem and ordinary-permutation clients](docs/COALGEBRAS.md#ordered-group-like-differences-and-translations).
+  semiring, normalized group-likes in additive-commutative-monoid modules
+  correspond to scalar-source coalgebra maps by `g ↦ (r ↦ r • g)` and evaluation
+  at `1`, without multiplication or nontriviality. `GroupLike.map` along
+  coalgebra morphisms respects identity and composition, and this correspondence
+  is natural. For possibly noncommutative semiring bialgebras,
+  `BialgHom.groupLikeMap` induces a monoid homomorphism with the same laws,
+  without Hopf structure. In possibly noncommutative semiring Hopf algebras,
+  Mathlib's `GroupLike.toUnits` is injective, has image exactly the units with
+  group-like underlying values, and commutes with `Units.map` under bialgebra
+  morphisms, pointwise and as monoid homomorphisms. Mathlib provides the carrier,
+  monoid/group structures, unit construction and antipode identities; this
+  library adds transport maps and characterization/naturality laws. These
+  transport and unit results allow independent universes, with no finiteness
+  or nontriviality assumptions.
+  [Cardinality](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCardinality.lean),
+  [coalgebra maps](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean),
+  [bialgebra maps](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean),
+  [Hopf units](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean).
+  For full coalgebras on additive-group modules over a commutative semiring,
+  group-like differences are ordered skew primitives; see
+  [the theorem and ordinary-permutation clients](docs/COALGEBRAS.md#ordered-group-like-differences-and-translations).
 - **Antipodes.** For full Hopf algebras over a commutative semiring, either
   commutative multiplication **or** cocommutative comultiplication suffices for
   `S² = id`; these are alternatives, not an iff or simultaneous requirements.
@@ -159,6 +174,9 @@ maintained project libraries; it does not claim to formalize an entire source.
 | --- | --- |
 | [`AlgebraicGroups`](AlgebraicGroups.lean) | Library aggregate; focused imports are linked above. |
 | [`AlgebraicGroupsTest`](AlgebraicGroupsTest/) | Test library: ordinary-import clients and boundary examples. |
+| [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
+| [`AlgebraicGroups.Algebra.Bialgebra.GroupLike`](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean) | Monoid homomorphism `BialgHom.groupLikeMap` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |
+| [`AlgebraicGroups.Algebra.HopfAlgebra.GroupLike`](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean) | Injectivity, image characterization and pointwise/monoid-homomorphism `Units.map` naturality of Mathlib's `GroupLike.toUnits` for possibly noncommutative semiring Hopf algebras over a commutative semiring. |
 
 The [coalgebra guide](docs/COALGEBRAS.md) gives API walkthroughs and models;
 [mathematical topics](docs/MATHEMATICS.md) cover vector groups, triangular groups,
