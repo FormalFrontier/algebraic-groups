@@ -81,11 +81,11 @@ def killForbidden :
       apply Subtype.ext
       rfl
     simp only [killForbidden, MvPolynomial.killCompl, MvPolynomial.aeval_X,
-      dif_pos hr, dif_pos hp, heq]
+      dite_eq_left hr, dite_eq_left hp, heq]
   · have hr : p ∉ Set.range (survivingInclusion n r) :=
       fun hm => hp ((mem_range_survivingInclusion n r p).mp hm)
     simp only [killForbidden, MvPolynomial.killCompl, MvPolynomial.aeval_X,
-      dif_neg hr, dif_neg hp]
+      dite_eq_right hr, dite_eq_right hp]
 
 /-- Evaluate the ambient algebra in the surviving polynomial variables. -/
 def toPolynomial : Ambient K n →ₐ[K] MvPolynomial (SurvivingPair n r) K :=
@@ -116,7 +116,7 @@ theorem toPolynomial_ideal_le_ker :
 def toPolynomialQuotient :
     CoordinateRing K n r →ₐ[K] MvPolynomial (SurvivingPair n r) K :=
   Ideal.Quotient.liftₐ (ideal K n r) (toPolynomial K n r)
-    (fun x hx => RingHom.mem_ker.mp (toPolynomial_ideal_le_ker K n r hx))
+    (fun _ hx => RingHom.mem_ker.mp (toPolynomial_ideal_le_ker K n r hx))
 
 @[simp] theorem toPolynomialQuotient_quotient (x : Ambient K n) :
     toPolynomialQuotient K n r (quotient K n r x) = toPolynomial K n r x := by
@@ -203,7 +203,7 @@ def polynomialEquiv :
     polynomialEquiv K n r
       (quotient K n r (entry K n s.1.1.1 s.1.1.2)) = MvPolynomial.X s := by
   rcases s with ⟨p, hp⟩
-  simpa [hp] using polynomialEquiv_entry K n r p
+  simp [hp]
 
 @[simp] theorem polynomialEquiv_forbidden
     (p : UnitriangularCoordinateRing.StrictUpperPair (Fin n))

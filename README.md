@@ -27,6 +27,12 @@ maintained project libraries; it does not claim to formalize an entire source.
   module and the ordinary module quotient by the kernel are flat. No
   surjectivity or coalgebra laws are required.
   [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean).
+- **Coideal generator criterion.** Over a commutative ring, the span of an
+  arbitrary set in an additive-group module with `CoalgebraStruct` is a coideal
+  iff the counit and `(q ⊗ q) ∘ Δ` vanish on every generator, where `q` is the
+  ordinary module quotient map by that span. Scalar and module universes are
+  independent; no coalgebra laws, field, flatness, finiteness or nonemptiness are
+  required. [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean).
 - **Kernels over a field.** The linear kernel of any coalgebra morphism is a
   coideal, without surjectivity. Both source and target need only
   `CoalgebraStruct` on additive-group modules, in independent universes; no
@@ -116,6 +122,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   No target multiplication, finite dimension or nonempty group-like family is required.
   [Extension](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean),
   [span coordinates](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoordinates.lean).
+- **Group-like coordinates.** In a coalgebra with a basis of group-like elements
+  over a commutative semiring, an element is group-like exactly when distinct
+  coordinates have product zero and their finite-support sum is one. Coordinate
+  idempotence follows from these conditions; the basis index need not be finite.
+  The canonical monoid-algebra criterion needs no monoid structure on its index
+  type and agrees with Mathlib's monomial classification over commutative domains.
+  [Basis coordinates](AlgebraicGroups/LinearAlgebra/Coalgebra/GroupLikeCoordinates.lean),
+  [coefficients](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoefficients.lean).
 - **Antipodes.** For full Hopf algebras over a commutative semiring, either
   commutative multiplication **or** cocommutative comultiplication suffices for
   `S² = id`; these are alternatives, not an iff or simultaneous requirements.

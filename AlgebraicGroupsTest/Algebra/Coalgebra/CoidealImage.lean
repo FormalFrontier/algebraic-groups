@@ -1,6 +1,6 @@
 /-
 SPDX-License-Identifier: Apache-2.0
-Authors: Formal Frontier Agents, Trellis
+Authors: Formal Frontier Agents
 -/
 module
 
@@ -365,22 +365,28 @@ private lemma coordinateSwap_single (n : ℕ) (r : ℤ) :
   Finsupp.domLCongr_single (R := ℤ) _ _ _
 
 private lemma coordinateSpan_isCoideal {n : ℕ} (hn : n ≠ 0) :
-    (coordinateSpan n).IsCoideal where
-  counit_eq_zero := by
-    intro x hx
-    obtain ⟨r, rfl⟩ := Submodule.mem_span_singleton.mp hx
-    change (r • Finsupp.single n (1 : ℤ)) 0 = 0
+    (coordinateSpan n).IsCoideal := by
+  apply (Submodule.isCoideal_span_iff (R := ℤ)
+    ({Finsupp.single n 1} : Set (ℕ →₀ ℤ))).mpr
+  constructor
+  · intro x hx
+    rcases Set.mem_singleton_iff.mp hx with rfl
+    rw [coefficient_counit]
     simp [hn]
-  map_mkQ_comul_eq_zero := by
-    intro x hx
+  · intro x hx
     rw [coefficient_comul, map_zero]
 
 private lemma coordinateSpan_zero_not_isCoideal : ¬ (coordinateSpan 0).IsCoideal := by
   intro h
-  have hε := h.counit_eq_zero
-    (Submodule.mem_span_singleton_self (Finsupp.single (0 : ℕ) (1 : ℤ)))
+  have hε := ((Submodule.isCoideal_span_iff (R := ℤ)
+    ({Finsupp.single 0 1} : Set (ℕ →₀ ℤ))).mp h).1
+    (Finsupp.single 0 1) (by simp)
   rw [coefficient_counit] at hε
   norm_num at hε
+
+private lemma empty_span_isCoideal :
+    (Submodule.span ℤ (∅ : Set (ℕ →₀ ℤ))).IsCoideal := by
+  exact (Submodule.isCoideal_span_iff (R := ℤ) (∅ : Set (ℕ →₀ ℤ))).mpr (by simp)
 
 private lemma coordinateSpan_ne_bot (n : ℕ) : coordinateSpan n ≠ ⊥ := by
   intro h

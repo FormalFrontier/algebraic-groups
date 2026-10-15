@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.LinearAlgebra.Coalgebra.GroupLikeCoordinates
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 
 /-!
@@ -140,8 +141,9 @@ variable [CommSemiring R]
 /-- The counit of the canonical diagonal coalgebra is the sum of its coefficients. -/
 theorem counit_eq_sum_coeff (x : R[G]) :
     Coalgebra.counit (R := R) x = x.coeff.sum (fun _ r => r) := by
-  simpa only [map_finsuppSum, counit_single, CommSemiring.counit_apply] using
-    congrArg (Coalgebra.counit (R := R)) x.sum_coeff_single.symm
+  exact Module.Basis.counit_eq_sum_repr (basis G R)
+    (fun g ↦ by simpa only [basis_apply] using
+      (isGroupLikeElem_single_one (R := R) (A := R) g).counit_eq_one) x
 
 /-- Comultiplication of the canonical diagonal coalgebra is diagonal in its generators. -/
 theorem comul_eq_sum_coeff (x : R[G]) :

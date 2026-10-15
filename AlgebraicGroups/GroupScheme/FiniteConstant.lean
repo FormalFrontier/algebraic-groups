@@ -26,6 +26,8 @@ point formula also printed in item 2.3 is not used to construct this scheme.
 ## Main definitions
 
 - `AlgebraicGeometry.FiniteGroupFunctions`: the coordinate function algebra.
+- `AlgebraicGeometry.FiniteGroupFunctions.basis`: its coordinate delta basis,
+  requiring only a finite indexing type.
 - `AlgebraicGeometry.FiniteGroupFunctions.comulAlgHom`: comultiplication dual
   to the abstract group law.
 - `AlgebraicGeometry.finiteConstantGroupScheme`: the resulting affine group
@@ -35,6 +37,19 @@ point formula also printed in item 2.3 is not used to construct this scheme.
 - `AlgebraicGeometry.finiteConstantSigmaIso`: its underlying scheme is the
   finite coproduct of copies of the base.
 
+## Finite-index basis interface
+
+The coordinate basis and finite-module instance require `Finite Γ`, not a chosen
+`Fintype Γ` enumeration. The basis uses Mathlib's noncomputable finite-support
+coordinates; classical selection supplies an enumeration only when needed.
+The group-law and group-scheme constructions retain their `Fintype Γ` assumptions.
+
+Ordinary applications of `FiniteGroupFunctions.basis K Γ` still infer finiteness
+from `[Fintype Γ]`. Fully explicit applications must instead pass a `Finite Γ`
+dictionary: replace `@FiniteGroupFunctions.basis K Γ hK F`, for `F : Fintype Γ`,
+by `@FiniteGroupFunctions.basis K Γ hK (Fintype.finite F)`. The same dictionary
+conversion applies to explicit applications of the finite-module instance.
+
 ## References
 
 - James S. Milne, *Algebraic Groups* (2017), item 2.3, p. 40 (the finite
@@ -43,7 +58,8 @@ point formula also printed in item 2.3 is not used to construct this scheme.
   equivalence for finite function algebras) and `Mathlib.AlgebraicGeometry.Limits`
   (the coproduct-to-spectrum-of-product isomorphism used for the summands).
 - Mathlib, `Mathlib.LinearAlgebra.StdBasis` (`Pi.basisFun`, the finite
-  function-algebra basis).
+  function-algebra basis) and `Mathlib.RingTheory.Finiteness.Basic`
+  (`Module.Finite.pi` and `Module.Finite.self`, finite generation of the function module).
 - Mathlib, `Mathlib.AlgebraicGeometry.Group.Affine` (the affine Hopf-algebra
   group-scheme construction and its convolution on points).
 -/
@@ -82,17 +98,37 @@ def toPiAlgEquiv [CommRing K] : FiniteGroupFunctions K Γ ≃ₐ[K] (Γ → K) :
 instance [CommRing K] [_root_.IsReduced K] : _root_.IsReduced (FiniteGroupFunctions K Γ) where
   eq_zero _f hf := funext fun g ↦ (hf.map (Pi.evalRingHom (fun _ : Γ ↦ K) g)).eq_zero
 
-/-- The coordinate delta functions form the standard basis of the function algebra. -/
-noncomputable def basis [CommRing K] [Fintype Γ] :
+/-- The coordinate delta functions form the standard basis of the function algebra,
+using Mathlib's `Pi.basisFun` without a chosen enumeration of the finite index type. -/
+noncomputable def basis [CommRing K] [Finite Γ] :
     Module.Basis Γ K (FiniteGroupFunctions K Γ) := by
-  letI : Finite Γ := Fintype.finite (inferInstance : Fintype Γ)
   change Module.Basis Γ K (Γ → K)
   exact Pi.basisFun K Γ
 
-noncomputable instance [CommRing K] [Fintype Γ] :
-    Module.Finite K (FiniteGroupFunctions K Γ) := by
-  let _ : Finite Γ := Fintype.finite (inferInstance : Fintype Γ)
-  exact Module.Finite.of_basis (basis K Γ)
+/-- Finite generation of the function module, from Mathlib's `Module.Finite.pi`
+and `Module.Finite.self`. -/
+noncomputable instance [CommRing K] [Finite Γ] :
+    Module.Finite K (FiniteGroupFunctions K Γ) :=
+  inferInstanceAs (Module.Finite K (Γ → K))
+
+/-- Forgetting the dedicated function-algebra type carries the coordinate basis
+onto Mathlib's standard basis of the finite function space. -/
+theorem basis_map_toPi [CommRing K] [Finite Γ] :
+    (basis K Γ).map (toPiAlgEquiv K Γ).toLinearEquiv = Pi.basisFun K Γ := by
+  apply Module.Basis.repr_injective
+  ext f g
+  rfl
+
+/-- A coordinate basis vector is the characteristic function of its index. -/
+@[simp] theorem basis_apply [CommRing K] [Finite Γ] [DecidableEq Γ] (g : Γ) :
+    basis K Γ g = (Pi.single g (1 : K) : Γ → K) :=
+  Pi.basisFun_apply K Γ g
+
+/-- The coefficient of a function in the coordinate basis is its value at that index. -/
+@[simp] theorem basis_repr [CommRing K] [Finite Γ]
+    (f : FiniteGroupFunctions K Γ) (g : Γ) :
+    (basis K Γ).repr f g = f g :=
+  Pi.basisFun_repr K Γ f g
 
 /-- Reassociate and swap curried variables so that a tensor of functions
 `x ⊗ y` is evaluated at `(g, h)` as `x g * y h`. -/

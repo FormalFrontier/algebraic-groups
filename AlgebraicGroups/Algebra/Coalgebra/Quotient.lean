@@ -1,6 +1,6 @@
 /-
 SPDX-License-Identifier: Apache-2.0
-Authors: Formal Frontier Agents, Trellis
+Authors: Formal Frontier Agents
 -/
 module
 
@@ -49,6 +49,12 @@ ensures flatness of the target and of the module quotient by the kernel, as used
 in tensor-square cancellation for the ordinary linear quotient lift. Flatness of
 the two ambient modules alone does not suffice over a general commutative ring.
 
+The statement `Submodule.isCoideal_span_iff` packages the two coideal conditions
+as tests on an arbitrary generating set.
+The projection in its statement is the ordinary module quotient
+map, defined before any coideality proof or quotient coalgebra structure is available.
+It uses the existing coideal predicate and the generic linear-span APIs.
+
 ## References
 
 - `Mathlib.RingTheory.Coalgebra.Quotient` supplies coideals, quotient structures
@@ -62,6 +68,8 @@ the two ambient modules alone does not suffice over a general commutative ring.
   `TensorProduct.map_injective_of_flat_flat` from `Mathlib.RingTheory.Flat.Basic`,
   with vector-space freeness supplied by `Module.Free.of_divisionRing` from
   `Mathlib.LinearAlgebra.Basis.VectorSpace` and flatness by `Module.Flat.of_free`.
+- `Mathlib.LinearAlgebra.Span.Basic` supplies `Submodule.span_le` and
+  `LinearMap.eqOn_span_iff` for extending linear conditions from generators.
 -/
 
 @[expose] public section
@@ -74,6 +82,36 @@ namespace Submodule
 
 variable {R : Type u} [CommRing R]
 variable {C : Type v} [AddCommGroup C] [Module R C] [CoalgebraStruct R C]
+
+/-- A span is a coideal exactly when its generators have zero counit and their
+comultiplications vanish after projecting both tensor factors to the ordinary
+module quotient by the span. No quotient coalgebra structure or coalgebra laws
+are assumed. -/
+theorem isCoideal_span_iff (s : Set C) :
+    (Submodule.span R s).IsCoideal ↔
+      (∀ x ∈ s, Coalgebra.counit (R := R) x = 0) ∧
+        ∀ x ∈ s, TensorProduct.map (Submodule.span R s).mkQ (Submodule.span R s).mkQ
+          (Coalgebra.comul (R := R) x) = 0 := by
+  constructor
+  · intro h
+    exact ⟨fun x hx => h.counit_eq_zero (Submodule.subset_span hx),
+      fun x hx => h.map_mkQ_comul_eq_zero (Submodule.subset_span hx)⟩
+  · rintro ⟨hcounit, hcomul⟩
+    have hspan_counit : Submodule.span R s ≤
+        LinearMap.ker (Coalgebra.counit (R := R) : C →ₗ[R] R) :=
+      Submodule.span_le.mpr fun x hx => LinearMap.mem_ker.mpr (hcounit x hx)
+    have hspan_comul : Submodule.span R s ≤
+        LinearMap.ker ((TensorProduct.map (Submodule.span R s).mkQ
+          (Submodule.span R s).mkQ).comp (Coalgebra.comul (R := R))) :=
+      Submodule.span_le.mpr fun x hx => LinearMap.mem_ker.mpr (hcomul x hx)
+    refine
+      { counit_eq_zero := ?_
+        map_mkQ_comul_eq_zero := ?_ }
+    · intro x hx
+      exact LinearMap.mem_ker.mp (hspan_counit hx)
+    · intro x hx
+      exact LinearMap.mem_ker.mp (hspan_comul hx)
+
 variable {D : Type w} [AddCommGroup D] [Module R D] [CoalgebraStruct R D]
 
 /-- The ordinary linear image of a coideal under a coalgebra-structure-preserving map
@@ -337,7 +375,8 @@ theorem quotientQuotientCoalgEquivQuotientSup_toLinearEquiv (I J : Submodule R C
       quotientQuotientEquivQuotientSup I J :=
   rfl
 
-/-- The canonical equivalence sends a twice-projected representative to its class modulo the join. -/
+/-- The canonical equivalence sends a twice-projected representative to its class
+modulo the join. -/
 @[simp]
 theorem quotientQuotientCoalgEquivQuotientSup_mk_mk (I J : Submodule R C)
     [hI : I.IsCoideal] [hJ : J.IsCoideal] (a : C) :
@@ -352,8 +391,8 @@ theorem quotientQuotientCoalgEquivQuotientSup_symm_mk (I J : Submodule R C)
     [hI : I.IsCoideal] [hJ : J.IsCoideal] (a : C) :
     (quotientQuotientCoalgEquivQuotientSup I J).symm (Quotient.mk (p := I ⊔ J) a) =
       Quotient.mk (p := J.map I.mkQ) (Quotient.mk (p := I) a) := by
-  letI : (J.map I.mkQ).IsCoideal := hJ.map (Coalgebra.Quotient.mkQCoalgHom I)
-  letI : (I ⊔ J).IsCoideal := hI.sup hJ
+  let : (J.map I.mkQ).IsCoideal := hJ.map (Coalgebra.Quotient.mkQCoalgHom I)
+  let : (I ⊔ J).IsCoideal := hI.sup hJ
   rw [← quotientQuotientCoalgEquivQuotientSup_mk_mk I J a]
   exact (quotientQuotientCoalgEquivQuotientSup I J).toLinearEquiv.symm_apply_apply _
 
@@ -365,8 +404,8 @@ theorem quotientQuotientCoalgEquivQuotientSup_comp_mkQCoalgHom (I J : Submodule 
         ((Coalgebra.Quotient.mkQCoalgHom (J.map I.mkQ)).comp
           (Coalgebra.Quotient.mkQCoalgHom I)) =
       Coalgebra.Quotient.mkQCoalgHom (I ⊔ J) := by
-  letI : (J.map I.mkQ).IsCoideal := hJ.map (Coalgebra.Quotient.mkQCoalgHom I)
-  letI : (I ⊔ J).IsCoideal := hI.sup hJ
+  let : (J.map I.mkQ).IsCoideal := hJ.map (Coalgebra.Quotient.mkQCoalgHom I)
+  let : (I ⊔ J).IsCoideal := hI.sup hJ
   apply CoalgHom.ext
   intro a
   exact quotientQuotientCoalgEquivQuotientSup_mk_mk I J a

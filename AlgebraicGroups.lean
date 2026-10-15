@@ -13,6 +13,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
 public import AlgebraicGroups.Algebra.Coalgebra.Equiv
 public import AlgebraicGroups.Algebra.Coalgebra.FiniteSubcoalgebra
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCardinality
+public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoefficients
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoordinates
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan

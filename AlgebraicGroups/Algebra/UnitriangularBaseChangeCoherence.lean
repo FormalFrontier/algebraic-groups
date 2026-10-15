@@ -64,7 +64,7 @@ private theorem baseChange_tower_polynomial (R S T : Type u)
     [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T]
     [IsScalarTower R S T]
-    (ι : Type u) [Fintype ι] [LinearOrder ι]
+    (ι : Type u) [LinearOrder ι]
     (s : S) (p : FreeCoordinateRing R ι) :
     MvPolynomial.map (algebraMap S T)
         (s • MvPolynomial.map (algebraMap R S) p) =

@@ -77,6 +77,12 @@ noncomputable def delta (g : Γ) : FiniteGroupFunctions K Γ := by
   classical
   exact Pi.single g 1
 
+omit [Fintype Γ] in
+private theorem basis_eq_delta [Finite Γ] (g : Γ) :
+    basis K Γ g = delta (K := K) g := by
+  classical
+  simpa only [delta] using basis_apply K Γ g
+
 /-- The complete orthogonal family obtained by evaluating an algebra homomorphism
 on the singleton characteristic functions. -/
 noncomputable def idempotentsOfAlgHom [CommRing R] [Algebra K R]
@@ -155,8 +161,7 @@ noncomputable def algHomEquivIdempotentPartitions [CommRing R] [Algebra K R] :
     apply AlgHom.toLinearMap_injective
     apply (basis K Γ).ext
     intro g
-    change algHomOfIdempotents (K := K) (idempotentsOfAlgHom φ)
-      (idempotentsOfAlgHom_complete φ) (delta g) = φ (delta g)
+    simp only [AlgHom.toLinearMap_apply, basis_eq_delta]
     simp [idempotentsOfAlgHom]
   right_inv e := by
     ext g
@@ -349,6 +354,8 @@ theorem quotient_comp_algHom_eq_eval [CommRing R] [Algebra K R]
   apply AlgHom.toLinearMap_injective
   apply (basis K Γ).ext
   intro h
+  simp only [AlgHom.toLinearMap_apply, AlgHom.comp_apply, Algebra.ofId_apply,
+    basis_eq_delta]
   change (Ideal.Quotient.mkₐ K p.asIdeal) (φ (delta h)) =
     algebraMap K (R ⧸ p.asIdeal) (delta h g)
   by_cases hh : h = g

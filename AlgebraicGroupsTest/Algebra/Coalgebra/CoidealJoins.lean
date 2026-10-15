@@ -60,24 +60,21 @@ private lemma counit_e (n : ℤ) : counit (R := ℤ) (e n) = 1 :=
 private lemma comul_e (n : ℤ) : comul (R := ℤ) (e n) = e n ⊗ₜ[ℤ] e n :=
   (isGroupLikeElem_single_one (R := ℤ) (A := ℤ) n).comul_eq_tmul_self
 
-private lemma differenceLine_isCoideal (n : ℤ) : (differenceLine n).IsCoideal where
-  counit_eq_zero := by
-    have hk : differenceLine n ≤ LinearMap.ker (counit (R := ℤ)) := by
-      apply (Submodule.span_singleton_le_iff_mem _ _).mpr
-      simp only [LinearMap.mem_ker, map_sub, counit_e, sub_self]
-    exact fun x hx => hk hx
-  map_mkQ_comul_eq_zero := by
+private lemma differenceLine_isCoideal (n : ℤ) : (differenceLine n).IsCoideal := by
+  apply (Submodule.isCoideal_span_iff (R := ℤ) ({e 0 - e n} : Set A)).mpr
+  constructor
+  · intro x hx
+    rcases Set.mem_singleton_iff.mp hx with rfl
+    simp only [map_sub, counit_e, sub_self]
+  · intro x hx
+    rcases Set.mem_singleton_iff.mp hx with rfl
     have hq : (differenceLine n).mkQ (e 0) = (differenceLine n).mkQ (e n) := by
       apply sub_eq_zero.mp
       rw [← map_sub, Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero]
       exact difference_mem n
-    have hk : differenceLine n ≤ LinearMap.ker
-        ((TensorProduct.map (differenceLine n).mkQ (differenceLine n).mkQ).comp
-          (comul (R := ℤ))) := by
-      apply (Submodule.span_singleton_le_iff_mem _ _).mpr
-      simp only [LinearMap.mem_ker, LinearMap.comp_apply, map_sub, comul_e,
-        TensorProduct.map_tmul, hq, sub_self]
-    exact fun x hx => hk hx
+    change TensorProduct.map (differenceLine n).mkQ (differenceLine n).mkQ
+      (comul (R := ℤ) (e 0 - e n)) = 0
+    simp only [map_sub, comul_e, TensorProduct.map_tmul, hq, sub_self]
 
 private lemma differenceLine_ne_bot {n : ℤ} (hn : n ≠ 0) : differenceLine n ≠ ⊥ := by
   intro h
