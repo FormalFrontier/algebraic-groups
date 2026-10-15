@@ -7,6 +7,7 @@ module
 public import AlgebraicGroups.Algebra.Coalgebra.Quotient
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.LinearAlgebra.Finsupp.LSum
 import Mathlib.Tactic.NormNum
 
@@ -249,6 +250,70 @@ theorem mapDomainBialgHom_double_fst_mapQ :
     Coalgebra.Quotient.comul_mk,
     (isGroupLikeElem_single_one (R := ℤ) (A := ℤ) (0 : ℤ)).comul_eq_tmul_self,
     TensorProduct.map_tmul] using hΔ
+
+/-- The ordinary kernel quotient of the doubled first-coordinate projection is flat. -/
+private theorem flat_quotient_ker_mapDomainBialgHom_double_fst :
+    Module.Flat ℤ (AddMonoidAlgebra ℤ (ℤ × ℤ) ⧸
+      LinearMap.ker (mapDomainBialgHom ℤ doubleFst :
+        AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ)) := by
+  letI : Module.Free ℤ (AddMonoidAlgebra ℤ ℤ) := Module.Free.of_basis (basis ℤ ℤ)
+  let p : AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ :=
+    mapDomainBialgHom ℤ (AddMonoidHom.fst ℤ ℤ)
+  let j : AddMonoidAlgebra ℤ ℤ →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ :=
+    mapDomainBialgHom ℤ double
+  have hp : Function.Surjective p := by
+    intro x
+    induction x using induction_linear with
+    | zero => exact ⟨0, map_zero p⟩
+    | add x y hx hy =>
+      obtain ⟨a, rfl⟩ := hx
+      obtain ⟨b, rfl⟩ := hy
+      exact ⟨a + b, map_add p a b⟩
+    | single a r =>
+      exact ⟨single (a, 0) r, mapDomainBialgHom_single (AddMonoidHom.fst ℤ ℤ) (a, 0) r⟩
+  have hj : Function.Injective j := by
+    apply mapDomain_injective
+    intro a b hab
+    change a + a = b + b at hab
+    omega
+  have hfactor : (mapDomainBialgHom ℤ doubleFst :
+      AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ) = j.comp p := by
+    apply LinearMap.ext
+    intro x
+    exact (mapDomainBialgHom_mapDomainBialgHom double (AddMonoidHom.fst ℤ ℤ) x).symm
+  rw [hfactor, LinearMap.ker_comp_of_ker_eq_bot p (LinearMap.ker_eq_bot.mpr hj)]
+  exact Module.Flat.of_linearEquiv (p.quotKerEquivOfSurjective hp)
+
+/-- The doubled first-coordinate projection has a proper nonzero coideal kernel,
+although it is not surjective. -/
+private theorem mapDomainBialgHom_double_fst_kernel :
+    (LinearMap.ker (mapDomainBialgHom ℤ doubleFst :
+      AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ)).IsCoideal ∧
+    (LinearMap.ker (mapDomainBialgHom ℤ doubleFst :
+      AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ)) ≠ ⊥ ∧
+    (LinearMap.ker (mapDomainBialgHom ℤ doubleFst :
+      AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ)) ≠ ⊤ ∧
+    ¬ Function.Surjective (mapDomainBialgHom ℤ doubleFst) := by
+  letI : Module.Free ℤ (AddMonoidAlgebra ℤ ℤ) := Module.Free.of_basis (basis ℤ ℤ)
+  letI := flat_quotient_ker_mapDomainBialgHom_double_fst
+  refine ⟨CoalgHomClass.ker_isCoideal_of_flat_quotient
+    (mapDomainBialgHom ℤ doubleFst), ?_, ?_,
+    mapDomainBialgHom_not_surjective doubleFst (fun n => double_ne_one n.1)⟩
+  · intro hbot
+    exact doubleFst_not_injective (LinearMap.ker_eq_bot.mp hbot)
+  · intro htop
+    have hx : single ((0, 0) : ℤ × ℤ) 1 ∈ LinearMap.ker
+        (mapDomainBialgHom ℤ doubleFst :
+          AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ) :=
+      htop.symm ▸ Submodule.mem_top
+    have hz : mapDomainBialgHom ℤ doubleFst (single (0, 0) 1) = 0 := hx
+    have hcoeff := congrArg (fun x : AddMonoidAlgebra ℤ ℤ => x.coeff 0) hz
+    norm_num [mapDomainBialgHom_single, doubleFst, double] at hcoeff
+
+/-- The flat-quotient kernel criterion includes the identity map over a field. -/
+private theorem ker_id_rat_isCoideal :
+    (LinearMap.ker (CoalgHom.id ℚ ℚ : ℚ →ₗ[ℚ] ℚ)).IsCoideal := by
+  exact CoalgHomClass.ker_isCoideal_of_flat_quotient (CoalgHom.id ℚ ℚ)
 
 end AddMonoidAlgebra
 

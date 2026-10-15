@@ -7,9 +7,9 @@ module
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.RingTheory.Coalgebra.Equiv
 public import Mathlib.RingTheory.Coalgebra.Quotient
+public import Mathlib.RingTheory.Flat.Basic
 
 import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Coideal images, joins and coalgebra morphisms on quotients
@@ -30,12 +30,16 @@ quotient projection by `Submodule.liftQCoalgHom`. A coalgebra homomorphism carry
 one coideal into another induces `Submodule.mapQCoalgHom` between their quotients.
 The latter construction respects identity and composition.
 
-These coideal-image, join and quotient-map constructions use Mathlib's quotient coalgebra structure and
-linear quotient maps. The scalars are a commutative ring, the modules are additive
-commutative groups, and the scalar, source and target universes are independent.
-Preservation of counit and comultiplication requires only `CoalgebraStruct`, not
-the coalgebra laws. For these constructions, no algebra structure, field
-hypothesis, flatness or projectivity is required.
+The image, join and quotient constructions use Mathlib's quotient coalgebra
+structure and linear quotient maps. The scalars are a commutative ring, the modules
+are additive commutative groups, and the scalar, source and target universes are
+independent. Preservation of counit and comultiplication requires only
+`CoalgebraStruct`, not the coalgebra laws. These constructions require no algebra
+structure, field hypothesis, flatness or projectivity.
+
+For kernel coideality, flatness of the target and of the ordinary kernel quotient
+is sufficient, without surjectivity. The quotient in this hypothesis is formed as
+a module before any coideal proof or quotient coalgebra structure is available.
 
 Over a field, `CoalgHomClass.ker_isCoideal` states that the linear kernel of any
 coalgebra morphism is a coideal. Both source and target need only
@@ -371,6 +375,38 @@ end
 
 end Submodule
 
+universe uR uC uD uMorphism
+
+/-- The kernel of a coalgebra-structure-preserving map is a coideal when its target
+and its ordinary module quotient by the kernel are flat. No surjectivity or
+coalgebra laws are required. -/
+theorem CoalgHomClass.ker_isCoideal_of_flat_quotient
+    {R : Type uR} [CommRing R]
+    {C : Type uC} [AddCommGroup C] [Module R C]
+    {D : Type uD} [AddCommGroup D] [Module R D]
+    [CoalgebraStruct R C] [CoalgebraStruct R D]
+    {F : Type uMorphism} [FunLike F C D] [CoalgHomClass F R C D]
+    (f : F) [Module.Flat R D]
+    [Module.Flat R (C ⧸ LinearMap.ker (f : C →ₗ[R] D))] :
+    (LinearMap.ker (f : C →ₗ[R] D)).IsCoideal := by
+  let p := LinearMap.ker (f : C →ₗ[R] D)
+  -- This factor uses only the ordinary module quotient, not a quotient coalgebra.
+  let g : (C ⧸ p) →ₗ[R] D := p.liftQ (f : C →ₗ[R] D) le_rfl
+  have hg : Function.Injective g := LinearMap.ker_eq_bot.mp
+    (Submodule.ker_liftQ_eq_bot p (f : C →ₗ[R] D) le_rfl le_rfl)
+  have hcomp : g.comp p.mkQ = (f : C →ₗ[R] D) :=
+    p.liftQ_mkQ (f : C →ₗ[R] D) le_rfl
+  have htensor := TensorProduct.map_injective_of_flat_flat g g hg hg
+  constructor
+  · intro x hx
+    have hfx : f x = 0 := hx
+    rw [← CoalgHomClass.counit_comp_apply f x, hfx, map_zero]
+  · intro x hx
+    have hfx : f x = 0 := hx
+    apply htensor
+    rw [map_zero, TensorProduct.map_map, hcomp,
+      CoalgHomClass.map_comp_comul_apply f x, hfx, map_zero]
+
 namespace CoalgHomClass
 
 section Field
@@ -384,30 +420,7 @@ variable {F : Type z} [FunLike F C D] [CoalgHomClass F K C D]
 surjectivity or coalgebra laws on either module. -/
 theorem ker_isCoideal (f : F) :
     (LinearMap.ofClass f : C →ₗ[K] D).ker.IsCoideal := by
-  let g : C →ₗ[K] D := LinearMap.ofClass f
-  let I := g.ker
-  let h : (C ⧸ I) →ₗ[K] D := I.liftQ g le_rfl
-  have h_injective : Function.Injective h :=
-    LinearMap.ker_eq_bot.mp (I.ker_liftQ_eq_bot g le_rfl le_rfl)
-  have hq : h.comp I.mkQ = g := I.liftQ_mkQ g le_rfl
-  -- The quotient lift is injective, and over a field its tensor square is too.
-  -- Thus the coideal condition can be checked after mapping to the target tensor square.
-  have h_tensor_injective : Function.Injective (TensorProduct.map h h) :=
-    TensorProduct.map_injective_of_flat_flat h h h_injective h_injective
-  constructor
-  · intro x hx
-    have hxg : f x = 0 := LinearMap.mem_ker.mp hx
-    rw [← counit_comp_apply f x, hxg, map_zero]
-  · intro x hx
-    have hxg : f x = 0 := LinearMap.mem_ker.mp hx
-    apply h_tensor_injective
-    calc
-      TensorProduct.map h h (TensorProduct.map I.mkQ I.mkQ (comul x)) =
-          TensorProduct.map g g (comul x) := by
-        rw [TensorProduct.map_map, hq]
-      _ = comul (f x) := map_comp_comul_apply f x
-      _ = 0 := by rw [hxg, map_zero]
-      _ = TensorProduct.map h h 0 := (map_zero _).symm
+  exact ker_isCoideal_of_flat_quotient f
 
 end Field
 

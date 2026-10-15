@@ -13,6 +13,11 @@ maintained project libraries; it does not claim to formalize an entire source.
   quotient maps respecting identity and composition. Additive-group modules with
   `CoalgebraStruct` suffice, in independent universes; no coalgebra laws, flatness,
   projectivity or field hypothesis. [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean).
+- **Kernels with a flat quotient.** Over a commutative ring, the kernel of a
+  linear map preserving comultiplication and counit is a coideal when the target
+  module and the ordinary module quotient by the kernel are flat. No
+  surjectivity or coalgebra laws are required.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean).
 - **Kernels over a field.** The linear kernel of any coalgebra morphism is a
   coideal, without surjectivity. Both source and target need only
   `CoalgebraStruct` on additive-group modules, in independent universes; no
