@@ -6,6 +6,7 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Union
 public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.RingTheory.Ideal.Nonunits
 public import Mathlib.RingTheory.Jacobson.Ideal
@@ -22,7 +23,9 @@ Jacobson radical. The finite index set may be empty.
 
 The selection first avoids finitely many proper kernels over a field, then
 finds unit coordinates modulo each maximal ideal. A unit coordinate permits
-a basis update by the determinant and adjugate identities.
+a basis update, even for an infinite basis: linear independence follows from
+Mathlib's replacement lemma, and spanning follows by separating the pivot
+from the finitely supported coordinates and multiplying by its unit inverse.
 
 ## References
 
@@ -34,9 +37,12 @@ a basis update by the determinant and adjugate identities.
 * Mathlib, `Mathlib.Algebra.Module.Submodule.Union`
   (`Submodule.exists_forall_notMem_of_forall_ne_top`),
   `Mathlib.RingTheory.Ideal.Nonunits`, `Mathlib.RingTheory.Jacobson.Ideal`,
-  `Mathlib.LinearAlgebra.Determinant`, and
-  `Mathlib.LinearAlgebra.Matrix.Adjugate` provide the avoidance, unit,
-  Jacobson, and basis-update ingredients.
+  and `Mathlib.LinearAlgebra.LinearIndependent.Lemmas`
+  (`LinearIndependent.update`) provide the avoidance, unit, Jacobson, and
+  independence ingredients. `Finsupp.single_add_erase` and the linear-combination
+  API provide the finite-support spanning argument for arbitrary-index updates.
+  The update-coordinate proofs use Mathlib's `Basis.ext` on coordinate linear
+  maps, following the inverse-unit coordinate approach of `Basis.coord_unitsSMul`.
 -/
 
 @[expose] public section
@@ -217,34 +223,105 @@ end LinearMap
 namespace Module.Basis
 
 variable {ι A M : Type*} [CommRing A] [AddCommGroup M] [Module A M]
-  [Fintype ι] [DecidableEq ι]
 
-/-- Replacing one vector of a finite basis by a vector having a unit coefficient
+/-- Replacing one vector of a basis by a vector having a unit coefficient
 at that position remains linearly independent and spanning. -/
-lemma isBasis_update (b : Basis ι A M) (i : ι) (x : M)
+lemma isBasis_update [DecidableEq ι] (b : Basis ι A M) (i : ι) (x : M)
     (hx : IsUnit (b.repr x i)) :
     LinearIndependent A (Function.update b i x) ∧
       Submodule.span A (Set.range (Function.update b i x)) = ⊤ := by
-  rw [is_basis_iff_det b, Basis.det_apply, b.toMatrix_update, b.toMatrix_self,
-    ← Matrix.cramer_apply, Matrix.cramer_one]
-  simpa using hx
+  refine ⟨b.linearIndependent.update i x ?_, ?_⟩
+  · refine ⟨1, one_mem _, b.repr x, hx.mem_nonZeroDivisors, ?_⟩
+    simpa only [one_smul] using (b.linearCombination_repr x).symm
+  · let S := Submodule.span A (Set.range (Function.update b i x))
+    have hxS : x ∈ S := by
+      apply Submodule.subset_span
+      exact ⟨i, by simp⟩
+    have hbS (j : ι) (hji : j ≠ i) : b j ∈ S := by
+      apply Submodule.subset_span
+      exact ⟨j, by simp only [Function.update_of_ne hji]⟩
+    have hy : Finsupp.linearCombination A b ((b.repr x).erase i) ∈ S := by
+      rw [Finsupp.linearCombination_apply, Finsupp.sum]
+      apply S.sum_smul_mem
+      intro j hj
+      apply hbS j
+      exact Finset.ne_of_mem_erase (by simpa only [Finsupp.support_erase] using hj)
+    have hdecomp : (b.repr x i) • b i +
+        Finsupp.linearCombination A b ((b.repr x).erase i) = x := by
+      simpa only [map_add, Finsupp.linearCombination_single, b.linearCombination_repr] using
+        congrArg (Finsupp.linearCombination A b) (Finsupp.single_add_erase i (b.repr x))
+    have hmul : (b.repr x i) • b i ∈ S := by
+      rw [eq_sub_iff_add_eq.mpr hdecomp]
+      exact S.sub_mem hxS hy
+    have hbi : b i ∈ S := (S.smul_mem_iff_of_isUnit hx).mp hmul
+    exact (Submodule.eq_top_iff_forall_basis_mem b).2 fun j ↦ by
+      by_cases hji : j = i
+      · simpa only [hji] using hbi
+      · exact hbS j hji
 
 /-- The basis obtained by replacing one basis vector by a vector having a unit
 coefficient at that position. -/
-noncomputable def update (b : Basis ι A M) (i : ι) (x : M)
+noncomputable def update [DecidableEq ι] (b : Basis ι A M) (i : ι) (x : M)
     (hx : IsUnit (b.repr x i)) : Basis ι A M :=
   Basis.mk (isBasis_update b i x hx).1 (isBasis_update b i x hx).2.ge
 
 @[simp]
-lemma update_apply (b : Basis ι A M) (i : ι) (x : M)
+lemma update_apply [DecidableEq ι] (b : Basis ι A M) (i : ι) (x : M)
     (hx : IsUnit (b.repr x i)) (j : ι) :
     update b i x hx j = Function.update b i x j := by
   apply Basis.mk_apply
 
 @[simp]
-lemma update_same (b : Basis ι A M) (i : ι) (x : M)
+lemma update_same [DecidableEq ι] (b : Basis ι A M) (i : ι) (x : M)
     (hx : IsUnit (b.repr x i)) : update b i x hx i = x := by
   simp
+
+/-- The pivot coordinate after a unit-pivot basis update is multiplied by the
+inverse of the pivot unit. No finiteness of the index type is needed. -/
+lemma repr_update_same [DecidableEq ι] (b : Basis ι A M) (i : ι) (x y : M)
+    (hx : IsUnit (b.repr x i)) :
+    (b.update i x hx).repr y i = (↑(hx.unit⁻¹) : A) * b.repr y i := by
+  have hmul : (↑(hx.unit⁻¹) : A) * b.repr x i = 1 := by
+    simpa only [hx.unit_spec] using (Units.inv_mul hx.unit)
+  have hcoord : (b.update i x hx).coord i = (↑(hx.unit⁻¹) : A) • b.coord i := by
+    apply (b.update i x hx).ext
+    intro k
+    simp only [coord_apply, LinearMap.smul_apply, smul_eq_mul, repr_self]
+    by_cases hki : k = i
+    · subst k
+      simpa only [update_same, Finsupp.single_eq_same] using hmul.symm
+    · simp only [update_apply, Function.update_of_ne hki, repr_self,
+        Finsupp.single_apply, if_neg hki, mul_zero]
+  simpa only [coord_apply, LinearMap.smul_apply, smul_eq_mul] using
+    congrArg (fun f : M →ₗ[A] A ↦ f y) hcoord
+
+/-- Away from the pivot, the new coordinate subtracts the old pivot coordinate
+multiplied by the inverse pivot unit and the replacement vector's coordinate. -/
+lemma repr_update_of_ne [DecidableEq ι] (b : Basis ι A M) (i : ι) (x y : M)
+    (hx : IsUnit (b.repr x i)) (j : ι) (hji : j ≠ i) :
+    (b.update i x hx).repr y j =
+      b.repr y j - b.repr y i * (↑(hx.unit⁻¹) : A) * b.repr x j := by
+  have hmul : (↑(hx.unit⁻¹) : A) * b.repr x i = 1 := by
+    simpa only [hx.unit_spec] using (Units.inv_mul hx.unit)
+  have hcoord : (b.update i x hx).coord j =
+      b.coord j - ((↑(hx.unit⁻¹) : A) * b.repr x j) • b.coord i := by
+    apply (b.update i x hx).ext
+    intro k
+    simp only [coord_apply, LinearMap.sub_apply, LinearMap.smul_apply,
+      smul_eq_mul, repr_self]
+    by_cases hki : k = i
+    · subst k
+      simp only [update_same, Finsupp.single_apply, if_neg (Ne.symm hji)]
+      rw [mul_right_comm _ (b.repr x j), hmul, one_mul, sub_self]
+    · simp only [update_apply, Function.update_of_ne hki, repr_self,
+        Finsupp.single_apply, if_neg hki, mul_zero, sub_zero]
+  calc
+    (b.update i x hx).repr y j =
+        b.repr y j - ((↑(hx.unit⁻¹) : A) * b.repr x j) * b.repr y i := by
+      simpa only [coord_apply, LinearMap.sub_apply, LinearMap.smul_apply,
+        smul_eq_mul] using congrArg (fun f : M →ₗ[A] A ↦ f y) hcoord
+    _ = b.repr y j - b.repr y i * (↑(hx.unit⁻¹) : A) * b.repr x j := by
+      rw [mul_comm _ (b.repr y i), ← mul_assoc]
 
 variable {K : Type*} [Field K] [Infinite K] [Algebra K A]
   [Module K M] [IsScalarTower K A M] [Finite (MaximalSpectrum A)]
@@ -252,10 +329,11 @@ variable {K : Type*} [Field K] [Infinite K] [Algebra K A]
 /-- A base-field subspace spanning a finite free module over a semilocal
 algebra contains a basis. This is a field-base analogue of Stacks Project,
 Lemma 10.78.8 (tag 03C1). -/
-lemma exists_basis_subset (b : Basis ι A M) (W : Submodule K M)
+lemma exists_basis_subset [Finite ι] (b : Basis ι A M) (W : Submodule K M)
     (hW : Submodule.span A (W : Set M) = ⊤) :
     ∃ b' : Basis ι A M, ∀ i, b' i ∈ W := by
   classical
+  let _ := Fintype.ofFinite ι
   suffices h : ∀ s : Finset ι, ∃ b' : Basis ι A M, ∀ i ∈ s, b' i ∈ W by
     obtain ⟨b', hb'⟩ := h Finset.univ
     exact ⟨b', fun i ↦ hb' i (Finset.mem_univ i)⟩
@@ -288,12 +366,13 @@ variable {R B L : Type*} [CommRing R] [IsLocalRing R]
 contains a basis if the extended maximal ideal lies in the Jacobson radical.
 This is the basis-selection conclusion of Stacks Project, Lemma 10.78.8
 (tag 03C1). -/
-lemma exists_basis_subset_of_le_jacobson (b : Basis ι B L) (W : Submodule R L)
+lemma exists_basis_subset_of_le_jacobson [Finite ι] (b : Basis ι B L) (W : Submodule R L)
     (hW : Submodule.span B (W : Set L) = ⊤)
     (hJ : Ideal.map (algebraMap R B) (IsLocalRing.maximalIdeal R) ≤
       (Ideal.jacobson (⊥ : Ideal B))) :
     ∃ b' : Basis ι B L, ∀ i, b' i ∈ W := by
   classical
+  let _ := Fintype.ofFinite ι
   suffices h : ∀ s : Finset ι, ∃ b' : Basis ι B L, ∀ i ∈ s, b' i ∈ W by
     obtain ⟨b', hb'⟩ := h Finset.univ
     exact ⟨b', fun i ↦ hb' i (Finset.mem_univ i)⟩

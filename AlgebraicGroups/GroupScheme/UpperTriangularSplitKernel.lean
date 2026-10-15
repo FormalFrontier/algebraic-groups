@@ -249,7 +249,7 @@ def upperTriangularDiagonalBialgHom :
           (upperTriangularDiagonalCoordinateMap K n
             (DiagonalCoordinateRing.quotient K n
               (GeneralLinearCoordinateRing.matrix K n i i)))
-      rw [upperTriangularDiagonalCoordinateMap_matrix, if_pos rfl]
+      rw [upperTriangularDiagonalCoordinateMap_matrix, ite_eq_left rfl]
       change (Algebra.TensorProduct.map
         (upperTriangularDiagonalCoordinateMap K n)
         (upperTriangularDiagonalCoordinateMap K n))
@@ -260,7 +260,7 @@ def upperTriangularDiagonalBialgHom :
       rw [GeneralLinearCoordinateRing.native_comul_matrix, map_sum, map_sum]
       simp only [Algebra.TensorProduct.map_tmul]
       rw [Finset.sum_eq_single i]
-      · rw [upperTriangularDiagonalCoordinateMap_matrix, if_pos rfl]
+      · rw [upperTriangularDiagonalCoordinateMap_matrix, ite_eq_left rfl]
         exact (upperTriangular_comul_diagonal K n i).symm
       · intro index _ hne
         by_cases h : i = index
@@ -503,8 +503,8 @@ theorem upperTriangularDiagonalSquare_isPushout :
         b.hom ((Bialgebra.counitAlgHom K (DiagonalCoordinateRing.CoordinateRing K n))
           (DiagonalCoordinateRing.quotient K n
             (GeneralLinearCoordinateRing.matrix K n i i))) at h
-      rw [upperTriangularDiagonalCoordinateMap_matrix, if_pos rfl,
-        diagonalCounit_matrix, if_pos rfl, map_one] at h
+      rw [upperTriangularDiagonalCoordinateMap_matrix, ite_eq_left rfl,
+        diagonalCounit_matrix, ite_eq_left rfl, map_one] at h
       exact h
     have hbase (r : K) : a.hom (algebraMap K
         (UpperTriangularCoordinateRing.CoordinateRing K n) r) = b.hom r := by

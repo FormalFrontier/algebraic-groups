@@ -81,14 +81,13 @@ def diagonalSubgroup : Subgroup (GeneralLinearGroup ι R) where
       ext i j
       by_cases hij : i = j
       · subst j
-        simpa [diagonalUnitsHom_apply, d] using
-          ((IsUnit.prod_univ_iff.mp hdet) i).unit_spec
+        simp [diagonalUnitsHom_apply, d]
       · simpa [diagonalUnitsHom_apply, hij] using (hg i j hij).symm
     rw [← heq]
     intro i j hij
     have hinv : (diagonalUnitsHom ι R d)⁻¹ = diagonalUnitsHom ι R (d⁻¹) := by
       exact (map_inv (diagonalUnitsHom ι R) d).symm
-    rw [hinv, diagonalUnitsHom_apply, if_neg hij]
+    rw [hinv, diagonalUnitsHom_apply, ite_eq_right hij]
 
 /-- The native diagonal general linear group, including empty indices and zero rings. -/
 abbrev DiagonalGroup := diagonalSubgroup ι R
@@ -138,7 +137,7 @@ def unitsEquiv : DiagonalGroup ι R ≃* (ι → Rˣ) where
     ext i j
     by_cases hij : i = j
     · subst j
-      simpa [diagonalUnitsHom_apply] using (isUnit_entry g i).unit_spec
+      simp [diagonalUnitsHom_apply]
     · simpa [diagonalUnitsHom_apply, hij] using (g.2 i j hij).symm
   right_inv d := by
     funext i
