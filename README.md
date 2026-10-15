@@ -20,6 +20,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   universed additive-monoid modules is needed; identity and composition are
   respected, with a bridge to the full-law tensor map.
   [Module](AlgebraicGroups/Algebra/Coalgebra/TensorProduct.lean).
+- **Tensor products of coalgebra quotients.** For coideals in modules with weak
+  coalgebra structures over a commutative ring, the sum of the two tensor relation
+  images is a coideal. Mathlib's linear comparison refines to a coalgebra
+  equivalence on the canonical quotients, with representative formulas, a
+  quotient-map square and unique factorization of maps vanishing on the relation
+  sum. No flatness or coalgebra-law hypothesis is needed.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/TensorProductQuotient.lean),
+  [integer product example](AlgebraicGroupsTest/Algebra/Coalgebra/TensorProductQuotient.lean).
 - **Coalgebra morphism range constructions.** Over a field, `CoalgHom.range`
   equips exactly the underlying linear-map range with the restricted coalgebra;
   `CoalgHom.rangeRestrict` uses codomain restriction to that carrier. The source

@@ -21,6 +21,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
 public import AlgebraicGroups.Algebra.Coalgebra.IdempotentIdeal
 public import AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Coalgebra.Quotient
+public import AlgebraicGroups.Algebra.Coalgebra.TensorProductQuotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.Coalgebra.SkewPrimitive
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProduct
