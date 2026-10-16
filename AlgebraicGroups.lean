@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
+public import AlgebraicGroups.Algebra.Bialgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
 public import AlgebraicGroups.Algebra.Coalgebra.Coefficients
