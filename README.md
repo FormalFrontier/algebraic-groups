@@ -161,6 +161,14 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Roots of unity at all orders.** Over any commutative base ring, the cyclic
+  group algebra `K[ZMod n]` represents the roots-of-unity functor for every
+  natural `n`. At zero it is the Laurent Hopf algebra and its group scheme is
+  canonically the existing multiplicative group; positive orders retain the
+  polynomial presentation `K[T]/(T^n - 1)`. The zero-order extension is beyond
+  Milne's positive-order item 2.4.
+  [Module](AlgebraicGroups/GroupScheme/RootsOfUnity.lean),
+  [rational-unit model](AlgebraicGroupsTest/RootsOfUnity.lean).
 - **Connected group schemes.** A connected group scheme of finite type over any
   field is geometrically irreducible, even without reducedness. If it is also
   geometrically reduced, it is geometrically integral. Finite type is expressed

@@ -11,24 +11,33 @@ public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
 public import Mathlib.RingTheory.RootsOfUnity.Basic
 public import Mathlib.RingTheory.AdjoinRoot
+public import AlgebraicGroups.GroupScheme.Multiplicative
+
+import all Mathlib.RingTheory.Bialgebra.MonoidAlgebra -- to unfold `AddMonoidAlgebra.liftMulEquiv`
 
 /-!
-# Finite roots-of-unity group schemes
+# Roots-of-unity group schemes at all orders
 
 This file packages the affine group scheme represented by the Hopf algebra
 `K[ZMod n]` and identifies its points with the `n`-th roots of unity.
 For positive `n`, Milne's *Algebraic Groups*, item 2.4, gives the roots-of-unity
 functor, the quotient `k[T]/(T ^ n - 1)` and the multiplication-induced
 comultiplication `T ↦ T ⊗ T` over a field. The construction here uses the
-cyclic group algebra over any commutative base. The coordinate ring and group
-scheme are also defined at `n = 0`, but the points isomorphism and polynomial
-quotient equivalence below require `[NeZero n]` (equivalently, positive `n`).
+cyclic group algebra over any commutative base and represents roots of unity
+for every natural `n`. At `n = 0`, every unit is a root, `ZMod 0` is `ℤ`, and
+the coordinate Hopf algebra is the Laurent algebra of the existing multiplicative
+group scheme. This zero-order extension is beyond Milne's positive-order item.
+
+The polynomial quotient equivalence and its `T ^ (n - 1)` antipode formula
+require `[NeZero n]` (equivalently, positive `n`). At zero the coordinate algebra
+is Laurent, not the polynomial algebra `K[T]/(T ^ 0 - 1)`.
 
 ## Main definitions
 
 - `AlgebraicGeometry.rootsOfUnityGroupScheme`
 - `AlgebraicGeometry.rootsOfUnityMulEquivPoints`
 - `AlgebraicGeometry.rootsOfUnityPointsIso`
+- `AlgebraicGeometry.rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup`
 - `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv`
 - `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv_symm_root_isGroupLike`
 
@@ -52,11 +61,11 @@ noncomputable section
 open CategoryTheory Polynomial
 open scoped CategoryTheory.MonObj
 
-universe u
+universe u v w t
 
 namespace AlgebraicGeometry
 
-/-- The coordinate ring used for the finite roots-of-unity group scheme. -/
+/-- The cyclic group-algebra coordinate ring of the roots-of-unity group scheme. -/
 abbrev rootsOfUnityCoordinateRing (K : Type u) [CommRing K] (n : ℕ) :=
   AddMonoidAlgebra K (ZMod n)
 
@@ -116,7 +125,7 @@ abbrev rootsOfUnityPointsFunctor (K : Type u) [CommRing K] (n : ℕ) :
 
 namespace RootsOfUnity
 
-variable {R : Type u} [CommRing R]
+variable {R : Type v} [CommMonoid R]
 
 /-- The additive homomorphism from `ZMod n` determined by a root of unity. -/
 def rootAddHom {n : ℕ} (ζ : rootsOfUnity n R) : ZMod n →+ Additive Rˣ :=
@@ -144,81 +153,85 @@ lemma rootMonoidHom_generator {n : ℕ} (ζ : rootsOfUnity n R) :
   rw [rootAddHom, ZMod.lift_castAddHom]
   simp
 
-@[simp]
-lemma rootMonoidHom_restrict {S : Type u} [CommRing S]
-    (σ : R →+* S) {n : ℕ} (ζ : rootsOfUnity n R) :
-    rootMonoidHom (restrictRootsOfUnity σ n ζ) =
-      σ.toMonoidHom.comp (rootMonoidHom ζ) := by
-  apply MonoidHom.ext
+private lemma cyclicCharacter_ext {n : ℕ}
+    {f g : Multiplicative (ZMod n) →* R}
+    (h : f (.ofAdd 1) = g (.ofAdd 1)) : f = g := by
+  apply MonoidHom.toAdditiveRight.injective
+  -- Integer casts generate `ZMod n`, also when `n = 0`.
+  have hcast : f.toAdditiveRight.comp (Int.castAddHom (ZMod n)) =
+      g.toAdditiveRight.comp (Int.castAddHom (ZMod n)) := by
+    apply AddMonoidHom.ext_int
+    change Additive.ofMul (f (.ofAdd ((1 : ℤ) : ZMod n))) =
+      Additive.ofMul (g (.ofAdd ((1 : ℤ) : ZMod n)))
+    simpa only [Int.cast_one] using congrArg Additive.ofMul h
+  apply AddMonoidHom.ext
   intro x
   obtain ⟨z, rfl⟩ := ZMod.intCast_surjective x
-  have heq : Multiplicative.ofAdd (z : ZMod n) =
-      (Multiplicative.ofAdd (1 : ZMod n)) ^ z := by
-    change Multiplicative.ofAdd (z : ZMod n) =
-      Multiplicative.ofAdd (z • (1 : ZMod n))
-    congr 1
-    simp
-  change rootMonoidHom (restrictRootsOfUnity σ n ζ)
-      (Multiplicative.ofAdd (z : ZMod n)) =
-    (σ.toMonoidHom.comp (rootMonoidHom ζ))
-      (Multiplicative.ofAdd (z : ZMod n))
-  rw [← MonoidHom.coe_toHomUnits
-      (rootMonoidHom (restrictRootsOfUnity σ n ζ)),
-    ← MonoidHom.coe_toHomUnits (σ.toMonoidHom.comp (rootMonoidHom ζ))]
-  rw [heq, map_zpow, map_zpow]
-  have hbase :
-      (rootMonoidHom (restrictRootsOfUnity σ n ζ)).toHomUnits
-          (Multiplicative.ofAdd (1 : ZMod n)) =
-        (σ.toMonoidHom.comp (rootMonoidHom ζ)).toHomUnits
-          (Multiplicative.ofAdd (1 : ZMod n)) := by
-    apply Units.ext
-    simp
-  rw [hbase]
+  exact DFunLike.congr_fun hcast z
+
+/-- Cyclic characters commute with restriction along a multiplicative map. -/
+@[simp]
+lemma rootMonoidHom_restrict {S : Type w} [CommMonoid S]
+    {F : Type t} [FunLike F R S] [MonoidHomClass F R S]
+    (σ : F) {n : ℕ} (ζ : rootsOfUnity n R) :
+    rootMonoidHom (restrictRootsOfUnity σ n ζ) =
+      (σ : R →* S).comp (rootMonoidHom ζ) := by
+  apply cyclicCharacter_ext
+  simp only [rootMonoidHom_generator, MonoidHom.comp_apply,
+    restrictRootsOfUnity_coe_apply, MonoidHom.coe_coe]
 
 /-- Recover a root of unity by evaluating a cyclic character at its standard
 generator. -/
-def monoidHomRoot {n : ℕ} [NeZero n]
+def monoidHomRoot {n : ℕ}
     (f : Multiplicative (ZMod n) →* R) : rootsOfUnity n R :=
-  rootsOfUnity.mkOfPowEq (f (.ofAdd 1)) (by
+  ⟨f.toHomUnits (.ofAdd 1), by
     have hg : (Multiplicative.ofAdd (1 : ZMod n)) ^ n = 1 := by
       change Multiplicative.ofAdd (n • (1 : ZMod n)) = Multiplicative.ofAdd 0
       congr 1
       simp
-    rw [← f.map_pow, hg, map_one])
+    change (f.toHomUnits (.ofAdd 1)) ^ n = 1
+    rw [← (f.toHomUnits).map_pow, hg, map_one]⟩
 
+/-- The inverse character construction uses the unit supplied by the source group. -/
 @[simp]
-lemma monoidHomRoot_rootMonoidHom {n : ℕ} [NeZero n]
+lemma monoidHomRoot_coe {n : ℕ} (f : Multiplicative (ZMod n) →* R) :
+    (monoidHomRoot f : Rˣ) = f.toHomUnits (.ofAdd 1) := by
+  rfl
+
+/-- The underlying value of the inverse character construction is generator evaluation. -/
+@[simp]
+lemma monoidHomRoot_val {n : ℕ} (f : Multiplicative (ZMod n) →* R) :
+    ((monoidHomRoot f : Rˣ) : R) = f (.ofAdd 1) := by
+  rw [monoidHomRoot_coe, MonoidHom.coe_toHomUnits]
+
+/-- Recovering a root after taking its character is the identity. -/
+@[simp]
+lemma monoidHomRoot_rootMonoidHom {n : ℕ}
     (ζ : rootsOfUnity n R) : monoidHomRoot (rootMonoidHom ζ) = ζ := by
   apply rootsOfUnity.coe_injective
-  simp [monoidHomRoot]
+  change ((monoidHomRoot (rootMonoidHom ζ) : Rˣ) : R) = ((ζ : Rˣ) : R)
+  rw [monoidHomRoot_val, rootMonoidHom_generator]
 
+/-- Taking the character of its recovered root is the identity. -/
 @[simp]
-lemma rootMonoidHom_monoidHomRoot {n : ℕ} [NeZero n]
+lemma rootMonoidHom_monoidHomRoot {n : ℕ}
     (f : Multiplicative (ZMod n) →* R) : rootMonoidHom (monoidHomRoot f) = f := by
-  apply MonoidHom.ext
-  intro x
-  obtain ⟨z, rfl⟩ := ZMod.intCast_surjective x
-  have heq : Multiplicative.ofAdd (z : ZMod n) =
-      (Multiplicative.ofAdd (1 : ZMod n)) ^ z := by
-    change Multiplicative.ofAdd (z : ZMod n) =
-      Multiplicative.ofAdd (z • (1 : ZMod n))
-    congr 1
-    simp
-  change rootMonoidHom (monoidHomRoot f) (Multiplicative.ofAdd (z : ZMod n)) =
-    f (Multiplicative.ofAdd (z : ZMod n))
-  rw [← MonoidHom.coe_toHomUnits (rootMonoidHom (monoidHomRoot f)),
-    ← MonoidHom.coe_toHomUnits f]
-  rw [heq, map_zpow, map_zpow]
-  have hbase : (rootMonoidHom (monoidHomRoot f)).toHomUnits
-      (Multiplicative.ofAdd (1 : ZMod n)) =
-      f.toHomUnits (Multiplicative.ofAdd (1 : ZMod n)) := by
-    apply Units.ext
-    simp [monoidHomRoot]
-  rw [hbase]
+  apply cyclicCharacter_ext
+  rw [rootMonoidHom_generator, monoidHomRoot_val]
+
+/-- Recovering roots commutes with postcomposition of characters. -/
+lemma monoidHomRoot_restrict {S : Type w} [CommMonoid S]
+    {F : Type t} [FunLike F R S] [MonoidHomClass F R S]
+    (σ : F) {n : ℕ} (f : Multiplicative (ZMod n) →* R) :
+    monoidHomRoot ((σ : R →* S).comp f) =
+      restrictRootsOfUnity σ n (monoidHomRoot f) := by
+  apply rootsOfUnity.coe_injective
+  simp only [monoidHomRoot_val, MonoidHom.comp_apply,
+    restrictRootsOfUnity_coe_apply, MonoidHom.coe_coe]
 
 /-- Evaluation at the standard generator identifies roots of unity with
 characters of `ZMod n`. -/
-def equivMonoidHom (n : ℕ) [NeZero n] :
+def equivMonoidHom (n : ℕ) :
     rootsOfUnity n R ≃ (Multiplicative (ZMod n) →* R) where
   toFun := rootMonoidHom
   invFun := monoidHomRoot
@@ -226,59 +239,80 @@ def equivMonoidHom (n : ℕ) [NeZero n] :
   right_inv := rootMonoidHom_monoidHomRoot
 
 /-- The group equivalence between roots of unity and cyclic characters. -/
-def mulEquivMonoidHom (n : ℕ) [NeZero n] :
+def mulEquivMonoidHom (n : ℕ) :
     rootsOfUnity n R ≃* (Multiplicative (ZMod n) →* R) where
   __ := equivMonoidHom n
   map_mul' ζ ξ := by
-    apply (equivMonoidHom (R := R) n).symm.injective
-    apply rootsOfUnity.coe_injective
-    simp [equivMonoidHom, monoidHomRoot]
+    apply cyclicCharacter_ext
+    change rootMonoidHom (ζ * ξ) (.ofAdd 1) =
+      (rootMonoidHom ζ * rootMonoidHom ξ) (.ofAdd 1)
+    simp only [rootMonoidHom_generator, MonoidHom.mul_apply,
+      Subgroup.coe_mul, Units.val_mul]
 
 end RootsOfUnity
 
-variable (K : Type u) [CommRing K]
-variable (R : Type u) [CommRing R] [Algebra K R]
-
-/-- Roots of unity are multiplicatively equivalent to algebra maps out of
-their group-algebra coordinate ring. -/
-def rootsOfUnityMulEquivAlgHom (n : ℕ) [NeZero n] :
-    rootsOfUnity n R ≃*
-      WithConv (rootsOfUnityCoordinateRing K n →ₐ[K] R) where
-  toEquiv := (RootsOfUnity.mulEquivMonoidHom (R := R) n).toEquiv.trans <|
-    (AddMonoidAlgebra.lift K R (ZMod n)).trans (WithConv.equiv _).symm
-  map_mul' ζ ξ := by
-    apply WithConv.ofConv_injective
-    ext
-    simp [AlgHom.convMul_apply]
-
-@[simp]
-lemma rootsOfUnityMulEquivAlgHom_apply (n : ℕ) [NeZero n]
-    (ζ : rootsOfUnity n R) :
-    (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv =
-      AddMonoidAlgebra.lift K R (ZMod n) (RootsOfUnity.rootMonoidHom ζ) :=
+private lemma addMonoidAlgebra_liftMulEquiv_apply
+    {R : Type u} {A : Type v} {M : Type w}
+    [CommSemiring R] [CommSemiring A] [Algebra R A] [AddMonoid M]
+    (f : Multiplicative M →* A) :
+    (AddMonoidAlgebra.liftMulEquiv (R := R) (A := A) (M := M) f).ofConv =
+      AddMonoidAlgebra.lift R A M f :=
   rfl
 
+variable (K : Type u) [CommRing K]
+
+section AlgebraMaps
+
+variable (R : Type v) [CommSemiring R] [Algebra K R]
+
+/-- Roots of unity are multiplicatively equivalent to algebra maps out of
+their group-algebra coordinate ring, at every natural order. -/
+def rootsOfUnityMulEquivAlgHom (n : ℕ) :
+    rootsOfUnity n R ≃*
+      WithConv (rootsOfUnityCoordinateRing K n →ₐ[K] R) :=
+  (RootsOfUnity.mulEquivMonoidHom (R := R) n).trans
+    (AddMonoidAlgebra.liftMulEquiv (R := K) (A := R) (M := ZMod n))
+
+@[simp]
+lemma rootsOfUnityMulEquivAlgHom_apply (n : ℕ) (ζ : rootsOfUnity n R) :
+    (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv =
+      AddMonoidAlgebra.lift K R (ZMod n) (RootsOfUnity.rootMonoidHom ζ) := by
+  exact addMonoidAlgebra_liftMulEquiv_apply (R := K) (RootsOfUnity.rootMonoidHom ζ)
+
+/-- The inverse algebra-map equivalence recovers the character and evaluates its generator. -/
+lemma rootsOfUnityMulEquivAlgHom_symm_apply (n : ℕ)
+    (φ : WithConv (rootsOfUnityCoordinateRing K n →ₐ[K] R)) :
+    (rootsOfUnityMulEquivAlgHom K R n).symm φ =
+      RootsOfUnity.monoidHomRoot
+        ((AddMonoidAlgebra.lift K R (ZMod n)).symm φ.ofConv) := by
+  apply (rootsOfUnityMulEquivAlgHom K R n).injective
+  apply (WithConv.equiv _).injective
+  simp only [MulEquiv.apply_symm_apply, WithConv.equiv_apply,
+    rootsOfUnityMulEquivAlgHom_apply, RootsOfUnity.rootMonoidHom_monoidHomRoot,
+    Equiv.apply_symm_apply]
+
+/-- The algebra-map equivalence is natural in the target algebra. -/
 @[simp]
 lemma rootsOfUnityMulEquivAlgHom_naturality
-    {S : Type u} [CommRing S] [Algebra K S]
-    (f : R →ₐ[K] S) (n : ℕ) [NeZero n] (ζ : rootsOfUnity n R) :
+    {S : Type w} [CommSemiring S] [Algebra K S]
+    (f : R →ₐ[K] S) (n : ℕ) (ζ : rootsOfUnity n R) :
     (rootsOfUnityMulEquivAlgHom K S n
       (restrictRootsOfUnity f n ζ)).ofConv =
       f.comp (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv := by
-  apply AddMonoidAlgebra.algHom_ext
-  · intro x
-    rw [rootsOfUnityMulEquivAlgHom_apply,
-      rootsOfUnityMulEquivAlgHom_apply]
-    simp only [AddMonoidAlgebra.lift_single, one_smul, AlgHom.comp_apply]
-    change RootsOfUnity.rootMonoidHom
-        (restrictRootsOfUnity f.toRingHom n ζ) (.ofAdd x) =
-      f.toRingHom (RootsOfUnity.rootMonoidHom ζ (.ofAdd x))
-    rw [RootsOfUnity.rootMonoidHom_restrict]
-    rfl
-  · ext
+  rw [rootsOfUnityMulEquivAlgHom_apply, rootsOfUnityMulEquivAlgHom_apply,
+    RootsOfUnity.rootMonoidHom_restrict]
+  apply (AddMonoidAlgebra.lift K S (ZMod n)).symm.injective
+  ext a
+  simp
 
-/-- The functor-of-points equivalence at a `K`-algebra `R`. -/
-def rootsOfUnityMulEquivPoints (n : ℕ) [NeZero n] :
+end AlgebraMaps
+
+section AffinePoints
+
+variable (R : Type u) [CommRing R] [Algebra K R]
+
+/-- The functor-of-points equivalence at a `K`-algebra `R`, at every natural order. -/
+def rootsOfUnityMulEquivPoints (n : ℕ) :
     rootsOfUnity n R ≃*
       ((Spec (.of R)).asOver (Spec (.of K)) ⟶ rootsOfUnityScheme K n) :=
   (rootsOfUnityMulEquivAlgHom K R n).trans
@@ -286,7 +320,7 @@ def rootsOfUnityMulEquivPoints (n : ℕ) [NeZero n] :
       (R := K) (S := rootsOfUnityCoordinateRing K n) (T := R))
 
 @[simp]
-lemma rootsOfUnityMulEquivPoints_map_mul (n : ℕ) [NeZero n]
+lemma rootsOfUnityMulEquivPoints_map_mul (n : ℕ)
     (ζ ξ : rootsOfUnity n R) :
     rootsOfUnityMulEquivPoints K R n (ζ * ξ) =
       rootsOfUnityMulEquivPoints K R n ζ *
@@ -294,41 +328,57 @@ lemma rootsOfUnityMulEquivPoints_map_mul (n : ℕ) [NeZero n]
   (rootsOfUnityMulEquivPoints K R n).map_mul ζ ξ
 
 @[simp]
-lemma rootsOfUnityMulEquivPoints_apply_left (n : ℕ) [NeZero n]
+lemma rootsOfUnityMulEquivPoints_apply_left (n : ℕ)
     (ζ : rootsOfUnity n R) :
     (rootsOfUnityMulEquivPoints K R n ζ).left =
       Spec.map (CommRingCat.ofHom
         (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv.toRingHom) :=
   rfl
 
-/-- The affine group scheme `rootsOfUnityGroupScheme K n` represents the
-group-valued roots-of-unity functor of Milne's *Algebraic Groups*, item 2.4,
-over an arbitrary commutative base for positive `n`. -/
-def rootsOfUnityPointsIso (n : ℕ) [NeZero n] :
+/-- Restricting a root along an algebra map precomposes the corresponding affine point. -/
+lemma rootsOfUnityMulEquivPoints_naturality
+    {S : Type u} [CommRing S] [Algebra K S]
+    (f : R →ₐ[K] S) (n : ℕ) (ζ : rootsOfUnity n R) :
+    rootsOfUnityMulEquivPoints K S n (restrictRootsOfUnity f n ζ) =
+      (algSpec (.of K)).map (CommAlgCat.ofHom f).op ≫
+        rootsOfUnityMulEquivPoints K R n ζ := by
+  apply Over.OverMorphism.ext
+  simp only [Over.comp_left, rootsOfUnityMulEquivPoints_apply_left,
+    rootsOfUnityMulEquivAlgHom_naturality, algSpec_map_left]
+  exact Spec.map_comp
+    (CommRingCat.ofHom (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv.toRingHom)
+    (CommRingCat.ofHom f.toRingHom)
+
+end AffinePoints
+
+/-- The affine group scheme `rootsOfUnityGroupScheme K n` represents roots of
+unity over an arbitrary commutative base for every natural `n`. For positive
+`n` this extends Milne's *Algebraic Groups*, item 2.4; at zero it represents units. -/
+def rootsOfUnityPointsIso (n : ℕ) :
     rootsOfUnityFunctor K n ≅ rootsOfUnityPointsFunctor K n :=
   NatIso.ofComponents
     (fun R ↦ (rootsOfUnityMulEquivPoints K R n).toGrpIso)
     (fun {R S} f ↦ by
-      ext ζ
-      apply Over.OverMorphism.ext
-      change
-        (rootsOfUnityMulEquivPoints K S n
-          (restrictRootsOfUnity f.hom n ζ)).left =
-        ((algSpec (.of K)).map f.op).left ≫
-          (rootsOfUnityMulEquivPoints K R n ζ).left
-      rw [rootsOfUnityMulEquivPoints_apply_left]
-      change
-        Spec.map (CommRingCat.ofHom
-          (rootsOfUnityMulEquivAlgHom K S n
-            (restrictRootsOfUnity f.hom n ζ)).ofConv.toRingHom) =
-        Spec.map (CommRingCat.ofHom f.hom.toRingHom) ≫
-          Spec.map (CommRingCat.ofHom
-            (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv.toRingHom)
-      rw [← Spec.map_comp]
-      congr 1
-      exact congrArg (fun h : rootsOfUnityCoordinateRing K n →ₐ[K] S ↦
-          CommRingCat.ofHom h.toRingHom)
-        (rootsOfUnityMulEquivAlgHom_naturality K R f.hom n ζ))
+      apply GrpCat.ext
+      intro ζ
+      exact rootsOfUnityMulEquivPoints_naturality K R f.hom n ζ)
+
+/-- The forward component of the representing isomorphism is the point equivalence. -/
+@[simp]
+lemma rootsOfUnityPointsIso_hom_app_apply
+    (R : Type u) [CommRing R] [Algebra K R] (n : ℕ) (ζ : rootsOfUnity n R) :
+    (rootsOfUnityPointsIso K n).hom.app (CommAlgCat.of K R) ζ =
+      rootsOfUnityMulEquivPoints K R n ζ := by
+  rfl
+
+/-- The inverse component of the representing isomorphism recovers the root from its point. -/
+@[simp]
+lemma rootsOfUnityPointsIso_inv_app_apply
+    (R : Type u) [CommRing R] [Algebra K R] (n : ℕ)
+    (p : (Spec (.of R)).asOver (Spec (.of K)) ⟶ rootsOfUnityScheme K n) :
+    (rootsOfUnityPointsIso K n).inv.app (CommAlgCat.of K R) p =
+      (rootsOfUnityMulEquivPoints K R n).symm p := by
+  rfl
 
 /-- The polynomial defining the usual coordinate presentation of the
 roots-of-unity scheme. -/
@@ -344,6 +394,118 @@ def rootsOfUnityCoordinateGenerator (n : ℕ) :
 lemma rootsOfUnityCoordinateGenerator_pow (n : ℕ) :
     rootsOfUnityCoordinateGenerator K n ^ n = 1 := by
   simp [rootsOfUnityCoordinateGenerator, AddMonoidAlgebra.one_def]
+
+/-- The algebra map associated to a root evaluates the coordinate generator at that root. -/
+@[simp]
+lemma rootsOfUnityMulEquivAlgHom_generator
+    (R : Type v) [CommSemiring R] [Algebra K R] (n : ℕ) (ζ : rootsOfUnity n R) :
+    (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv
+      (rootsOfUnityCoordinateGenerator K n) = ((ζ : Rˣ) : R) := by
+  rw [rootsOfUnityMulEquivAlgHom_apply]
+  simpa only [rootsOfUnityCoordinateGenerator, AddMonoidAlgebra.lift_single, one_smul]
+    using RootsOfUnity.rootMonoidHom_generator ζ
+
+/-- At order zero the cyclic coordinate Hopf algebra is the Laurent coordinate
+Hopf algebra of the multiplicative group, by the identity on integer monomials. -/
+def rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup :
+    rootsOfUnityCoordinateRing K 0 ≃ₐc[K] multiplicativeGroupCoordinateRing K :=
+  BialgEquiv.refl (R := K) (A := AddMonoidAlgebra K ℤ)
+
+/-- The zero-order coordinate comparison sends each integer monomial to itself. -/
+@[simp]
+lemma rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_apply
+    (x : rootsOfUnityCoordinateRing K 0) :
+    rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K x = x := by
+  rfl
+
+/-- The inverse zero-order coordinate comparison is the identity on integer monomials. -/
+@[simp]
+lemma rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_symm_apply
+    (x : multiplicativeGroupCoordinateRing K) :
+    (rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm x = x := by
+  rfl
+
+/-- The zero-order coordinate generator corresponds to the multiplicative-group coordinate. -/
+@[simp]
+lemma rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_generator :
+    rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K
+      (rootsOfUnityCoordinateGenerator K 0) = multiplicativeGroupCoordinate K := by
+  rw [rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_apply]
+  rfl
+
+/-- The multiplicative-group coordinate pulls back to the zero-order coordinate generator. -/
+@[simp]
+lemma rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_symm_coordinate :
+    (rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm
+      (multiplicativeGroupCoordinate K) = rootsOfUnityCoordinateGenerator K 0 := by
+  rw [rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_symm_apply]
+  rfl
+
+/-- The order-zero roots-of-unity group scheme is canonically the existing
+multiplicative group. The map is induced contravariantly by the identity
+bialgebra equivalence, not by the inversion automorphism. -/
+def rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup :
+    rootsOfUnityGroupScheme K 0 ≅ multiplicativeGroupScheme K :=
+  (hopfSpec (.of K)).mapIso
+    (CommHopfAlgCat.isoMk
+      (rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K)).symm.op
+
+/-- The forward group-scheme comparison is induced by the inverse coordinate comparison. -/
+lemma rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup_hom_left :
+    (rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup K).hom.hom.hom.left =
+      Spec.map (CommRingCat.ofHom
+        ((rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm :
+          multiplicativeGroupCoordinateRing K →ₐ[K] rootsOfUnityCoordinateRing K 0).toRingHom) := by
+  rfl
+
+/-- The inverse group-scheme comparison is induced by the forward coordinate comparison. -/
+lemma rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup_inv_left :
+    (rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup K).inv.hom.hom.left =
+      Spec.map (CommRingCat.ofHom
+        (rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K :
+          rootsOfUnityCoordinateRing K 0 →ₐ[K] multiplicativeGroupCoordinateRing K).toRingHom) := by
+  rfl
+
+/-- The zero-order comparison carries a root's point to the multiplicative-group point
+of its underlying unit. -/
+lemma rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup_point
+    (R : Type u) [CommRing R] [Algebra K R] (ζ : rootsOfUnity 0 R) :
+    rootsOfUnityMulEquivPoints K R 0 ζ ≫
+        (rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup K).hom.hom.hom =
+      multiplicativeGroupMulEquivPoints K R (ζ : Rˣ) := by
+  have hφ :
+      (rootsOfUnityMulEquivAlgHom K R 0 ζ).ofConv.comp
+          ((rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm :
+            multiplicativeGroupCoordinateRing K →ₐ[K] rootsOfUnityCoordinateRing K 0) =
+        (multiplicativeGroupMulEquivAlgHom K R (ζ : Rˣ)).ofConv := by
+    -- A character of the integers, hence its lifted algebra map, is determined by `T`.
+    apply AddMonoidAlgebra.algHom_ext'
+    · apply MonoidHom.ext_mint
+      change (rootsOfUnityMulEquivAlgHom K R 0 ζ).ofConv
+          ((rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm
+            (multiplicativeGroupCoordinate K)) =
+        (multiplicativeGroupMulEquivAlgHom K R (ζ : Rˣ)).ofConv
+          (multiplicativeGroupCoordinate K)
+      rw [rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_symm_coordinate,
+        rootsOfUnityMulEquivAlgHom_generator, multiplicativeGroupMulEquivAlgHom_coordinate]
+    · ext
+  apply Over.OverMorphism.ext
+  -- Normalize the scheme endpoints before applying contravariant functoriality.
+  change
+    Spec.map (CommRingCat.ofHom
+      (rootsOfUnityMulEquivAlgHom K R 0 ζ).ofConv.toRingHom) ≫
+        Spec.map (CommRingCat.ofHom
+          ((rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm :
+            multiplicativeGroupCoordinateRing K →ₐ[K] rootsOfUnityCoordinateRing K 0).toRingHom) =
+      Spec.map (CommRingCat.ofHom
+        (multiplicativeGroupMulEquivAlgHom K R (ζ : Rˣ)).ofConv.toRingHom)
+  exact (Spec.map_comp
+    (CommRingCat.ofHom
+      ((rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm :
+        multiplicativeGroupCoordinateRing K →ₐ[K] rootsOfUnityCoordinateRing K 0).toRingHom)
+    (CommRingCat.ofHom (rootsOfUnityMulEquivAlgHom K R 0 ζ).ofConv.toRingHom)).symm.trans
+      (congrArg (fun φ : multiplicativeGroupCoordinateRing K →ₐ[K] R ↦
+        Spec.map (CommRingCat.ofHom φ.toRingHom)) hφ)
 
 /-- The distinguished root in `AdjoinRoot (X ^ n - 1)` as an `n`-th root of
 unity. -/

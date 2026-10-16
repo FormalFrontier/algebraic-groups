@@ -752,10 +752,21 @@ does not assert surjectivity at every test object.
   finite-type group-scheme structure, and its original map to the group scheme
   is a group-object homomorphism.
 - `AlgebraicGeometry.rootsOfUnityGroupScheme` and
-  `AlgebraicGeometry.rootsOfUnityPointsIso`: the affine finite-type group scheme
-  represented by `K[ZMod n]` has the natural group-valued functor of `n`-th
-  roots of unity; `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv` identifies
-  its coordinate ring with `K[T]/(T^n - 1)` for positive `n`.
+  `AlgebraicGeometry.rootsOfUnityPointsIso`: over any commutative base, the
+  affine group scheme represented by `K[ZMod n]` has the natural group-valued
+  functor of `n`-th roots of unity for every natural `n`. At zero all units are
+  roots, and `AlgebraicGeometry.rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup`
+  identifies this group object with the existing multiplicative group, using
+  the identity on integer/Laurent monomials. Character maps need only a
+  commutative monoid target; the algebra-map equivalence allows commutative
+  semiring targets in a separate universe. Affine points use commutative rings
+  in the same ambient universe as the base, as in Mathlib's `Spec` equivalence.
+  The extension to zero order goes beyond Milne's positive-order item 2.4.
+  `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv` identifies the coordinate
+  ring with `K[T]/(T^n - 1)` only for positive `n`; the zero-order coordinate
+  ring is Laurent rather than polynomial. The rational unit `2` gives a
+  nonidentity order-zero root, character, coordinate-algebra map and affine
+  point in the [coordinate client](../AlgebraicGroupsTest/RootsOfUnity.lean).
 - `FrobeniusTwistedLine.groupScheme`: the characteristic-`p` affine group
   scheme cut out by `Y^p - tX^p`. When `t` is not a `p`-th power, its
   coordinate ring is a reduced domain, while an explicit nonzero nilpotent

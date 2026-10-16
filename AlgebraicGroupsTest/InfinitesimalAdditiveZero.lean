@@ -114,9 +114,9 @@ private theorem testZeroAlgebraAdditivePoint
       (infinitesimalAdditiveCoordinate (ZMod 2) 2 0) = 0 :=
   testAdditivePoint (ZMod 2) 2 PUnit x
 
-private theorem testZeroAlgebraRootsPoint (ζ : rootsOfUnity 1 PUnit) :
-    (rootsOfUnityMulEquivAlgHom (ZMod 3) PUnit 1 ζ).ofConv
+private theorem testZeroAlgebraRootsPoint (ζ : rootsOfUnity 1 PUnit.{1}) :
+    (rootsOfUnityMulEquivAlgHom (ZMod 3) PUnit.{1} 1 ζ).ofConv
       (rootsOfUnityCoordinateGenerator (ZMod 3) 1) = 1 :=
-  testRootsPoint (ZMod 3) PUnit ζ
+  testRootsPoint (ZMod 3) PUnit.{1} ζ
 
 end AlgebraicGeometry

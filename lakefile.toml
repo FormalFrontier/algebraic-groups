@@ -108,6 +108,7 @@ roots = [
   "AlgebraicGroupsTest.MatrixEndScheme",
   "AlgebraicGroupsTest.MonoidAlgebraPrimitive",
   "AlgebraicGroupsTest.Multiplicative",
+  "AlgebraicGroupsTest.RootsOfUnity",
   "AlgebraicGroupsTest.PrimitivePowerHopfIdeal",
   "AlgebraicGroupsTest.SymmetricAlgebra",
   "AlgebraicGroupsTest.SpecialLinear",
