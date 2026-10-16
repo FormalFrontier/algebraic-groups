@@ -26,6 +26,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProductQuotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport
 public import AlgebraicGroups.Algebra.Coalgebra.SkewPrimitive
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProduct
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient

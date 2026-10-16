@@ -71,6 +71,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.QuotientQuotient",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.TensorProduct",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.RightComoduleTransport",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SkewPrimitive",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Antipode",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.CocommutativeAntipode",

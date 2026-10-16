@@ -77,6 +77,15 @@ maintained project libraries; it does not claim to formalize an entire source.
   nor the coacted-on module projective. Flatness of the coacting coalgebra suffices
   for unique subtype coactions from image stability and unique colinear
   factorization; the counit need not be onto. [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean).
+- **Carrier transport of right comodules.** For a specified right `C`-comodule
+  `X` and an `R`-linear equivalence `e : V ≃ₗ[R] W`, `X.transport e` is a lawful
+  right `C`-comodule on the given target module. The coalgebra stays fixed:
+  its coaction at `w` is `(e tensor id_C) (X.coaction (e.symm w))`, changing
+  only the first tensor factor. The constructor and its two coaction formulas
+  work over commutative semirings on additive-commutative-monoid modules in
+  independent universes, without flatness or finiteness. A full coherence or
+  comodule-morphism transport API is not asserted here.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean).
 - **Intrinsic coefficients.** Coefficient spans exist over commutative semirings.
   Over a field they form a subcoalgebra: unique full corestriction of a coaction
   to `D` on the **same module** is equivalent to coefficient-span containment in
@@ -267,6 +276,7 @@ maintained project libraries; it does not claim to formalize an entire source.
 | --- | --- |
 | [`AlgebraicGroups`](AlgebraicGroups.lean) | Library aggregate; focused imports are linked above. |
 | [`AlgebraicGroupsTest`](AlgebraicGroupsTest/) | Test library: ordinary-import clients and boundary examples. |
+| [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean) | Lawful carrier transport of specified right comodules with fixed coalgebra, and first-factor coaction formulas. |
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
 | [`AlgebraicGroups.Algebra.Bialgebra.GroupLike`](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean) | Monoid homomorphism `BialgHom.groupLikeMap` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |
 | [`AlgebraicGroups.Algebra.HopfAlgebra.GroupLike`](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean) | Injectivity, image characterization and pointwise/monoid-homomorphism `Units.map` naturality of Mathlib's `GroupLike.toUnits` for possibly noncommutative semiring Hopf algebras over a commutative semiring. |
