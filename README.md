@@ -142,6 +142,13 @@ maintained project libraries; it does not claim to formalize an entire source.
   No target multiplication, finite dimension or nonempty group-like family is required.
   [Extension](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean),
   [span coordinates](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoordinates.lean).
+- **Monoid-algebra bialgebra maps.** Over a commutative semiring `R`, monoid
+  homomorphisms `M →* GroupLike R A` correspond by an explicit equivalence to
+  bialgebra maps `R[M] →ₐc[R] A`, for any monoid `M` and full `R`-bialgebra `A`.
+  The target semiring may be noncommutative; no Hopf structure, finiteness or
+  nontriviality is required. Evaluation, uniqueness and naturality laws describe
+  the equivalence in independent scalar, monoid and target universes.
+  [Module](AlgebraicGroups/Algebra/Bialgebra/MonoidAlgebra.lean).
 - **Group-like coordinates.** In a coalgebra with a basis of group-like elements
   over a commutative semiring, an element is group-like exactly when distinct
   coordinates have product zero and their finite-support sum is one. Coordinate
@@ -263,8 +270,11 @@ maintained project libraries; it does not claim to formalize an entire source.
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
 | [`AlgebraicGroups.Algebra.Bialgebra.GroupLike`](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean) | Monoid homomorphism `BialgHom.groupLikeMap` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |
 | [`AlgebraicGroups.Algebra.HopfAlgebra.GroupLike`](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean) | Injectivity, image characterization and pointwise/monoid-homomorphism `Units.map` naturality of Mathlib's `GroupLike.toUnits` for possibly noncommutative semiring Hopf algebras over a commutative semiring. |
+| [`AlgebraicGroups.Algebra.Bialgebra.MonoidAlgebra`][bialg-monoid] | Group-like map equivalence. |
 | [`AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra`](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean) | Universal extension of group-like families and diagonal structural formulas. |
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoordinates`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoordinates.lean) | Group-like-span subcoalgebra and structure-preserving coordinates over a field. |
+
+[bialg-monoid]: AlgebraicGroups/Algebra/Bialgebra/MonoidAlgebra.lean
 
 The [coalgebra guide](docs/COALGEBRAS.md) gives API walkthroughs and models;
 [mathematical topics](docs/MATHEMATICS.md) cover vector groups, triangular groups,

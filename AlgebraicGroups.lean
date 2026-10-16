@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
+public import AlgebraicGroups.Algebra.Bialgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Bialgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
@@ -24,6 +25,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Coalgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProductQuotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct
 public import AlgebraicGroups.Algebra.Coalgebra.SkewPrimitive
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProduct
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
