@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.GroupScheme.AffineHomOver
 public import AlgebraicGroups.GroupScheme.Diagonal
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
@@ -16,6 +17,11 @@ Milne identifies the diagonal subgroup over a field with a finite product of
 adjunction establish the categorical product for **all** test schemes over
 any commutative base, not merely affine test-algebra points. The empty-index
 product is terminal.
+
+The affine-target/global-sections equivalence and its composition law are
+`affineSpecHomOverEquiv` and `affineSpecHomOverEquiv_comp`, provided by
+`AlgebraicGroups.GroupScheme.AffineHomOver`. The names `diagonalAffineHomEquiv`
+and `diagonalAffineHomEquiv_comp` remain as deprecated compatibility interfaces.
 
 ## References
 
@@ -154,41 +160,29 @@ theorem diagonalGroupProjection_point (R : Type u) [CommRing R] [Algebra K R]
   exact congrArg (fun hom : multiplicativeGroupCoordinateRing K →ₐ[K] R ↦
     Spec.map (CommRingCat.ofHom hom.toRingHom)) hcoordinate
 
-def diagonalAffineHomEquiv (X : Over (Spec (.of K)))
-    (A : Type u) [CommRing A] [Algebra K A] :
-    (X ⟶ (algSpec (.of K)).obj (.op (CommAlgCat.of K A))) ≃
-      (A →ₐ[K] ((algΓ (.of K)).obj X).unop) where
-  toFun hom := ((algΓAlgSpecAdjunction (.of K)).homEquiv X
-    (.op (CommAlgCat.of K A))).symm hom |>.unop.hom
-  invFun hom := (algΓAlgSpecAdjunction (.of K)).homEquiv X
-    (.op (CommAlgCat.of K A)) (CommAlgCat.ofHom hom).op
-  left_inv hom := by
-    simpa only [CommAlgCat.ofHom_hom, Quiver.Hom.op_unop] using
-      ((algΓAlgSpecAdjunction (.of K)).homEquiv X
-        (.op (CommAlgCat.of K A))).apply_symm_apply hom
-  right_inv hom := by
-    simp only [Quiver.Hom.unop_op, Equiv.symm_apply_apply, CommAlgCat.hom_ofHom]
+/-- Maps to an affine target are algebra maps into global sections.
+Use `affineSpecHomOverEquiv`. -/
+@[deprecated (since := "2026-10-16")]
+alias diagonalAffineHomEquiv := affineSpecHomOverEquiv
 
+/-- Postcomposition with an affine-target map acts by precomposition on
+algebra maps into global sections. Use `affineSpecHomOverEquiv_comp`. -/
+@[deprecated affineSpecHomOverEquiv_comp (since := "2026-10-16")]
 theorem diagonalAffineHomEquiv_comp (X : Over (Spec (.of K)))
     (A B : Type u) [CommRing A] [Algebra K A] [CommRing B] [Algebra K B]
     (map : B →ₐ[K] A)
     (hom : X ⟶ (algSpec (.of K)).obj (.op (CommAlgCat.of K A))) :
-    diagonalAffineHomEquiv K X B
+    affineSpecHomOverEquiv K X B
       (hom ≫ (algSpec (.of K)).map (CommAlgCat.ofHom map).op) =
-      (diagonalAffineHomEquiv K X A hom).comp map := by
-  apply AlgHom.ext
-  intro element
-  exact congrArg (fun morphism : (algΓ (.of K)).obj X ⟶
-      Opposite.op (CommAlgCat.of K B) ↦ morphism.unop.hom element)
-    ((algΓAlgSpecAdjunction (.of K)).homEquiv_naturality_right_symm hom
-      (CommAlgCat.ofHom map).op)
+      (affineSpecHomOverEquiv K X A hom).comp map :=
+  affineSpecHomOverEquiv_comp K X A B map hom
 
 /-- Maps from any `K`-scheme to the diagonal group are tuples of global units,
 using Mathlib's `algΓAlgSpecAdjunction`, also when the source is nonaffine. -/
 def diagonalGroupHomUnits (X : Over (Spec (.of K))) :
     (X ⟶ (diagonalGroupScheme K n).X) ≃
       (n → ((algΓ (.of K)).obj X).unopˣ) :=
-  (((diagonalAffineHomEquiv K X (DiagonalCoordinateRing.CoordinateRing K n)).trans
+  (((affineSpecHomOverEquiv K X (DiagonalCoordinateRing.CoordinateRing K n)).trans
     (WithConv.equiv (DiagonalCoordinateRing.CoordinateRing K n →ₐ[K]
       ((algΓ (.of K)).obj X).unop)).symm).trans
     (diagonalGroupMulEquivAlgHom K n _).symm.toEquiv).trans
@@ -198,7 +192,7 @@ def diagonalGroupHomUnits (X : Over (Spec (.of K))) :
 def multiplicativeGroupHomUnits (X : Over (Spec (.of K))) :
     (X ⟶ (multiplicativeGroupScheme K).X) ≃
       ((algΓ (.of K)).obj X).unopˣ :=
-  ((diagonalAffineHomEquiv K X (multiplicativeGroupCoordinateRing K)).trans
+  ((affineSpecHomOverEquiv K X (multiplicativeGroupCoordinateRing K)).trans
     (WithConv.equiv (multiplicativeGroupCoordinateRing K →ₐ[K]
       ((algΓ (.of K)).obj X).unop)).symm).trans
     (multiplicativeGroupMulEquivAlgHom K _).symm.toEquiv
@@ -209,35 +203,35 @@ theorem diagonalGroupProjection_globalUnit (j : n) (X : Over (Spec (.of K)))
     (hom : X ⟶ (diagonalGroupScheme K n).X) :
     multiplicativeGroupHomUnits K X (hom ≫ (diagonalGroupProjection K n j).hom.hom) =
       diagonalGroupHomUnits K n X hom j := by
-  have hcomp : diagonalAffineHomEquiv K X (multiplicativeGroupCoordinateRing K)
+  have hcomp : affineSpecHomOverEquiv K X (multiplicativeGroupCoordinateRing K)
       (hom ≫ (diagonalGroupProjection K n j).hom.hom) =
-      (diagonalAffineHomEquiv K X (DiagonalCoordinateRing.CoordinateRing K n) hom).comp
+      (affineSpecHomOverEquiv K X (DiagonalCoordinateRing.CoordinateRing K n) hom).comp
         (diagonalGroupProjectionCoordinateMap K n j) :=
-    diagonalAffineHomEquiv_comp K X (DiagonalCoordinateRing.CoordinateRing K n)
+    affineSpecHomOverEquiv_comp K X (DiagonalCoordinateRing.CoordinateRing K n)
       (multiplicativeGroupCoordinateRing K)
       (diagonalGroupProjectionCoordinateMap K n j) hom
   apply Units.ext
   change (((multiplicativeGroupMulEquivAlgHom K _).symm
-      (WithConv.toConv (diagonalAffineHomEquiv K X (multiplicativeGroupCoordinateRing K)
+      (WithConv.toConv (affineSpecHomOverEquiv K X (multiplicativeGroupCoordinateRing K)
         (hom ≫ (diagonalGroupProjection K n j).hom.hom))) :
         ((algΓ (.of K)).obj X).unopˣ) : ((algΓ (.of K)).obj X).unop) = _
   rw [← multiplicativeGroupMulEquivAlgHom_coordinate K _
     ((multiplicativeGroupMulEquivAlgHom K _).symm
-      (WithConv.toConv (diagonalAffineHomEquiv K X (multiplicativeGroupCoordinateRing K)
+      (WithConv.toConv (affineSpecHomOverEquiv K X (multiplicativeGroupCoordinateRing K)
         (hom ≫ (diagonalGroupProjection K n j).hom.hom))))]
   simp only [MulEquiv.apply_symm_apply]
   rw [hcomp, AlgHom.comp_apply,
     diagonalGroupProjection_coordinate]
-  change (diagonalAffineHomEquiv K X (DiagonalCoordinateRing.CoordinateRing K n) hom)
+  change (affineSpecHomOverEquiv K X (DiagonalCoordinateRing.CoordinateRing K n) hom)
       (quotient K n (matrix K n j j)) =
     ↑(Matrix.DiagonalGroup.unitsEquiv
       ((diagonalGroupMulEquivAlgHom K n _).symm
-        (WithConv.toConv (diagonalAffineHomEquiv K X
+        (WithConv.toConv (affineSpecHomOverEquiv K X
           (DiagonalCoordinateRing.CoordinateRing K n) hom))) j)
   rw [Matrix.DiagonalGroup.unitsEquiv_apply_val,
     ← diagonalGroupMulEquivAlgHom_entry K n _
       ((diagonalGroupMulEquivAlgHom K n _).symm
-        (WithConv.toConv (diagonalAffineHomEquiv K X
+        (WithConv.toConv (affineSpecHomOverEquiv K X
           (DiagonalCoordinateRing.CoordinateRing K n) hom))) j j]
   simp
 
