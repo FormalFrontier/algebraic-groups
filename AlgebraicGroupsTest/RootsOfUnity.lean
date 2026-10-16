@@ -137,3 +137,17 @@ private theorem positiveCoordinate_zeroRing :
   rootsOfUnityCoordinateAlgEquiv_generator (ZMod 1) 2
 
 end AlgebraicGeometry
+
+namespace AlgebraicGeometry
+
+/-- Order-zero roots of unity over `ℚ` retain finite presentation, flatness and
+local finite presentation, with Laurent coordinates. -/
+private theorem rootsOfUnity_rational_zero_properties :
+    Algebra.FinitePresentation ℚ (rootsOfUnityCoordinateRing ℚ 0) ∧
+      Flat (rootsOfUnityScheme ℚ 0).hom ∧
+      LocallyOfFinitePresentation (rootsOfUnityScheme ℚ 0).hom :=
+  ⟨rootsOfUnityCoordinateRing_finitePresentation ℚ 0,
+    rootsOfUnityScheme_flat ℚ 0,
+    rootsOfUnityScheme_locallyOfFinitePresentation ℚ 0⟩
+
+end AlgebraicGeometry

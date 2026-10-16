@@ -10,6 +10,8 @@ passage correspondence is maintained separately.
 
 - [Coalgebras and comodules](COALGEBRAS.md): finite containment, intrinsic
   coefficients, counit ideals, group-like elements and API walkthroughs.
+- [Roots of unity](#roots-of-unity-at-all-orders): all-order coordinates,
+  finite properties and pointwise rank over commutative bases.
 - [Vector groups](#vector-groups-matrix-groups-and-functors),
   [closed stages](#closed-unitriangular-stages),
   [unitriangular base change](#unitriangular-base-change),
@@ -751,22 +753,6 @@ does not assert surjectivity at every test object.
   finite-type subfunctor whose component ranges are subgroups inherits a
   finite-type group-scheme structure, and its original map to the group scheme
   is a group-object homomorphism.
-- `AlgebraicGeometry.rootsOfUnityGroupScheme` and
-  `AlgebraicGeometry.rootsOfUnityPointsIso`: over any commutative base, the
-  affine group scheme represented by `K[ZMod n]` has the natural group-valued
-  functor of `n`-th roots of unity for every natural `n`. At zero all units are
-  roots, and `AlgebraicGeometry.rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup`
-  identifies this group object with the existing multiplicative group, using
-  the identity on integer/Laurent monomials. Character maps need only a
-  commutative monoid target; the algebra-map equivalence allows commutative
-  semiring targets in a separate universe. Affine points use commutative rings
-  in the same ambient universe as the base, as in Mathlib's `Spec` equivalence.
-  The extension to zero order goes beyond Milne's positive-order item 2.4.
-  `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv` identifies the coordinate
-  ring with `K[T]/(T^n - 1)` only for positive `n`; the zero-order coordinate
-  ring is Laurent rather than polynomial. The rational unit `2` gives a
-  nonidentity order-zero root, character, coordinate-algebra map and affine
-  point in the [coordinate client](../AlgebraicGroupsTest/RootsOfUnity.lean).
 - `FrobeniusTwistedLine.groupScheme`: the characteristic-`p` affine group
   scheme cut out by `Y^p - tX^p`. When `t` is not a `p`-th power, its
   coordinate ring is a reduced domain, while an explicit nonzero nilpotent
@@ -822,6 +808,86 @@ does not assert surjectivity at every test object.
   the right subgroup action, `relativeFppfCosetIso` identifies this coset
   sheaf with the type-valued sheaf represented by `Q`; the target need not be
   a group scheme.
+
+## Roots of unity at all orders
+
+Import [`AlgebraicGroups.GroupScheme.RootsOfUnity`](../AlgebraicGroups/GroupScheme/RootsOfUnity.lean).
+For any `K : Type u` with `[CommRing K]`, `rootsOfUnityCoordinateRing K n` is
+`K[ZMod n]`, and `rootsOfUnityGroupScheme K n` is its affine group scheme over
+`Spec K`. The roots-of-unity API names below are in `AlgebraicGeometry`.
+
+`rootsOfUnityPointsIso` identifies its group-valued functor of points with
+`n`-th roots of unity for every natural `n`. Character maps need only a
+commutative monoid target; the algebra-map equivalence allows commutative
+semiring targets in a separate universe. Affine points use commutative rings
+in the same ambient universe as the base, as in Mathlib's `Spec` equivalence.
+For positive `n`, `rootsOfUnityCoordinateAlgEquiv K n` gives the presentation
+`K[T]/(T^n - 1)`. At zero, all units are roots, and
+`rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup K` identifies the group
+object with the existing multiplicative group by the identity on integer
+monomials. Its coordinate algebra is Laurent, not `K[T]/(T^0 - 1)`. This
+zero-order extension goes beyond the positive-order formulation in Milne's
+item 2.4.
+
+### Finite properties and usage
+
+Mathlib's `AddMonoidAlgebra.basis (ZMod n) K` is a basis of the coordinate
+module at every order. For positive `n` its index type has cardinality `n`,
+even when `K` is the zero ring. The public properties are:
+
+| API | Orders | Conclusion |
+| --- | --- | --- |
+| `rootsOfUnityCoordinateRing_finitePresentation K n` | All `n` | `Algebra.FinitePresentation K (rootsOfUnityCoordinateRing K n)` |
+| `rootsOfUnityScheme_isFinite K n` | `[NeZero n]` | `IsFinite (rootsOfUnityScheme K n).hom` |
+| `rootsOfUnityScheme_flat K n` | All `n` | `Flat (rootsOfUnityScheme K n).hom` |
+| `rootsOfUnityScheme_locallyOfFinitePresentation K n` | All `n` | `LocallyOfFinitePresentation (rootsOfUnityScheme K n).hom` |
+| `rootsOfUnityScheme_finrank K n x` | `[NeZero n]`, `x : Spec (.of K)` | `(rootsOfUnityScheme K n).hom.finrank x = n` |
+
+The first four declarations are instances, usable either by their names or by
+instance inference. The rank theorem is also a simp lemma. No field,
+Noetherian, global nontriviality or invertibility-of-`n` assumption is imposed,
+and the base universe `u` is arbitrary. In particular, positive order does not
+mean that `n` is a unit in `K`.
+
+The finite indexed coordinate basis together with these morphism properties
+expresses the usual finite locally free geometry of rank `n` at positive order.
+The Lean interface supplies the basis, separate finite/flat/local-finite-presentation
+properties and pointwise rank, not a bundled finite-locally-free morphism class
+or a comparison with a locally free pushforward. Algebra finite presentation
+here is not a claim of module finite presentation at every order. Nor is any
+general implication from finite and flat to finite presentation over arbitrary
+rings asserted. At zero, the Laurent algebra still has algebra finite
+presentation and its structure map is flat and locally of finite presentation;
+no finiteness or rank-zero conclusion is stated.
+
+The scheme rank formula is pointwise on the base, not a count of field-valued
+roots. At positive order, a numerical global
+`Module.finrank K (rootsOfUnityCoordinateRing K n) = n` from the finite basis
+needs the usual nontriviality/strong-rank-condition hypotheses. For a nontrivial
+commutative ring these are available, but over the zero ring Mathlib's
+`Module.finrank_subsingleton` gives `1`, not arbitrary `n`.
+The indexed basis is still valid there, and the spectrum has no points, so the
+pointwise scheme formula remains consistent.
+
+### Standard examples and limits
+
+The rational unit `2` gives a nonidentity order-zero root, character,
+coordinate-algebra map and affine point in the
+[coordinate client](../AlgebraicGroupsTest/RootsOfUnity.lean), which also
+instantiates algebra finite presentation, flatness and local finite presentation
+at order zero over `ℚ`.
+
+For `μ₂` over `𝔽₂`, the [translation client](../AlgebraicGroupsTest/InfinitesimalAdditiveTranslation.lean)
+applies all five properties, with scheme rank two at the zero prime of `𝔽₂`.
+The coordinate algebra has dimension two by the Mathlib basis and contains the
+nonzero square-zero element `ε = U - 1`, where `U` is
+`rootsOfUnityCoordinateGenerator (ZMod 2) 2`. Thus positive order need not be
+inverted, and finite flatness does not assert reducedness or étaleness.
+Translation `U = 1 + T` is an algebra and underlying-scheme equivalence, not a
+Hopf or group-scheme identification with `α₂`; the
+[group-nonisomorphism theorem](../AlgebraicGroups/GroupScheme/InfinitesimalAdditiveNonisomorphism.lean)
+rules out such a group-scheme isomorphism at positive height. These results
+assert nothing about Tate modules or torsion of abelian varieties.
 
 ## Dimension, components and density
 

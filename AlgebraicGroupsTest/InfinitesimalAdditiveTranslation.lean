@@ -203,3 +203,52 @@ private theorem zmod3_one_scheme_map_test :
 #print axioms Commute.add_pow_prime_pow_eq'
 
 end AlgebraicGeometry
+
+namespace AlgebraicGeometry
+
+/-- The coordinate algebra of second roots of unity over `𝔽₂` has dimension two. -/
+private theorem rootsOfUnity_zmod_two_finrank :
+    Module.finrank (ZMod 2) (rootsOfUnityCoordinateRing (ZMod 2) 2) = 2 := by
+  simpa only [ZMod.card] using
+    Module.finrank_eq_card_basis (AddMonoidAlgebra.basis (ZMod 2) (ZMod 2))
+
+/-- Translation carries the nonzero square-zero additive coordinate to `U - 1`
+in the coordinate algebra of second roots of unity over `𝔽₂`. -/
+private theorem rootsOfUnity_zmod_two_nonzero_square_zero :
+    rootsOfUnityCoordinateGenerator (ZMod 2) 2 - 1 ≠ 0 ∧
+      (rootsOfUnityCoordinateGenerator (ZMod 2) 2 - 1) ^ 2 = 0 := by
+  let e := (infinitesimalAdditiveTranslationAlgEquiv (ZMod 2) 2 1).symm
+  have ht : infinitesimalAdditiveCoordinate (ZMod 2) 2 1 ≠ 0 :=
+    additivePowerCoordinate_ne_zero (ZMod 2) (2 ^ 1) (by decide)
+  have ht_square : infinitesimalAdditiveCoordinate (ZMod 2) 2 1 ^ 2 = 0 := by
+    simpa only [pow_one] using infinitesimalAdditiveCoordinate_pow (ZMod 2) 2 1
+  have he : e (infinitesimalAdditiveCoordinate (ZMod 2) 2 1) =
+      rootsOfUnityCoordinateGenerator (ZMod 2) 2 - 1 := by
+    exact infinitesimalAdditiveTranslationAlgEquiv_symm_coordinate (ZMod 2) 2 1
+  constructor
+  · intro hzero
+    apply ht
+    apply e.injective
+    rw [he, hzero, map_zero]
+  · rw [← he, ← map_pow, ht_square, map_zero]
+
+end AlgebraicGeometry
+
+namespace AlgebraicGeometry
+
+/-- Second roots of unity over `𝔽₂` are finitely presented, finite and flat, with
+rank two at the zero prime of the base. -/
+private theorem rootsOfUnity_zmod_two_finite_properties :
+    Algebra.FinitePresentation (ZMod 2) (rootsOfUnityCoordinateRing (ZMod 2) 2) ∧
+      IsFinite (rootsOfUnityScheme (ZMod 2) 2).hom ∧
+      Flat (rootsOfUnityScheme (ZMod 2) 2).hom ∧
+      LocallyOfFinitePresentation (rootsOfUnityScheme (ZMod 2) 2).hom ∧
+      (rootsOfUnityScheme (ZMod 2) 2).hom.finrank
+        (⟨⊥, Ideal.isPrime_bot⟩ : Spec (.of (ZMod 2))) = 2 :=
+  ⟨rootsOfUnityCoordinateRing_finitePresentation (ZMod 2) 2,
+    rootsOfUnityScheme_isFinite (ZMod 2) 2,
+    rootsOfUnityScheme_flat (ZMod 2) 2,
+    rootsOfUnityScheme_locallyOfFinitePresentation (ZMod 2) 2,
+    rootsOfUnityScheme_finrank (ZMod 2) 2 ⟨⊥, Ideal.isPrime_bot⟩⟩
+
+end AlgebraicGeometry

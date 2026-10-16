@@ -6,6 +6,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Group.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Morphisms.FlatRank
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
@@ -13,6 +14,8 @@ public import Mathlib.RingTheory.RootsOfUnity.Basic
 public import Mathlib.RingTheory.AdjoinRoot
 public import AlgebraicGroups.GroupScheme.Multiplicative
 
+import Mathlib.RingTheory.Finiteness.Finsupp
+import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import all Mathlib.RingTheory.Bialgebra.MonoidAlgebra -- to unfold `AddMonoidAlgebra.liftMulEquiv`
 
 /-!
@@ -32,6 +35,17 @@ The polynomial quotient equivalence and its `T ^ (n - 1)` antipode formula
 require `[NeZero n]` (equivalently, positive `n`). At zero the coordinate algebra
 is Laurent, not the polynomial algebra `K[T]/(T ^ 0 - 1)`.
 
+The coordinate algebra has Mathlib's `AddMonoidAlgebra.basis (ZMod n) K` at every
+order. For positive `n` this basis has `n` indices, and the structure morphism
+is finite, flat and locally of finite presentation, with rank `n` at each base
+point. Algebra finite presentation, flatness and local finite presentation hold
+also at order zero. No field, Noetherian or invertibility-of-`n` hypothesis is
+required. These properties and the coordinate basis express the usual finite
+locally free geometry at positive order; no bundled finite-locally-free morphism
+class or comparison with a locally free pushforward is supplied here. The rank
+formula is pointwise on `Spec K`, not an unqualified global `Module.finrank`
+formula over the zero ring, whose spectrum is empty.
+
 ## Main definitions
 
 - `AlgebraicGeometry.rootsOfUnityGroupScheme`
@@ -40,6 +54,17 @@ is Laurent, not the polynomial algebra `K[T]/(T ^ 0 - 1)`.
 - `AlgebraicGeometry.rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup`
 - `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv`
 - `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv_symm_root_isGroupLike`
+
+## Main results
+
+- `AlgebraicGeometry.rootsOfUnityCoordinateRing_finitePresentation`: algebra finite
+  presentation at every natural order.
+- `AlgebraicGeometry.rootsOfUnityScheme_isFinite`: finiteness at positive order.
+- `AlgebraicGeometry.rootsOfUnityScheme_flat`: flatness at every natural order.
+- `AlgebraicGeometry.rootsOfUnityScheme_locallyOfFinitePresentation`: local finite
+  presentation at every natural order.
+- `AlgebraicGeometry.rootsOfUnityScheme_finrank`: rank `n` at each base point for
+  positive `n` over any commutative base ring.
 
 ## References
 
@@ -661,5 +686,71 @@ lemma rootsOfUnityCoordinateAlgEquiv_antipode_root (n : ℕ) [NeZero n] :
     rw [Nat.cast_sub hn]
     simp]
   simp
+
+/-- The roots-of-unity structure morphism is induced by the coefficient algebra map. -/
+@[simp]
+lemma rootsOfUnityScheme_hom (n : ℕ) :
+    (rootsOfUnityScheme K n).hom =
+      Spec.map (CommRingCat.ofHom (algebraMap K (rootsOfUnityCoordinateRing K n))) :=
+  rfl
+
+section FiniteProperties
+
+/-- The roots-of-unity coordinate algebra is finitely presented over every commutative base,
+including at order zero, where it is a Laurent polynomial algebra. -/
+instance rootsOfUnityCoordinateRing_finitePresentation (n : ℕ) :
+    Algebra.FinitePresentation K (rootsOfUnityCoordinateRing K n) := by
+  cases n with
+  | zero =>
+    change Algebra.FinitePresentation K (LaurentPolynomial K)
+    let : IsScalarTower K K[X] (LaurentPolynomial K) :=
+      IsScalarTower.of_algebraMap_eq fun r => by
+        change LaurentPolynomial.C r = Polynomial.toLaurent (Polynomial.C r)
+        exact (Polynomial.toLaurent_C r).symm
+    exact Algebra.FinitePresentation.of_isLocalizationAway (X : K[X])
+  | succ n =>
+    exact Algebra.FinitePresentation.equiv
+      (rootsOfUnityCoordinateAlgEquiv K (n + 1)).symm
+
+/-- The roots-of-unity structure morphism is finite at every positive order. -/
+instance rootsOfUnityScheme_isFinite (n : ℕ) [NeZero n] :
+    IsFinite (rootsOfUnityScheme K n).hom := by
+  exact (IsFinite.SpecMap_iff
+    (CommRingCat.ofHom (algebraMap K (rootsOfUnityCoordinateRing K n)))).mpr
+      ((RingHom.finite_algebraMap (A := K)
+        (B := rootsOfUnityCoordinateRing K n)).mpr inferInstance)
+
+/-- The roots-of-unity structure morphism is flat at every natural order, including zero. -/
+instance rootsOfUnityScheme_flat (n : ℕ) :
+    Flat (rootsOfUnityScheme K n).hom := by
+  exact (Flat.SpecMap_iff
+    (f := CommRingCat.ofHom (algebraMap K (rootsOfUnityCoordinateRing K n)))).mpr
+      ((RingHom.flat_algebraMap_iff (R := K)
+        (S := rootsOfUnityCoordinateRing K n)).mpr Module.Flat.of_free)
+
+/-- The roots-of-unity structure morphism is locally of finite presentation at every natural
+order, including zero. -/
+instance rootsOfUnityScheme_locallyOfFinitePresentation (n : ℕ) :
+    LocallyOfFinitePresentation (rootsOfUnityScheme K n).hom := by
+  exact (LocallyOfFinitePresentation.SpecMap_iff
+    (CommRingCat.ofHom (algebraMap K (rootsOfUnityCoordinateRing K n)))).mpr
+      ((RingHom.finitePresentation_algebraMap (A := K)
+        (B := rootsOfUnityCoordinateRing K n)).mpr
+          (rootsOfUnityCoordinateRing_finitePresentation K n))
+
+/-- At positive order, the roots-of-unity structure morphism has rank `n` at each point of the
+base. The base may be any commutative ring; the spectrum of the zero ring is empty. -/
+@[simp]
+lemma rootsOfUnityScheme_finrank (n : ℕ) [NeZero n] (x : Spec (.of K)) :
+    (rootsOfUnityScheme K n).hom.finrank x = n := by
+  let : Nontrivial K := x.nontrivial
+  have h : Module.finrank K (rootsOfUnityCoordinateRing K n) = n := by
+    simpa only [ZMod.card] using
+      Module.finrank_eq_card_basis (AddMonoidAlgebra.basis (ZMod n) K)
+  exact (Scheme.Hom.finrank_SpecMap_algebraMap K (rootsOfUnityCoordinateRing K n) x).trans
+    ((congrFun (Module.rankAtStalk_eq_finrank_of_free
+      (R := K) (M := rootsOfUnityCoordinateRing K n)) x).trans h)
+
+end FiniteProperties
 
 end AlgebraicGeometry

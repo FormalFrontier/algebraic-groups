@@ -165,10 +165,17 @@ maintained project libraries; it does not claim to formalize an entire source.
   group algebra `K[ZMod n]` represents the roots-of-unity functor for every
   natural `n`. At zero it is the Laurent Hopf algebra and its group scheme is
   canonically the existing multiplicative group; positive orders retain the
-  polynomial presentation `K[T]/(T^n - 1)`. The zero-order extension is beyond
-  Milne's positive-order item 2.4.
+  polynomial presentation `K[T]/(T^n - 1)`. The coordinates are free with basis
+  indexed by `ZMod n`. At positive order the structure morphism is finite, flat
+  and locally of finite presentation, with pointwise scheme rank `n`, without
+  requiring `n` to be invertible. Algebra finite presentation, flatness and local
+  finite presentation hold also at order zero; no finiteness or rank-zero claim
+  is made there. The zero-order extension is beyond Milne's positive-order
+  item 2.4.
   [Module](AlgebraicGroups/GroupScheme/RootsOfUnity.lean),
-  [rational-unit model](AlgebraicGroupsTest/RootsOfUnity.lean).
+  [API and rank conventions](docs/MATHEMATICS.md#roots-of-unity-at-all-orders),
+  [rational-unit model](AlgebraicGroupsTest/RootsOfUnity.lean),
+  [nonreduced second roots over `𝔽₂`](AlgebraicGroupsTest/InfinitesimalAdditiveTranslation.lean).
 - **Connected group schemes.** A connected group scheme of finite type over any
   field is geometrically irreducible, even without reducedness. If it is also
   geometrically reduced, it is geometrically integral. Finite type is expressed
