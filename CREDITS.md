@@ -107,6 +107,11 @@ the precise passage-to-construction distinctions.
   The commutative-semiring containment results use projectivity of the coacting
   coalgebra, not of the coacted-on module. The regular case gives the
   right-coideal step, not a general two-factor semiring theorem.
+- J. S. Milne, *Abelian Varieties*, version 2.0 (March 16, 2008), proof of
+  Corollary 1.4, printed p. 9: the inversion criterion motivates the statement
+  for arbitrary Cartesian group objects in
+  `AlgebraicGroups.GroupObject.Commutative`; the arbitrary-category statement
+  is a categorical extension, not a statement attributed to that source.
 - J. S. Milne, *Algebraic Groups: The Theory of Group Schemes of Finite Type
   over a Field*, Cambridge Studies in Advanced Mathematics 170, Cambridge
   University Press, 2017. Items 2.1 and 2.6 describe the additive group and

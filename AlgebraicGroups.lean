@@ -55,6 +55,7 @@ public import AlgebraicGroups.Category.EquivalenceRelation
 public import AlgebraicGroups.Category.Grp.FilteredColimits
 public import AlgebraicGroups.FieldTheory.GeometricallyReduced
 public import AlgebraicGroups.GroupObject.Characteristic
+public import AlgebraicGroups.GroupObject.Commutative
 public import AlgebraicGroups.GroupObject.Coset
 public import AlgebraicGroups.GroupObject.EffectiveEpi
 public import AlgebraicGroups.GroupObject.FunctorCategory

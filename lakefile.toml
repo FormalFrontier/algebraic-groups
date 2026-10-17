@@ -39,6 +39,7 @@ roots = [
   "AlgebraicGroupsTest.ArtinSchreierTwistedLine",
   "AlgebraicGroupsTest.FiniteConstantPoints",
   "AlgebraicGroupsTest.GeneralLinear",
+  "AlgebraicGroupsTest.GroupObject.Commutative",
   "AlgebraicGroupsTest.Diagonal",
   "AlgebraicGroupsTest.DiagonalProduct",
   "AlgebraicGroupsTest.UpperTriangular",

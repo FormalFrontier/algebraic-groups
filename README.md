@@ -6,6 +6,15 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ## Headline results
 
+### Group objects
+
+- **Inversion criterion.** For a group object in a Cartesian monoidal category,
+  commutativity is equivalent to inversion being a monoid morphism. The braiding
+  is explicit and unique in this setting. This is a categorical extension of the
+  inversion criterion used in Milne, *Abelian Varieties*, proof of Corollary 1.4.
+  [Criterion](AlgebraicGroups/GroupObject/Commutative.lean),
+  [integer and permutation models](AlgebraicGroupsTest/GroupObject/Commutative.lean).
+
 ### Coalgebras and Hopf algebras
 
 - **Group-like elements and scalar extension.** The counit-one and tensor-square
