@@ -66,6 +66,7 @@ public import AlgebraicGroups.GroupObject.SplitKernelSemidirect
 public import AlgebraicGroups.GroupObject.Translation
 public import AlgebraicGroups.GroupScheme.Additive
 public import AlgebraicGroups.GroupScheme.AdditiveProductAffineSpace
+public import AlgebraicGroups.GroupScheme.AffineHomOverConvolution
 public import AlgebraicGroups.GroupScheme.Vector
 public import AlgebraicGroups.GroupScheme.VectorProduct
 public import AlgebraicGroups.GroupScheme.MatrixEndAdditive

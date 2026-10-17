@@ -155,4 +155,6 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinatesUse",
   "AlgebraicGroupsTest.Algebra.Coalgebra.TensorProduct",
   "AlgebraicGroupsTest.Algebra.Coalgebra.TensorProductQuotient",
+  "AlgebraicGroupsTest.AffineHomOverConvolution",
+  "AlgebraicGroupsTest.AffineHomOverMulEquiv",
 ]

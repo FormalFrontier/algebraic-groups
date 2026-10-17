@@ -177,6 +177,13 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Affine-target maps and convolution.** Over a commutative ring `R`, maps from
+  an arbitrary scheme over `Spec R` to the spectrum of a commutative
+  `R`-bialgebra correspond to algebra maps into global sections. Geometric
+  pointwise multiplication corresponds to convolution; on affine sources the
+  coefficient identification is `Γ(Spec T) ≅ T`. No source affineness or Hopf
+  structure is required.
+  [Module](AlgebraicGroups/GroupScheme/AffineHomOverConvolution.lean).
 - **Roots of unity at all orders.** Over any commutative base ring, the cyclic
   group algebra `K[ZMod n]` represents the roots-of-unity functor for every
   natural `n`. At zero it is the Laurent Hopf algebra and its group scheme is
@@ -287,6 +294,7 @@ maintained project libraries; it does not claim to formalize an entire source.
 | [`AlgebraicGroups`](AlgebraicGroups.lean) | Library aggregate; focused imports are linked above. |
 | [`AlgebraicGroupsTest`](AlgebraicGroupsTest/) | Test library: ordinary-import clients and boundary examples. |
 | [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean) | Lawful carrier transport of specified right comodules with fixed coalgebra, and first-factor coaction formulas. |
+| [`AlgebraicGroups.GroupScheme.AffineHomOverConvolution`](AlgebraicGroups/GroupScheme/AffineHomOverConvolution.lean) | Affine-target global-sections comparison with convolution, target and coefficient readbacks, naturality, and affine specialization. |
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
 | [`AlgebraicGroups.Algebra.Bialgebra.GroupLike`](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean) | Monoid homomorphism `BialgHom.groupLikeMap` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |
 | [`AlgebraicGroups.Algebra.HopfAlgebra.GroupLike`](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean) | Injectivity, image characterization and pointwise/monoid-homomorphism `Units.map` naturality of Mathlib's `GroupLike.toUnits` for possibly noncommutative semiring Hopf algebras over a commutative semiring. |
