@@ -66,6 +66,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeBaseChange",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinates",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeSpan",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeTensorProduct",
   "AlgebraicGroupsTest.Algebra.Coalgebra.Hom",
   "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdeal",
   "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdealTensor",

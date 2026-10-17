@@ -23,6 +23,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   data. The full group-like predicate has corresponding corollaries, with no
   flatness or finiteness assumption on the coalgebra module.
   [Module](AlgebraicGroups/Algebra/Coalgebra/GroupLikeBaseChange.lean).
+- **Group-like elements of tensor products.** For full coalgebras over an arbitrary
+  commutative semiring, normalized group-like elements of the tensor product
+  correspond canonically to ordered pairs of group-like elements. The equivalence
+  uses the two counit projections, has pure-tensor inverse values, and is natural
+  under coalgebra morphisms. For bialgebras it is multiplicative, without requiring
+  commutativity of the two bialgebras or nontriviality of the scalar semiring.
+  [Coalgebra equivalence](AlgebraicGroups/Algebra/Coalgebra/GroupLikeTensorProduct.lean),
+  [multiplicative equivalence](AlgebraicGroups/Algebra/Bialgebra/GroupLikeTensorProduct.lean).
 - **Tensor products of coalgebra morphisms.** For a commutative `R`-algebra `S`,
   an `S`-linear coalgebra map and an `R`-linear coalgebra map induce an `S`-linear
   map on tensor products over `R`. Only `CoalgebraStruct` on independently

@@ -323,8 +323,46 @@ lemma repr_update_of_ne [DecidableEq ι] (b : Basis ι A M) (i : ι) (x y : M)
     _ = b.repr y j - b.repr y i * (↑(hx.unit⁻¹) : A) * b.repr x j := by
       rw [mul_comm _ (b.repr y i), ← mul_assoc]
 
+private lemma exists_basis_subset_finset_aux (b : Basis ι A M) (S : Set M)
+    (hselect : ∀ f : M →ₗ[A] A, Function.Surjective f → ∃ x ∈ S, IsUnit (f x))
+    (s : Finset ι) :
+    ∃ b' : Basis ι A M, (∀ i ∈ s, b' i ∈ S) ∧ ∀ i ∉ s, b' i = b i := by
+  classical
+  induction s using Finset.induction_on with
+  | empty =>
+      exact ⟨b, by simp, fun _ _ ↦ rfl⟩
+  | @insert i s _ ih =>
+      obtain ⟨c, hcS, hcb⟩ := ih
+      obtain ⟨x, hxS, hx⟩ := hselect (c.coord i) (by
+        intro a
+        refine ⟨a • c i, ?_⟩
+        simp [Basis.coord_apply])
+      have hx' : IsUnit (c.repr x i) := by
+        simpa [Basis.coord_apply] using hx
+      refine ⟨c.update i x hx', ?_, ?_⟩
+      · intro j hj
+        by_cases hji : j = i
+        · subst j
+          simpa only [update_same] using hxS
+        · rw [update_apply, Function.update_of_ne hji]
+          exact hcS j ((Finset.mem_insert.mp hj).resolve_left hji)
+      · intro j hj
+        have hji : j ≠ i := fun hji ↦ hj (Finset.mem_insert.mpr (Or.inl hji))
+        have hjs : j ∉ s := fun hjs ↦ hj (Finset.mem_insert_of_mem hjs)
+        rw [update_apply, Function.update_of_ne hji]
+        exact hcb j hjs
+
 variable {K : Type*} [Field K] [Infinite K] [Algebra K A]
   [Module K M] [IsScalarTower K A M] [Finite (MaximalSpectrum A)]
+
+/-- Over a semilocal algebra of an infinite field, a spanning base subspace
+contains the entries on any finite set of indices of a new basis that agrees
+with the given basis at every other index. -/
+lemma exists_basis_subset_finset (b : Basis ι A M) (W : Submodule K M)
+    (hW : Submodule.span A (W : Set M) = ⊤) (s : Finset ι) :
+    ∃ b' : Basis ι A M, (∀ i ∈ s, b' i ∈ W) ∧ ∀ i ∉ s, b' i = b i := by
+  exact exists_basis_subset_finset_aux b (W : Set M)
+    (fun f hf ↦ LinearMap.exists_mem_isUnit_apply W hW f hf) s
 
 /-- A base-field subspace spanning a finite free module over a semilocal
 algebra contains a basis. This is a field-base analogue of Stacks Project,
@@ -334,33 +372,25 @@ lemma exists_basis_subset [Finite ι] (b : Basis ι A M) (W : Submodule K M)
     ∃ b' : Basis ι A M, ∀ i, b' i ∈ W := by
   classical
   let _ := Fintype.ofFinite ι
-  suffices h : ∀ s : Finset ι, ∃ b' : Basis ι A M, ∀ i ∈ s, b' i ∈ W by
-    obtain ⟨b', hb'⟩ := h Finset.univ
-    exact ⟨b', fun i ↦ hb' i (Finset.mem_univ i)⟩
-  intro s
-  induction s using Finset.induction_on with
-  | empty =>
-      exact ⟨b, by simp⟩
-  | @insert i s hi ih =>
-      obtain ⟨b', hb'⟩ := ih
-      obtain ⟨x, hxW, hx⟩ := LinearMap.exists_mem_isUnit_apply W hW (b'.coord i) (by
-        intro a
-        refine ⟨a • b' i, ?_⟩
-        simp [Basis.coord_apply])
-      have hx' : IsUnit (b'.repr x i) := by
-        simpa [Basis.coord_apply] using hx
-      refine ⟨b'.update i x hx', ?_⟩
-      intro j hj
-      by_cases hji : j = i
-      · subst j
-        simpa using hxW
-      · rw [update_apply, update_of_ne hji]
-        exact hb' j ((Finset.mem_insert.mp hj).resolve_left hji)
+  obtain ⟨b', hb', _⟩ := exists_basis_subset_finset b W hW Finset.univ
+  exact ⟨b', fun i ↦ hb' i (Finset.mem_univ i)⟩
 
 variable {R B L : Type*} [CommRing R] [IsLocalRing R]
   [Infinite (IsLocalRing.ResidueField R)] [CommRing B] [Algebra R B]
   [AddCommGroup L] [Module B L] [Module R L] [IsScalarTower R B L]
   [Finite (MaximalSpectrum B)]
+
+/-- Over a semilocal algebra of a local ring with infinite residue field, a
+generating base submodule contains the entries on any finite set of indices of
+a new basis agreeing with the given basis elsewhere, provided the extended
+maximal ideal lies in the Jacobson radical. -/
+lemma exists_basis_subset_finset_of_le_jacobson (b : Basis ι B L) (W : Submodule R L)
+    (hW : Submodule.span B (W : Set L) = ⊤)
+    (hJ : Ideal.map (algebraMap R B) (IsLocalRing.maximalIdeal R) ≤
+      (Ideal.jacobson (⊥ : Ideal B))) (s : Finset ι) :
+    ∃ b' : Basis ι B L, (∀ i ∈ s, b' i ∈ W) ∧ ∀ i ∉ s, b' i = b i := by
+  exact exists_basis_subset_finset_aux b (W : Set L)
+    (fun f hf ↦ LinearMap.exists_mem_isUnit_apply_of_le_jacobson W hW hJ f hf) s
 
 /-- Local-base version of `exists_basis_subset`: a generating base submodule
 contains a basis if the extended maximal ideal lies in the Jacobson radical.
@@ -373,28 +403,7 @@ lemma exists_basis_subset_of_le_jacobson [Finite ι] (b : Basis ι B L) (W : Sub
     ∃ b' : Basis ι B L, ∀ i, b' i ∈ W := by
   classical
   let _ := Fintype.ofFinite ι
-  suffices h : ∀ s : Finset ι, ∃ b' : Basis ι B L, ∀ i ∈ s, b' i ∈ W by
-    obtain ⟨b', hb'⟩ := h Finset.univ
-    exact ⟨b', fun i ↦ hb' i (Finset.mem_univ i)⟩
-  intro s
-  induction s using Finset.induction_on with
-  | empty =>
-      exact ⟨b, by simp⟩
-  | @insert i s hi ih =>
-      obtain ⟨b', hb'⟩ := ih
-      obtain ⟨x, hxW, hx⟩ := LinearMap.exists_mem_isUnit_apply_of_le_jacobson
-        W hW hJ (b'.coord i) (by
-          intro a
-          refine ⟨a • b' i, ?_⟩
-          simp [Basis.coord_apply])
-      have hx' : IsUnit (b'.repr x i) := by
-        simpa [Basis.coord_apply] using hx
-      refine ⟨b'.update i x hx', ?_⟩
-      intro j hj
-      by_cases hji : j = i
-      · subst j
-        simpa using hxW
-      · rw [update_apply, update_of_ne hji]
-        exact hb' j ((Finset.mem_insert.mp hj).resolve_left hji)
+  obtain ⟨b', hb', _⟩ := exists_basis_subset_finset_of_le_jacobson b W hW hJ Finset.univ
+  exact ⟨b', fun i ↦ hb' i (Finset.mem_univ i)⟩
 
 end Module.Basis
