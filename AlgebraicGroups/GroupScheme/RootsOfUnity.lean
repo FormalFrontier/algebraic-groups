@@ -6,7 +6,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Group.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
 public import Mathlib.AlgebraicGeometry.Morphisms.FlatRank
+public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
@@ -14,6 +16,8 @@ public import Mathlib.RingTheory.RootsOfUnity.Basic
 public import Mathlib.RingTheory.AdjoinRoot
 public import AlgebraicGroups.GroupScheme.Multiplicative
 
+import AlgebraicGroups.GroupScheme.AffineHomOver
+import AlgebraicGroups.GroupScheme.DiagonalProduct
 import Mathlib.RingTheory.Finiteness.Finsupp
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import all Mathlib.RingTheory.Bialgebra.MonoidAlgebra -- to unfold `AddMonoidAlgebra.liftMulEquiv`
@@ -51,12 +55,21 @@ formula over the zero ring, whose spectrum is empty.
 - `AlgebraicGeometry.rootsOfUnityGroupScheme`
 - `AlgebraicGeometry.rootsOfUnityMulEquivPoints`
 - `AlgebraicGeometry.rootsOfUnityPointsIso`
+- `AlgebraicGeometry.rootsOfUnityGroupSchemeInclusion`
 - `AlgebraicGeometry.rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup`
 - `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv`
 - `AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv_symm_root_isGroupLike`
 
 ## Main results
 
+- `AlgebraicGeometry.rootsOfUnityGroupSchemeInclusion_point`: the inclusion sends
+  a root's affine point to the multiplicative-group point of its underlying unit.
+- `AlgebraicGeometry.rootsOfUnityPowerSquare_isPullback`: the roots-of-unity scheme
+  is the scheme-theoretic kernel of the stock `n`-th power endomorphism of `Gₘ`.
+- `AlgebraicGeometry.rootsOfUnityGroupSchemeInclusion_isClosedImmersion`: the
+  canonical inclusion is a closed immersion at every order.
+- `AlgebraicGeometry.rootsOfUnityGroupSchemeInclusion_zero`: at order zero the
+  inclusion is the existing identity-coordinate comparison with `Gₘ`.
 - `AlgebraicGeometry.rootsOfUnityCoordinateRing_finitePresentation`: algebra finite
   presentation at every natural order.
 - `AlgebraicGeometry.rootsOfUnityScheme_isFinite`: finiteness at positive order.
@@ -83,7 +96,7 @@ formula over the zero ring, whose spectrum is empty.
 
 noncomputable section
 
-open CategoryTheory Polynomial
+open CategoryTheory CategoryTheory.Limits CategoryTheory.CartesianMonoidalCategory Polynomial
 open scoped CategoryTheory.MonObj
 
 universe u v w t
@@ -173,7 +186,7 @@ def rootMonoidHom {n : ℕ} (ζ : rootsOfUnity n R) :
 @[simp]
 lemma rootMonoidHom_generator {n : ℕ} (ζ : rootsOfUnity n R) :
     rootMonoidHom ζ (.ofAdd 1) = ((ζ : Rˣ) : R) := by
-  simp [rootMonoidHom]
+  change ((rootAddHom ζ (1 : ZMod n)).toMul : R) = ((ζ : Rˣ) : R)
   rw [show (1 : ZMod n) = Int.castAddHom (ZMod n) 1 by simp]
   rw [rootAddHom, ZMod.lift_castAddHom]
   simp
@@ -368,8 +381,8 @@ lemma rootsOfUnityMulEquivPoints_naturality
       (algSpec (.of K)).map (CommAlgCat.ofHom f).op ≫
         rootsOfUnityMulEquivPoints K R n ζ := by
   apply Over.OverMorphism.ext
-  simp only [Over.comp_left, rootsOfUnityMulEquivPoints_apply_left,
-    rootsOfUnityMulEquivAlgHom_naturality, algSpec_map_left]
+  simp only [rootsOfUnityMulEquivPoints_apply_left,
+    rootsOfUnityMulEquivAlgHom_naturality]
   exact Spec.map_comp
     (CommRingCat.ofHom (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv.toRingHom)
     (CommRingCat.ofHom f.toRingHom)
@@ -531,6 +544,254 @@ lemma rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup_point
     (CommRingCat.ofHom (rootsOfUnityMulEquivAlgHom K R 0 ζ).ofConv.toRingHom)).symm.trans
       (congrArg (fun φ : multiplicativeGroupCoordinateRing K →ₐ[K] R ↦
         Spec.map (CommRingCat.ofHom φ.toRingHom)) hφ)
+
+section PowerKernel
+
+/-- The canonical inclusion of the roots-of-unity group scheme into the
+multiplicative group, induced by the quotient of character groups `ℤ → ZMod n`. -/
+def rootsOfUnityGroupSchemeInclusion (n : ℕ) :
+    rootsOfUnityGroupScheme K n ⟶ multiplicativeGroupScheme K :=
+  (hopfSpec (.of K)).map
+    (Opposite.op (CommHopfAlgCat.ofHom
+      (AddMonoidAlgebra.mapDomainBialgHom K (Int.castAddHom (ZMod n)))))
+
+/-- The underlying scheme map is contravariantly induced by the canonical
+map of group algebras. -/
+@[simp]
+lemma rootsOfUnityGroupSchemeInclusion_left (n : ℕ) :
+    (rootsOfUnityGroupSchemeInclusion K n).hom.hom.left =
+      Spec.map (CommRingCat.ofHom
+        (AddMonoidAlgebra.mapDomainBialgHom K
+          (Int.castAddHom (ZMod n))).toAlgHom.toRingHom) :=
+  rfl
+
+/-- The multiplicative-group coordinate pulls back to the standard cyclic coordinate. -/
+@[simp]
+lemma rootsOfUnityGroupSchemeInclusion_coordinate (n : ℕ) :
+    AddMonoidAlgebra.mapDomainBialgHom K (Int.castAddHom (ZMod n))
+        (multiplicativeGroupCoordinate K) =
+      rootsOfUnityCoordinateGenerator K n := by
+  simp only [multiplicativeGroupCoordinate, LaurentPolynomial.T,
+    AddMonoidAlgebra.mapDomainBialgHom_single, Int.coe_castAddHom, Int.cast_one,
+    rootsOfUnityCoordinateGenerator]
+
+/-- Precomposition with the coordinate map forgets only the root-of-unity condition. -/
+@[simp]
+lemma rootsOfUnityGroupSchemeInclusion_algHom
+    (R : Type v) [CommSemiring R] [Algebra K R] (n : ℕ) (ζ : rootsOfUnity n R) :
+    (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv.comp
+        (AddMonoidAlgebra.mapDomainBialgHom K
+          (Int.castAddHom (ZMod n))).toAlgHom =
+      (multiplicativeGroupMulEquivAlgHom K R (ζ : Rˣ)).ofConv := by
+  apply AddMonoidAlgebra.algHom_ext'
+  · apply MonoidHom.ext_mint
+    change (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv
+        (AddMonoidAlgebra.mapDomainBialgHom K (Int.castAddHom (ZMod n))
+          (multiplicativeGroupCoordinate K)) =
+      (multiplicativeGroupMulEquivAlgHom K R (ζ : Rˣ)).ofConv
+        (multiplicativeGroupCoordinate K)
+    rw [rootsOfUnityGroupSchemeInclusion_coordinate,
+      rootsOfUnityMulEquivAlgHom_generator, multiplicativeGroupMulEquivAlgHom_coordinate]
+  · ext
+
+/-- The inclusion sends a root's affine point to the multiplicative-group point
+of its underlying unit, with no restriction on the order or the commutative base. -/
+@[simp]
+lemma rootsOfUnityGroupSchemeInclusion_point
+    (R : Type u) [CommRing R] [Algebra K R] (n : ℕ) (ζ : rootsOfUnity n R) :
+    rootsOfUnityMulEquivPoints K R n ζ ≫
+        (rootsOfUnityGroupSchemeInclusion K n).hom.hom =
+      multiplicativeGroupMulEquivPoints K R (ζ : Rˣ) := by
+  apply Over.OverMorphism.ext
+  change
+    Spec.map (CommRingCat.ofHom
+      (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv.toRingHom) ≫
+        Spec.map (CommRingCat.ofHom
+          (AddMonoidAlgebra.mapDomainBialgHom K
+            (Int.castAddHom (ZMod n))).toAlgHom.toRingHom) =
+      Spec.map (CommRingCat.ofHom
+        (multiplicativeGroupMulEquivAlgHom K R (ζ : Rˣ)).ofConv.toRingHom)
+  exact (Spec.map_comp
+    (CommRingCat.ofHom
+      (AddMonoidAlgebra.mapDomainBialgHom K
+        (Int.castAddHom (ZMod n))).toAlgHom.toRingHom)
+    (CommRingCat.ofHom (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv.toRingHom)).symm.trans
+      (congrArg (fun φ : multiplicativeGroupCoordinateRing K →ₐ[K] R ↦
+        Spec.map (CommRingCat.ofHom φ.toRingHom))
+        (rootsOfUnityGroupSchemeInclusion_algHom K R n ζ))
+
+private def multiplicativeGroupHomUnitsMulEquiv (T : Over (Spec (.of K))) :
+    (T ⟶ multiplicativeGroupUnderlyingScheme K) ≃*
+      ((algΓ (.of K)).obj T).unopˣ where
+  __ := multiplicativeGroupHomUnits K T
+  map_mul' := multiplicativeGroupHomUnits_mul K T
+
+private def rootsOfUnityEquivHomOver (n : ℕ) (T : Over (Spec (.of K))) :
+    rootsOfUnity n ((algΓ (.of K)).obj T).unop ≃
+      (T ⟶ rootsOfUnityScheme K n) :=
+  ((rootsOfUnityMulEquivAlgHom K ((algΓ (.of K)).obj T).unop n).toEquiv.trans
+    (WithConv.equiv _)).trans
+      (affineSpecHomOverEquiv K T (rootsOfUnityCoordinateRing K n)).symm
+
+private lemma rootsOfUnityEquivHomOver_inclusion (n : ℕ)
+    (T : Over (Spec (.of K))) (ζ : rootsOfUnity n ((algΓ (.of K)).obj T).unop) :
+    rootsOfUnityEquivHomOver K n T ζ ≫
+        (rootsOfUnityGroupSchemeInclusion K n).hom.hom =
+      (multiplicativeGroupHomUnits K T).symm (ζ : ((algΓ (.of K)).obj T).unopˣ) := by
+  apply (affineSpecHomOverEquiv K T (multiplicativeGroupCoordinateRing K)).injective
+  change affineSpecHomOverEquiv K T (multiplicativeGroupCoordinateRing K)
+      ((affineSpecHomOverEquiv K T (rootsOfUnityCoordinateRing K n)).symm
+          (rootsOfUnityMulEquivAlgHom K _ n ζ).ofConv ≫
+        (algSpec (.of K)).map (CommAlgCat.ofHom
+          (AddMonoidAlgebra.mapDomainBialgHom K
+            (Int.castAddHom (ZMod n))).toAlgHom).op) =
+    affineSpecHomOverEquiv K T (multiplicativeGroupCoordinateRing K)
+      ((affineSpecHomOverEquiv K T (multiplicativeGroupCoordinateRing K)).symm
+        (multiplicativeGroupMulEquivAlgHom K _ (ζ : ((algΓ (.of K)).obj T).unopˣ)).ofConv)
+  rw [affineSpecHomOverEquiv_comp, Equiv.apply_symm_apply, Equiv.apply_symm_apply]
+  exact rootsOfUnityGroupSchemeInclusion_algHom K _ n ζ
+
+private lemma rootsOfUnityHomOver_inclusion_unit (n : ℕ)
+    (T : Over (Spec (.of K))) (f : T ⟶ rootsOfUnityScheme K n) :
+    multiplicativeGroupHomUnits K T
+        (f ≫ (rootsOfUnityGroupSchemeInclusion K n).hom.hom) =
+      ((rootsOfUnityEquivHomOver K n T).symm f : ((algΓ (.of K)).obj T).unopˣ) := by
+  obtain ⟨ζ, rfl⟩ := (rootsOfUnityEquivHomOver K n T).surjective f
+  rw [rootsOfUnityEquivHomOver_inclusion, Equiv.apply_symm_apply,
+    Equiv.symm_apply_apply]
+
+private lemma rootsOfUnityPower_comp (n : ℕ) (T : Over (Spec (.of K)))
+    (f : T ⟶ multiplicativeGroupUnderlyingScheme K) :
+    f ≫ ((𝟙 (multiplicativeGroupScheme K)) ^ n).hom.hom = f ^ n := by
+  rw [Grp.Hom.hom_pow, Mon.Hom.hom_pow]
+  change f ≫ (𝟙 (multiplicativeGroupUnderlyingScheme K)) ^ n = f ^ n
+  rw [MonObj.comp_pow, Category.comp_id]
+
+private theorem rootsOfUnityPowerSquare_over (n : ℕ) :
+    IsPullback (rootsOfUnityGroupSchemeInclusion K n).hom.hom
+      (toUnit (rootsOfUnityScheme K n))
+      ((𝟙 (multiplicativeGroupScheme K)) ^ n).hom.hom
+      η[multiplicativeGroupUnderlyingScheme K] := by
+  have hcomm : (rootsOfUnityGroupSchemeInclusion K n).hom.hom ≫
+        ((𝟙 (multiplicativeGroupScheme K)) ^ n).hom.hom =
+      toUnit (rootsOfUnityScheme K n) ≫ η[multiplicativeGroupUnderlyingScheme K] := by
+    rw [rootsOfUnityPower_comp]
+    change (rootsOfUnityGroupSchemeInclusion K n).hom.hom ^ n =
+      (1 : rootsOfUnityScheme K n ⟶ multiplicativeGroupUnderlyingScheme K)
+    apply (multiplicativeGroupHomUnitsMulEquiv K (rootsOfUnityScheme K n)).injective
+    rw [map_pow, map_one]
+    change multiplicativeGroupHomUnits K (rootsOfUnityScheme K n)
+      (rootsOfUnityGroupSchemeInclusion K n).hom.hom ^ n = 1
+    have hunit := rootsOfUnityHomOver_inclusion_unit K n (rootsOfUnityScheme K n)
+      (𝟙 (rootsOfUnityScheme K n))
+    rw [Category.id_comp] at hunit
+    rw [hunit]
+    exact ((rootsOfUnityEquivHomOver K n (rootsOfUnityScheme K n)).symm
+      (𝟙 (rootsOfUnityScheme K n))).prop
+  apply IsPullback.of_isLimit (c := PullbackCone.mk _ _ hcomm)
+  refine PullbackCone.isLimitAux' _ (fun s ↦ ?_)
+  let U := multiplicativeGroupHomUnitsMulEquiv K s.pt
+  let E := rootsOfUnityEquivHomOver K n s.pt
+  have hf : s.fst ^ n = (1 : s.pt ⟶ multiplicativeGroupUnderlyingScheme K) := by
+    calc
+      s.fst ^ n = s.fst ≫ ((𝟙 (multiplicativeGroupScheme K)) ^ n).hom.hom :=
+        (rootsOfUnityPower_comp K n s.pt s.fst).symm
+      _ = s.snd ≫ η[multiplicativeGroupUnderlyingScheme K] := s.condition
+      _ = toUnit s.pt ≫ η[multiplicativeGroupUnderlyingScheme K] :=
+        congrArg (fun g ↦ g ≫ η[multiplicativeGroupUnderlyingScheme K])
+          (toUnit_unique _ _)
+      _ = 1 := rfl
+  have hroot : U s.fst ^ n = 1 := by
+    simpa only [map_pow, map_one] using congrArg U hf
+  let ζ : rootsOfUnity n ((algΓ (.of K)).obj s.pt).unop := ⟨U s.fst, hroot⟩
+  refine ⟨E ζ, ?_, toUnit_unique _ _, ?_⟩
+  · exact (rootsOfUnityEquivHomOver_inclusion K n s.pt ζ).trans
+      ((multiplicativeGroupHomUnits K s.pt).symm_apply_apply s.fst)
+  · intro m hm _
+    apply E.symm.injective
+    rw [Equiv.symm_apply_apply]
+    apply Subtype.ext
+    have hm' : m ≫ (rootsOfUnityGroupSchemeInclusion K n).hom.hom = s.fst := hm
+    exact (rootsOfUnityHomOver_inclusion_unit K n s.pt m).symm.trans
+      (congrArg (multiplicativeGroupHomUnits K s.pt) hm')
+
+/-- The roots-of-unity scheme is the pullback, in schemes, of the `n`-th power
+endomorphism of the multiplicative group along its unit section. This includes
+order zero, where the power map is constant one and the kernel is all of `Gₘ`. -/
+theorem rootsOfUnityPowerSquare_isPullback (n : ℕ) :
+    IsPullback (rootsOfUnityGroupSchemeInclusion K n).hom.hom.left
+      (rootsOfUnityScheme K n).hom
+      ((𝟙 (multiplicativeGroupScheme K)) ^ n).hom.hom.left
+      η[multiplicativeGroupUnderlyingScheme K].left := by
+  exact IsPullback.map (Over.forget (Spec (.of K)))
+    (rootsOfUnityPowerSquare_over K n)
+
+/-- The power-kernel square is a pullback over the base, with arbitrary schemes
+as test objects. -/
+theorem rootsOfUnityPowerSquare_isPullback_over (n : ℕ) :
+    IsPullback (rootsOfUnityGroupSchemeInclusion K n).hom.hom
+      (toUnit (rootsOfUnityScheme K n))
+      ((𝟙 (multiplicativeGroupScheme K)) ^ n).hom.hom
+      η[multiplicativeGroupUnderlyingScheme K] := by
+  exact rootsOfUnityPowerSquare_over K n
+
+/-- The canonical roots-of-unity inclusion is a closed immersion over any
+commutative base and at every natural order. -/
+theorem rootsOfUnityGroupSchemeInclusion_isClosedImmersion (n : ℕ) :
+    IsClosedImmersion (rootsOfUnityGroupSchemeInclusion K n).hom.hom.left := by
+  rw [rootsOfUnityGroupSchemeInclusion_left]
+  apply IsClosedImmersion.spec_of_surjective
+  intro x
+  obtain ⟨y, hy⟩ := Finsupp.mapDomain_surjective
+    (M := K) (ZMod.intCast_surjective (n := n)) (AddMonoidAlgebra.coeffEquiv x)
+  refine ⟨AddMonoidAlgebra.coeffEquiv.symm y, ?_⟩
+  apply AddMonoidAlgebra.coeffEquiv.injective
+  exact hy
+
+/-- At zero, the canonical inclusion is the comparison induced by the identity
+on integer monomials, not its composite with inversion. -/
+@[simp]
+lemma rootsOfUnityGroupSchemeInclusion_zero :
+    rootsOfUnityGroupSchemeInclusion K 0 =
+      (rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup K).hom := by
+  have hφ :
+      (AddMonoidAlgebra.mapDomainBialgHom K
+        (Int.castAddHom (ZMod 0))).toAlgHom =
+      ((rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm :
+        multiplicativeGroupCoordinateRing K →ₐ[K] rootsOfUnityCoordinateRing K 0) := by
+    apply AddMonoidAlgebra.algHom_ext'
+    · apply MonoidHom.ext_mint
+      change AddMonoidAlgebra.mapDomainBialgHom K (Int.castAddHom (ZMod 0))
+          (multiplicativeGroupCoordinate K) =
+        (rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm
+          (multiplicativeGroupCoordinate K)
+      rw [rootsOfUnityGroupSchemeInclusion_coordinate,
+        rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_symm_coordinate]
+    · ext
+  apply Grp.hom_ext
+  apply Over.OverMorphism.ext
+  rw [rootsOfUnityGroupSchemeInclusion_left,
+    rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup_hom_left]
+  exact congrArg (fun φ : multiplicativeGroupCoordinateRing K →ₐ[K]
+    rootsOfUnityCoordinateRing K 0 ↦ Spec.map (CommRingCat.ofHom φ.toRingHom)) hφ
+
+/-- Every morphism from a scheme over `K` to `Gₘ` whose `n`-th power is the unit
+factors uniquely through the canonical roots-of-unity inclusion. The source
+need not be affine, reduced or nonempty. -/
+theorem rootsOfUnitySchemeKernel_universal (n : ℕ)
+    (T : Over (Spec (.of K))) (f : T ⟶ multiplicativeGroupUnderlyingScheme K)
+    (hf : f ≫ ((𝟙 (multiplicativeGroupScheme K)) ^ n).hom.hom =
+      toUnit T ≫ η[multiplicativeGroupUnderlyingScheme K]) :
+    ∃! lift : T ⟶ rootsOfUnityScheme K n,
+      lift ≫ (rootsOfUnityGroupSchemeInclusion K n).hom.hom = f := by
+  let square := rootsOfUnityPowerSquare_isPullback_over K n
+  refine ⟨square.lift f (toUnit T) hf, square.lift_fst _ _ _, ?_⟩
+  intro candidate hcandidate
+  apply square.hom_ext
+  · exact hcandidate.trans (square.lift_fst _ _ _).symm
+  · exact toUnit_unique _ _
+
+end PowerKernel
 
 /-- The distinguished root in `AdjoinRoot (X ^ n - 1)` as an `n`-th root of
 unity. -/

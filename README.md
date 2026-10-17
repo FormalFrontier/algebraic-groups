@@ -192,6 +192,16 @@ maintained project libraries; it does not claim to formalize an entire source.
   [API and rank conventions](docs/MATHEMATICS.md#roots-of-unity-at-all-orders),
   [rational-unit model](AlgebraicGroupsTest/RootsOfUnity.lean),
   [nonreduced second roots over `𝔽₂`](AlgebraicGroupsTest/InfinitesimalAdditiveTranslation.lean).
+- **Roots of unity as a power kernel.** Over any commutative ring and for every
+  natural `n`, the canonical inclusion `μₙ → Gₘ` is a closed immersion and sends
+  each root's affine point to its underlying unit. The square with the `n`-th
+  power map on `Gₘ` and its unit section is a pullback both in schemes and over
+  `Spec K`. Thus maps from arbitrary `K`-schemes whose `n`-th power is the unit
+  factor uniquely through this inclusion; the source need not be affine or
+  reduced. At `n = 0`, the power map is constant one, the kernel is all of `Gₘ`,
+  and the inclusion agrees with the canonical zero-order isomorphism above.
+  [Module](AlgebraicGroups/GroupScheme/RootsOfUnity.lean),
+  [unique lift of the rational point `−1`](AlgebraicGroupsTest/RootsOfUnity.lean).
 - **Connected group schemes.** A connected group scheme of finite type over any
   field is geometrically irreducible, even without reducedness. If it is also
   geometrically reduced, it is geometrically integral. Finite type is expressed
@@ -306,9 +316,15 @@ GitHub `main` contains reviewed releases; Lake records the resolved commit in
 Import `AlgebraicGroups` or a focused module linked above. For example:
 
 ```lean
-import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
-#check HopfAlgebra.antipode_involutive
+import AlgebraicGroups.GroupScheme.RootsOfUnity
+#check AlgebraicGeometry.rootsOfUnitySchemeKernel_universal
 ```
+
+For a map `f : T → Gₘ` over `Spec K`, this universal property takes the equation
+that the composite with the `n`-th power map is the unit and supplies a unique
+map `T → μₙ` whose composite with the canonical inclusion is `f`.
+The [rational-point example](AlgebraicGroupsTest/RootsOfUnity.lean) identifies this
+lift of `−1` at order two with the point of the explicit root `−1 : ℚ`.
 
 Lean `v4.34.0-rc2` and exact GitHub dependencies are pinned in
 [lean-toolchain](lean-toolchain), [lakefile.toml](lakefile.toml) and

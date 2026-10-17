@@ -197,6 +197,72 @@ def multiplicativeGroupHomUnits (X : Over (Spec (.of K))) :
       ((algΓ (.of K)).obj X).unop)).symm).trans
     (multiplicativeGroupMulEquivAlgHom K _).symm.toEquiv
 
+-- Keep the inverse map's declared target in the form carrying Mathlib's
+-- canonical bialgebra-induced monoid structure.
+private def diagonalAffineHomOfConv
+    (X : Over (Spec (.of K))) (A : Type u) [CommRing A] [Algebra K A]
+    (φ : WithConv (A →ₐ[K] ((algΓ (.of K)).obj X).unop)) :
+    X ⟶ (Spec (.of A)).asOver (Spec (.of K)) :=
+  (affineSpecHomOverEquiv K X A).symm φ.ofConv
+
+-- Keep the unit's codomain canonical before composing with `Spec.mapMulEquiv`.
+private def diagonalAffineUnit (X : Over (Spec (.of K))) :
+    X ⟶ (Spec (.of (((algΓ (.of K)).obj X).unop))).asOver (Spec (.of K)) :=
+  (algΓAlgSpecAdjunction (.of K)).unit.app X
+
+-- Identify one application without unfolding the canonical target in a product.
+private lemma diagonalAffineHomOfConv_eq_unit_comp
+    (X : Over (Spec (.of K))) (A : Type u) [CommRing A] [Bialgebra K A]
+    (φ : WithConv (A →ₐ[K] ((algΓ (.of K)).obj X).unop)) :
+    diagonalAffineHomOfConv K X A φ =
+      diagonalAffineUnit K X ≫
+        Spec.mapMulEquiv (R := K) (S := A) (T := ((algΓ (.of K)).obj X).unop) φ := by
+  exact (algΓAlgSpecAdjunction (.of K)).homEquiv_unit X
+    (.op (CommAlgCat.of K A)) (CommAlgCat.ofHom φ.ofConv).op
+
+-- The adjunction inverse is `Spec.map` precomposed with the adjunction unit.
+-- Thus convolution multiplication becomes multiplication of scheme morphisms.
+private lemma diagonalAffineHomOfConv_mul
+    (X : Over (Spec (.of K))) (A : Type u) [CommRing A] [Bialgebra K A]
+    (φ ψ : WithConv (A →ₐ[K] ((algΓ (.of K)).obj X).unop)) :
+    diagonalAffineHomOfConv K X A (φ * ψ) =
+      diagonalAffineHomOfConv K X A φ * diagonalAffineHomOfConv K X A ψ := by
+  rw [diagonalAffineHomOfConv_eq_unit_comp, diagonalAffineHomOfConv_eq_unit_comp,
+    diagonalAffineHomOfConv_eq_unit_comp, map_mul]
+  exact MonObj.comp_mul (diagonalAffineUnit K X) _ _
+
+private lemma multiplicativeGroupHomUnits_symm_mul
+    (X : Over (Spec (.of K))) (a b : ((algΓ (.of K)).obj X).unopˣ) :
+    (multiplicativeGroupHomUnits K X).symm (a * b) =
+      (multiplicativeGroupHomUnits K X).symm a *
+        (multiplicativeGroupHomUnits K X).symm b := by
+  change diagonalAffineHomOfConv K X (multiplicativeGroupCoordinateRing K)
+      (multiplicativeGroupMulEquivAlgHom K _ (a * b)) =
+    diagonalAffineHomOfConv K X (multiplicativeGroupCoordinateRing K)
+        (multiplicativeGroupMulEquivAlgHom K _ a) *
+      diagonalAffineHomOfConv K X (multiplicativeGroupCoordinateRing K)
+        (multiplicativeGroupMulEquivAlgHom K _ b)
+  rw [map_mul, diagonalAffineHomOfConv_mul]
+
+/-- The global unit of a product of maps to `Gₘ` is the product of their global units. -/
+theorem multiplicativeGroupHomUnits_mul (X : Over (Spec (.of K)))
+    (f g : X ⟶ (multiplicativeGroupScheme K).X) :
+    multiplicativeGroupHomUnits K X (f * g) =
+      multiplicativeGroupHomUnits K X f * multiplicativeGroupHomUnits K X g := by
+  apply (multiplicativeGroupHomUnits K X).symm.injective
+  rw [Equiv.symm_apply_apply, multiplicativeGroupHomUnits_symm_mul,
+    Equiv.symm_apply_apply, Equiv.symm_apply_apply]
+
+/-- The constant unit map to `Gₘ` corresponds to the unit global section. -/
+@[simp]
+theorem multiplicativeGroupHomUnits_one (X : Over (Spec (.of K))) :
+    multiplicativeGroupHomUnits K X (1 : X ⟶ (multiplicativeGroupScheme K).X) = 1 := by
+  have h : multiplicativeGroupHomUnits K X 1 * multiplicativeGroupHomUnits K X 1 =
+      multiplicativeGroupHomUnits K X 1 := by
+    simpa only [one_mul] using
+      (multiplicativeGroupHomUnits_mul K X (1 : X ⟶ (multiplicativeGroupScheme K).X) 1).symm
+  exact mul_eq_left.mp h
+
 /-- Composition with a projection reads the corresponding global unit,
 even when the test scheme is not affine. -/
 theorem diagonalGroupProjection_globalUnit (j : n) (X : Over (Spec (.of K)))

@@ -48,7 +48,7 @@ noncomputable section
 open CategoryTheory
 open scoped CategoryTheory.MonObj
 
-universe u
+universe u v w
 
 namespace AlgebraicGeometry
 
@@ -115,7 +115,11 @@ abbrev multiplicativeGroupPointsFunctor
     (K : Type u) [CommRing K] : CommAlgCat K ⥤ GrpCat :=
   (algSpec (.of K)).rightOp ⋙ yonedaGrp.obj (multiplicativeGroupScheme K)
 
-variable (K R : Type u) [CommRing K] [CommRing R] [Algebra K R]
+variable (K : Type u) [CommRing K]
+
+section AlgebraMaps
+
+variable (R : Type v) [CommSemiring R] [Algebra K R]
 
 /-- Units are multiplicatively equivalent to algebra maps out of the
 Laurent-polynomial coordinate ring, equipped with convolution. This realizes
@@ -184,7 +188,7 @@ theorem multiplicativeGroupMulEquivAlgHom_coordinate (u : Rˣ) :
 /-- Naturality of the units/algebra-map equivalence under a map of base
 algebras. -/
 theorem multiplicativeGroupMulEquivAlgHom_naturality
-    {S : Type u} [CommRing S] [Algebra K S]
+    {S : Type w} [CommSemiring S] [Algebra K S]
     (f : R →ₐ[K] S) (u : Rˣ) :
     (multiplicativeGroupMulEquivAlgHom K S (Units.map f u)).ofConv =
       f.comp (multiplicativeGroupMulEquivAlgHom K R u).ofConv := by
@@ -208,6 +212,12 @@ theorem multiplicativeGroupMulEquivAlgHom_naturality
       _ = f ↑(u ^ n) := Units.coe_map (f : R →* S) (u ^ n)
   · ext
 
+end AlgebraMaps
+
+section AffinePoints
+
+variable (R : Type u) [CommRing R] [Algebra K R]
+
 /-- The functor-of-points equivalence at a `K`-algebra `R`, extending the
 units-valued points of Milne's *Algebraic Groups*, item 2.2. -/
 def multiplicativeGroupMulEquivPoints :
@@ -225,6 +235,8 @@ theorem multiplicativeGroupMulEquivPoints_apply_left (u : Rˣ) :
       Spec.map (CommRingCat.ofHom
         (multiplicativeGroupMulEquivAlgHom K R u).ofConv.toRingHom) :=
   rfl
+
+end AffinePoints
 
 /-- The affine multiplicative group scheme represents the units functor.
 This extends Milne's *Algebraic Groups*, item 2.2, to arbitrary commutative

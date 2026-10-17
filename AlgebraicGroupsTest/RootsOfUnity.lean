@@ -8,14 +8,18 @@ import AlgebraicGroups.GroupScheme.RootsOfUnity
 import Mathlib.Tactic.NormNum
 
 /-!
-# The rational unit two as an order-zero root and affine point
+# Rational roots of unity and their canonical inclusion
 
-The unit, root, character, algebra map and nonidentity affine point below are
-constructed using Mathlib's units, integer powers, group-algebra lift and affine
-`Spec` equivalence. Their construction and separation from the identity do not
-use the roots-of-unity character equivalences or the zero-order comparison.
-The final equations compare this model with those APIs. A positive-order
-polynomial coordinate equation over the zero ring records the other boundary.
+The order-zero unit two, root, character, algebra map and nonidentity affine
+point below are constructed using Mathlib's units, integer powers, group-algebra
+lift and affine `Spec` equivalence. Their construction and separation from the
+identity do not use the roots-of-unity character equivalences or the zero-order
+comparison. The comparison equations also identify its image under the canonical
+inclusion. At order two, the rational root `−1` has a nonidentity image in `Gₘ`
+whose square is one. These separations use no scheme-theoretic kernel theorem.
+The kernel universal property identifies this explicit root point as the unique
+lift of that multiplicative-group point. A positive-order polynomial coordinate
+equation over the zero ring records the other boundary.
 -/
 
 noncomputable section
@@ -129,6 +133,72 @@ private theorem rationalTwo_multiplicativePoint_comparison :
       multiplicativeGroupMulEquivPoints ℚ ℚ rationalTwoUnit := by
   rw [← rationalTwo_point_comparison]
   exact rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup_point ℚ ℚ rationalTwoRoot
+
+private theorem rationalTwo_inclusion_zero_comparison :
+    rationalTwoPoint ≫ (rootsOfUnityGroupSchemeInclusion ℚ 0).hom.hom =
+      rationalTwoPoint ≫
+        (rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup ℚ).hom.hom.hom := by
+  calc
+    _ = multiplicativeGroupMulEquivPoints ℚ ℚ rationalTwoUnit := by
+      rw [← rationalTwo_point_comparison]
+      exact rootsOfUnityGroupSchemeInclusion_point ℚ ℚ 0 rationalTwoRoot
+    _ = _ := rationalTwo_multiplicativePoint_comparison.symm
+
+private def rationalNegOneRoot : rootsOfUnity 2 ℚ :=
+  rootsOfUnity.mkOfPowEq (-1 : ℚ) (n := 2) (by norm_num)
+
+private theorem rationalNegOneRoot_unit_ne_one : (rationalNegOneRoot : ℚˣ) ≠ 1 := by
+  intro h
+  have hv := congrArg (fun a : ℚˣ ↦ (a : ℚ)) h
+  change (-1 : ℚ) = 1 at hv
+  norm_num at hv
+
+private theorem rationalNegOne_multiplicativePoint_ne_one :
+    multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ) ≠ 1 := by
+  intro h
+  apply rationalNegOneRoot_unit_ne_one
+  apply (multiplicativeGroupMulEquivPoints ℚ ℚ).injective
+  simpa only [map_one] using h
+
+/-- The canonical inclusion has a nonidentity rational image at order two,
+and that image is killed by the stock square endomorphism. -/
+private theorem rationalNegOne_inclusion_model :
+    (rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot ≫
+        (rootsOfUnityGroupSchemeInclusion ℚ 2).hom.hom =
+      multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ)) ∧
+    (rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot ≫
+        (rootsOfUnityGroupSchemeInclusion ℚ 2).hom.hom ≠ 1) ∧
+    ((rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot ≫
+        (rootsOfUnityGroupSchemeInclusion ℚ 2).hom.hom) ≫
+        ((𝟙 (multiplicativeGroupScheme ℚ)) ^ (2 : ℕ)).hom.hom = 1) := by
+  refine ⟨rootsOfUnityGroupSchemeInclusion_point ℚ ℚ 2 rationalNegOneRoot, ?_, ?_⟩
+  · rw [rootsOfUnityGroupSchemeInclusion_point]
+    exact rationalNegOne_multiplicativePoint_ne_one
+  · rw [rootsOfUnityGroupSchemeInclusion_point, Grp.Hom.hom_pow, Mon.Hom.hom_pow]
+    change multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ) ≫
+      (𝟙 (multiplicativeGroupUnderlyingScheme ℚ)) ^ (2 : ℕ) = 1
+    rw [MonObj.comp_pow, Category.comp_id, ← map_pow, rationalNegOneRoot.prop, map_one]
+
+/-- A lift of the rational `−1` point through the order-two inclusion is exactly
+its explicitly constructed root point. -/
+private theorem rationalNegOne_lift_iff
+    (candidate : (Spec (.of ℚ)).asOver (Spec (.of ℚ)) ⟶ rootsOfUnityScheme ℚ 2) :
+    candidate ≫ (rootsOfUnityGroupSchemeInclusion ℚ 2).hom.hom =
+        multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ) ↔
+      candidate = rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot := by
+  have hpower := rationalNegOne_inclusion_model.2.2
+  rw [rationalNegOne_inclusion_model.1] at hpower
+  obtain ⟨lift, _, unique⟩ := rootsOfUnitySchemeKernel_universal ℚ 2
+    ((Spec (.of ℚ)).asOver (Spec (.of ℚ)))
+    (multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ)) (by
+      simpa only [CategoryTheory.Hom.one_def] using hpower)
+  constructor
+  · intro h
+    exact (unique candidate h).trans
+      (unique (rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot)
+        rationalNegOne_inclusion_model.1).symm
+  · rintro rfl
+    exact rationalNegOne_inclusion_model.1
 
 private theorem positiveCoordinate_zeroRing :
     rootsOfUnityCoordinateAlgEquiv (ZMod 1) 2
