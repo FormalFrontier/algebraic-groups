@@ -8,7 +8,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 /-!
-# External tensor coactions of specified right comodules
+# External tensor products of specified right comodules
 
 For specified right coactions of `C` on `V` and `D` on `W`,
 `Coalgebra.RightComodule.externalTensorCoaction` tensors the coaction maps and
@@ -24,6 +24,16 @@ equality has codomain `(V ⊗[R] W) ⊗[R] R`, with the inverse right unitor on
 the right. For the regular input comodules, the map is the comultiplication
 of that same tensor coalgebra.
 
+`Coalgebra.RightComodule.externalTensor` equips `V ⊗[R] W` with this
+coaction as a specified right comodule over `C ⊗[R] D`. Its coaction API gives
+map, application and pure-input formulas, and `externalTensor_regular`
+identifies the external tensor product of regular comodules with the regular
+comodule of the tensor coalgebra. The general right-comodule coassociativity,
+counit, injectivity and zero-map lemmas apply to the constructed object.
+
+This is an external tensor product over two coalgebras, not an internal tensor
+product over a fixed bialgebra. No morphism action or coherence is asserted here.
+
 ## References
 
 The specified right comodules and regular coactions are the existing
@@ -31,7 +41,8 @@ AlgebraicGroups constructions by Formal Frontier Agents. Tensor maps,
 associators, unitors and the middle-factor interchange are Mathlib's
 formalizations by Kenny Lau and Mario Carneiro. Mathlib's tensor coalgebra,
 by Amelia Livingston and Andrew Yang, uses the scalar-tower tensor APIs of
-Kim Morrison, Johan Commelin and Eric Wieser.
+Kim Morrison, Johan Commelin and Eric Wieser. Classical comodules are credited
+bibliographically to M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969.
 -/
 
 @[expose] public section
@@ -206,5 +217,48 @@ theorem externalTensorCoaction_regular :
     _root_.TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_eq,
     _root_.TensorProduct.AlgebraTensorModule.map_eq] using
     (_root_.TensorProduct.comul_def (R := R) (S := R) (A := C) (B := D)).symm
+
+universe uM uN
+
+variable {M : Type uM} {N : Type uN}
+variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+
+/-- The external tensor product of two specified right comodules, over the tensor
+coalgebra. Its coaction tensors the input coactions and interchanges the middle
+factors. This is the classical external tensor construction for comodules
+(Sweedler, *Hopf Algebras*, 1969), here over a commutative semiring. -/
+def externalTensor (X : RightComodule R C M) (Y : RightComodule R D N) :
+    RightComodule R (C ⊗[R] D) (M ⊗[R] N) where
+  coaction := externalTensorCoaction X Y
+  coassoc := externalTensorCoaction_coassoc X Y
+  counit_comp := externalTensorCoaction_counit_comp X Y
+
+/-- The coaction map of the external tensor product is the external tensor coaction. -/
+@[simp] theorem externalTensor_coaction (X : RightComodule R C M) (Y : RightComodule R D N) :
+    (externalTensor X Y).coaction = externalTensorCoaction X Y := by
+  rfl
+
+/-- Evaluate the external tensor product's coaction at any tensor. -/
+theorem externalTensor_coaction_apply (X : RightComodule R C M)
+    (Y : RightComodule R D N) (t : M ⊗[R] N) :
+    (externalTensor X Y).coaction t = externalTensorCoaction X Y t := by
+  rfl
+
+/-- On pure inputs, shuffle the tensor of the coaction values. Neither input
+coaction value is required to be a pure tensor. -/
+@[simp] theorem externalTensor_coaction_tmul (X : RightComodule R C M)
+    (Y : RightComodule R D N) (m : M) (n : N) :
+    (externalTensor X Y).coaction (m ⊗ₜ[R] n) =
+      _root_.TensorProduct.tensorTensorTensorComm R M C N D
+        (X.coaction m ⊗ₜ[R] Y.coaction n) := by
+  exact externalTensorCoaction_tmul X Y m n
+
+/-- The external tensor product of regular comodules is the regular comodule
+of the same tensor coalgebra. -/
+theorem externalTensor_regular :
+    externalTensor (regular R C) (regular R D) = regular R (C ⊗[R] D) := by
+  apply RightComodule.ext
+  rw [externalTensor_coaction]
+  exact externalTensorCoaction_regular
 
 end Coalgebra.RightComodule

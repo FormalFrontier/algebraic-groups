@@ -77,6 +77,16 @@ maintained project libraries; it does not claim to formalize an entire source.
   nor the coacted-on module projective. Flatness of the coacting coalgebra suffices
   for unique subtype coactions from image stability and unique colinear
   factorization; the counit need not be onto. [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean).
+- **External tensor products of specified right comodules.** Over a commutative
+  semiring, right comodules on arbitrary additive-monoid modules over full
+  coalgebras `C` and `D` give a right comodule on `M ⊗[R] N` over the tensor
+  coalgebra `C ⊗[R] D`, in five independent universes. The coaction shuffles
+  the tensor of the input coaction values; regular comodules recover the
+  regular comodule of that same tensor coalgebra. No flatness, projectivity,
+  finiteness or purity of coaction values is required. This is an external
+  construction, not an internal tensor product over a fixed bialgebra.
+  [Construction and API](AlgebraicGroups/Algebra/Coalgebra/RightComodule/TensorProduct.lean),
+  [Examples](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule/TensorProduct.lean).
 - **Carrier transport of right comodules.** For a specified right `C`-comodule
   `X` and an `R`-linear equivalence `e : V ≃ₗ[R] W`, `X.transport e` is a lawful
   right `C`-comodule on the given target module. The coalgebra stays fixed:
