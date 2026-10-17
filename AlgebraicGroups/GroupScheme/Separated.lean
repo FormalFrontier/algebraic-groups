@@ -30,6 +30,9 @@ the field case needs no finite-type hypothesis.
   `MorphismProperty.of_isPullback` and
   `isClosedImmersion_of_comp_eq_id`: the diagonal criterion, pullback stability
   of closed immersions and the closed-unit-section step over a field.
+- Mathlib, `IsPullback.of_isLimit_binaryFan_of_isTerminal`,
+  `IsPullback.of_right` and `Functor.map_isPullback`: the product pullback,
+  pullback pasting and preservation by the over-category forgetful functor.
 - Mathlib, `GrpObj.eq_lift_inv_left` and `GrpObj.lift_inv_left_eq`
   (`Mathlib.CategoryTheory.Monoidal.Grp`): the identities proving
   that categorical left division is an isomorphism.
@@ -83,42 +86,15 @@ theorem isSeparated_of_isClosedImmersion_unit (G : Over S) [GrpObj G]
     (hunit : IsClosedImmersion η[G].left) : IsSeparated G.hom := by
   constructor
   change IsClosedImmersion (lift (𝟙 G) (𝟙 G)).left
-  have hP : IsPullback
-      (fst G (𝟙_ (Over S))).left
-      (snd G (𝟙_ (Over S))).left
-      G.hom (𝟙_ (Over S)).hom :=
-    Over.isPullback_of_binaryFan_isLimit _
-      (tensorProductIsBinaryProduct G (𝟙_ (Over S)))
-  have hB : IsPullback (fst G G).left (snd G G).left G.hom G.hom :=
-    Over.isPullback_of_binaryFan_isLimit _ (tensorProductIsBinaryProduct G G)
-  have hi_fst : (G ◁ η[G]).left ≫ (fst G G).left =
-      (fst G (𝟙_ (Over S))).left := by
-    simpa only [← Over.comp_left] using congrArg Over.Hom.left (whiskerLeft_fst G η[G])
-  have hi_snd : (G ◁ η[G]).left ≫ (snd G G).left =
-      (snd G (𝟙_ (Over S))).left ≫ η[G].left := by
-    simpa only [← Over.comp_left] using congrArg Over.Hom.left (whiskerLeft_snd G η[G])
-  have hi : IsPullback
-      (G ◁ η[G]).left
-      (snd G (𝟙_ (Over S))).left
-      (snd G G).left η[G].left :=
-    IsPullback.mk' hi_snd
-      (by
-        intro T φ φ' h₁ h₂
-        exact hP.hom_ext
-          (by simpa only [Category.assoc, hi_fst] using
-            congrArg (fun q ↦ q ≫ (fst G G).left) h₁)
-          h₂)
-      (by
-        intro T a b hab
-        have w : (a ≫ (fst G G).left) ≫ G.hom = b ≫ (𝟙_ (Over S)).hom := by
-          rw [Category.assoc, hB.w, ← Category.assoc, hab, Category.assoc, η[G].w]
-        let l := hP.lift (a ≫ (fst G G).left) b w
-        refine ⟨l, ?_, hP.lift_snd _ _ _⟩
-        apply hB.hom_ext
-        · rw [Category.assoc, hi_fst, hP.lift_fst]
-        · rw [Category.assoc, hi_snd, ← Category.assoc, hP.lift_snd, hab])
+  have hprod (X Y : Over S) : IsPullback (fst X Y) (snd X Y)
+      (toUnit X) (toUnit Y) :=
+    .of_isLimit_binaryFan_of_isTerminal (tensorProductIsBinaryProduct X Y)
+      isTerminalTensorUnit
+  have hi : IsPullback (G ◁ η[G]) (snd G (𝟙_ (Over S))) (snd G G) η[G] := by
+    refine IsPullback.of_right ?_ (whiskerLeft_snd G η[G]) (hprod G G)
+    simpa only [whiskerLeft_fst, comp_toUnit] using hprod G (𝟙_ (Over S))
   have hη : IsClosedImmersion (G ◁ η[G]).left :=
-    MorphismProperty.of_isPullback hi.flip hunit
+    MorphismProperty.of_isPullback ((Over.forget S).map_isPullback hi.flip) hunit
   rw [show lift (𝟙 G) (𝟙 G) =
       (ρ_ G).inv ≫ (G ◁ η[G]) ≫ (GrpObj.leftDivIso G).inv by
     ext <;> simp [GrpObj.leftDivIso]]
