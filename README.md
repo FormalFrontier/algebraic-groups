@@ -22,6 +22,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   [Criterion](AlgebraicGroups/GroupObject/KernelTorsor.lean),
   [proper `S₃ → S₃ × C₂` inclusion and monoid boundary](AlgebraicGroupsTest/GroupObject/TrivialKernel.lean).
 
+- **Kernel pairs of group-to-monoid morphisms.** In a Cartesian monoidal
+  category, let `G` be a group object, `Q` a monoid object and `q : G → Q` a
+  monoid morphism. For any kernel pullback `N → G` over the unit of `Q`, the
+  kernel-pair statement identifies `N × G` with `G ×_Q G` by
+  `(n, g) ↦ (i(n)g, g)`. No group structure on `N`, inverse operation on `Q`
+  or global finite-limit hypothesis is required.
+  [Statement](AlgebraicGroups/GroupObject/KernelTorsor.lean).
+
 ### Coalgebras and Hopf algebras
 
 - **Group-like elements and scalar extension.** The counit-one and tensor-square
@@ -222,6 +230,17 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Separated morphisms and kernel units.** For any scheme `S`, a monoid
+  morphism `q : G → Q` in `Over S` from a group object to a monoid object
+  has the criterion `IsSeparated q.left ↔ IsClosedImmersion k.left`, where
+  `K = pullback q η[Q]` in `Over S` and `k : 𝟙_(Over S) → K` is the
+  canonical lift of the unit of `G` and the identity of the tensor unit,
+  whose underlying scheme is `S`. The kernel is the whole scheme-theoretic
+  fibre over the relative unit, not one geometric or reduced fibre. The
+  criterion imposes no separatedness of `G → S`, target group structure,
+  flatness, finiteness, field or nonemptiness hypothesis.
+  [Statement](AlgebraicGroups/GroupScheme/Separated.lean),
+  [multiplicative-group projection and boundary examples](AlgebraicGroupsTest/Multiplicative.lean).
 - **Kernel fibres with a chosen lift.** In any Cartesian monoidal category, for
   a morphism `q : G → Q` of group objects and a supplied kernel pullback,
   right translation by an ordinary point `g : 𝟙 → G` identifies the kernel with

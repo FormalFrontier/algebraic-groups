@@ -41,7 +41,7 @@ already has a point.
   `Mathlib.Algebra.Group.Subgroup.Ker`, for the trivial-kernel injectivity criterion.
 -/
 
-public section
+@[expose] public section
 
 open CategoryTheory Limits MonoidalCategory CartesianMonoidalCategory MonObj Category
 
@@ -84,10 +84,15 @@ theorem mono_iff_isIso_lift_one {N G Q : C} [GrpObj G] [MonObj Q]
         _ = 1 := by simp only [Category.assoc, e, hN.lift_fst, Hom.one_def]
     exact hinjective hab
 
-variable {N G Q : C} [GrpObj G] [GrpObj Q]
+variable {N G Q : C} [GrpObj G]
 
-/-- If `N` is the kernel of a morphism of group objects `q : G ⟶ Q`, then multiplying
-an element of `G` by an element of `N` exhibits `N × G` as `G ×_Q G`.
+section MonoidTarget
+
+variable [MonObj Q]
+
+/-- If `N` is the kernel of a monoid morphism from a group object `G` to a monoid
+object `Q`, then `(n, g) ↦ (i(n)g, g)` exhibits `N × G` as `G ×_Q G`.
+No group structure on `N` or inverse operation on `Q` is required.
 Compare the fibre-translation argument in Milne, *Algebraic Groups* (2017), proof of
 Proposition 1.62(a); the conclusion here is only the categorical pullback. -/
 theorem isPullback_kernel_mul (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
@@ -98,8 +103,12 @@ theorem isPullback_kernel_mul (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
     simp
   have hdiff (s : PullbackCone q q) : (s.fst * s.snd⁻¹) ≫ q = (toUnit s.pt) ≫ η[Q] := by
     change (s.fst * s.snd⁻¹) ≫ q = 1
-    rw [MonObj.mul_comp, GrpObj.inv_comp, s.condition]
-    exact mul_inv_cancel _
+    calc
+      (s.fst * s.snd⁻¹) ≫ q = (s.fst ≫ q) * (s.snd⁻¹ ≫ q) :=
+        MonObj.mul_comp _ _ _
+      _ = (s.snd ≫ q) * (s.snd⁻¹ ≫ q) := by rw [s.condition]
+      _ = (s.snd * s.snd⁻¹) ≫ q := (MonObj.mul_comp _ _ _).symm
+      _ = 1 := by rw [mul_inv_cancel, MonObj.one_comp]
   let kernelLift (s : PullbackCone q q) : s.pt ⟶ N :=
     hN.lift (s.fst * s.snd⁻¹) (toUnit s.pt) (hdiff s)
   have kernelLift_i (s : PullbackCone q q) : kernelLift s ≫ i = s.fst * s.snd⁻¹ := by
@@ -133,6 +142,10 @@ theorem isPullback_kernel_mul (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
         simp
     · rw [lift_snd]
       exact hm₂
+
+end MonoidTarget
+
+variable [GrpObj Q]
 
 /-- A chosen lift `g` identifies the kernel of `q` with the fibre over `g ≫ q`
 by right translation. The point `g` need not be a group-object homomorphism.

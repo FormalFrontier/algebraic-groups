@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.GroupObject.KernelTorsor
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
@@ -14,12 +15,16 @@ This file proves that a group scheme is separated when its unit section is a
 closed immersion. In particular, every group scheme over a field is separated.
 
 The closed-unit-section criterion is relative to an arbitrary base scheme;
-the field case needs no finite-type hypothesis.
+the field case needs no finite-type hypothesis. For a monoid morphism from a
+relative group scheme to a relative monoid scheme, the kernel-unit criterion
+relates separatedness to the canonical section of the pullback over the target unit.
+This is the whole scheme-theoretic unit fibre, not a reduced or geometric fibre.
 
 ## Main results
 
 - `AlgebraicGeometry.isSeparated_of_isClosedImmersion_unit`
 - `AlgebraicGeometry.isSeparated_of_grpObj`
+- `AlgebraicGeometry.isSeparated_iff_isClosedImmersion_kernelUnit`
 
 ## References
 
@@ -33,12 +38,15 @@ the field case needs no finite-type hypothesis.
 - Mathlib, `IsPullback.of_isLimit_binaryFan_of_isTerminal`,
   `IsPullback.of_right` and `Functor.map_isPullback`: the product pullback,
   pullback pasting and preservation by the over-category forgetful functor.
+- `CategoryTheory.GrpObj.isPullback_kernel_mul` in
+  `AlgebraicGroups.GroupObject.KernelTorsor`: the kernel-pair orientation
+  `(n, g) ↦ (i(n)g, g)` for a group source and monoid target.
 - Mathlib, `GrpObj.eq_lift_inv_left` and `GrpObj.lift_inv_left_eq`
   (`Mathlib.CategoryTheory.Monoidal.Grp`): the identities proving
   that categorical left division is an isomorphism.
 -/
 
-public section
+@[expose] public section
 
 open CategoryTheory CategoryTheory.Limits
 open CategoryTheory.MonoidalCategory
@@ -108,6 +116,75 @@ theorem isSeparated_of_isClosedImmersion_unit (G : Over S) [GrpObj G]
   have hηdiv : IsClosedImmersion ((G ◁ η[G]).left ≫ (GrpObj.leftDivIso G).inv.left) :=
     @IsClosedImmersion.comp _ _ _ _ _ hη hdiv
   exact @IsClosedImmersion.comp _ _ _ _ _ hρ hηdiv
+
+/-- A monoid morphism from a group scheme to a monoid scheme over any base is
+separated exactly when the canonical unit section of its scheme-theoretic kernel
+is a closed immersion. The kernel is `pullback q η[Q]` in `Over S`, and its unit
+is the displayed pullback lift, not the ambient unit `η[G]`.
+
+The kernel-pair description is `GrpObj.isPullback_kernel_mul`; the geometric
+translation is the relative analogue of the diagonal-to-unit argument in
+Milne, *Algebraic Groups* (2017), Proposition 1.22 and Appendix A.41. -/
+theorem isSeparated_iff_isClosedImmersion_kernelUnit {G Q : Over S}
+    [GrpObj G] [MonObj Q] (q : G ⟶ Q) [IsMonHom q] :
+    IsSeparated q.left ↔ IsClosedImmersion
+      (pullback.lift (f := q) (g := η[Q]) η[G] (𝟙 (𝟙_ (Over S)))
+        (by simpa only [Category.id_comp] using IsMonHom.one_hom q)).left := by
+  let N : Over S := pullback q η[Q]
+  let i : N ⟶ G := pullback.fst q η[Q]
+  let κ : 𝟙_ (Over S) ⟶ N :=
+    pullback.lift (f := q) (g := η[Q]) η[G] (𝟙 (𝟙_ (Over S)))
+      (by simpa only [Category.id_comp] using IsMonHom.one_hom q)
+  change IsSeparated q.left ↔ IsClosedImmersion κ.left
+  have hpb := IsPullback.of_hasPullback q η[Q]
+  constructor
+  · intro hq
+    have : IsSeparated (pullback.snd q η[Q]).left :=
+      MorphismProperty.of_isPullback ((Over.forget S).map_isPullback hpb) hq
+    have hκp : κ.left ≫ (pullback.snd q η[Q]).left = 𝟙 (𝟙_ (Over S)).left := by
+      change (κ ≫ pullback.snd q η[Q]).left =
+        (𝟙 (𝟙_ (Over S)) : (𝟙_ (Over S)) ⟶ (𝟙_ (Over S))).left
+      simp only [κ, pullback.lift_snd]
+    have : IsClosedImmersion (κ.left ≫ (pullback.snd q η[Q]).left) := by
+      rw [hκp]
+      infer_instance
+    exact IsClosedImmersion.of_comp κ.left (pullback.snd q η[Q]).left
+  · intro hκ
+    have hN : IsPullback i (toUnit N) q η[Q] := by
+      simpa only [show pullback.snd q η[Q] = toUnit N from toUnit_unique _ _] using hpb
+    let j : G ⟶ N ⊗ G := lift (toUnit G ≫ κ) (𝟙 G)
+    have hprod (X Y : Over S) : IsPullback (fst X Y) (snd X Y)
+        (toUnit X) (toUnit Y) :=
+      .of_isLimit_binaryFan_of_isTerminal (tensorProductIsBinaryProduct X Y)
+        isTerminalTensorUnit
+    have hj : IsPullback j (toUnit G) (fst N G) κ := by
+      refine IsPullback.of_right ?_ (by simp only [j, lift_fst]) (hprod N G).flip
+      simpa only [j, lift_snd, comp_toUnit, toUnit_unit] using
+        (IsPullback.id_horiz (toUnit G))
+    have hjc : IsClosedImmersion j.left :=
+      MorphismProperty.of_isPullback ((Over.forget S).map_isPullback hj.flip) hκ
+    have hjmul : j ≫ (i ⊗ₘ 𝟙 G) ≫ μ[G] = 𝟙 G := by
+      simp only [j, lift_map_assoc, Category.comp_id, Category.assoc, κ, i,
+        pullback.lift_fst, MonObj.lift_comp_one_left]
+    have hjsnd : j ≫ snd N G = 𝟙 G := by simp only [j, lift_snd]
+    have hpair : IsPullback ((i ⊗ₘ 𝟙 G) ≫ μ[G]).left
+        (snd N G).left q.left q.left :=
+      (Over.forget S).map_isPullback (GrpObj.isPullback_kernel_mul i q hN)
+    let e : (N ⊗ G).left ≅ pullback q.left q.left := hpair.isoPullback
+    have hdiag : j.left ≫ e.hom = pullback.diagonal q.left := by
+      apply pullback.hom_ext
+      · simp only [Category.assoc, e, IsPullback.isoPullback_hom_fst,
+          pullback.diagonal_fst]
+        simpa only [← Over.comp_left, Over.id_left] using
+          congrArg (fun f : G ⟶ G => f.left) hjmul
+      · simp only [Category.assoc, e, IsPullback.isoPullback_hom_snd,
+          pullback.diagonal_snd]
+        simpa only [← Over.comp_left, Over.id_left] using
+          congrArg (fun f : G ⟶ G => f.left) hjsnd
+    constructor
+    rw [← hdiag]
+    exact (MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion
+      j.left e.hom).2 hjc
 
 variable {K : Type u} [Field K]
 
