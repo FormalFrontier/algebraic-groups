@@ -16,7 +16,7 @@ public import Mathlib.RingTheory.Smooth.Field
 
 This file relates geometric reducedness to separable generation and formal smoothness for
 essentially finite-type field extensions. It also records that geometric reducedness over a
-field is preserved by localization.
+commutative base ring is preserved by localization.
 
 ## Main results
 
@@ -36,6 +36,11 @@ field is preserved by localization.
   `exists_isTranscendenceBasis_and_isSeparable_of_linearIndepOn_pow_of_essFiniteType`, and
   `FormallySmooth.of_algebraicIndependent_of_isSeparable` supply the formal algebraic
   characterization and the separating-basis route to formal smoothness.
+- Mathlib's `IsLocalization.tensorProductEquivOfMapIncludeRight` identifies each localized
+  geometric fiber with the canonical localization of the source fiber;
+  `isReduced_localizationPreserves` and `isReduced_of_injective` give reducedness and its
+  transport across this equivalence. `Algebra.TensorProduct.rid` identifies the geometric
+  fibers of the base ring itself with the corresponding algebraically closed residue fields.
 -/
 
 public section
@@ -44,29 +49,53 @@ open scoped TensorProduct
 
 noncomputable section
 
-universe u v
+universe u v w
 
 namespace Algebra.IsGeometricallyReduced
 
-variable {k : Type u} {K : Type v} [Field k] [Field K] [Algebra k K]
-
-/-- Geometric reducedness over a field is preserved by localization. -/
-theorem of_isLocalization {A B : Type v} [CommRing A] [CommRing B]
-    [Algebra k A] [Algebra k B] [Algebra A B] [IsScalarTower k A B]
-    (M : Submonoid A) [IsLocalization M B] [Algebra.IsGeometricallyReduced k A] :
+/-- Geometric reducedness over a commutative ring is preserved by localization. -/
+theorem of_isLocalization {k : Type u} {A : Type v} {B : Type w}
+    [CommRing k] [CommRing A] [CommRing B]
+    [Algebra k A] [Algebra k B] [Algebra A B]
+    [IsScalarTower k A B]
+    (M : Submonoid A) [IsLocalization M B]
+    [Algebra.IsGeometricallyReduced k A] :
     Algebra.IsGeometricallyReduced k B := by
-  rw [Algebra.isGeometricallyReduced_field_iff]
-  let E := AlgebraicClosure k
-  let _ : Algebra (E ⊗[k] A) (E ⊗[k] B) :=
-    (Algebra.TensorProduct.map (AlgHom.id k E) (IsScalarTower.toAlgHom k A B)).toAlgebra
-  have _ : IsScalarTower E (E ⊗[k] A) (E ⊗[k] B) :=
-    .of_algebraMap_eq <| by intro; simp [RingHom.algebraMap_toAlgebra]
-  have _ : IsLocalization
-      (M.map (Algebra.TensorProduct.includeRight (R := k) (A := E))) (E ⊗[k] B) :=
-    IsLocalization.tensorProduct_tensorProduct_right k E M B
-      (by ext; simp [RingHom.algebraMap_toAlgebra])
-  exact isReduced_localizationPreserves
-    (M.map (Algebra.TensorProduct.includeRight (R := k) (A := E))) (E ⊗[k] B) inferInstance
+  refine ⟨fun p hp ↦ ?_⟩
+  let E := AlgebraicClosure p.ResidueField
+  let N : Submonoid (E ⊗[k] A) :=
+    M.map (Algebra.TensorProduct.includeRight (R := k) (A := E))
+  let C := Localization N
+  have : IsReduced (E ⊗[k] A) := inferInstance
+  -- Reduce a localization in the source fiber's universe before crossing to the target fiber.
+  have : IsReduced C := isReduced_localizationPreserves N C inferInstance
+  let e := IsLocalization.tensorProductEquivOfMapIncludeRight k E M B C
+  exact isReduced_of_injective e e.injective
+
+/-- A nonfield base: the integers localized away from `2` are geometrically reduced. -/
+example : Algebra.IsGeometricallyReduced ℤ (Localization.Away (2 : ℤ)) := by
+  let : Algebra.IsGeometricallyReduced ℤ ℤ := by
+    refine ⟨fun p hp ↦ ?_⟩
+    exact isReduced_of_injective
+      (Algebra.TensorProduct.rid ℤ ℤ (AlgebraicClosure p.ResidueField))
+      (Algebra.TensorProduct.rid ℤ ℤ (AlgebraicClosure p.ResidueField)).injective
+  exact of_isLocalization (Submonoid.powers (2 : ℤ))
+
+/-- Localizing away from zero is allowed: all geometric fibers are zero rings. -/
+example (R : Type u) [CommRing R] :
+    Algebra.IsGeometricallyReduced R (Localization.Away (0 : R)) := by
+  let : Subsingleton (Localization.Away (0 : R)) :=
+    IsLocalization.subsingleton (M := Submonoid.powers (0 : R))
+      (S := Localization.Away (0 : R)) (Submonoid.mem_powers _)
+  exact ⟨fun _ _ ↦ inferInstance⟩
+
+/-- A zero base has no prime ideals, so its geometric-fiber condition is vacuous. -/
+example {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S]
+    [Subsingleton R] : Algebra.IsGeometricallyReduced R S := by
+  refine ⟨fun p hp ↦ ?_⟩
+  exact (hp.one_notMem ((Subsingleton.elim (0 : R) 1) ▸ p.zero_mem)).elim
+
+variable {k : Type u} {K : Type v} [Field k] [Field K] [Algebra k K]
 
 /-- A linearly independent family in a geometrically reduced field extension remains linearly
 independent after taking `p`th powers in positive characteristic. This is the geometric-reducedness

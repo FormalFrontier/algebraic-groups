@@ -6,8 +6,10 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroupsTest.Algebra.Coalgebra.FiniteSubcoalgebra
+public import Mathlib.Algebra.Module.PUnit
 public import Mathlib.Data.Finsupp.Fintype
 public import Mathlib.LinearAlgebra.Finsupp.Supported
+public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 
 /-!
@@ -402,3 +404,344 @@ end RightComoduleExamples
 #print axioms RightComoduleExamples.threeIdeal_projective_nonfree_proper_counit
 #print axioms RightComoduleExamples.threeGenerator_not_groupLike
 #print axioms RightComoduleExamples.idealAmbient_infinite_projective_nonfree_not_finite
+
+/-!
+## Linear operations on comodule morphisms
+
+The scalar coaction on the natural-number plane gives two noncommuting coordinate
+maps. The scalar coaction on `PUnit` gives a zero-module boundary over the same
+nontrivial scalar semiring. Tensor naturality proves colinearity of the coordinate
+maps; the comodule laws are those of `RightComodule.scalar`.
+-/
+
+namespace RightComoduleHomExamples
+
+universe z
+
+open Coalgebra (RightComoduleHom)
+open Coalgebra.RightComoduleHom
+
+/-- The natural-number plane with its scalar coaction. -/
+noncomputable def plane : RightComodule ℕ ℕ (ℕ × ℕ) := RightComodule.scalar ℕ _
+
+/-- The coordinate map `(x, y) ↦ (y, 0)` on the scalar comodule. -/
+noncomputable def A : RightComoduleHom plane plane where
+  toLinearMap := (LinearMap.snd ℕ ℕ ℕ).prod (0 : ℕ × ℕ →ₗ[ℕ] ℕ)
+  colinear := by
+    ext m <;> simp [plane, LinearMap.rTensor_tmul]
+
+/-- The coordinate map `(x, y) ↦ (0, x)` on the scalar comodule. -/
+noncomputable def B : RightComoduleHom plane plane where
+  toLinearMap := (0 : ℕ × ℕ →ₗ[ℕ] ℕ).prod (LinearMap.fst ℕ ℕ ℕ)
+  colinear := by
+    ext m <;> simp [plane, LinearMap.rTensor_tmul]
+
+@[simp] theorem A_apply (m : ℕ × ℕ) : A m = (m.2, 0) := rfl
+@[simp] theorem B_apply (m : ℕ × ℕ) : B m = (0, m.1) := rfl
+
+/-- A point distinguishing the identity and zero morphisms. -/
+def e : ℕ × ℕ := (1, 0)
+
+/-- The scalar comodule has a nonzero identity morphism. -/
+theorem id_ne_zero : RightComoduleHom.id plane ≠ (0 : RightComoduleHom plane plane) := by
+  intro h
+  have hp := congrArg (fun f : RightComoduleHom plane plane ↦ (f e).1) h
+  simpa [e] using hp
+
+/-- Addition on morphisms is pointwise addition. -/
+theorem id_add_id_at_e :
+    (RightComoduleHom.id plane + RightComoduleHom.id plane) e = (2, 0) := by simp [e]
+
+/-- Natural-number scalar multiplication has its ordinary pointwise meaning. -/
+theorem three_smul_id_at_e : ((3 : ℕ) • RightComoduleHom.id plane) e = (3, 0) := by simp [e]
+
+/-- Composition applies the inner morphism first. -/
+theorem A_comp_B_at_e : A.comp B e = (1, 0) := by simp [e]
+
+/-- The two coordinate morphisms do not commute at `e`. -/
+theorem B_comp_A_at_e : B.comp A e = (0, 0) := by simp [e]
+
+/-- Scalar multiplication in both slots agrees with the existing composition. -/
+theorem scaled_comp_at_e : ((2 : ℕ) • A).comp ((3 : ℕ) • B) e = (6, 0) := by
+  simp [e]
+
+/-- The canonical linear-map class supplies additivity directly on morphisms. -/
+theorem B_map_add : B (e + e) = B e + B e := map_add B e e
+
+/-- The canonical linear-map class supplies scalar compatibility directly. -/
+theorem B_map_smul : B ((3 : ℕ) • e) = (3 : ℕ) • B e := map_smul B 3 e
+
+/-- The generic class preserves zero without an additional morphism lemma. -/
+theorem B_map_zero : B 0 = 0 := map_zero B
+
+/-- Both original coercions agree with the generic class on the coordinate map. -/
+theorem A_coercions :
+    (A.toLinearMap : (ℕ × ℕ) → (ℕ × ℕ)) = (A : (ℕ × ℕ) → (ℕ × ℕ)) ∧
+      (A : (ℕ × ℕ) →ₗ[ℕ] (ℕ × ℕ)) = A.toLinearMap ∧
+      LinearMap.ofClass A = A.toLinearMap :=
+  ⟨coe_toLinearMap A, coe_eq_toLinearMap A, ofClass_eq_toLinearMap A⟩
+
+/-- The bundled forgetful map reads back the coordinate linear map. -/
+theorem forget_A : toLinearMapₗ plane plane A =
+    (LinearMap.snd ℕ ℕ ℕ).prod (0 : ℕ × ℕ →ₗ[ℕ] ℕ) := by
+  rw [toLinearMapₗ_apply]
+  rfl
+
+/-- The linear forgetful map preserves natural-number multiples generically. -/
+theorem forget_three_id : toLinearMapₗ plane plane ((3 : ℕ) • RightComoduleHom.id plane) =
+    (3 : ℕ) • toLinearMapₗ plane plane (RightComoduleHom.id plane) :=
+  map_nsmul (toLinearMapₗ plane plane) 3 (RightComoduleHom.id plane)
+
+/-- Forgetting morphism linear combinations works in independent universes and both map routes. -/
+theorem forget_linear_combination {R : Type u} {C : Type v} {M : Type w} {N : Type z}
+    [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
+    [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+    (X : RightComodule R C M) (Y : RightComodule R C N)
+    (r : R) (f g : RightComoduleHom X Y) :
+    toLinearMapₗ X Y (r • f + g) = r • LinearMap.ofClass f + (g : M →ₗ[R] N) := by
+  rw [map_add, map_smul]
+  simp only [toLinearMapₗ_apply, ofClass_eq_toLinearMap, coe_eq_toLinearMap]
+
+/-- Injectivity of the bundled forgetful map detects the nonzero identity. -/
+theorem forget_id_ne_zero : toLinearMapₗ plane plane (RightComoduleHom.id plane) ≠ 0 := by
+  intro h
+  apply id_ne_zero
+  apply toLinearMapₗ_injective plane plane
+  simpa using h
+
+/-- The one-element module with the scalar coaction. -/
+noncomputable def point : RightComodule ℕ ℕ PUnit := RightComodule.scalar ℕ _
+
+/-- The zero morphism from the plane to the one-element module. -/
+noncomputable def toPoint : RightComoduleHom plane point := 0
+
+/-- The zero morphism from the one-element module to the plane. -/
+noncomputable def fromPoint : RightComoduleHom point plane := 0
+
+/-- Every plane-to-point morphism is pointwise the unique map. -/
+theorem toPoint_unique (f : RightComoduleHom plane point) : f = toPoint := by
+  apply Coalgebra.RightComoduleHom.ext
+  intro m
+  exact Subsingleton.elim _ _
+
+/-- A morphism out of the one-element module vanishes by linearity at zero. -/
+theorem fromPoint_unique (f : RightComoduleHom point plane) : f = fromPoint := by
+  apply Coalgebra.RightComoduleHom.ext
+  intro m
+  calc
+    f m = f 0 := congrArg f (Subsingleton.elim m 0)
+    _ = 0 := map_zero f
+    _ = fromPoint m := rfl
+
+/-- Zero, sum, scalar and forgetful readbacks agree in both zero-module directions. -/
+theorem point_readbacks :
+    (0 : RightComoduleHom plane point) = toPoint ∧
+      toPoint + toPoint = toPoint ∧ (3 : ℕ) • toPoint = toPoint ∧
+      toLinearMapₗ plane point toPoint = 0 ∧
+      (0 : RightComoduleHom point plane) = fromPoint ∧
+      fromPoint + fromPoint = fromPoint ∧ (3 : ℕ) • fromPoint = fromPoint ∧
+      toLinearMapₗ point plane fromPoint = 0 := by
+  simp [toPoint, fromPoint]
+
+end RightComoduleHomExamples
+
+/-!
+## Inverse colinearity for two colored coactions
+
+The two coactions on `ℕ × ℕ` below use the same stock module structures and the
+stock full coalgebra `MonoidAlgebra ℕ Bool`. Their basis colors are fixed; only
+the module coordinates are exchanged. Both coaction laws are proved directly,
+without transport. Mathlib supplies the coalgebra, product maps and tensor maps.
+-/
+
+namespace RightComoduleExamples
+
+noncomputable section
+
+private abbrev ColoredCoalgebra := MonoidAlgebra ℕ Bool
+
+-- These stock monoid-algebra elements have coefficients `Finsupp.single false 1`
+-- and `Finsupp.single true 1`, respectively.
+private def color0 : ColoredCoalgebra := MonoidAlgebra.single false 1
+private def color1 : ColoredCoalgebra := MonoidAlgebra.single true 1
+
+private theorem color0_groupLike : IsGroupLikeElem ℕ color0 := by
+  constructor <;>
+    simp [color0, MonoidAlgebra.comul_single, CommSemiring.comul_apply]
+
+private theorem color1_groupLike : IsGroupLikeElem ℕ color1 := by
+  constructor <;>
+    simp [color1, MonoidAlgebra.comul_single, CommSemiring.comul_apply]
+
+private def coloredRhoX : (ℕ × ℕ) →ₗ[ℕ] (ℕ × ℕ) ⊗[ℕ] ColoredCoalgebra :=
+  (((TensorProduct.mk ℕ (ℕ × ℕ) ColoredCoalgebra).flip color0) ∘ₗ
+      LinearMap.inl ℕ ℕ ℕ).coprod
+    (((TensorProduct.mk ℕ (ℕ × ℕ) ColoredCoalgebra).flip color1) ∘ₗ
+      LinearMap.inr ℕ ℕ ℕ)
+
+private def coloredRhoY : (ℕ × ℕ) →ₗ[ℕ] (ℕ × ℕ) ⊗[ℕ] ColoredCoalgebra :=
+  (((TensorProduct.mk ℕ (ℕ × ℕ) ColoredCoalgebra).flip color1) ∘ₗ
+      LinearMap.inl ℕ ℕ ℕ).coprod
+    (((TensorProduct.mk ℕ (ℕ × ℕ) ColoredCoalgebra).flip color0) ∘ₗ
+      LinearMap.inr ℕ ℕ ℕ)
+
+private theorem coloredRhoX_apply (a b : ℕ) :
+    coloredRhoX (a, b) = (a, 0) ⊗ₜ[ℕ] color0 + (0, b) ⊗ₜ[ℕ] color1 := rfl
+
+private theorem coloredRhoY_apply (a b : ℕ) :
+    coloredRhoY (a, b) = (a, 0) ⊗ₜ[ℕ] color1 + (0, b) ⊗ₜ[ℕ] color0 := rfl
+
+private def coloredX : RightComodule ℕ ColoredCoalgebra (ℕ × ℕ) where
+  coaction := coloredRhoX
+  coassoc := by
+    apply LinearMap.ext
+    rintro ⟨a, b⟩
+    change TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
+        (coloredRhoX.rTensor ColoredCoalgebra (coloredRhoX (a, b))) =
+      (Coalgebra.comul (R := ℕ) (A := ColoredCoalgebra)).lTensor (ℕ × ℕ)
+        (coloredRhoX (a, b))
+    rw [coloredRhoX_apply]
+    simp [coloredRhoX_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
+      TensorProduct.add_tmul, color0_groupLike.comul_eq_tmul_self,
+      color1_groupLike.comul_eq_tmul_self]
+    simp only [Prod.mk_zero_zero, TensorProduct.zero_tmul, add_zero, zero_add]
+    refine (LinearEquiv.map_add
+      (TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra)
+      (((a, 0) ⊗ₜ[ℕ] color0) ⊗ₜ[ℕ] color0)
+      (((0, b) ⊗ₜ[ℕ] color1) ⊗ₜ[ℕ] color1)).trans ?_
+    exact congrArg₂ (· + ·)
+      (show TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
+          (((a, 0) ⊗ₜ[ℕ] color0) ⊗ₜ[ℕ] color0) =
+          (a, 0) ⊗ₜ[ℕ] (color0 ⊗ₜ[ℕ] color0) from
+        TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
+          (N := ColoredCoalgebra) (P := ColoredCoalgebra) (a, 0) color0 color0)
+      (show TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
+          (((0, b) ⊗ₜ[ℕ] color1) ⊗ₜ[ℕ] color1) =
+          (0, b) ⊗ₜ[ℕ] (color1 ⊗ₜ[ℕ] color1) from
+        TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
+          (N := ColoredCoalgebra) (P := ColoredCoalgebra) (0, b) color1 color1)
+  counit_comp := by
+    apply LinearMap.ext
+    rintro ⟨a, b⟩
+    change (Coalgebra.counit (R := ℕ) (A := ColoredCoalgebra)).lTensor (ℕ × ℕ)
+        (coloredRhoX (a, b)) = (a, b) ⊗ₜ[ℕ] 1
+    rw [coloredRhoX_apply]
+    simp only [map_add, LinearMap.lTensor_tmul,
+      color0_groupLike.counit_eq_one, color1_groupLike.counit_eq_one]
+    rw [← TensorProduct.add_tmul]
+    simp
+
+private def coloredY : RightComodule ℕ ColoredCoalgebra (ℕ × ℕ) where
+  coaction := coloredRhoY
+  coassoc := by
+    apply LinearMap.ext
+    rintro ⟨a, b⟩
+    change TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
+        (coloredRhoY.rTensor ColoredCoalgebra (coloredRhoY (a, b))) =
+      (Coalgebra.comul (R := ℕ) (A := ColoredCoalgebra)).lTensor (ℕ × ℕ)
+        (coloredRhoY (a, b))
+    rw [coloredRhoY_apply]
+    simp [coloredRhoY_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
+      TensorProduct.add_tmul, color0_groupLike.comul_eq_tmul_self,
+      color1_groupLike.comul_eq_tmul_self]
+    simp only [Prod.mk_zero_zero, TensorProduct.zero_tmul, add_zero, zero_add]
+    refine (LinearEquiv.map_add
+      (TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra)
+      (((a, 0) ⊗ₜ[ℕ] color1) ⊗ₜ[ℕ] color1)
+      (((0, b) ⊗ₜ[ℕ] color0) ⊗ₜ[ℕ] color0)).trans ?_
+    exact congrArg₂ (· + ·)
+      (show TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
+          (((a, 0) ⊗ₜ[ℕ] color1) ⊗ₜ[ℕ] color1) =
+          (a, 0) ⊗ₜ[ℕ] (color1 ⊗ₜ[ℕ] color1) from
+        TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
+          (N := ColoredCoalgebra) (P := ColoredCoalgebra) (a, 0) color1 color1)
+      (show TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
+          (((0, b) ⊗ₜ[ℕ] color0) ⊗ₜ[ℕ] color0) =
+          (0, b) ⊗ₜ[ℕ] (color0 ⊗ₜ[ℕ] color0) from
+        TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
+          (N := ColoredCoalgebra) (P := ColoredCoalgebra) (0, b) color0 color0)
+  counit_comp := by
+    apply LinearMap.ext
+    rintro ⟨a, b⟩
+    change (Coalgebra.counit (R := ℕ) (A := ColoredCoalgebra)).lTensor (ℕ × ℕ)
+        (coloredRhoY (a, b)) = (a, b) ⊗ₜ[ℕ] 1
+    rw [coloredRhoY_apply]
+    simp only [map_add, LinearMap.lTensor_tmul,
+      color0_groupLike.counit_eq_one, color1_groupLike.counit_eq_one]
+    rw [← TensorProduct.add_tmul]
+    simp
+
+-- Forward colinearity is checked on the specified maps, not inferred from the
+-- inverse theorem or a transported coaction.
+private def coloredSwapHom : Coalgebra.RightComoduleHom coloredX coloredY where
+  toLinearMap := (LinearEquiv.prodComm ℕ ℕ ℕ).toLinearMap
+  colinear := by
+    apply LinearMap.ext
+    rintro ⟨a, b⟩
+    change coloredRhoY (b, a) =
+      (LinearEquiv.prodComm ℕ ℕ ℕ).toLinearMap.rTensor ColoredCoalgebra
+        (coloredRhoX (a, b))
+    rw [coloredRhoY_apply, coloredRhoX_apply]
+    simp [LinearMap.rTensor_tmul, add_comm]
+
+-- Nonzero outputs witness both nonzero coactions. Coefficients after the
+-- stock projection and tensor unitor detect the changed coaction and the
+-- failure of the same swap to be colinear from `coloredX` to itself.
+example :
+    coloredX.coaction (1, 0) ≠ 0 ∧ coloredY.coaction (1, 0) ≠ 0 ∧
+      coloredX.coaction ≠ coloredY.coaction ∧
+      (LinearEquiv.prodComm ℕ ℕ ℕ) (1, 0) ≠ (1, 0) ∧
+      ¬ (coloredX.coaction ∘ₗ (LinearEquiv.prodComm ℕ ℕ ℕ).toLinearMap =
+        (LinearEquiv.prodComm ℕ ℕ ℕ).toLinearMap.rTensor ColoredCoalgebra ∘ₗ
+          coloredX.coaction) := by
+  refine ⟨?_, ?_, ?_, ?_, ?_⟩
+  · intro h
+    have hz := coloredX.coaction_eq_zero.mp h
+    simpa using congrArg (fun p : ℕ × ℕ ↦ p.1) hz
+  · intro h
+    have hz := coloredY.coaction_eq_zero.mp h
+    simpa using congrArg (fun p : ℕ × ℕ ↦ p.1) hz
+  · intro h
+    have hxy := LinearMap.congr_fun h (1, 0)
+    change coloredRhoX (1, 0) = coloredRhoY (1, 0) at hxy
+    rw [coloredRhoX_apply, coloredRhoY_apply] at hxy
+    have hc := congrArg
+      (fun t : (ℕ × ℕ) ⊗[ℕ] ColoredCoalgebra ↦
+        (TensorProduct.lid ℕ ColoredCoalgebra
+          ((LinearMap.fst ℕ ℕ ℕ).rTensor ColoredCoalgebra t)).coeff false)
+      hxy
+    simp [LinearMap.rTensor_tmul, TensorProduct.lid_tmul, color0, color1] at hc
+  · simp
+  · intro h
+    have hswap := LinearMap.congr_fun h (1, 0)
+    change coloredRhoX (0, 1) =
+      (LinearEquiv.prodComm ℕ ℕ ℕ).toLinearMap.rTensor ColoredCoalgebra
+        (coloredRhoX (1, 0)) at hswap
+    simp only [coloredRhoX_apply] at hswap
+    have hc := congrArg
+      (fun t : (ℕ × ℕ) ⊗[ℕ] ColoredCoalgebra ↦
+        (TensorProduct.lid ℕ ColoredCoalgebra
+          ((LinearMap.snd ℕ ℕ ℕ).rTensor ColoredCoalgebra t)).coeff false)
+      hswap
+    simp [LinearMap.rTensor_tmul, TensorProduct.lid_tmul, color0, color1] at hc
+
+-- The headline law supplies the inverse colinearity field with exactly the
+-- supplied equivalence's inverse linear map, and with the coalgebra fixed.
+example : ∃ f : Coalgebra.RightComoduleHom coloredY coloredX,
+    f.toLinearMap = (LinearEquiv.prodComm ℕ ℕ ℕ).symm.toLinearMap := by
+  refine ⟨{
+    toLinearMap := (LinearEquiv.prodComm ℕ ℕ ℕ).symm.toLinearMap
+    colinear := Coalgebra.RightComoduleHom.colinear_symm
+      (LinearEquiv.prodComm ℕ ℕ ℕ) coloredSwapHom.colinear }, rfl⟩
+
+-- A cheap identity boundary uses the same already constructed coaction.
+example :
+    coloredX.coaction ∘ₗ (LinearEquiv.refl ℕ (ℕ × ℕ)).symm.toLinearMap =
+      (LinearEquiv.refl ℕ (ℕ × ℕ)).symm.toLinearMap.rTensor ColoredCoalgebra ∘ₗ
+        coloredX.coaction := by
+  apply Coalgebra.RightComoduleHom.colinear_symm
+  simp [LinearMap.rTensor_id]
+
+end
+
+end RightComoduleExamples

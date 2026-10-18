@@ -20,17 +20,27 @@ monoid modules, with independent universes for the scalars, coalgebra and two
 carriers. It needs no flatness, projectivity, basis or finiteness assumption.
 `transport_coaction` and `transport_coaction_apply` read back its coaction.
 
+`transportHom` and `transportInvHom` are the canonical colinear maps with
+underlying linear maps `e` and `e.symm`; their composites are the respective
+identities. Transport respects identity, successive carrier equivalences and
+inverses as equalities of specified comodule structures. The universal property
+`transport_eq_iff_colinear` characterizes the transported target by colinearity
+of `e`. These are object-coherence laws and a canonical inverse pair, not a
+construction on arbitrary comodule morphisms.
+
 ## References
 
 Mathlib supplies `LinearEquiv.arrowCongr`, tensor extensions, associators,
 unitors and their naturality laws. The construction retains the earlier
 project raw-conjugation and tensor-naturality proof approach for specified
 right comodules, including its closed coassociativity and counit arguments.
+The canonical colinear pair and object-coherence proofs use Mathlib's
+linear-equivalence inverse and tensor-composition laws.
 -/
 
 @[expose] public section
 
-universe uR uC uV uW
+universe uR uC uV uW uZ
 
 open scoped TensorProduct
 
@@ -136,6 +146,106 @@ theorem transport_coaction (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
 then the original coaction, then the equivalence on the first tensor factor. -/
 theorem transport_coaction_apply (X : RightComodule R C V) (e : V ≃ₗ[R] W) (w : W) :
     (X.transport e).coaction w = e.toLinearMap.rTensor C (X.coaction (e.symm w)) := (rfl)
+
+/-- The carrier equivalence as a colinear map to the transported comodule. -/
+@[no_expose]
+def transportHom (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
+    RightComoduleHom X (X.transport e) where
+  toLinearMap := e.toLinearMap
+  colinear := by
+    ext v
+    simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, transport_coaction_apply,
+      LinearEquiv.symm_apply_apply]
+
+/-- The underlying linear map of the canonical forward colinear map. -/
+@[simp] theorem transportHom_toLinearMap (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
+    (transportHom X e).toLinearMap = e.toLinearMap := (rfl)
+
+/-- The canonical forward colinear map has the carrier equivalence as its function. -/
+@[simp] theorem coe_transportHom (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
+    (transportHom X e : V → W) = (e : V → W) := (rfl)
+
+/-- Evaluation of the canonical forward colinear map. -/
+@[simp] theorem transportHom_apply (X : RightComodule R C V) (e : V ≃ₗ[R] W) (v : V) :
+    transportHom X e v = e v := (rfl)
+
+/-- The inverse carrier equivalence as a colinear map from the transported comodule. -/
+@[no_expose]
+def transportInvHom (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
+    RightComoduleHom (X.transport e) X where
+  toLinearMap := e.symm.toLinearMap
+  colinear := by
+    ext w
+    simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, transport_coaction_apply]
+    rw [← LinearMap.rTensor_comp_apply, LinearEquiv.symm_comp,
+      LinearMap.rTensor_id, LinearMap.id_apply]
+
+/-- The underlying linear map of the canonical inverse colinear map. -/
+@[simp] theorem transportInvHom_toLinearMap (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
+    (transportInvHom X e).toLinearMap = e.symm.toLinearMap := (rfl)
+
+/-- The canonical inverse colinear map has the inverse carrier equivalence as its function. -/
+@[simp] theorem coe_transportInvHom (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
+    (transportInvHom X e : W → V) = (e.symm : W → V) := (rfl)
+
+/-- Evaluation of the canonical inverse colinear map. -/
+@[simp] theorem transportInvHom_apply (X : RightComodule R C V) (e : V ≃ₗ[R] W) (w : W) :
+    transportInvHom X e w = e.symm w := (rfl)
+
+/-- The inverse after the forward map is the identity on the original comodule. -/
+@[simp] theorem transportInvHom_comp_transportHom
+    (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
+    (transportInvHom X e).comp (transportHom X e) = RightComoduleHom.id X := by
+  ext v
+  simp only [RightComoduleHom.comp_apply, transportInvHom_apply, transportHom_apply,
+    LinearEquiv.symm_apply_apply, RightComoduleHom.id_apply]
+
+/-- The forward after the inverse map is the identity on the transported comodule. -/
+@[simp] theorem transportHom_comp_transportInvHom
+    (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
+    (transportHom X e).comp (transportInvHom X e) = RightComoduleHom.id (X.transport e) := by
+  ext w
+  simp only [RightComoduleHom.comp_apply, transportHom_apply, transportInvHom_apply,
+    LinearEquiv.apply_symm_apply, RightComoduleHom.id_apply]
+
+/-- Transport along the identity leaves the specified comodule unchanged. -/
+@[simp] theorem transport_refl (X : RightComodule R C V) :
+    X.transport (LinearEquiv.refl R V) = X := by
+  apply RightComodule.ext
+  ext v
+  simp only [transport_coaction, LinearEquiv.arrowCongr_apply, LinearEquiv.rTensor_refl,
+    LinearEquiv.refl_symm, LinearEquiv.refl_apply]
+
+/-- Successive carrier transport along `e` and then `f` agrees with their composite. -/
+theorem transport_trans {Z : Type uZ} [AddCommMonoid Z] [Module R Z]
+    (X : RightComodule R C V) (e : V ≃ₗ[R] W) (f : W ≃ₗ[R] Z) :
+    (X.transport e).transport f = X.transport (e.trans f) := by
+  apply RightComodule.ext
+  ext z
+  simp only [transport_coaction, LinearEquiv.arrowCongr_apply, LinearEquiv.rTensor_trans,
+    LinearEquiv.trans_apply, LinearEquiv.symm_trans_apply]
+
+/-- Transporting back along the inverse recovers the original specified comodule. -/
+@[simp] theorem transport_symm (X : RightComodule R C V) (e : V ≃ₗ[R] W) :
+    (X.transport e).transport e.symm = X := by
+  rw [transport_trans, LinearEquiv.self_trans_symm, transport_refl]
+
+/-- A lawful target coaction is the transported one exactly when the carrier
+equivalence intertwines it with the original coaction. -/
+theorem transport_eq_iff_colinear (X : RightComodule R C V) (e : V ≃ₗ[R] W)
+    (Y : RightComodule R C W) :
+    X.transport e = Y ↔
+      Y.coaction ∘ₗ e.toLinearMap = e.toLinearMap.rTensor C ∘ₗ X.coaction := by
+  constructor
+  · intro h
+    subst Y
+    simpa only [transportHom_toLinearMap] using (transportHom X e).colinear
+  · intro h
+    apply RightComodule.ext
+    ext w
+    rw [transport_coaction_apply]
+    simpa only [LinearMap.comp_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply] using
+      (LinearMap.congr_fun h (e.symm w)).symm
 
 end Conjugation
 

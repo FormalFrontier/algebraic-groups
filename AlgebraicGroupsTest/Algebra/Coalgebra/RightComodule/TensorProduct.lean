@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
 import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct
 import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 
@@ -15,7 +16,12 @@ the tensor coalgebra on `A ⊗[ℕ] A`. The monomials at indices `2` and `3`, wi
 coefficient `1`, have a nonzero tensor whose coaction is its tensor square.
 The tensor of the two counits detects this input without a field or basis.
 
-The bottom subcomodule of the same regular comodule gives a zero-carrier
+For the distinct coalgebras `MonoidAlgebra ℕ Bool` and `MonoidAlgebra ℕ (Fin 3)`,
+coordinate extraction on a tensor of two sums selects the tensor of the monomials
+at `false` and `0`. The product coordinate detects a nonzero value, and the product
+counit distinguishes that value from the input. Neither coordinate is a counit.
+
+The bottom subcomodule of the regular comodule on `A` gives a zero-carrier
 boundary. Its subtype and tensor domain are inhabited subsingletons, and the
 specified external tensor coaction is zero.
 
@@ -26,6 +32,9 @@ constructions by Formal Frontier Agents. Mathlib supplies the tensor maps and
 permutations by Kenny Lau and Mario Carneiro, tensor coalgebras by Amelia
 Livingston and Andrew Yang, scalar-tower tensor APIs by Kim Morrison, Johan
 Commelin and Eric Wieser, and monoid-algebra coalgebras by Amelia Livingston.
+The coordinate maps follow AlgebraicGroups' finite-coalgebra coefficient examples
+and Mathlib's monoid-algebra and Finsupp formalizations by Johannes Hölzl,
+Yury Kudryashov and Kim Morrison.
 Classical comodules are credited bibliographically to M. E. Sweedler,
 *Hopf Algebras*, W. A. Benjamin, 1969.
 -/
@@ -113,6 +122,105 @@ private theorem regular_semiring_contract :
     apply hinput
     exact externalRegular.coaction_injective
       (h.trans (map_zero externalRegular.coaction).symm)
+
+private abbrev regularBool :=
+  @regular ℕ (MonoidAlgebra ℕ Bool) _ _ _ (MonoidAlgebra.instCoalgebra ℕ ℕ Bool)
+
+private abbrev regularFinThree :=
+  @regular ℕ (MonoidAlgebra ℕ (Fin 3)) _ _ _ (MonoidAlgebra.instCoalgebra ℕ ℕ (Fin 3))
+
+private abbrev falseMonomial : MonoidAlgebra ℕ Bool := MonoidAlgebra.single false 1
+
+private abbrev trueMonomial : MonoidAlgebra ℕ Bool := MonoidAlgebra.single true 1
+
+private abbrev zeroMonomial : MonoidAlgebra ℕ (Fin 3) := MonoidAlgebra.single 0 1
+
+private abbrev oneMonomial : MonoidAlgebra ℕ (Fin 3) := MonoidAlgebra.single 1 1
+
+private abbrev boolPair := falseMonomial + trueMonomial
+
+private abbrev finThreePair := zeroMonomial + oneMonomial
+
+private def falseCoordinate : MonoidAlgebra ℕ Bool →ₗ[ℕ] ℕ :=
+  (Finsupp.lapply false).comp (MonoidAlgebra.coeffLinearEquiv ℕ).toLinearMap
+
+private def zeroCoordinate : MonoidAlgebra ℕ (Fin 3) →ₗ[ℕ] ℕ :=
+  (Finsupp.lapply (0 : Fin 3)).comp (MonoidAlgebra.coeffLinearEquiv ℕ).toLinearMap
+
+private abbrev coordinateProduct :=
+  (TensorProduct.lid ℕ ℕ).toLinearMap ∘ₗ TensorProduct.map falseCoordinate zeroCoordinate
+
+private abbrev counitProduct :=
+  (TensorProduct.lid ℕ ℕ).toLinearMap ∘ₗ
+    TensorProduct.map (Coalgebra.counit (R := ℕ) (A := MonoidAlgebra ℕ Bool))
+      (Coalgebra.counit (R := ℕ) (A := MonoidAlgebra ℕ (Fin 3)))
+
+private abbrev tensorPair := boolPair ⊗ₜ[ℕ] finThreePair
+
+private abbrev selectedTensor := falseMonomial ⊗ₜ[ℕ] zeroMonomial
+
+/-- Product coordinates on two distinct regular coalgebras select one monomial tensor
+from a tensor of two sums. -/
+private theorem external_coordinate_coefficient :
+    (regularBool.externalTensor regularFinThree).coefficient coordinateProduct tensorPair =
+      selectedTensor := by
+  have hleft : regularBool.coefficient falseCoordinate boolPair = falseMonomial := by
+    rw [Coalgebra.RightComodule.coefficient_eq,
+      Coalgebra.RightComodule.regular_coaction]
+    simp [boolPair, falseMonomial, trueMonomial, falseCoordinate,
+      MonoidAlgebra.comul_single, TensorProduct.map_tmul, MonoidAlgebra.lsingle_apply,
+      LinearMap.rTensor_tmul]
+  have hright : regularFinThree.coefficient zeroCoordinate finThreePair = zeroMonomial := by
+    rw [Coalgebra.RightComodule.coefficient_eq,
+      Coalgebra.RightComodule.regular_coaction]
+    simp [finThreePair, zeroMonomial, oneMonomial, zeroCoordinate,
+      MonoidAlgebra.comul_single, TensorProduct.map_tmul, MonoidAlgebra.lsingle_apply,
+      LinearMap.rTensor_tmul]
+  calc
+    _ = regularBool.coefficient falseCoordinate boolPair ⊗ₜ[ℕ]
+        regularFinThree.coefficient zeroCoordinate finThreePair :=
+      Coalgebra.RightComodule.externalTensor_coefficient_tmul
+        regularBool regularFinThree falseCoordinate zeroCoordinate boolPair finThreePair
+    _ = selectedTensor := by rw [hleft, hright]
+
+/-- The selected coefficient is nonzero and differs from the input, as detected by
+product coordinates and counits. The rejected monomials separate each coordinate
+from its coalgebra's counit. -/
+private theorem coordinate_coefficient_contract :
+    coordinateProduct selectedTensor = 1 ∧
+    selectedTensor ≠ 0 ∧
+    counitProduct tensorPair = 4 ∧
+    counitProduct selectedTensor = 1 ∧
+    selectedTensor ≠ tensorPair ∧
+    falseCoordinate trueMonomial = 0 ∧
+    Coalgebra.counit (R := ℕ) trueMonomial = 1 ∧
+    zeroCoordinate oneMonomial = 0 ∧
+    Coalgebra.counit (R := ℕ) oneMonomial = 1 := by
+  have hselected : coordinateProduct selectedTensor = 1 := by
+    simp [coordinateProduct, selectedTensor, falseCoordinate, zeroCoordinate,
+      falseMonomial, zeroMonomial]
+  have hraw : counitProduct tensorPair = 4 := by
+    simp [counitProduct, tensorPair, boolPair, finThreePair, falseMonomial,
+      trueMonomial, zeroMonomial, oneMonomial, smul_eq_mul]
+  have hsmall : counitProduct selectedTensor = 1 := by
+    simp [counitProduct, selectedTensor, falseMonomial, zeroMonomial]
+  have hleftCounit : Coalgebra.counit (R := ℕ) trueMonomial = 1 := by
+    exact (MonoidAlgebra.counit_single (R := ℕ) true (1 : ℕ)).trans
+      (CommSemiring.counit_apply ℕ 1)
+  have hrightCounit : Coalgebra.counit (R := ℕ) oneMonomial = 1 := by
+    exact (MonoidAlgebra.counit_single (R := ℕ) (1 : Fin 3) (1 : ℕ)).trans
+      (CommSemiring.counit_apply ℕ 1)
+  refine ⟨hselected, ?_, hraw, hsmall, ?_, ?_, hleftCounit, ?_, hrightCounit⟩
+  · intro h
+    have hone : (1 : ℕ) = 0 :=
+      hselected.symm.trans ((congrArg coordinateProduct h).trans (map_zero coordinateProduct))
+    exact Nat.one_ne_zero hone
+  · intro h
+    have hone : (1 : ℕ) = 4 :=
+      hsmall.symm.trans ((congrArg counitProduct h).trans hraw)
+    exact (by decide : (1 : ℕ) ≠ 4) hone
+  · simp [falseCoordinate, trueMonomial]
+  · simp [zeroCoordinate, oneMonomial]
 
 private abbrev regularBottom :=
   Coalgebra.RightComodule.Subcomodule.bot regularMonoidAlgebra

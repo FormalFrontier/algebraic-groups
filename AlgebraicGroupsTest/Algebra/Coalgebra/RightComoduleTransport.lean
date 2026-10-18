@@ -24,7 +24,9 @@ The coalgebra `C` and its scalar-module structures stay fixed.
 For the diagonal coalgebra on `MonoidAlgebra ℕ (Multiplicative ℤ)`, translation
 of the integer basis labels leads to the equation `δₙ ↦ δₙ ⊗ δₙ₋₁`.
 The equations below concern coassociativity, right counitality, the translated
-basis and identity on the bottom subcomodule of the regular comodule.
+basis and identity on the bottom subcomodule of the regular comodule. The
+canonical inverse colinear maps and successive transport are exercised on the
+same translated basis, including recovery of the original specified coaction.
 
 ## References
 
@@ -93,22 +95,25 @@ private theorem shiftedCoaction_counit_comp :
       (TensorProduct.rid ℕ Diagonal).symm.toLinearMap :=
   shiftedRegular.counit_comp
 
+private theorem shift_delta (n : ℤ) : shift (delta n) = delta (n + 1) := by
+  simp only [shift, delta, MonoidAlgebra.mapDomainLinearEquiv_single,
+    labelShift, Equiv.coe_mulRight, ofAdd_add]
+
+private theorem shift_symm_delta (n : ℤ) : shift.symm (delta n) = delta (n - 1) := by
+  apply shift.injective
+  rw [shift.apply_symm_apply, shift_delta, sub_add_cancel]
+
+private theorem diagonalRegular_coaction_delta (n : ℤ) :
+    diagonalRegular.coaction (delta n) = delta n ⊗ₜ[ℕ] delta n := by
+  simp only [diagonalRegular, RightComodule.regular_coaction, delta,
+    MonoidAlgebra.comul_single, CommSemiring.comul_apply, TensorProduct.map_tmul,
+    MonoidAlgebra.lsingle_apply]
+
 private theorem shiftedCoaction_delta (n : ℤ) :
     shiftedCoaction (delta n) = delta n ⊗ₜ[ℕ] delta (n - 1) := by
-  have hshift (m : ℤ) : shift (delta m) = delta (m + 1) := by
-    simp only [shift, delta, MonoidAlgebra.mapDomainLinearEquiv_single,
-      labelShift, Equiv.coe_mulRight, ofAdd_add]
-  have hsymm : shift.symm (delta n) = delta (n - 1) := by
-    apply shift.injective
-    rw [shift.apply_symm_apply, hshift, sub_add_cancel]
-  have hregular (m : ℤ) :
-      diagonalRegular.coaction (delta m) = delta m ⊗ₜ[ℕ] delta m := by
-    simp only [diagonalRegular, RightComodule.regular_coaction, delta,
-      MonoidAlgebra.comul_single, CommSemiring.comul_apply, TensorProduct.map_tmul,
-      MonoidAlgebra.lsingle_apply]
   change (diagonalRegular.transport shift).coaction (delta n) = _
-  rw [transport_coaction, LinearEquiv.arrowCongr_apply, hsymm, hregular,
-    LinearEquiv.rTensor_tmul, hshift, sub_add_cancel]
+  rw [transport_coaction, LinearEquiv.arrowCongr_apply, shift_symm_delta,
+    diagonalRegular_coaction_delta, LinearEquiv.rTensor_tmul, shift_delta, sub_add_cancel]
 
 private theorem shiftedCoaction_delta_zero_ne :
     shiftedCoaction (delta 0) ≠ diagonalRegular.coaction (delta 0) ∧
@@ -139,6 +144,59 @@ private theorem shiftedCoaction_delta_zero_ne :
       simpa only [hshifted, hdetect, map_zero] using ht
     simpa [delta] using hd
 
+/-- The canonical colinear pair on a genuinely changed coaction, its second
+transport and inverse recovery, evaluated on the integer-labelled basis. -/
+example (n : ℤ) :
+    (shiftedCoaction (delta 0) ≠ diagonalRegular.coaction (delta 0) ∧
+      shiftedCoaction (delta 0) ≠ 0) ∧
+    ¬ (diagonalRegular.coaction ∘ₗ shift.toLinearMap =
+      shift.toLinearMap.rTensor Diagonal ∘ₗ diagonalRegular.coaction) ∧
+    shiftedRegular.coaction (transportHom diagonalRegular shift (delta n)) =
+      delta (n + 1) ⊗ₜ[ℕ] delta n ∧
+    transportInvHom diagonalRegular shift (delta n) = delta (n - 1) ∧
+    diagonalRegular.coaction (transportInvHom diagonalRegular shift (delta n)) =
+      delta (n - 1) ⊗ₜ[ℕ] delta (n - 1) ∧
+    (shiftedRegular.transport shift).coaction (delta n) = delta n ⊗ₜ[ℕ] delta (n - 2) ∧
+    shiftedRegular.transport shift.symm = diagonalRegular ∧
+    (transportInvHom diagonalRegular shift).comp (transportHom diagonalRegular shift)
+      (delta n) = delta n ∧
+    (transportHom diagonalRegular shift).comp (transportInvHom diagonalRegular shift)
+      (delta n) = delta n := by
+  refine ⟨shiftedCoaction_delta_zero_ne, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  · intro h
+    have htransport : diagonalRegular.transport shift = diagonalRegular :=
+      (transport_eq_iff_colinear diagonalRegular shift diagonalRegular).mpr h
+    exact shiftedCoaction_delta_zero_ne.1
+      (congrArg (fun X : RightComodule ℕ Diagonal Diagonal ↦ X.coaction (delta 0)) htransport)
+  · calc
+      shiftedRegular.coaction (transportHom diagonalRegular shift (delta n)) =
+          (transportHom diagonalRegular shift).toLinearMap.rTensor Diagonal
+            (diagonalRegular.coaction (delta n)) :=
+        (transportHom diagonalRegular shift).colinear_apply (delta n)
+      _ = delta (n + 1) ⊗ₜ[ℕ] delta n := by
+        rw [transportHom_toLinearMap, diagonalRegular_coaction_delta,
+          LinearMap.rTensor_tmul, LinearEquiv.coe_coe, shift_delta]
+  · rw [transportInvHom_apply, shift_symm_delta]
+  · calc
+      diagonalRegular.coaction (transportInvHom diagonalRegular shift (delta n)) =
+          (transportInvHom diagonalRegular shift).toLinearMap.rTensor Diagonal
+            (shiftedRegular.coaction (delta n)) :=
+        (transportInvHom diagonalRegular shift).colinear_apply (delta n)
+      _ = delta (n - 1) ⊗ₜ[ℕ] delta (n - 1) := by
+        rw [transportInvHom_toLinearMap,
+          show shiftedRegular.coaction (delta n) = delta n ⊗ₜ[ℕ] delta (n - 1) from
+            shiftedCoaction_delta n,
+          LinearMap.rTensor_tmul, LinearEquiv.coe_coe, shift_symm_delta]
+  · rw [show shiftedRegular.transport shift = diagonalRegular.transport (shift.trans shift) from
+        transport_trans diagonalRegular shift shift,
+      transport_coaction_apply, LinearEquiv.symm_trans_apply,
+      shift_symm_delta, shift_symm_delta, diagonalRegular_coaction_delta,
+      LinearMap.rTensor_tmul, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+      shift_delta, shift_delta, sub_add_cancel, sub_add_cancel, sub_sub, one_add_one_eq_two]
+  · exact transport_symm diagonalRegular shift
+  · rw [transportInvHom_comp_transportHom, RightComoduleHom.id_apply]
+  · rw [transportHom_comp_transportInvHom, RightComoduleHom.id_apply]
+
 /-- The bottom subcomodule of the diagonal regular comodule. -/
 private def diagonalBottom : diagonalRegular.Subcomodule :=
   Subcomodule.bot diagonalRegular
@@ -152,6 +210,17 @@ private theorem conjugatedCoaction_bottom_refl :
   simp only [conjugatedCoaction, transport_coaction, LinearEquiv.arrowCongr_apply,
     LinearEquiv.rTensor_refl,
     LinearEquiv.refl_symm, LinearEquiv.refl_apply]
+
+/-- The same construction includes the bottom carrier and its identity equivalence. -/
+example :
+    diagonalBottom.comodule.transport (LinearEquiv.refl ℕ diagonalBottom.toSubmodule) =
+        diagonalBottom.comodule ∧
+    transportHom diagonalBottom.comodule (LinearEquiv.refl ℕ diagonalBottom.toSubmodule) 0 = 0 ∧
+    transportInvHom diagonalBottom.comodule
+      (LinearEquiv.refl ℕ diagonalBottom.toSubmodule) 0 = 0 := by
+  refine ⟨transport_refl diagonalBottom.comodule, ?_, ?_⟩
+  · rw [transportHom_apply, LinearEquiv.refl_apply]
+  · rw [transportInvHom_apply, LinearEquiv.refl_symm, LinearEquiv.refl_apply]
 
 end
 

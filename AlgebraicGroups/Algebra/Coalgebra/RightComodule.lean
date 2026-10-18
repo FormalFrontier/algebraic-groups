@@ -26,6 +26,8 @@ flatness, projectivity or freeness.
   `Subsingleton M`.
 * `RightComoduleHom` is a linear map intertwining the specified coactions, with
   underlying map `toLinearMap`, identities and composition.
+  `RightComoduleHom.colinear_symm` gives colinearity of the inverse of a linear
+  equivalence whose forward map intertwines the two specified coactions.
 * `RightComodule.IsStable` describes image stability for every member of an
   existing submodule in the range of `U ⊗ C → M ⊗ C`.
   `RightComodule.Subcomodule` instead carries a coaction on the submodule subtype
@@ -245,6 +247,21 @@ theorem colinear_apply (f : RightComoduleHom X Y) (m : M) :
     Y.coaction (f m) = f.toLinearMap.rTensor C (X.coaction m) :=
   LinearMap.congr_fun f.colinear m
 
+/-- The inverse of a linear equivalence intertwining two specified right coactions
+intertwines those coactions in the opposite direction. -/
+theorem colinear_symm {R : Type u} {C : Type v} {M : Type w} {N : Type z}
+    [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
+    [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+    {X : RightComodule R C M} {Y : RightComodule R C N}
+    (e : M ≃ₗ[R] N)
+    (h : Y.coaction ∘ₗ e.toLinearMap = e.toLinearMap.rTensor C ∘ₗ X.coaction) :
+    X.coaction ∘ₗ e.symm.toLinearMap = e.symm.toLinearMap.rTensor C ∘ₗ Y.coaction := by
+  rw [← LinearEquiv.coe_rTensor, ← LinearEquiv.symm_rTensor,
+    LinearEquiv.eq_toLinearMap_symm_comp (e₁₂ := e.rTensor C),
+    ← LinearMap.comp_assoc, LinearEquiv.comp_toLinearMap_symm_eq (e₁₂ := e),
+    LinearEquiv.coe_rTensor]
+  exact h.symm
+
 /-- The identity right-comodule morphism. -/
 def id (X : RightComodule R C M) : RightComoduleHom X X where
   toLinearMap := LinearMap.id
@@ -278,6 +295,125 @@ theorem comp_assoc {Q : Type*} [AddCommMonoid Q] [Module R Q]
     {W : RightComodule R C Q} (h : RightComoduleHom Z W)
     (g : RightComoduleHom Y Z) (f : RightComoduleHom X Y) :
     (h.comp g).comp f = h.comp (g.comp f) := by ext; rfl
+
+end RightComoduleHom
+
+namespace RightComoduleHom
+
+/-!
+## Module structure on comodule morphisms
+
+The operations use the existing underlying linear map and preserve colinearity by
+linearity of tensoring. The class/coercion and injective additive/module construction
+follow Mathlib's `RepresentationTheory/Intertwining.lean`, by Stepan Nesterov and
+Edison Xie, together with Mathlib's linear-map and tensor-product APIs.
+-/
+
+/-
+The Intertwining formalization has the following notice:
+Copyright (c) 2025 Stepan Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Stepan Nesterov, Edison Xie
+-/
+
+variable {R : Type u} {C : Type v} {M : Type w} {N : Type z}
+variable [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
+variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable {X : RightComodule R C M} {Y : RightComodule R C N}
+
+instance instLinearMapClass : LinearMapClass (RightComoduleHom X Y) R M N where
+  map_add f := f.toLinearMap.map_add
+  map_smulₛₗ f := f.toLinearMap.map_smul
+
+/-- The generic linear map agrees with the original underlying linear map. -/
+@[simp] theorem ofClass_eq_toLinearMap (f : RightComoduleHom X Y) :
+    LinearMap.ofClass f = f.toLinearMap := rfl
+
+/-- The original linear-map coercion is the underlying linear map. -/
+theorem coe_eq_toLinearMap (f : RightComoduleHom X Y) :
+    (f : M →ₗ[R] N) = f.toLinearMap := rfl
+
+/-- The underlying linear map and the original function coercion agree. -/
+@[simp] theorem coe_toLinearMap (f : RightComoduleHom X Y) :
+    (f.toLinearMap : M → N) = f := rfl
+
+/-- Forgetting colinearity is injective. -/
+theorem toLinearMap_injective :
+    Function.Injective (fun f : RightComoduleHom X Y ↦ f.toLinearMap) := by
+  intro f g h
+  exact ext (fun m ↦ LinearMap.congr_fun h m)
+
+instance instZero : Zero (RightComoduleHom X Y) where
+  zero :=
+    { toLinearMap := 0
+      colinear := by simp }
+
+@[simp] theorem zero_apply (m : M) : (0 : RightComoduleHom X Y) m = 0 := rfl
+
+@[simp] theorem toLinearMap_zero : (0 : RightComoduleHom X Y).toLinearMap = 0 := rfl
+
+instance instAdd : Add (RightComoduleHom X Y) where
+  add f g :=
+    { toLinearMap := f.toLinearMap + g.toLinearMap
+      colinear := by
+        simp only [LinearMap.comp_add, LinearMap.rTensor_add, LinearMap.add_comp,
+          f.colinear, g.colinear] }
+
+@[simp] theorem add_apply (f g : RightComoduleHom X Y) (m : M) :
+    (f + g) m = f m + g m := rfl
+
+@[simp] theorem toLinearMap_add (f g : RightComoduleHom X Y) :
+    (f + g).toLinearMap = f.toLinearMap + g.toLinearMap := rfl
+
+instance instSMulNat : SMul ℕ (RightComoduleHom X Y) where
+  smul n f :=
+    { toLinearMap := n • f.toLinearMap
+      colinear := by
+        have ht : (n • f.toLinearMap).rTensor C = n • f.toLinearMap.rTensor C :=
+          map_nsmul (LinearMap.rTensorHom C) n f.toLinearMap
+        rw [ht]
+        ext m
+        simp only [LinearMap.comp_apply, LinearMap.smul_apply, map_nsmul]
+        exact congrArg (fun t : N ⊗[R] C ↦ n • t) (f.colinear_apply m) }
+
+instance instAddCommMonoid : AddCommMonoid (RightComoduleHom X Y) :=
+  toLinearMap_injective.addCommMonoid
+    (fun f : RightComoduleHom X Y ↦ f.toLinearMap)
+    toLinearMap_zero toLinearMap_add (fun _ _ ↦ rfl)
+
+instance instSMul : SMul R (RightComoduleHom X Y) where
+  smul r f :=
+    { toLinearMap := r • f.toLinearMap
+      colinear := by
+        simp only [LinearMap.comp_smul, LinearMap.rTensor_smul, LinearMap.smul_comp,
+          f.colinear] }
+
+@[simp] theorem smul_apply (r : R) (f : RightComoduleHom X Y) (m : M) :
+    (r • f) m = r • f m := rfl
+
+@[simp] theorem toLinearMap_smul (r : R) (f : RightComoduleHom X Y) :
+    (r • f).toLinearMap = r • f.toLinearMap := rfl
+
+instance instModule : Module R (RightComoduleHom X Y) :=
+  Function.Injective.module R
+    { toFun := fun f : RightComoduleHom X Y ↦ f.toLinearMap
+      map_zero' := toLinearMap_zero
+      map_add' := toLinearMap_add }
+    toLinearMap_injective toLinearMap_smul
+
+/-- Forget colinearity as a linear map on the module of comodule morphisms. -/
+def toLinearMapₗ (X : RightComodule R C M) (Y : RightComodule R C N) :
+    RightComoduleHom X Y →ₗ[R] (M →ₗ[R] N) where
+  toFun := toLinearMap
+  map_add' := toLinearMap_add
+  map_smul' := toLinearMap_smul
+
+@[simp] theorem toLinearMapₗ_apply (X : RightComodule R C M) (Y : RightComodule R C N)
+    (f : RightComoduleHom X Y) : toLinearMapₗ X Y f = f.toLinearMap := rfl
+
+/-- The bundled linear map forgetting colinearity is injective. -/
+theorem toLinearMapₗ_injective (X : RightComodule R C M) (Y : RightComodule R C N) :
+    Function.Injective (toLinearMapₗ X Y) := toLinearMap_injective
 
 end RightComoduleHom
 

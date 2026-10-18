@@ -18,6 +18,9 @@ the scalar field and requires no additional closure condition.
 
 The set and type coercions use the underlying submodule. In particular, the additive and
 module structures on a subcoalgebra are those on the existing submodule subtype.
+Subcoalgebras are partially ordered by inclusion, and the greatest subcoalgebra is the whole
+ambient coalgebra. Its closure follows from the linear equivalence between the top submodule
+and the ambient space, and the induced equivalence on their tensor squares.
 
 ## References
 
@@ -25,7 +28,8 @@ The carrier and tensor inclusion use Mathlib's `Submodule` and `TensorProduct.ma
 The ambient coalgebra follows `Mathlib.RingTheory.Coalgebra.Basic`; the submodule and tensor
 maps follow `Mathlib.Algebra.Module.Submodule.LinearMap` and
 `Mathlib.LinearAlgebra.TensorProduct.Map`. The carrier API follows Mathlib's `Submodule`
-and `Subalgebra` conventions.
+and `Subalgebra` conventions. The inclusion order uses Mathlib's `PartialOrder.ofSetLike`;
+the greatest subcoalgebra uses `Submodule.topEquiv` and `TensorProduct.congr`.
 -/
 
 @[expose] public section
@@ -142,6 +146,62 @@ theorem coe_mk' (S : Submodule K C) (hS) : (mk' S hS : Set C) = S :=
 @[simp]
 theorem mem_mk' (S : Submodule K C) (hS) (x : C) : x ∈ mk' S hS ↔ x ∈ S :=
   Iff.rfl
+
+/-- Subcoalgebras are partially ordered by inclusion. -/
+instance instPartialOrder : PartialOrder (Subcoalgebra K C) :=
+  PartialOrder.ofSetLike (Subcoalgebra K C) C
+
+/-- Inclusion of subcoalgebras is inclusion of their underlying submodules. -/
+@[simp]
+theorem toSubmodule_le_toSubmodule {D E : Subcoalgebra K C} :
+    D.toSubmodule ≤ E.toSubmodule ↔ D ≤ E :=
+  Iff.rfl
+
+/-- The whole ambient coalgebra as a subcoalgebra. -/
+instance instTop : Top (Subcoalgebra K C) where
+  top :=
+    { toSubmodule := ⊤
+      comul_mem' := by
+        intro x _
+        let e : (⊤ : Submodule K C) ≃ₗ[K] C := Submodule.topEquiv
+        refine ⟨(TensorProduct.congr e e).symm (Coalgebra.comul (R := K) x), ?_⟩
+        change TensorProduct.map e.toLinearMap e.toLinearMap
+          ((TensorProduct.congr e e).symm (Coalgebra.comul (R := K) x)) = _
+        rw [← TensorProduct.toLinearMap_congr e e]
+        exact (TensorProduct.congr e e).apply_symm_apply _ }
+
+/-- The underlying submodule of the greatest subcoalgebra is the whole ambient space. -/
+@[simp]
+theorem top_toSubmodule :
+    (⊤ : Subcoalgebra K C).toSubmodule = (⊤ : Submodule K C) :=
+  rfl
+
+/-- The greatest subcoalgebra contains every ambient element. -/
+@[simp, norm_cast]
+theorem coe_top : ((⊤ : Subcoalgebra K C) : Set C) = Set.univ :=
+  rfl
+
+/-- Every ambient element belongs to the greatest subcoalgebra. -/
+@[simp]
+theorem mem_top {x : C} : x ∈ (⊤ : Subcoalgebra K C) :=
+  Submodule.mem_top
+
+/-- The whole ambient coalgebra is greatest under inclusion. -/
+instance instOrderTop : OrderTop (Subcoalgebra K C) where
+  __ := instTop
+  le_top _ _ _ := Set.mem_univ _
+
+/-- A subcoalgebra is greatest exactly when its underlying submodule is the whole space. -/
+@[simp]
+theorem toSubmodule_eq_top {D : Subcoalgebra K C} :
+    D.toSubmodule = (⊤ : Submodule K C) ↔ D = (⊤ : Subcoalgebra K C) := by
+  rw [← top_toSubmodule, toSubmodule_inj]
+
+/-- A subcoalgebra is greatest exactly when it contains every ambient element. -/
+theorem eq_top_iff {D : Subcoalgebra K C} :
+    D = (⊤ : Subcoalgebra K C) ↔ ∀ x : C, x ∈ D :=
+  _root_.eq_top_iff.trans
+    ⟨fun h x => h (mem_top (x := x)), fun h x _ => h x⟩
 
 /-- The subcoalgebra subtype is the subtype of its underlying submodule. -/
 @[simp]

@@ -104,14 +104,25 @@ maintained project libraries; it does not claim to formalize an entire source.
   construction, not an internal tensor product over a fixed bialgebra.
   [Construction and API](AlgebraicGroups/Algebra/Coalgebra/RightComodule/TensorProduct.lean),
   [Examples](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule/TensorProduct.lean).
+- **Modules of right-comodule morphisms.** Over a commutative semiring, morphisms
+  between specified right comodules on additive-monoid modules form a module by
+  pointwise operations. Their original underlying linear map is an injective
+  bundled linear forgetful map, coherent with the generic linear-map class.
+  No flatness, finiteness or nontriviality assumption is required.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean),
+  [coordinate and zero-module examples](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean).
 - **Carrier transport of right comodules.** For a specified right `C`-comodule
   `X` and an `R`-linear equivalence `e : V ≃ₗ[R] W`, `X.transport e` is a lawful
   right `C`-comodule on the given target module. The coalgebra stays fixed:
   its coaction at `w` is `(e tensor id_C) (X.coaction (e.symm w))`, changing
-  only the first tensor factor. The constructor and its two coaction formulas
-  work over commutative semirings on additive-commutative-monoid modules in
-  independent universes, without flatness or finiteness. A full coherence or
-  comodule-morphism transport API is not asserted here.
+  only the first tensor factor. The canonical colinear maps with underlying
+  maps `e` and `e.symm` are mutual inverses. Transport respects identity,
+  successive equivalences and inverse equivalences as equalities of specified
+  comodule structures; colinearity of `e` characterizes the transported target.
+  These results work over commutative semirings on additive-commutative-monoid
+  modules in independent universes, without flatness or finiteness. They give
+  object coherence and a canonical inverse pair, not transport of arbitrary
+  comodule morphisms.
   [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean).
 - **Intrinsic coefficients.** Coefficient spans exist over commutative semirings.
   Over a field they form a subcoalgebra: unique full corestriction of a coaction
@@ -327,7 +338,7 @@ maintained project libraries; it does not claim to formalize an entire source.
 | --- | --- |
 | [`AlgebraicGroups`](AlgebraicGroups.lean) | Library aggregate; focused imports are linked above. |
 | [`AlgebraicGroupsTest`](AlgebraicGroupsTest/) | Test library: ordinary-import clients and boundary examples. |
-| [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean) | Lawful carrier transport of specified right comodules with fixed coalgebra, and first-factor coaction formulas. |
+| [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean) | Carrier transport with fixed coalgebra, object-coherence laws, canonical inverse colinear maps and target characterization. |
 | [`AlgebraicGroups.GroupScheme.AffineHomOverConvolution`](AlgebraicGroups/GroupScheme/AffineHomOverConvolution.lean) | Affine-target global-sections comparison with convolution, target and coefficient readbacks, naturality, and affine specialization. |
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
 | [`AlgebraicGroups.Algebra.Bialgebra.GroupLike`](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean) | Monoid homomorphism `BialgHom.groupLikeMap` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |

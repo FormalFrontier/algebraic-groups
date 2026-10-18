@@ -146,6 +146,7 @@ roots = [
   "AlgebraicGroupsTest.GroupLikeCardinality",
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeHom",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraCodRestrict",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraOrderTop",
   "AlgebraicGroupsTest.GroupScheme.IdentityComponentBaseChange",
   "AlgebraicGroupsTest.GroupScheme.GeometricallyIntegral",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.GroupLikeUnits",
