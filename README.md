@@ -14,6 +14,13 @@ maintained project libraries; it does not claim to formalize an entire source.
   inversion criterion used in Milne, *Abelian Varieties*, proof of Corollary 1.4.
   [Criterion](AlgebraicGroups/GroupObject/Commutative.lean),
   [integer and permutation models](AlgebraicGroupsTest/GroupObject/Commutative.lean).
+- **Trivial-kernel criterion.** A morphism from a group object to a monoid object
+  in any Cartesian monoidal category is mono exactly when the canonical unit-to-fibre
+  pullback lift is an isomorphism. The supplied fibre needs no group structure or
+  global finite-limit hypothesis. For schemes this is the scheme-theoretic fibre,
+  not a geometric-point test.
+  [Criterion](AlgebraicGroups/GroupObject/KernelTorsor.lean),
+  [proper `S₃ → S₃ × C₂` inclusion and monoid boundary](AlgebraicGroupsTest/GroupObject/TrivialKernel.lean).
 
 ### Coalgebras and Hopf algebras
 

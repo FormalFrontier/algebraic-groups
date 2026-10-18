@@ -186,6 +186,12 @@ the precise passage-to-construction distinctions.
 
 ## Prior formalizations
 
+The group-object trivial-kernel criterion combines Andrew Yang's Mathlib Hom-group
+and postcomposition interfaces with `MonoidHom.ker_eq_bot_iff` from Kexing Ying's
+kernel formalization and Mathlib's pullback and limit-comparison APIs. Its symmetric-group
+example uses Kim Morrison's monoid-object construction in `Type` and Markus Himmel's
+group-object extension, rather than separate group-object structures.
+
 The Hopf coefficient matrix unit adapts Mathlib's `Coalgebra.Repr` and its
 finite-sum antipode identities, using the matrix and units interfaces. Formal
 Frontier Agents developed the two inverse proofs, unit construction and
