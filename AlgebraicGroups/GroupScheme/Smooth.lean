@@ -12,6 +12,7 @@ algebraic-closure descent of Mathlib's `AlgebraicGeometry.smooth_of_grpObj`.
 -/
 module
 
+public import AlgebraicGroups.GroupObject.BaseChange
 public import AlgebraicGroups.GroupObject.KernelTorsor
 public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 public import Mathlib.AlgebraicGeometry.Morphisms.LocalFlatDescent
@@ -142,22 +143,7 @@ theorem smooth_of_unit_mem_smoothLocus
       · rw [Category.assoc]
         simp only [m, eW, pullback.lift_fst]
         rw [← Category.assoc, pullback.lift_fst, he]
-        exact (show η[Over.mk fΩ].left ≫ pullback.fst f g =
-          g ≫ η[Over.mk f].left by
-            rw [show η[Over.mk fΩ] =
-              Functor.LaxMonoidal.ε (Over.pullback g) ≫
-                (Over.pullback g).map η[Over.mk f] from
-              Over.monObjMkPullbackSnd_one]
-            rw [Over.comp_left, Category.assoc, Over.ε_pullback_left]
-            change inv (pullback.snd (𝟙 _) g) ≫
-                pullback.lift (pullback.fst (𝟙 _) g ≫ η[Over.mk f].left)
-                  (pullback.snd (𝟙 _) g) _ ≫ pullback.fst f g =
-              g ≫ η[Over.mk f].left
-            rw [pullback.lift_fst]
-            rw [show pullback.fst (𝟙 _) g = pullback.snd (𝟙 _) g ≫ g by
-              simpa using (pullback.condition :
-                pullback.fst (𝟙 _) g ≫ 𝟙 _ = pullback.snd (𝟙 _) g ≫ g)]
-            simp).symm
+        exact (Over.unit_pullback_fst f g).symm
       · rw [Category.assoc]
         simp only [m, eW, pullback.lift_snd]
         rw [← Category.assoc, pullback.lift_snd]
@@ -181,13 +167,15 @@ theorem smooth_of_unit_mem_smoothLocus
     exact hmem
 
 private lemma smooth_descendsAlong_fppf :
-    MorphismProperty.DescendsAlong (@Smooth)
+    MorphismProperty.DescendsAlong (@Smooth.{u})
       (@Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation) := by
-  let hlocal : IsZariskiLocalAtTarget (@Smooth) :=
-    HasRingHomProperty.instIsZariskiLocalAtTarget (@Smooth) (Q := RingHom.Smooth)
-  exact
-    @instDescendsAlongSchemeMinMorphismPropertySurjectiveFlatLocallyOfFinitePresentationOfQuasiCompactOfIsZariskiLocalAtTarget
-      (@Smooth) instDescendsAlongSchemeSmoothMinMorphismPropertySurjectiveFlatQuasiCompact hlocal
+  let P : MorphismProperty Scheme.{u} := @Smooth.{u}
+  let hlocal : IsZariskiLocalAtTarget P :=
+    HasRingHomProperty.instIsZariskiLocalAtTarget P (Q := RingHom.Smooth)
+  let hfpqc : P.DescendsAlong (@Surjective ⊓ @Flat ⊓ @QuasiCompact) :=
+    inferInstance
+  exact inferInstanceAs
+    (P.DescendsAlong (@Surjective ⊓ @Flat ⊓ @LocallyOfFinitePresentation))
 
 variable {S : Scheme.{u}} {N G Q : Over S} [GrpObj G] [GrpObj Q]
 

@@ -55,6 +55,7 @@ public import AlgebraicGroups.Category.Extensive
 public import AlgebraicGroups.Category.EquivalenceRelation
 public import AlgebraicGroups.Category.Grp.FilteredColimits
 public import AlgebraicGroups.FieldTheory.GeometricallyReduced
+public import AlgebraicGroups.GroupObject.BaseChange
 public import AlgebraicGroups.GroupObject.Characteristic
 public import AlgebraicGroups.GroupObject.Commutative
 public import AlgebraicGroups.GroupObject.Coset
@@ -228,3 +229,12 @@ The [mathematical topic guide](docs/MATHEMATICS.md) locates the specific
 antecedents and prior formalizations without identifying the general-base
 constructions with their field-base sources.
 -/
+
+namespace AlgebraicGeometry
+
+/-- The proposition that the local ring at the unit of a locally finite-type group
+scheme over a field has Krull dimension equal to the scheme's topological Krull dimension. -/
+private def unitStalkDimension.{u} : Prop :=
+  type_of% (@AlgebraicGeometry.ringKrullDim_stalk_unit_eq_topologicalKrullDim.{u})
+
+end AlgebraicGeometry

@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.GroupScheme.Additive
+import AlgebraicGroups.Examples.UnitStalkDimension
 
 /-!
 # Additive-group regression clients
