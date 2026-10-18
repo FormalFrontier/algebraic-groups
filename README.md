@@ -204,6 +204,13 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Kernel fibres with a chosen lift.** In any Cartesian monoidal category, for
+  a morphism `q : G → Q` of group objects and a supplied kernel pullback,
+  right translation by an ordinary point `g : 𝟙 → G` identifies the kernel with
+  the fibre over `g ≫ q`. No group structure on the kernel or multiplicativity
+  of `g` is required. A target point without a chosen domain lift is not covered.
+  [Module](AlgebraicGroups/GroupObject/KernelTorsor.lean),
+  [permutation-group example](AlgebraicGroupsTest/SplitKernelSemidirect.lean).
 - **Affine-target maps and convolution.** Over a commutative ring `R`, maps from
   an arbitrary scheme over `Spec R` to the spectrum of a commutative
   `R`-bialgebra correspond to algebra maps into global sections. Geometric
@@ -381,8 +388,10 @@ and [formalization metadata](formalization.yaml) for result declarations.
 ## References
 
 Selected antecedents are Sweedler's *Hopf Algebras* (1969), Milne's *Algebraic
-Groups* (2017) and distinct 2012/2015 notes, the Stacks Project, and the prior
-formalizations in Mathlib and project dependencies. [References and scope](CREDITS.md#mathematical-sources)
+Groups* (2017) and distinct 2012/2015 notes, his *Abelian Varieties*, version 2.0
+(March 16, 2008), Chapter I, proof of Proposition 7.1 for chosen-lift fibre
+translation, the Stacks Project, and the prior formalizations in Mathlib and
+project dependencies. [References and scope](CREDITS.md#mathematical-sources)
 give precise locators, qualifications and further sources; none asserts whole-source coverage.
 
 ## Credits and license

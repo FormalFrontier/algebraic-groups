@@ -9,8 +9,8 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 /-!
 # Translations in group objects
 
-This file supplies the left-translation isomorphism complementary to
-`CategoryTheory.GrpObj.mulRight`.
+This file supplies the characteristic composition formula for right translation
+and the left-translation isomorphism complementary to `CategoryTheory.GrpObj.mulRight`.
 
 ## References
 
@@ -35,6 +35,14 @@ open MonoidalCategory CartesianMonoidalCategory MonObj
 universe v u
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
+
+/-- Right translation acts on morphisms by right multiplication by the constant point. -/
+@[to_additive
+  /-- Right translation acts on morphisms by addition of the constant point. -/]
+lemma comp_mulRight_hom {A T : C} [GrpObj A] (f : T ⟶ A) (g : 𝟙_ C ⟶ A) :
+    f ≫ (mulRight g).hom = f * (toUnit T ≫ g) := by
+  change f ≫ ((𝟙 A) * (toUnit A ≫ g)) = _
+  simp only [MonObj.comp_mul, Category.comp_id, comp_toUnit_assoc]
 
 /-- The left-translation isomorphism `(f * ·)` of a group object.
 For algebraic groups and rational points, see Milne, *Algebraic Groups* (2017), item 1.8. -/

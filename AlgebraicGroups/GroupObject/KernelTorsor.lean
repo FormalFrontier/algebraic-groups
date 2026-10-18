@@ -5,11 +5,16 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.GroupObject.Hom
+public import AlgebraicGroups.GroupObject.Translation
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Kernel torsors for morphisms of group objects
 
 This file begins the categorical core of smooth descent for extensions of group schemes.
+A chosen lift of a point of the target identifies the kernel with the fibre over that
+point by right translation. This does not assert that a fibre without a supplied lift
+already has a point.
 
 ## References
 
@@ -17,6 +22,10 @@ This file begins the categorical core of smooth descent for extensions of group 
   Proposition 1.62(a), for exact sequences and the fibre-translation argument
   in smooth extension descent. The theorem here is a generic kernel-pair
   pullback statement, not the smoothness implication.
+* J. S. Milne, *Abelian Varieties*, version 2.0 (March 16, 2008), Chapter I,
+  proof of Proposition 7.1, for the chosen-lift fibre-translation step.
+  Scalar extension and the existence of a lift are separate from this step;
+  the full proposition is not asserted here.
 * Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, for group laws on
   Hom sets, and the `IsPullback` cone and universal-property API.
 -/
@@ -79,5 +88,26 @@ theorem isPullback_kernel_mul (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
         simp
     · rw [lift_snd]
       exact hm₂
+
+/-- A chosen lift `g` identifies the kernel of `q` with the fibre over `g ≫ q`
+by right translation. The point `g` need not be a group-object homomorphism.
+This is the chosen-lift translation step in Milne, *Abelian Varieties*, version 2.0
+(March 16, 2008), Chapter I, proof of Proposition 7.1; it does not assert that fibres
+without a supplied lift already have points, nor supply the scalar-extension or
+existence arguments of that proposition. -/
+theorem isPullback_kernel_mulRight (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
+    (hN : IsPullback i (toUnit N) q η[Q]) (g : 𝟙_ C ⟶ G) :
+    IsPullback (i ≫ (GrpObj.mulRight g).hom) (toUnit N) q (g ≫ q) := by
+  have htranslation :
+      IsPullback (GrpObj.mulRight g).hom q q (GrpObj.mulRight (g ≫ q)).hom := by
+    apply IsPullback.of_horiz_isIso
+    refine ⟨?_⟩
+    rw [← Category.id_comp (GrpObj.mulRight g).hom, comp_mulRight_hom,
+      MonObj.mul_comp, comp_mulRight_hom]
+    simp only [Category.id_comp, Category.assoc]
+  have hunit : η[Q] ≫ (GrpObj.mulRight (g ≫ q)).hom = g ≫ q := by
+    rw [comp_mulRight_hom]
+    simp [MonObj.one_eq_one]
+  simpa only [hunit] using hN.paste_horiz htranslation
 
 end CategoryTheory.GrpObj

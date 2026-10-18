@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.GroupObject.KernelTorsor
 public import AlgebraicGroups.GroupObject.SplitKernelSemidirect
 public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
@@ -22,12 +23,18 @@ projection `H × H ⟶ H` is multiplicative, yet the underlying isomorphism
 noncommuting swaps detect the nontrivial conjugation. Its twisted product
 instead uses conjugation by the inverse of the second section value.
 
+The same projection also has a fibre over a nonidentity point obtained from its
+kernel by right translation by an ordinary, nonmultiplicative point. Its pullback
+property is checked directly in `Type`; the two swaps distinguish right translation
+from left multiplication.
+
 ## References
 
 * Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp` (group-object
   conjugation), `Mathlib.CategoryTheory.Limits.Types.Pullbacks` (pullbacks in
   `Type`), `Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp` (group objects
-  in `Type`), and `Mathlib.GroupTheory.Perm.Fin` (finite permutation groups).
+  in `Type`), `GrpObj.mulRight` (right translation), and
+  `Mathlib.GroupTheory.Perm.Fin` (finite permutation groups).
 -/
 
 public section
@@ -159,5 +166,68 @@ example :
   rw [forward_value, forward_value, forward_value] at hfirst
   change secondSwap * firstSwap = firstSwap * secondSwap at hfirst
   exact swaps_do_not_commute hfirst.symm
+
+private def kernelFibrePoint : 𝟙_ (Type) ⟶ DoubleH :=
+  ↾fun _ ↦ (firstSwap, secondSwap)
+
+private theorem kernelFibre_mulRight_value (n : H) :
+    (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom) n =
+      (n * firstSwap, secondSwap) := by
+  change (n * firstSwap, (1 : H) * secondSwap) = _
+  exact Prod.ext rfl (_root_.one_mul secondSwap)
+
+private theorem kernelFibre_mulRight_square :
+    IsPullback (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom)
+      (toUnit H) quotient (kernelFibrePoint ≫ quotient) := by
+  apply (Limits.Types.isPullback_iff
+    (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom)
+    quotient (toUnit H) (kernelFibrePoint ≫ quotient)).2
+  refine ⟨?_, ?_, ?_⟩
+  · apply ConcreteCategory.hom_ext
+    intro n
+    change ((kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom) n).2 = secondSwap
+    exact congrArg Prod.snd (kernelFibre_mulRight_value n)
+  · intro first second h
+    have hfirst := congrArg Prod.fst h.1
+    rw [kernelFibre_mulRight_value, kernelFibre_mulRight_value] at hfirst
+    exact mul_right_cancel hfirst
+  · intro pair point h
+    refine ⟨pair.1 * firstSwap⁻¹, ?_, ?_⟩
+    · rw [kernelFibre_mulRight_value]
+      change pair.2 = secondSwap at h
+      exact Prod.ext (_root_.inv_mul_cancel_right pair.1 firstSwap) h.symm
+    · rfl
+
+private theorem kernelFibre_mulRight_order :
+    ((kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom) secondSwap).1
+        (0 : Fin 3) = 2 ∧
+      (kernelFibrePoint PUnit.unit * kernelIncl secondSwap).1 (0 : Fin 3) = 1 := by
+  rw [kernelFibre_mulRight_value]
+  change (secondSwap * firstSwap) (0 : Fin 3) = 2 ∧
+    (firstSwap * secondSwap) (0 : Fin 3) = 1
+  decide
+
+private theorem kernelFibrePoint_properties :
+    (kernelFibrePoint ≫ quotient) PUnit.unit = secondSwap ∧
+      kernelFibrePoint ≫ quotient ≠ η[H] ∧ ¬ IsMonHom kernelFibrePoint := by
+  have hb : secondSwap ≠ (1 : H) := by decide
+  refine ⟨rfl, ?_, ?_⟩
+  · intro h
+    exact hb (ConcreteCategory.congr_hom h PUnit.unit)
+  · intro hg
+    have : IsMonHom kernelFibrePoint := hg
+    have hunit : (firstSwap, secondSwap) = ((1 : H), (1 : H)) :=
+      ConcreteCategory.congr_hom (IsMonHom.one_hom kernelFibrePoint) PUnit.unit
+    exact hb (congrArg Prod.snd hunit)
+
+example :
+    IsPullback (i ≫ (GrpObj.mulRight η[G]).hom) (toUnit N) q (η[G] ≫ q) := by
+  simpa only [GrpObj.mulRight_one, Iso.refl_hom, Category.comp_id,
+    IsMonHom.one_hom] using hN
+
+private theorem kernelFibre_isPullback :
+    IsPullback (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom)
+      (toUnit H) quotient (kernelFibrePoint ≫ quotient) :=
+  GrpObj.isPullback_kernel_mulRight kernelIncl quotient kernelSquare kernelFibrePoint
 
 end AlgebraicGroupsTest.SplitKernelSemidirect
