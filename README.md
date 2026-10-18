@@ -8,6 +8,17 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Group objects
 
+- **Group structure on a monoid kernel.** In any Cartesian monoidal category,
+  let `G` be a group object, `H` and `N` monoid objects, and `f : G → H` and
+  `i : N → G` monoid morphisms. A supplied pullback of `f` along the unit of `H`
+  with legs `i` and `N → 𝟙` gives `GrpObj.ofIsPullback f i hPB : GrpObj N`,
+  retaining exactly the supplied monoid structure. Its characteristic API gives
+  that equality, the original projection as a group-object morphism, its underlying
+  map, and compatibility with inversion. This constructs kernel group structures
+  without a group target or global pullbacks; the
+  [integer-product example](AlgebraicGroupsTest/GroupObjectKernel.lean) has a proper
+  nontrivial kernel and a non-group target.
+  [Construction](AlgebraicGroups/GroupObject/Kernel.lean).
 - **Inversion criterion.** For a group object in a Cartesian monoidal category,
   commutativity is equivalent to inversion being a monoid morphism. The braiding
   is explicit and unique in this setting. This is a categorical extension of the

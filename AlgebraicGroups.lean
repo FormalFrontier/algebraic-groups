@@ -62,6 +62,7 @@ public import AlgebraicGroups.GroupObject.Coset
 public import AlgebraicGroups.GroupObject.EffectiveEpi
 public import AlgebraicGroups.GroupObject.FunctorCategory
 public import AlgebraicGroups.GroupObject.Hom
+public import AlgebraicGroups.GroupObject.Kernel
 public import AlgebraicGroups.GroupObject.KernelTorsor
 public import AlgebraicGroups.GroupObject.Quotient
 public import AlgebraicGroups.GroupObject.SplitKernelProduct
