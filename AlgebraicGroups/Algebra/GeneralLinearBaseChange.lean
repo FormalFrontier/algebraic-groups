@@ -39,15 +39,15 @@ noncomputable section
 open CategoryTheory TensorProduct
 open scoped TensorProduct
 
-universe u
+universe u v w w₁ w₂
 
 namespace AlgebraicGeometry
 
-variable (K : Type u) [CommRing K] (V : Type u) [AddCommGroup V] [Module K V]
-  (R : Type u) [CommRing R] [Algebra K R]
+variable (K : Type u) [CommRing K] (V : Type v) [AddCommGroup V] [Module K V]
+  (R : Type w) [CommRing R] [Algebra K R]
 
 /-- The existing tensor-cancellation extension of endomorphisms, as a ring map. -/
-@[expose] def endBaseChangeRingHom (S : Type u) [CommRing S] [Algebra K S]
+@[expose] def endBaseChangeRingHom (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) :
     Module.End R (SourceOrderTensor K V R) →+*
       Module.End S (SourceOrderTensor K V S) := by
@@ -56,13 +56,13 @@ variable (K : Type u) [CommRing K] (V : Type u) [AddCommGroup V] [Module K V]
     (AlgebraTensorModule.cancelBaseChange K R S S V)).toRingHom.comp
     (Module.End.baseChangeHom R S (SourceOrderTensor K V R)).toRingHom
 
-@[simp] theorem endBaseChangeRingHom_apply (S : Type u) [CommRing S] [Algebra K S]
+@[simp] theorem endBaseChangeRingHom_apply (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (f : Module.End R (SourceOrderTensor K V R)) :
     endBaseChangeRingHom K V R S g f = endBaseChange K V R S g f := by
   rfl
 
 /-- The composition monoid of endomorphisms after scalar extension. -/
-@[expose] def endCompositionFunctor : CommAlgCat K ⥤ MonCat where
+@[expose] def endCompositionFunctor : CommAlgCat.{w, u} K ⥤ MonCat.{max w v} where
   obj R := MonCat.of (Module.End R (SourceOrderTensor K V R))
   map f := MonCat.ofHom (endBaseChangeRingHom K V _ _ f.hom).toMonoidHom
   map_id R := by
@@ -80,17 +80,17 @@ variable (K : Type u) [CommRing K] (V : Type u) [AddCommGroup V] [Module K V]
 case over a field base, with all commutative algebras over that field as test
 algebras (*Algebraic Groups*, item 2.8), to arbitrary commutative base rings
 and arbitrary modules. -/
-@[expose] def generalLinearModuleFunctor : CommAlgCat K ⥤ GrpCat :=
+@[expose] def generalLinearModuleFunctor : CommAlgCat.{w, u} K ⥤ GrpCat.{max w v} :=
   endCompositionFunctor K V ⋙ MonCat.units
 
 /-- Explicit scalar extension of an invertible endomorphism. -/
-@[expose] def generalLinearModuleBaseChange (S : Type u) [CommRing S] [Algebra K S]
+@[expose] def generalLinearModuleBaseChange (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) :
     LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R) →*
       LinearMap.GeneralLinearGroup S (SourceOrderTensor K V S) :=
   Units.map (endBaseChangeRingHom K V R S g).toMonoidHom
 
-@[simp] theorem generalLinearModuleBaseChange_val (S : Type u) [CommRing S] [Algebra K S]
+@[simp] theorem generalLinearModuleBaseChange_val (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
     (generalLinearModuleBaseChange K V R S g f).val = endBaseChange K V R S g f := rfl
 
@@ -101,7 +101,7 @@ and arbitrary modules. -/
   simp
 
 @[simp] theorem generalLinearModuleBaseChange_comp
-    (S T : Type u) [CommRing S] [Algebra K S] [CommRing T] [Algebra K T]
+    (S : Type w₁) (T : Type w₂) [CommRing S] [Algebra K S] [CommRing T] [Algebra K T]
     (g : R →ₐ[K] S) (h : S →ₐ[K] T)
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
     generalLinearModuleBaseChange K V S T h
@@ -111,11 +111,11 @@ and arbitrary modules. -/
   simpa only [generalLinearModuleBaseChange_val] using
     endBaseChange_comp K V R S T g h f.val
 
-theorem generalLinearModuleBaseChange_inv (S : Type u) [CommRing S] [Algebra K S]
+theorem generalLinearModuleBaseChange_inv (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
     (generalLinearModuleBaseChange K V R S g f).inv = endBaseChange K V R S g f.inv := rfl
 
-theorem generalLinearModuleBaseChange_tmul (S : Type u) [CommRing S] [Algebra K S]
+theorem generalLinearModuleBaseChange_tmul (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R))
     (s : S) (v : V) :
     (generalLinearModuleBaseChange K V R S g f).val (s ⊗ₜ[K] v) =
@@ -144,7 +144,7 @@ def sourceOrderedGeneralLinearEquiv :
   congr 1
 
 /-- Scalar extension of the literal-order module is conjugate to canonical scalar extension. -/
-def sourceOrderedGeneralLinearBaseChange (S : Type u) [CommRing S] [Algebra K S]
+def sourceOrderedGeneralLinearBaseChange (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) :
     LinearMap.GeneralLinearGroup R (SourceOrderedTensor K V R) →*
       LinearMap.GeneralLinearGroup S (SourceOrderedTensor K V S) :=
@@ -159,7 +159,7 @@ def sourceOrderedGeneralLinearBaseChange (S : Type u) [CommRing S] [Algebra K S]
   simp [sourceOrderedGeneralLinearBaseChange]
 
 @[simp] theorem sourceOrderedGeneralLinearBaseChange_comp
-    (S T : Type u) [CommRing S] [Algebra K S] [CommRing T] [Algebra K T]
+    (S : Type w₁) (T : Type w₂) [CommRing S] [Algebra K S] [CommRing T] [Algebra K T]
     (g : R →ₐ[K] S) (h : S →ₐ[K] T)
     (f : LinearMap.GeneralLinearGroup R (SourceOrderedTensor K V R)) :
     sourceOrderedGeneralLinearBaseChange K V S T h
@@ -169,7 +169,7 @@ def sourceOrderedGeneralLinearBaseChange (S : Type u) [CommRing S] [Algebra K S]
   simp [sourceOrderedGeneralLinearBaseChange, generalLinearModuleBaseChange_comp]
 
 /-- The general linear functor on the transported literal-order tensor module. -/
-def sourceOrderedGeneralLinearFunctor : CommAlgCat K ⥤ GrpCat where
+def sourceOrderedGeneralLinearFunctor : CommAlgCat.{w, u} K ⥤ GrpCat.{max w v} where
   obj R := GrpCat.of (LinearMap.GeneralLinearGroup R (SourceOrderedTensor K V R))
   map f := GrpCat.ofHom (sourceOrderedGeneralLinearBaseChange K V _ _ f.hom)
   map_id R := by
@@ -185,7 +185,8 @@ def sourceOrderedGeneralLinearFunctor : CommAlgCat K ⥤ GrpCat where
 
 /-- Naturality of the literal-order/canonical automorphism comparison. -/
 def sourceOrderedGeneralLinearIso :
-    sourceOrderedGeneralLinearFunctor K V ≅ generalLinearModuleFunctor K V :=
+    (sourceOrderedGeneralLinearFunctor K V : CommAlgCat.{w, u} K ⥤ GrpCat.{max w v}) ≅
+      generalLinearModuleFunctor K V :=
   NatIso.ofComponents
     (fun R ↦ (sourceOrderedGeneralLinearEquiv K V R).toGrpIso)
     (fun {R S} g ↦ by
@@ -204,7 +205,7 @@ def sourceOrderedGeneralLinearIso :
 
 /-- The transported literal-order action on pure tensors under coefficient change. -/
 theorem sourceOrderedGeneralLinearBaseChange_tmul
-    (S : Type u) [CommRing S] [Algebra K S]
+    (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (f : LinearMap.GeneralLinearGroup R (SourceOrderedTensor K V R))
     (v : V) (s : S) :
     (sourceOrderedGeneralLinearBaseChange K V R S g f).val

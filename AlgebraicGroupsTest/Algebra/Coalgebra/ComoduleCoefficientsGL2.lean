@@ -5,6 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport
+public import Mathlib.Algebra.Module.ULift
 public import AlgebraicGroups.Algebra.GeneralLinearCoordinateRing
 public import Mathlib.LinearAlgebra.StdBasis
 public import Mathlib.LinearAlgebra.Matrix.Notation
@@ -25,6 +27,11 @@ The resulting coefficient span is finitely generated, nonzero and proper.
 Evaluation at the identity and twice the identity separates the unit from
 that span. The off-diagonal coefficient `x₀₁` is not group-like: its counit is
 zero, whereas evaluation at an upper unipotent matrix is one.
+
+Transport to a universe-lifted carrier keeps the coalgebra fixed. The resulting
+bijective comodule morphism compares coefficients, spans and coefficient
+subcoalgebras on the two carriers. Its off-diagonal coefficient remains nonzero,
+and its coefficient span remains finitely generated and proper.
 
 No restricted coalgebra structure on the coefficient span is constructed here.
 
@@ -279,5 +286,83 @@ theorem coefficientSpan_contains_non_groupLike :
       ¬ IsGroupLikeElem (R := ℚ) (entry 0 1) := by
   rw [coefficientSpan_eq_entrySpan]
   exact ⟨Submodule.subset_span ⟨(0, 1), rfl⟩, entry01_ne_zero, entry01_not_groupLike⟩
+
+section Lift
+
+universe uLift
+
+private abbrev liftEquiv : M ≃ₗ[ℚ] ULift.{uLift} M :=
+  (ULift.moduleEquiv : ULift.{uLift} M ≃ₗ[ℚ] M).symm
+
+private abbrev liftedComodule : Coalgebra.RightComodule ℚ C (ULift.{uLift} M) :=
+  comodule.transport liftEquiv
+
+private def liftHom : Coalgebra.RightComoduleHom comodule liftedComodule.{uLift} :=
+  Coalgebra.RightComodule.transportHom comodule liftEquiv
+
+private theorem liftHom_bijective : Function.Bijective liftHom.{uLift} := by
+  simpa only [liftHom, Coalgebra.RightComodule.coe_transportHom] using
+    liftEquiv.{uLift}.bijective
+
+-- The pointwise comparison extracts the same nonzero off-diagonal entry.
+private theorem lifted_coefficient_entry01 :
+    liftedComodule.{uLift}.coefficient ((coordinate 0).comp liftEquiv.symm.toLinearMap)
+        (liftHom (vector 1)) = entry 0 1 ∧
+      liftedComodule.{uLift}.coefficient ((coordinate 0).comp liftEquiv.symm.toLinearMap)
+        (liftHom (vector 1)) ≠ 0 := by
+  have h := Coalgebra.RightComoduleHom.coefficient_apply liftHom.{uLift}
+    ((coordinate 0).comp liftEquiv.symm.toLinearMap) (vector 1)
+  have hcomp : ((coordinate 0).comp liftEquiv.symm.toLinearMap).comp
+      liftHom.{uLift}.toLinearMap = coordinate 0 := by
+    simpa only [liftHom, Coalgebra.RightComodule.transportHom_toLinearMap] using
+      (show ((coordinate 0).comp liftEquiv.symm.toLinearMap).comp
+          liftEquiv.{uLift}.toLinearMap = coordinate 0 from by
+        apply LinearMap.ext
+        intro m
+        exact congrArg (coordinate 0) (liftEquiv.{uLift}.symm_apply_apply m))
+  rw [hcomp, coefficient_coordinate_vector] at h
+  exact ⟨h, by rw [h]; exact entry01_ne_zero⟩
+
+-- Each comparison retains the source and transported target before using
+-- any description of the coefficient span by matrix entries.
+private theorem lifted_coefficientSpan_le :
+    liftedComodule.{uLift}.coefficientSpan ≤ comodule.coefficientSpan :=
+  Coalgebra.RightComoduleHom.coefficientSpan_le_of_surjective liftHom
+    liftHom_bijective.surjective
+
+private theorem coefficientSpan_eq_lifted :
+    comodule.coefficientSpan = liftedComodule.{uLift}.coefficientSpan :=
+  Coalgebra.RightComoduleHom.coefficientSpan_eq_of_bijective liftHom liftHom_bijective
+
+private theorem coefficientSpan_le_lifted :
+    comodule.coefficientSpan ≤ liftedComodule.{uLift}.coefficientSpan :=
+  Coalgebra.RightComoduleHom.coefficientSpan_le_of_injective liftHom
+    liftHom_bijective.injective
+
+private theorem lifted_coefficientSubcoalgebra_le :
+    liftedComodule.{uLift}.coefficientSubcoalgebra.toSubmodule ≤
+      comodule.coefficientSubcoalgebra.toSubmodule :=
+  Coalgebra.RightComoduleHom.coefficientSubcoalgebra_toSubmodule_le_of_surjective
+    liftHom liftHom_bijective.surjective
+
+private theorem coefficientSubcoalgebra_eq_lifted :
+    comodule.coefficientSubcoalgebra = liftedComodule.{uLift}.coefficientSubcoalgebra :=
+  Coalgebra.RightComoduleHom.coefficientSubcoalgebra_eq_of_bijective
+    liftHom liftHom_bijective
+
+private theorem coefficientSubcoalgebra_le_lifted :
+    comodule.coefficientSubcoalgebra.toSubmodule ≤
+      liftedComodule.{uLift}.coefficientSubcoalgebra.toSubmodule :=
+  Coalgebra.RightComoduleHom.coefficientSubcoalgebra_toSubmodule_le_of_injective
+    liftHom liftHom_bijective.injective
+
+private theorem lifted_coefficientSpan_fg_nonzero_proper :
+    liftedComodule.{uLift}.coefficientSpan.FG ∧
+      liftedComodule.{uLift}.coefficientSpan ≠ ⊥ ∧
+      liftedComodule.{uLift}.coefficientSpan ≠ ⊤ := by
+  rw [← coefficientSpan_eq_lifted]
+  exact coefficientSpan_fg_nonzero_proper
+
+end Lift
 
 end ComoduleCoefficientsGL2

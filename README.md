@@ -109,6 +109,15 @@ maintained project libraries; it does not claim to formalize an entire source.
   restricted coalgebra laws, bundled inclusion and unique morphism factorization.
   No ambient finite dimension, algebra/Hopf structure or least finite closure is
   assumed. [Modules and example](docs/COALGEBRAS.md#subcoalgebras-and-finite-containment-over-a-field).
+- **Supported diagonal subcoalgebras.** Over a field, for any index type and
+  set `s`, `Finsupp.supportedSubcoalgebra K s` consists exactly of the finitely
+  supported functions whose support lies in `s`, equivalently the span of the
+  unit coordinate vectors indexed by `s`. Its API gives membership, span,
+  coordinate inclusion and carrier-containment criteria. Finite `s` gives a
+  finitely generated carrier and a module-finite subcoalgebra; neither the index
+  type nor `s` need be finite for the construction.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finsupp.lean),
+  [diagonal examples](AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraDiagonal.lean).
 - **Subcoalgebra images.** Over a field, injectivity of a coalgebra map only on
   a subcoalgebra gives an equivalence with its image, preserving and reflecting
   module-finiteness and finite generation. Ambient equivalences transport these
@@ -120,6 +129,8 @@ maintained project libraries; it does not claim to formalize an entire source.
   nor the coacted-on module projective. Flatness of the coacting coalgebra suffices
   for unique subtype coactions from image stability and unique colinear
   factorization; the counit need not be onto. [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean).
+  With projectivity of the coacting coalgebra, the underlying carriers of the
+  module-finite subcomodules are directed and cover the whole comodule.
 - **External tensor products of specified right comodules.** Over a commutative
   semiring, right comodules on arbitrary additive-monoid modules over full
   coalgebras `C` and `D` give a right comodule on `M ⊗[R] N` over the tensor
@@ -156,6 +167,12 @@ maintained project libraries; it does not claim to formalize an entire source.
   `D`. No ambient finite dimension is needed; module-finiteness of the comodule
   gives module-finite coefficients, not algebra finite generation.
   [Module and GL₂ model](docs/COALGEBRAS.md#intrinsic-coefficient-coalgebras).
+- **Coefficient functoriality.** For morphisms of specified right comodules
+  over a commutative semiring, coefficients pull back along the underlying
+  linear map; surjections decrease coefficient spans and bijections preserve
+  them. Over a field, injections increase coefficient spans, with the same
+  comparisons for the underlying submodules of coefficient subcoalgebras.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean).
 - **Finite tensor-image containment.** Over a commutative semiring, a projective
   coalgebra's finite subsets lie in finitely generated `U` with `Δ(U)` in the
   image of `U ⊗ C`; over a field one obtains `D ⊗ D`. These are module, not
@@ -274,6 +291,19 @@ maintained project libraries; it does not claim to formalize an entire source.
   case.
   [Module](AlgebraicGroups/GroupObject/KernelTorsor.lean),
   [permutation and full-transformation-monoid example](AlgebraicGroupsTest/SplitKernelSemidirect.lean).
+- **Scalar extension of endomorphisms and automorphisms.** For an arbitrary
+  module over a commutative ring, every map of commutative coefficient algebras
+  induces maps on scalar-extended endomorphisms and invertible endomorphisms,
+  respecting identity and composition. The base, module and successive
+  coefficient-algebra universes are independent for the individual maps.
+  Tensor cancellation has a readback on arbitrary tensors, not only pure ones.
+  No finiteness, flatness or injectivity assumption is required. The comparison
+  with literal right-ordered tensors transports the coefficient-module structure;
+  The automorphism API varies the coefficient algebra, not arbitrary linear maps
+  of the underlying module.
+  [Endomorphisms](AlgebraicGroups/Algebra/MatrixEndBaseChange.lean),
+  [automorphisms](AlgebraicGroups/Algebra/GeneralLinearBaseChange.lean),
+  [examples](AlgebraicGroupsTest/MatrixEndBaseChange.lean).
 - **Affine-target maps and convolution.** Over a commutative ring `R`, maps from
   an arbitrary scheme over `Spec R` to the spectrum of a commutative
   `R`-bialgebra correspond to algebra maps into global sections. Geometric

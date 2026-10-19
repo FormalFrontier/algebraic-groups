@@ -47,6 +47,9 @@ flatness, projectivity or freeness.
   projective or free. The proof uses the coefficient argument in
   `FiniteSubcoalgebra`; the regular-coaction specialization reuses its
   right-coideal theorem.
+* `RightComodule.directed_fg_toSubmodule` makes the underlying submodules of
+  module-finite subcomodules directed under `[Module.Projective R C]`.
+* `RightComodule.iUnion_fg_eq_univ` says that these same subcomodules cover `M`.
 
 The regular and scalar constructors give coactions by comultiplication and the
 inverse right unitor. `RightComodule.ofTensor` gives `m ↦ m ⊗ e` when
@@ -687,6 +690,35 @@ theorem exists_fg_subcomodule_of_finite [Module.Projective R C]
     exists_fg_submodule_coaction_right_closed_of_finite
       X.coaction X.coassoc X.counit_comp hs
   exact ⟨Subcomodule.ofIsStable X U hstable, hsU, hfg⟩
+
+variable (X : RightComodule R C M)
+
+/-- The underlying submodules of module-finite subcomodules are directed when
+the coacting coalgebra is projective. -/
+theorem directed_fg_toSubmodule [Module.Projective R C] :
+    Directed (· ≤ ·)
+      (fun U : {U : X.Subcomodule // Module.Finite R U.toSubmodule} =>
+        U.val.toSubmodule) := by
+  intro U V
+  have hfg : (U.val.toSubmodule ⊔ V.val.toSubmodule).FG :=
+    (Module.Finite.iff_fg.mp U.property).sup (Module.Finite.iff_fg.mp V.property)
+  obtain ⟨s, hs, hspan⟩ := Submodule.fg_def.mp hfg
+  obtain ⟨W, hsW, hW⟩ := X.exists_fg_subcomodule_of_finite hs
+  have hle : U.val.toSubmodule ⊔ V.val.toSubmodule ≤ W.toSubmodule := by
+    rw [← hspan]
+    exact Submodule.span_le.mpr hsW
+  exact ⟨⟨W, Module.Finite.iff_fg.mpr hW⟩,
+    le_sup_left.trans hle, le_sup_right.trans hle⟩
+
+/-- Every element lies in a module-finite subcomodule when the coacting
+coalgebra is projective. -/
+theorem iUnion_fg_eq_univ [Module.Projective R C] :
+    (⋃ U : {U : X.Subcomodule // Module.Finite R U.toSubmodule},
+      (U.val : Set M)) = Set.univ := by
+  apply Set.iUnion_eq_univ_iff.mpr
+  intro m
+  obtain ⟨U, hmU, hU⟩ := X.exists_fg_subcomodule_of_finite (Set.finite_singleton m)
+  exact ⟨⟨U, Module.Finite.iff_fg.mpr hU⟩, hmU (Set.mem_singleton m)⟩
 
 end RightComodule
 

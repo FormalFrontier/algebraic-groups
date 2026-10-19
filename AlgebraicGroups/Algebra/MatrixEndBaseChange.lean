@@ -38,14 +38,14 @@ open scoped TensorProduct
 
 namespace AlgebraicGeometry
 
-universe u
+universe u v w w₁ w₂
 
-variable (K : Type u) [CommRing K] (V : Type u) [AddCommGroup V] [Module K V]
-  (R : Type u) [CommRing R] [Algebra K R]
+variable (K : Type u) [CommRing K] (V : Type v) [AddCommGroup V] [Module K V]
+  (R : Type w) [CommRing R] [Algebra K R]
 
 /-- The `R`-module denoted by `V ⊗[K] R` in source-order notation; its
 underlying implementation is the canonically scalar-extended module `R ⊗[K] V`. -/
-abbrev SourceOrderTensor : Type u := R ⊗[K] V
+abbrev SourceOrderTensor : Type (max w v) := R ⊗[K] V
 
 /-- Comparison from source-order tensors to the canonical scalar extension. -/
 @[expose] def sourceOrderTensorEquiv : (V ⊗[K] R) ≃ₗ[K] SourceOrderTensor K V R :=
@@ -133,7 +133,7 @@ theorem sourceOrderedEndEquiv_apply (f : Module.End R (SourceOrderedTensor K V R
 maps, by Mathlib's `LinearMap.baseChange` and tensor cancellation. Unlike the
 finite-dimensional field comparison in Milne, *Algebraic Groups*, items 2.7–2.8,
 this construction imposes no finiteness condition on `V`. -/
-@[expose] def endBaseChange (S : Type u) [CommRing S] [Algebra K S]
+@[expose] def endBaseChange (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (f : Module.End R (SourceOrderTensor K V R)) :
     Module.End S (SourceOrderTensor K V S) :=
   letI : Algebra R S := g.toRingHom.toAlgebra
@@ -142,10 +142,15 @@ this construction imposes no finiteness condition on `V`. -/
       (AlgebraTensorModule.cancelBaseChange K R S S V).symm.toLinearMap)
 
 /-- Readback of the canonical cancellation at every tensor, including sums. -/
-theorem cancelBaseChange_apply (S : Type u) [CommRing S] [Algebra K S]
+theorem cancelBaseChange_apply (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (s : S) (x : R ⊗[K] V) :
-    letI : Algebra R S := g.toRingHom.toAlgebra
-    (AlgebraTensorModule.cancelBaseChange K R S S V) (s ⊗ₜ[R] x) =
+    (@AlgebraTensorModule.cancelBaseChange K R S S V _ _ _ _ _ _ _
+      (@Algebra.toModule R S _ _ g.toRingHom.toAlgebra) _
+      (IsScalarTower.of_algHom g) _
+      (@Algebra.to_smulCommClass R S _ _ g.toRingHom.toAlgebra) _ _
+      g.toRingHom.toAlgebra (@IsScalarTower.right R S _ _ g.toRingHom.toAlgebra))
+      (@TensorProduct.tmul R _ S (R ⊗[K] V) _ _
+        (@Algebra.toModule R S _ _ g.toRingHom.toAlgebra) _ s x) =
       s • (g.toLinearMap.rTensor V) x := by
   let : Algebra R S := g.toRingHom.toAlgebra
   induction x using TensorProduct.inductionOn with
@@ -161,7 +166,7 @@ theorem cancelBaseChange_apply (S : Type u) [CommRing S] [Algebra K S]
 /-- An extended endomorphism acts on pure tensors by transporting its value at
 `1 ⊗ v`, and hence also specifies its action on arbitrary tensor sums. -/
 @[simp]
-theorem endBaseChange_tmul (S : Type u) [CommRing S] [Algebra K S]
+theorem endBaseChange_tmul (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) (f : Module.End R (SourceOrderTensor K V R))
     (s : S) (v : V) :
     endBaseChange K V R S g f (s ⊗ₜ[K] v) =
@@ -174,7 +179,7 @@ theorem endBaseChange_tmul (S : Type u) [CommRing S] [Algebra K S]
   exact cancelBaseChange_apply K V R S g s (f (1 ⊗ₜ[K] v))
 
 /-- The base-change map preserves the additive group of endomorphisms. -/
-@[expose] def endBaseChangeAddHom (S : Type u) [CommRing S] [Algebra K S]
+@[expose] def endBaseChangeAddHom (S : Type w₁) [CommRing S] [Algebra K S]
     (g : R →ₐ[K] S) : Module.End R (SourceOrderTensor K V R) →+
       Module.End S (SourceOrderTensor K V S) where
   toFun := endBaseChange K V R S g
@@ -202,7 +207,7 @@ theorem endBaseChange_id (f : Module.End R (SourceOrderTensor K V R)) :
     simp only [map_add, hx, hy]
 
 @[simp]
-theorem endBaseChange_comp (S T : Type u) [CommRing S] [Algebra K S]
+theorem endBaseChange_comp (S : Type w₁) (T : Type w₂) [CommRing S] [Algebra K S]
     [CommRing T] [Algebra K T] (g : R →ₐ[K] S) (h : S →ₐ[K] T)
     (f : Module.End R (SourceOrderTensor K V R)) :
     endBaseChange K V S T h (endBaseChange K V R S g f) =

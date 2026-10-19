@@ -335,6 +335,27 @@ theorem torsion_finite_containment :
     ((Set.finite_singleton _).insert _)
   exact ⟨U, hs (by simp), hs (by simp), hfg⟩
 
+/-- A finite common bound contains the supported subcomodule and coordinate two. -/
+private theorem torsionSupported_common_fg_bound :
+    ∃ W : torsionComodule.Subcomodule, Module.Finite ℕ W.toSubmodule ∧
+      torsionSupported.toSubmodule ≤ W.toSubmodule ∧
+      Finsupp.single 2 (1 : ZMod 2) ∈ W := by
+  obtain ⟨V, hV, hfgV⟩ := torsionComodule.exists_fg_subcomodule_of_finite
+    (Set.finite_singleton (Finsupp.single 2 (1 : ZMod 2)))
+  have hfgU : Module.Finite ℕ torsionSupported.toSubmodule :=
+    Module.Finite.iff_fg.mpr torsionSupported_fg_nonzero_proper.1
+  obtain ⟨W, hUW, hVW⟩ := torsionComodule.directed_fg_toSubmodule
+    ⟨torsionSupported, hfgU⟩ ⟨V, Module.Finite.iff_fg.mpr hfgV⟩
+  exact ⟨W.val, W.property, hUW, hVW (hV (by simp))⟩
+
+/-- The union supplies a finite subcomodule containing the sum of coordinates zero and two. -/
+private theorem torsion_coordinate_sum_mem_fg :
+    ∃ U : torsionComodule.Subcomodule, Module.Finite ℕ U.toSubmodule ∧
+      Finsupp.single 0 (1 : ZMod 2) + Finsupp.single 2 (1 : ZMod 2) ∈ U := by
+  obtain ⟨U, hU⟩ := Set.iUnion_eq_univ_iff.mp torsionComodule.iUnion_fg_eq_univ
+    (Finsupp.single 0 (1 : ZMod 2) + Finsupp.single 2 (1 : ZMod 2))
+  exact ⟨U.val, U.property, hU⟩
+
 /-- Finite containment applies with the proper-counit-image projective coacting ideal. -/
 theorem ideal_finite_containment :
     ∃ U : idealComodule.Subcomodule, Finsupp.single 0 threeGenerator ∈ U ∧ U.toSubmodule.FG := by

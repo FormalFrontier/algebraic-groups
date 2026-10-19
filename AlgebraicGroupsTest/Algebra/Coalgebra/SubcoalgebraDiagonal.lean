@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
+public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finsupp
 public import AlgebraicGroups.Algebra.Coalgebra.Equiv
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
@@ -22,15 +22,18 @@ vectors are group-like, while the coordinate vector at `2` is excluded. The ambi
 is not finite-dimensional, as its coordinate basis is indexed by `ℕ`. No infinitude
 assumption on the field is needed.
 
-The supported submodule is packaged through `Subcoalgebra.mk'`, using closure of the span
-of group-like elements. The coalgebra inclusion and tensor-inclusion injectivity identify
-the canonical comultiplication on its coordinate vectors. The canonical comultiplication
-and counit agree with the finite Finsupp coalgebra transported along
-`Finsupp.supportedEquivFinsupp`, without introducing another instance.
+The subcoalgebra is the two-coordinate specialization of
+`Finsupp.supportedSubcoalgebra`, whose arbitrary-support construction extends the
+construction here using closure of spans of group-like elements. Its characteristic API
+gives the carrier, coordinate membership and finiteness. The coalgebra inclusion and
+tensor-inclusion injectivity identify the canonical comultiplication on its coordinate
+vectors. The canonical comultiplication and counit agree with the finite Finsupp coalgebra
+transported along `Finsupp.supportedEquivFinsupp`, without introducing another instance.
 
 The existence theorem records a nonzero proper finite-dimensional subcoalgebra in an
-infinite-dimensional ambient module. Its carrier and verification helpers are private;
-the remaining examples compare the canonical structure with transported structure maps.
+infinite-dimensional ambient module. The specialized alias and verification helpers are
+private; the remaining examples compare the canonical structure with transported
+structure maps and include the empty-support boundary.
 
 ## References
 
@@ -63,34 +66,29 @@ private lemma isGroupLikeElem_single_one {ι : Type v} (i : ι) :
 
 /-- The diagonal subcoalgebra supported on the first two coordinates. -/
 private abbrev diagonalSubcoalgebra : Subcoalgebra K (ℕ →₀ K) :=
-  Subcoalgebra.mk' (Finsupp.supported K K ({0, 1} : Set ℕ)) <| by
-    intro x hx
-    rw [Finsupp.supported_eq_span_single] at hx ⊢
-    exact comul_mem_range_mapIncl_span_of_isGroupLikeElem
-      (by
-        rintro y ⟨i, hi, rfl⟩
-        exact isGroupLikeElem_single_one K i) hx
+  Finsupp.supportedSubcoalgebra K ({0, 1} : Set ℕ)
 
 @[simp]
 private lemma diagonalSubcoalgebra_toSubmodule :
-    (diagonalSubcoalgebra K).toSubmodule = Finsupp.supported K K ({0, 1} : Set ℕ) := by
-  simp only [diagonalSubcoalgebra, Subcoalgebra.toSubmodule_mk']
+    (diagonalSubcoalgebra K).toSubmodule = Finsupp.supported K K ({0, 1} : Set ℕ) :=
+  Finsupp.supportedSubcoalgebra_toSubmodule K ({0, 1} : Set ℕ)
 
 @[simp]
 private lemma mem_diagonalSubcoalgebra (x : ℕ →₀ K) :
     x ∈ diagonalSubcoalgebra K ↔ x ∈ Finsupp.supported K K ({0, 1} : Set ℕ) := by
-  simp only [diagonalSubcoalgebra, Subcoalgebra.mem_mk']
+  exact (Finsupp.mem_supportedSubcoalgebra K ({0, 1} : Set ℕ) x).trans
+    (Finsupp.mem_supported K x).symm
 
 private lemma diagonalSubcoalgebra_toSubmodule_eq_span :
     (diagonalSubcoalgebra K).toSubmodule =
       Submodule.span K ({Finsupp.single 0 (1 : K), Finsupp.single 1 (1 : K)} :
         Set (ℕ →₀ K)) := by
-  rw [diagonalSubcoalgebra_toSubmodule, Finsupp.supported_eq_span_single, Set.image_pair]
+  simpa only [Set.image_pair] using
+    Finsupp.supportedSubcoalgebra_toSubmodule_eq_span K ({0, 1} : Set ℕ)
 
 private lemma single_mem_diagonalSubcoalgebra (i : ℕ) (hi : i ∈ ({0, 1} : Set ℕ)) :
-    Finsupp.single i (1 : K) ∈ diagonalSubcoalgebra K := by
-  rw [mem_diagonalSubcoalgebra]
-  exact Finsupp.single_mem_supported K 1 hi
+    Finsupp.single i (1 : K) ∈ diagonalSubcoalgebra K :=
+  Finsupp.single_mem_supportedSubcoalgebra K ({0, 1} : Set ℕ) 1 hi
 
 private lemma diagonalSubcoalgebra_ne_bot : (diagonalSubcoalgebra K).toSubmodule ≠ ⊥ := by
   intro h
@@ -115,12 +113,11 @@ private lemma diagonalSubcoalgebra_ne_top : (diagonalSubcoalgebra K).toSubmodule
   rw [h]
   exact Submodule.mem_top
 
-private lemma diagonalSubcoalgebra_fg : (diagonalSubcoalgebra K).toSubmodule.FG := by
-  rw [diagonalSubcoalgebra_toSubmodule_eq_span]
-  exact Submodule.fg_span (by simp)
+private lemma diagonalSubcoalgebra_fg : (diagonalSubcoalgebra K).toSubmodule.FG :=
+  Finsupp.supportedSubcoalgebra_fg K ({0, 1} : Set ℕ) (by simp)
 
 private lemma diagonalSubcoalgebra_finite : Module.Finite K (diagonalSubcoalgebra K) :=
-  Module.Finite.iff_fg.mpr (diagonalSubcoalgebra_fg K)
+  Finsupp.supportedSubcoalgebra_finite K ({0, 1} : Set ℕ) (by simp)
 
 private lemma not_finite_finsupp_nat : ¬ Module.Finite K (ℕ →₀ K) :=
   Module.not_finite_of_infinite_basis (Finsupp.basisSingleOne (ι := ℕ) (R := K))
@@ -203,6 +200,10 @@ theorem exists_finite_proper_subcoalgebra_finsupp_nat :
     diagonalSubcoalgebra_ne_bot K, diagonalSubcoalgebra_ne_top K, diagonalSubcoalgebra_fg K,
     diagonalSubcoalgebra_finite K, not_finite_finsupp_nat K,
     single_mem_diagonalSubcoalgebra K 0 (by simp), single_mem_diagonalSubcoalgebra K 1 (by simp)⟩
+
+-- Empty support gives the zero carrier.
+example : (Finsupp.supportedSubcoalgebra K (∅ : Set ℕ)).toSubmodule = ⊥ := by
+  rw [Finsupp.supportedSubcoalgebra_toSubmodule_eq_span, Set.image_empty, Submodule.span_empty]
 
 -- The two group-like vectors use the canonical coalgebra and its bundled inclusion.
 example (i : ({0, 1} : Set ℕ)) :

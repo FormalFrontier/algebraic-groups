@@ -6,6 +6,7 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Coefficient coalgebras of right comodules
@@ -15,7 +16,11 @@ coefficient is obtained by evaluating a linear functional on the first tensor
 factor of `X.coaction m`. The coefficient span uses all linear functionals on
 `M` and all elements of `M`; no basis or finite-generation hypothesis is part
 of its definition. Coefficients and their span are defined over a commutative
-semiring.
+semiring. Under a right-comodule morphism, coefficients pull back along the
+underlying linear map. Surjections decrease coefficient spans, bijections
+preserve them, and over a field injections increase them, since linear
+functionals extend from subspaces. The corresponding statements hold for the
+underlying submodules of coefficient subcoalgebras.
 
 Over a field, `coefficientSubcoalgebra` has exactly this coefficient span as its
 underlying submodule. Corestriction of the coacting coalgebra uses the tensor
@@ -84,6 +89,90 @@ theorem coefficientSpan_le_iff (X : RightComodule K C M) (S : Submodule K C) :
     apply Submodule.span_le.mpr
     rintro c ⟨⟨ell, m⟩, rfl⟩
     exact h ell m
+
+end CommSemiring
+
+end Coalgebra.RightComodule
+
+namespace Coalgebra.RightComoduleHom
+
+section CommSemiring
+
+variable {K : Type u} {C : Type v} {M : Type w} {N : Type*}
+variable [CommSemiring K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
+variable [AddCommMonoid M] [Module K M] [AddCommMonoid N] [Module K N]
+variable {X : RightComodule K C M} {Y : RightComodule K C N}
+
+/-- Coefficients pull back along the underlying linear map of a comodule morphism. -/
+theorem coefficient_apply (f : RightComoduleHom X Y) (ell : N →ₗ[K] K) (m : M) :
+    Y.coefficient ell (f m) = X.coefficient (ell.comp f.toLinearMap) m := by
+  simp only [RightComodule.coefficient_eq, f.colinear_apply,
+    LinearMap.rTensor_comp, LinearMap.comp_apply]
+
+/-- A surjective comodule morphism decreases the coefficient span: surjectivity
+allows every target vector to be lifted to a source vector. -/
+theorem coefficientSpan_le_of_surjective (f : RightComoduleHom X Y)
+    (hf : Function.Surjective f) : Y.coefficientSpan ≤ X.coefficientSpan := by
+  apply (Y.coefficientSpan_le_iff _).mpr
+  intro ell n
+  obtain ⟨m, rfl⟩ := hf n
+  rw [f.coefficient_apply]
+  exact X.coefficient_mem_coefficientSpan (ell.comp f.toLinearMap) m
+
+/-- A bijective comodule morphism preserves the coefficient span; its inverse
+linear map pulls every source functional back to the target. -/
+theorem coefficientSpan_eq_of_bijective (f : RightComoduleHom X Y)
+    (hf : Function.Bijective f) : X.coefficientSpan = Y.coefficientSpan := by
+  classical
+  let e : M ≃ₗ[K] N := LinearEquiv.ofBijective f.toLinearMap hf
+  apply le_antisymm
+  · apply (X.coefficientSpan_le_iff _).mpr
+    intro ell m
+    have hcomp : (ell.comp e.symm.toLinearMap).comp f.toLinearMap = ell := by
+      ext x
+      exact congrArg ell (e.symm_apply_apply x)
+    have h := Y.coefficient_mem_coefficientSpan (ell.comp e.symm.toLinearMap) (f m)
+    rw [f.coefficient_apply, hcomp] at h
+    exact h
+  · exact f.coefficientSpan_le_of_surjective hf.surjective
+
+end CommSemiring
+
+section FieldCore
+
+variable {K : Type u} {C : Type v} {M : Type w} {N : Type*}
+variable [Field K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
+variable [AddCommMonoid M] [Module K M] [AddCommMonoid N] [Module K N]
+variable {X : RightComodule K C M} {Y : RightComodule K C N}
+
+/-- An injective comodule morphism over a field increases the coefficient span.
+Injectivity lets each source functional extend to the target; coefficients on
+vectors in a kernel need not survive a noninjective map. -/
+theorem coefficientSpan_le_of_injective (f : RightComoduleHom X Y)
+    (hf : Function.Injective f) : X.coefficientSpan ≤ Y.coefficientSpan := by
+  let : AddCommGroup M := Module.addCommMonoidToAddCommGroup K
+  let : AddCommGroup N := Module.addCommMonoidToAddCommGroup K
+  apply (X.coefficientSpan_le_iff _).mpr
+  intro ell m
+  obtain ⟨eta, heta⟩ :=
+    LinearMap.dualMap_surjective_of_injective (f := f.toLinearMap) hf ell
+  have hcomp : eta.comp f.toLinearMap = ell := by
+    simpa only [LinearMap.dualMap_apply'] using heta
+  have h := Y.coefficient_mem_coefficientSpan eta (f m)
+  rw [f.coefficient_apply, hcomp] at h
+  exact h
+
+end FieldCore
+
+end Coalgebra.RightComoduleHom
+
+namespace Coalgebra.RightComodule
+
+section CommSemiring
+
+variable {K : Type u} {C : Type v} {M : Type w}
+variable [CommSemiring K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
+variable [AddCommMonoid M] [Module K M]
 
 private theorem coefficient_eq_sum_basis {ι : Type*} [Fintype ι]
     (X : RightComodule K C M) (b : Module.Basis ι K M)
@@ -460,3 +549,40 @@ example (X : RightComodule K C M) :
 end Field
 
 end Coalgebra.RightComodule
+
+namespace Coalgebra.RightComoduleHom
+
+section FieldCarrier
+
+variable {K : Type u} {C : Type v} {M : Type w} {N : Type*}
+variable [Field K] [AddCommGroup C] [Module K C] [Coalgebra K C]
+variable [AddCommMonoid M] [Module K M] [AddCommMonoid N] [Module K N]
+variable {X : RightComodule K C M} {Y : RightComodule K C N}
+
+/-- A surjective comodule morphism decreases the underlying submodule of the
+coefficient subcoalgebra, since every target vector has a source lift. -/
+theorem coefficientSubcoalgebra_toSubmodule_le_of_surjective
+    (f : RightComoduleHom X Y) (hf : Function.Surjective f) :
+    Y.coefficientSubcoalgebra.toSubmodule ≤ X.coefficientSubcoalgebra.toSubmodule := by
+  simpa only [RightComodule.coefficientSubcoalgebra_toSubmodule] using
+    f.coefficientSpan_le_of_surjective hf
+
+/-- A bijective comodule morphism preserves the coefficient subcoalgebra. -/
+theorem coefficientSubcoalgebra_eq_of_bijective
+    (f : RightComoduleHom X Y) (hf : Function.Bijective f) :
+    X.coefficientSubcoalgebra = Y.coefficientSubcoalgebra := by
+  apply _root_.Subcoalgebra.toSubmodule_injective
+  simpa only [RightComodule.coefficientSubcoalgebra_toSubmodule] using
+    f.coefficientSpan_eq_of_bijective hf
+
+/-- An injective comodule morphism over a field increases the underlying
+submodule of the coefficient subcoalgebra, by extension of linear functionals. -/
+theorem coefficientSubcoalgebra_toSubmodule_le_of_injective
+    (f : RightComoduleHom X Y) (hf : Function.Injective f) :
+    X.coefficientSubcoalgebra.toSubmodule ≤ Y.coefficientSubcoalgebra.toSubmodule := by
+  simpa only [RightComodule.coefficientSubcoalgebra_toSubmodule] using
+    f.coefficientSpan_le_of_injective hf
+
+end FieldCarrier
+
+end Coalgebra.RightComoduleHom

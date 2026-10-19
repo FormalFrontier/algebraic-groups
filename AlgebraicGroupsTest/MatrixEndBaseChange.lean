@@ -6,6 +6,7 @@ module
 
 public import AlgebraicGroups.Algebra.MatrixEndBaseChange
 import Mathlib.Algebra.Field.ZMod
+import Mathlib.Algebra.Module.ULift
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
@@ -25,9 +26,10 @@ open scoped TensorProduct
 
 namespace AlgebraicGeometry
 
-universe u
+universe u v w w₁ w₂
 
-variable (K V R S T : Type u) [CommRing K] [AddCommGroup V] [Module K V]
+variable (K : Type u) (V : Type v) (R : Type w) (S : Type w₁) (T : Type w₂)
+  [CommRing K] [AddCommGroup V] [Module K V]
   [CommRing R] [Algebra K R] [CommRing S] [Algebra K S]
   [CommRing T] [Algebra K T]
 
@@ -124,6 +126,26 @@ private theorem testPolynomialEvaluation (f : Module.End (Polynomial (ZMod 2))
           (f (1 ⊗ₜ[ZMod 2] v)) :=
   endBaseChange_tmul (ZMod 2) (Fin 1 → ZMod 2)
     (Polynomial (ZMod 2)) (ZMod 2) (Polynomial.aeval (1 : ZMod 2)) f s v
+
+/-- Multiplication by the polynomial variable on a lifted rank-one module, under evaluation. -/
+private theorem testLiftedPolynomialEvaluation (s : ZMod 2)
+    (v : ULift.{v} (Fin 1 → ZMod 2)) :
+    endBaseChange (ZMod 2) (ULift.{v} (Fin 1 → ZMod 2)) (Polynomial (ZMod 2))
+      (ZMod 2) (Polynomial.aeval (1 : ZMod 2))
+      ((Polynomial.X : Polynomial (ZMod 2)) • (LinearMap.id : Module.End (Polynomial (ZMod 2))
+        (SourceOrderTensor (ZMod 2) (ULift.{v} (Fin 1 → ZMod 2)) (Polynomial (ZMod 2)))))
+      (s ⊗ₜ[ZMod 2] v) =
+        s • ((Polynomial.aeval (1 : ZMod 2)).toLinearMap.rTensor
+          (ULift.{v} (Fin 1 → ZMod 2)))
+          ((Polynomial.X : Polynomial (ZMod 2)) •
+            ((1 : Polynomial (ZMod 2)) ⊗ₜ[ZMod 2] v)) := by
+  simpa only [LinearMap.smul_apply, LinearMap.id_apply] using
+    (endBaseChange_tmul (ZMod 2) (ULift.{v} (Fin 1 → ZMod 2))
+      (Polynomial (ZMod 2)) (ZMod 2) (Polynomial.aeval (1 : ZMod 2))
+      ((Polynomial.X : Polynomial (ZMod 2)) •
+        (LinearMap.id : Module.End (Polynomial (ZMod 2))
+          (SourceOrderTensor (ZMod 2) (ULift.{v} (Fin 1 → ZMod 2))
+            (Polynomial (ZMod 2))))) s v)
 
 local instance zeroRingAlgebra : Algebra (ZMod 2) (ZMod 1) :=
   (ZMod.castHom (show 1 ∣ 2 by decide) (ZMod 1)).toAlgebra
