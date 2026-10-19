@@ -5,9 +5,11 @@ Authors: Formal Frontier Agents
 module
 
 import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoefficients
+public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoordinates
 import AlgebraicGroups.LinearAlgebra.Coalgebra.GroupLikeCoordinates
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Logic.Equiv.Bool
 
 /-!
 # Group-like coordinates over semirings
@@ -276,3 +278,93 @@ private theorem emptyIndex_zero_and_not_groupLike (x : MonoidAlgebra ℕ Empty) 
   have hc : Coalgebra.counit (R := ℕ) (0 : MonoidAlgebra ℕ Empty) ≠ 1 := by simp
   exact ⟨rfl, by simp, by simp, (fun i ↦ Empty.elim i), hc,
     fun h ↦ hc h.counit_eq_one⟩
+
+end
+
+/-!
+## Group-like basis coordinates over the natural numbers
+
+The standard diagonal coalgebra on `ℕ[Bool]` has a group-like basis reindexed
+by Boolean negation. Its basis equivalence interchanges the two generators.
+The constant family with value the nonzero scalar group-like element `1`
+extends to a noninjective coalgebra map to `ℕ`.
+
+The empty-index example requires no group-like element in the target.
+The basis, its reindexing and the scalar group-like witness use Mathlib's
+`MonoidAlgebra.basis`, `Module.Basis.reindex`, `Equiv.boolNot` and
+`isGroupLikeElem_self`; the coalgebras are the stock diagonal and scalar ones.
+-/
+
+@[expose] public section
+
+open scoped MonoidAlgebra
+
+namespace GroupLikeBasis
+
+private noncomputable def boolBasis : Module.Basis Bool ℕ ℕ[Bool] :=
+  (MonoidAlgebra.basis Bool ℕ).reindex Equiv.boolNot
+
+private theorem boolBasis_groupLike (i : Bool) : IsGroupLikeElem ℕ (boolBasis i) := by
+  simpa only [boolBasis, Module.Basis.reindex_apply, MonoidAlgebra.basis_apply] using
+    (MonoidAlgebra.isGroupLikeElem_single_one (R := ℕ) (A := ℕ) (Equiv.boolNot.symm i))
+
+/-- Reindexing yields a genuinely nonidentity coalgebra equivalence over a non-ring base. -/
+example :
+    boolBasis.groupLikeCoalgebraEquiv boolBasis_groupLike (MonoidAlgebra.single false 1) =
+        MonoidAlgebra.single true 1 ∧
+      boolBasis.groupLikeCoalgebraEquiv boolBasis_groupLike ≠ CoalgEquiv.refl ℕ ℕ[Bool] := by
+  have hswap : boolBasis.groupLikeCoalgebraEquiv boolBasis_groupLike
+      (MonoidAlgebra.single false 1) = MonoidAlgebra.single true 1 := by
+    simp [boolBasis, Module.Basis.reindex_apply]
+  refine ⟨hswap, ?_⟩
+  intro h
+  have hc := congrArg (fun e : ℕ[Bool] ≃ₗc[ℕ] ℕ[Bool] =>
+    (e (MonoidAlgebra.single false 1)).coeff false) h
+  rw [hswap] at hc
+  simp at hc
+
+private def scalarOne : GroupLike ℕ ℕ := ⟨1, isGroupLikeElem_self.mpr rfl⟩
+
+private noncomputable def collapse : ℕ[Bool] →ₗc[ℕ] ℕ :=
+  (boolBasis.groupLikeCoalgHomEquiv boolBasis_groupLike).symm (fun _ => scalarOne)
+
+/-- A noninjective family with nonzero group-like image extends to a map collapsing
+ two distinct nonzero basis vectors. -/
+example :
+    scalarOne.val = 1 ∧ scalarOne.val ≠ 0 ∧
+      ¬ Function.Injective (fun _ : Bool => scalarOne) ∧
+      boolBasis false ≠ boolBasis true ∧
+      boolBasis false ≠ 0 ∧ boolBasis true ≠ 0 ∧
+      collapse (boolBasis false) = 1 ∧ collapse (boolBasis true) = 1 ∧
+      ¬ Function.Injective collapse := by
+  have hne : boolBasis false ≠ boolBasis true := by
+    intro h
+    have : (false : Bool) = true := boolBasis.injective h
+    cases this
+  have hfalse : collapse (boolBasis false) = 1 :=
+    boolBasis.groupLikeCoalgHomEquiv_symm_apply_basis
+      boolBasis_groupLike (fun _ => scalarOne) false
+  have htrue : collapse (boolBasis true) = 1 :=
+    boolBasis.groupLikeCoalgHomEquiv_symm_apply_basis
+      boolBasis_groupLike (fun _ => scalarOne) true
+  refine ⟨rfl, by decide, ?_, hne, boolBasis.ne_zero false, boolBasis.ne_zero true,
+    hfalse, htrue, ?_⟩
+  · intro h
+    have : (false : Bool) = true := h (show scalarOne = scalarOne from rfl)
+    cases this
+  · intro h
+    exact hne (h (hfalse.trans htrue.symm))
+
+universe uD
+variable {D : Type uD} [AddCommMonoid D] [Module ℕ D] [Coalgebra ℕ D]
+
+/-- The empty basis gives the unique coalgebra map, without a target group-like witness. -/
+example (F : ℕ[Empty] →ₗc[ℕ] D) :
+    F = ((MonoidAlgebra.basis Empty ℕ).groupLikeCoalgHomEquiv
+      (fun i => nomatch i)).symm (fun i => nomatch i) := by
+  apply ((MonoidAlgebra.basis Empty ℕ).groupLikeCoalgHomEquiv
+    (fun i => nomatch i)).injective
+  funext i
+  exact nomatch i
+
+end GroupLikeBasis

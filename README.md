@@ -224,14 +224,21 @@ maintained project libraries; it does not claim to formalize an entire source.
   For full coalgebras on additive-group modules over a commutative semiring,
   group-like differences are ordered skew primitives; see
   [the theorem and ordinary-permutation clients](docs/COALGEBRAS.md#ordered-group-like-differences-and-translations).
-- **Group-like coalgebra coordinates.** Over a commutative semiring, arbitrary
-  families of group-like elements in additive-commutative-monoid module coalgebras correspond
-  to coalgebra maps from the free diagonal monoid-algebra coalgebra; the index needs
-  no monoid structure. Over a field, evaluation is a coalgebra equivalence onto the
-  group-like span, with diagonal coproduct and counit equal to the coefficient sum.
-  No target multiplication, finite dimension or nonempty group-like family is required.
-  [Extension](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean),
-  [span coordinates](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoordinates.lean).
+- **Group-like bases and coalgebra coordinates.** Over a commutative semiring `R`,
+  a given basis `b : Module.Basis I R C` of group-like elements in a full
+  coalgebra `C` determines `R[I] ≃ₗc[R] C` and, for every full coalgebra `D`,
+  `(C →ₗc[R] D) ≃ (I → GroupLike R D)`. The modules need only
+  `AddCommMonoid` and `Module R`, in independent universes. Basis evaluation,
+  inverse coefficients, singleton formulas, extensionality and natural
+  postcomposition laws characterize these constructions. They transport the
+  existing free diagonal coalgebra's group-like-family correspondence: the index
+  needs no monoid structure, and no field, finiteness, flatness or nonemptiness
+  is assumed. Over a field, `GroupLike.spanCoalgebraEquiv` is the canonical
+  span-basis specialization onto the group-like span, with diagonal coproduct
+  and coefficient-sum counit.
+  [Coordinates](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoordinates.lean),
+  [free extension](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean),
+  [nonidentity `ℕ[Bool]` equivalence, noninjective collapse and empty-index examples](AlgebraicGroupsTest/Algebra/Coalgebra/GroupLikeCoordinates.lean).
 - **Monoid-algebra bialgebra maps.** Over a commutative semiring `R`, monoid
   homomorphisms `M →* GroupLike R A` correspond by an explicit equivalence to
   bialgebra maps `R[M] →ₐc[R] A`, for any monoid `M` and full `R`-bialgebra `A`.
