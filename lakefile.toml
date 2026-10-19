@@ -162,4 +162,6 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.TensorProductQuotient",
   "AlgebraicGroupsTest.AffineHomOverConvolution",
   "AlgebraicGroupsTest.AffineHomOverMulEquiv",
+  "AlgebraicGroupsTest.GroupScheme.KernelFromPullback",
+  "AlgebraicGroupsTest.GroupScheme.DiagonalKernel",
 ]
