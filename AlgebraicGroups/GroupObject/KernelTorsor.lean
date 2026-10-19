@@ -21,10 +21,12 @@ The source-group hypothesis is essential: addition `ℕ × ℕ → ℕ` has triv
 but is not injective. For schemes, the fibre must be the scheme-theoretic pullback:
 in characteristic `p`, Frobenius on `Gₐ` has kernel `αₚ`, which geometric points do not detect.
 
-This file begins the categorical core of smooth descent for extensions of group schemes.
-A chosen lift of a point of the target identifies the kernel with the fibre over that
-point by right translation. This does not assert that a fibre without a supplied lift
-already has a point.
+The chosen-lift
+statement allows a monoid object as target: right translation by an ordinary
+point of the source identifies the supplied kernel with the fibre over its image.
+This requires neither a group structure on the kernel nor a multiplicative
+chosen point, and does not assert that a fibre without a supplied lift already
+has a point.
 
 ## References
 
@@ -33,7 +35,8 @@ already has a point.
   in smooth extension descent. The kernel-pair theorem here is a generic
   pullback statement, not the smoothness implication.
 * J. S. Milne, *Abelian Varieties*, version 2.0 (March 16, 2008), Chapter I,
-  proof of Proposition 7.1, for the chosen-lift fibre-translation step.
+  proof of Proposition 7.1, for the group-target specialization of the
+  chosen-lift fibre-translation step. The monoid-target statement is more general.
   Scalar extension and the existence of a lift are separate from this step;
   the full proposition is not asserted here.
 * Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, for group laws on
@@ -145,27 +148,51 @@ theorem isPullback_kernel_mul (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
 
 end MonoidTarget
 
-variable [GrpObj Q]
-
-/-- A chosen lift `g` identifies the kernel of `q` with the fibre over `g ≫ q`
-by right translation. The point `g` need not be a group-object homomorphism.
-This is the chosen-lift translation step in Milne, *Abelian Varieties*, version 2.0
-(March 16, 2008), Chapter I, proof of Proposition 7.1; it does not assert that fibres
-without a supplied lift already have points, nor supply the scalar-extension or
+/-- For a monoid-object morphism `q` from a group object to a monoid object,
+a chosen ordinary point `g` identifies the supplied kernel with the fibre over
+`g ≫ q` by right translation, in the order `i(n) * g`. No monoid structure on
+`N` or multiplicativity of `i` or `g` is assumed.
+The group-target specialization is the chosen-lift translation step in Milne,
+*Abelian Varieties*, version 2.0 (March 16, 2008), Chapter I, proof of
+Proposition 7.1. The monoid-target statement does not assert that fibres without
+a supplied lift already have points, nor supply the scalar-extension or
 existence arguments of that proposition. -/
-theorem isPullback_kernel_mulRight (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
+theorem isPullback_kernel_mulRight [MonObj Q] (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
     (hN : IsPullback i (toUnit N) q η[Q]) (g : 𝟙_ C ⟶ G) :
     IsPullback (i ≫ (GrpObj.mulRight g).hom) (toUnit N) q (g ≫ q) := by
-  have htranslation :
-      IsPullback (GrpObj.mulRight g).hom q q (GrpObj.mulRight (g ≫ q)).hom := by
-    apply IsPullback.of_horiz_isIso
-    refine ⟨?_⟩
-    rw [← Category.id_comp (GrpObj.mulRight g).hom, comp_mulRight_hom,
-      MonObj.mul_comp, comp_mulRight_hom]
-    simp only [Category.id_comp, Category.assoc]
-  have hunit : η[Q] ≫ (GrpObj.mulRight (g ≫ q)).hom = g ≫ q := by
-    rw [comp_mulRight_hom]
-    simp [MonObj.one_eq_one]
-  simpa only [hunit] using hN.paste_horiz htranslation
+  have hdiff (s : PullbackCone q (g ≫ q)) :
+      (s.fst * (s.snd ≫ g)⁻¹) ≫ q = toUnit s.pt ≫ η[Q] := by
+    calc
+      (s.fst * (s.snd ≫ g)⁻¹) ≫ q =
+          (s.fst ≫ q) * ((s.snd ≫ g)⁻¹ ≫ q) := MonObj.mul_comp _ _ _
+      _ = ((s.snd ≫ g) ≫ q) * ((s.snd ≫ g)⁻¹ ≫ q) := by
+        rw [s.condition, Category.assoc]
+      _ = ((s.snd ≫ g) * (s.snd ≫ g)⁻¹) ≫ q := (MonObj.mul_comp _ _ _).symm
+      _ = 1 := by rw [mul_inv_cancel, MonObj.one_comp]
+      _ = toUnit s.pt ≫ η[Q] := Hom.one_def
+  let kernelLift (s : PullbackCone q (g ≫ q)) : s.pt ⟶ N :=
+    hN.lift (s.fst * (s.snd ≫ g)⁻¹) (toUnit s.pt) (hdiff s)
+  have kernelLift_i (s : PullbackCone q (g ≫ q)) :
+      kernelLift s ≫ i = s.fst * (s.snd ≫ g)⁻¹ := by
+    simp [kernelLift]
+  refine
+    { w := ?_
+      isLimit' := ⟨PullbackCone.IsLimit.mk _ kernelLift ?_ ?_ ?_⟩ }
+  · rw [comp_mulRight_hom, MonObj.mul_comp, hN.w]
+    simp only [← Hom.one_def, _root_.one_mul, Category.assoc]
+  · intro s
+    rw [← Category.assoc, comp_mulRight_hom, kernelLift_i,
+      toUnit_unique (toUnit s.pt) s.snd]
+    exact inv_mul_cancel_right _ _
+  · intro s
+    exact toUnit_unique _ _
+  · intro s m hm₁ hm₂
+    apply hN.hom_ext
+    · rw [kernelLift_i]
+      rw [← Category.assoc, comp_mulRight_hom,
+        toUnit_unique (toUnit s.pt) s.snd] at hm₁
+      exact (eq_mul_inv_iff_mul_eq).2 hm₁
+    · rw [hm₂]
+      exact toUnit_unique _ _
 
 end CategoryTheory.GrpObj

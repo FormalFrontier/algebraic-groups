@@ -241,6 +241,16 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Separated group schemes.** Every group object over a base scheme whose
+  underlying space has at most one point is separated over that base. In
+  particular, this holds over every field, without a finite-type assumption.
+  Over any base, a closed unit section suffices. The at-most-one-point result
+  extends Milne, *Algebraic Groups* (2017), Proposition 1.22, using Mathlib's
+  closed-section theorem. By Mathlib's postcomposition criterion, every
+  over-map from such a group object to any scheme over the same base is separated;
+  the target need not be a group object.
+  [Module](AlgebraicGroups/GroupScheme/Separated.lean),
+  [additive-group and empty-base examples](AlgebraicGroupsTest/Additive.lean).
 - **Separated morphisms and kernel units.** For any scheme `S`, a monoid
   morphism `q : G → Q` in `Over S` from a group object to a monoid object
   has the criterion `IsSeparated q.left ↔ IsClosedImmersion k.left`, where
@@ -252,13 +262,18 @@ maintained project libraries; it does not claim to formalize an entire source.
   flatness, finiteness, field or nonemptiness hypothesis.
   [Statement](AlgebraicGroups/GroupScheme/Separated.lean),
   [multiplicative-group projection and boundary examples](AlgebraicGroupsTest/Multiplicative.lean).
-- **Kernel fibres with a chosen lift.** In any Cartesian monoidal category, for
-  a morphism `q : G → Q` of group objects and a supplied kernel pullback,
-  right translation by an ordinary point `g : 𝟙 → G` identifies the kernel with
-  the fibre over `g ≫ q`. No group structure on the kernel or multiplicativity
-  of `g` is required. A target point without a chosen domain lift is not covered.
+- **Kernel fibres with a chosen lift.** In any Cartesian monoidal category,
+  the chosen-lift statement concerns a monoid-object morphism `q : G → Q`
+  from a group object `G` to a monoid object `Q` and a supplied kernel pullback.
+  Right translation by an ordinary point `g : 𝟙 → G`, in the order `i(n) * g`,
+  identifies the kernel with the fibre over `g ≫ q`. No monoid structure on the
+  kernel or multiplicativity of its inclusion or of `g` is required. A target point
+  without a chosen domain lift is not covered. The group-target specialization
+  is the chosen-lift step in Milne's *Abelian Varieties*, Chapter I, proof of
+  Proposition 7.1. The monoid-target formulation is more general than this source
+  case.
   [Module](AlgebraicGroups/GroupObject/KernelTorsor.lean),
-  [permutation-group example](AlgebraicGroupsTest/SplitKernelSemidirect.lean).
+  [permutation and full-transformation-monoid example](AlgebraicGroupsTest/SplitKernelSemidirect.lean).
 - **Affine-target maps and convolution.** Over a commutative ring `R`, maps from
   an arbitrary scheme over `Spec R` to the spectrum of a commutative
   `R`-bialgebra correspond to algebra maps into global sections. Geometric
@@ -291,6 +306,12 @@ maintained project libraries; it does not claim to formalize an entire source.
   and the inclusion agrees with the canonical zero-order isomorphism above.
   [Module](AlgebraicGroups/GroupScheme/RootsOfUnity.lean),
   [unique lift of the rational point `−1`](AlgebraicGroupsTest/RootsOfUnity.lean).
+- **Unit-stalk dimension.** For a group scheme locally of finite type over any
+  field, the Krull dimension of its full local ring at the canonical unit equals
+  the topological Krull dimension of its underlying scheme. Neither algebraic
+  closure of the field nor connectedness or reducedness of the group scheme is
+  required.
+  [Theorem](AlgebraicGroups/GroupScheme/Dimension.lean).
 - **Connected group schemes.** A connected group scheme of finite type over any
   field is geometrically irreducible, even without reducedness. If it is also
   geometrically reduced, it is geometrically integral. Finite type is expressed

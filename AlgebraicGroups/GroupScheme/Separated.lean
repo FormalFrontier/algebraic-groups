@@ -12,17 +12,20 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 # Separated group schemes
 
 This file proves that a group scheme is separated when its unit section is a
-closed immersion. In particular, every group scheme over a field is separated.
+closed immersion. In particular, every group scheme over a base whose underlying
+space has at most one point is separated, including every field base.
 
-The closed-unit-section criterion is relative to an arbitrary base scheme;
-the field case needs no finite-type hypothesis. For a monoid morphism from a
-relative group scheme to a relative monoid scheme, the kernel-unit criterion
-relates separatedness to the canonical section of the pullback over the target unit.
-This is the whole scheme-theoretic unit fibre, not a reduced or geometric fibre.
+The closed-unit-section criterion is relative to an arbitrary base scheme.
+The at-most-one-point result needs neither finite type nor reducedness, and
+allows the empty base. For a monoid morphism from a relative group scheme to a
+relative monoid scheme, the kernel-unit criterion relates separatedness to the
+canonical section of the pullback over the target unit. This is the whole
+scheme-theoretic unit fibre, not a reduced or geometric fibre.
 
 ## Main results
 
 - `AlgebraicGeometry.isSeparated_of_isClosedImmersion_unit`
+- `AlgebraicGeometry.isSeparated_of_grpObj_of_subsingleton`
 - `AlgebraicGeometry.isSeparated_of_grpObj`
 - `AlgebraicGeometry.isSeparated_iff_isClosedImmersion_kernelUnit`
 
@@ -34,7 +37,8 @@ This is the whole scheme-theoretic unit fibre, not a reduced or geometric fibre.
 - Mathlib, `IsSeparated` (`Mathlib.AlgebraicGeometry.Morphisms.Separated`),
   `MorphismProperty.of_isPullback` and
   `isClosedImmersion_of_comp_eq_id`: the diagonal criterion, pullback stability
-  of closed immersions and the closed-unit-section step over a field.
+  of closed immersions and the closed-unit-section step over a base with at most
+  one point.
 - Mathlib, `IsPullback.of_isLimit_binaryFan_of_isTerminal`,
   `IsPullback.of_right` and `Functor.map_isPullback`: the product pullback,
   pullback pasting and preservation by the over-category forgetful functor.
@@ -186,13 +190,24 @@ theorem isSeparated_iff_isClosedImmersion_kernelUnit {G Q : Over S}
     exact (MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion
       j.left e.hom).2 hjc
 
+/-- Every group scheme over a base whose underlying space has at most one point
+is separated. This extends the field statement of Milne, *Algebraic Groups*
+(2017), Proposition 1.22, using Mathlib's closed-immersion theorem for sections
+over a subsingleton base. No finite-type or reducedness assumption is needed. -/
+theorem isSeparated_of_grpObj_of_subsingleton [Subsingleton S]
+    (G : Over S) [GrpObj G] : IsSeparated G.hom := by
+  have : Subsingleton (𝟙_ (Over S)).left := by
+    simpa only [Over.tensorUnit_left] using (inferInstance : Subsingleton S)
+  exact isSeparated_of_isClosedImmersion_unit G <|
+    isClosedImmersion_of_comp_eq_id (toUnit G).left η[G].left (by
+      simpa only [Over.tensorUnit_left, Over.toUnit_left, Over.tensorUnit_hom] using Over.w η[G])
+
 variable {K : Type u} [Field K]
 
 /-- Every group scheme over a field is separated, with no finite-type
 assumption; this is Milne, *Algebraic Groups* (2017), Proposition 1.22 with
 the finite-type hypothesis removed. -/
 theorem isSeparated_of_grpObj (G : Over (Spec (.of K))) [GrpObj G] : IsSeparated G.hom :=
-  isSeparated_of_isClosedImmersion_unit G <|
-    isClosedImmersion_of_comp_eq_id (Y := Spec (.of K)) G.hom η[G].left (by simp)
+  isSeparated_of_grpObj_of_subsingleton G
 
 end AlgebraicGeometry

@@ -7,19 +7,24 @@ module
 
 public import AlgebraicGroups.GroupScheme.Additive
 import AlgebraicGroups.Examples.UnitStalkDimension
+public import AlgebraicGroups.GroupScheme.Separated
+public import Mathlib.AlgebraicGeometry.Limits
 
 /-!
 # Additive-group regression clients
 
 The coordinate-evaluation test records the value of the additive coordinate.
-The remaining clients are private and include zero-ring targets.
+The remaining clients are private and include zero-ring targets. Over every
+field, the bundled additive group is separated and has distinct zero and one
+points. Arbitrary over-maps from it use separatedness of the structural map;
+the tensor-unit group over the empty base gives a boundary case.
 -/
 
 set_option warningAsError true
 
 noncomputable section
 
-open CategoryTheory
+open CategoryTheory CategoryTheory.MonoidalCategory
 open scoped CategoryTheory.MonObj
 
 namespace AlgebraicGeometry
@@ -120,5 +125,30 @@ private def testZModTwoAlgHomEquiv : Multiplicative (ZMod 2) ≃*
 private def testZModOneAlgHomEquiv : Multiplicative (ZMod 1) ≃*
     WithConv (additiveGroupCoordinateRing (ZMod 1) →ₐ[ZMod 1] ZMod 1) :=
   additiveGroupMulEquivAlgHom (ZMod 1) (ZMod 1)
+
+-- The group-object instance is the projection from the bundled additive group.
+private theorem testAdditiveGroupSeparated (k : Type u) [Field k] :
+    IsSeparated (additiveGroupScheme k).X.hom :=
+  isSeparated_of_grpObj_of_subsingleton (additiveGroupScheme k).X
+
+private theorem testAdditiveGroupDistinctPoints (k : Type u) [Field k] :
+    additiveGroupMulEquivPoints k k (.ofAdd 0) ≠
+      additiveGroupMulEquivPoints k k (.ofAdd 1) := by
+  intro h
+  exact (zero_ne_one : (0 : k) ≠ 1) (congrArg Multiplicative.toAdd
+    ((additiveGroupMulEquivPoints k k).injective h))
+
+-- The target need not carry a group structure, nor the map respect multiplication.
+private theorem testAdditiveGroupMorphismSeparated (k : Type u) [Field k]
+    {X : Over (Spec (.of k))} (f : (additiveGroupScheme k).X ⟶ X) :
+    IsSeparated f.left := by
+  have : IsSeparated (f.left ≫ X.hom) := by
+    rw [Over.w f]
+    exact isSeparated_of_grpObj_of_subsingleton (additiveGroupScheme k).X
+  exact IsSeparated.of_comp f.left X.hom
+
+private theorem testEmptyBaseGroupSeparated :
+    IsSeparated (𝟙_ (Over (Spec (.of PUnit.{u + 1})))).hom :=
+  isSeparated_of_grpObj_of_subsingleton _
 
 end AlgebraicGeometry

@@ -26,7 +26,11 @@ instead uses conjugation by the inverse of the second section value.
 The same projection also has a fibre over a nonidentity point obtained from its
 kernel by right translation by an ordinary, nonmultiplicative point. Its pullback
 property is checked directly in `Type`; the two swaps distinguish right translation
-from left multiplication.
+from left multiplication. Postcomposing this same projection with the canonical
+map from permutations to `Function.End (Fin 3)` retains its kernel and chosen
+point, and instantiates the monoid-target chosen-lift statement. The target is
+the full composition monoid, not just its units: a constant transformation is
+not a unit.
 
 ## References
 
@@ -34,7 +38,10 @@ from left multiplication.
   conjugation), `Mathlib.CategoryTheory.Limits.Types.Pullbacks` (pullbacks in
   `Type`), `Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp` (group objects
   in `Type`), `GrpObj.mulRight` (right translation), and
-  `Mathlib.GroupTheory.Perm.Fin` (finite permutation groups).
+  `Mathlib.GroupTheory.Perm.Fin` (finite permutation groups),
+  `Equiv.Perm.equivUnitsEnd` and `Units.coeHom` (the canonical map to the full
+  transformation monoid), and `MonTypeEquivalenceMon.inverse` (monoid objects
+  in `Type`).
 -/
 
 public section
@@ -229,5 +236,72 @@ private theorem kernelFibre_isPullback :
     IsPullback (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom)
       (toUnit H) quotient (kernelFibrePoint ≫ quotient) :=
   GrpObj.isPullback_kernel_mulRight kernelIncl quotient kernelSquare kernelFibrePoint
+
+-- Capture the native composition dictionary before installing its internal monoid object.
+private abbrev transformationMonCat : MonCat := MonCat.of (Function.End (Fin 3))
+
+private noncomputable instance : MonObj (Function.End (Fin 3)) :=
+  (MonTypeEquivalenceMon.inverse.obj transformationMonCat).mon
+
+private noncomputable abbrev transformationQuotient : DoubleH ⟶ Function.End (Fin 3) :=
+  quotient ≫
+    (MonTypeEquivalenceMon.inverse.map
+      (MonCat.ofHom ((Units.coeHom (Function.End (Fin 3))).comp
+        Equiv.Perm.equivUnitsEnd.toMonoidHom))).hom
+
+private instance : IsMonHom transformationQuotient := by
+  -- Check the native arrow laws through the stored map's permutation applications.
+  refine { one_hom := ?_, mul_hom := ?_ }
+  · apply ConcreteCategory.hom_ext
+    intro point
+    funext j
+    change (quotient (η[DoubleH] point)) j = j
+    have h := ConcreteCategory.congr_hom (IsMonHom.one_hom quotient) point
+    exact congrArg (fun p : H ↦ p j) h
+  · apply ConcreteCategory.hom_ext
+    intro pair
+    funext j
+    change (quotient (μ[DoubleH] pair)) j = (quotient pair.1) ((quotient pair.2) j)
+    have h := ConcreteCategory.congr_hom (IsMonHom.mul_hom quotient) pair
+    exact congrArg (fun p : H ↦ p j) h
+
+private theorem transformationKernelSquare :
+    IsPullback kernelIncl (toUnit H) transformationQuotient η[Function.End (Fin 3)] := by
+  have hkernel :=
+    (Limits.Types.isPullback_iff kernelIncl quotient (toUnit H) η[H]).1 kernelSquare
+  apply (Limits.Types.isPullback_iff kernelIncl transformationQuotient
+    (toUnit H) η[Function.End (Fin 3)]).2
+  refine ⟨?_, hkernel.2.1, ?_⟩
+  · apply ConcreteCategory.hom_ext
+    intro n
+    rfl
+  · intro pair point h
+    apply hkernel.2.2 pair point
+    apply Equiv.coe_fn_injective
+    exact h
+
+private theorem transformationFibrePoint_ne_unit :
+    kernelFibrePoint ≫ transformationQuotient ≠ η[Function.End (Fin 3)] := by
+  intro h
+  apply kernelFibrePoint_properties.2.1
+  apply ConcreteCategory.hom_ext
+  intro point
+  apply Equiv.coe_fn_injective
+  exact ConcreteCategory.congr_hom h point
+
+private theorem constant_transformation_not_isUnit :
+    ¬ @IsUnit (Function.End (Fin 3)) transformationMonCat.str
+      (fun _ : Fin 3 ↦ (0 : Fin 3)) := by
+  rintro ⟨unit, hunit⟩
+  have h := congrArg (fun f : Function.End (Fin 3) ↦ f 1) unit.val_inv
+  change unit.val (unit.inv 1) = (1 : Fin 3) at h
+  rw [hunit] at h
+  exact (by decide : (0 : Fin 3) ≠ 1) h
+
+private theorem transformationFibre_isPullback :
+    IsPullback (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom)
+      (toUnit H) transformationQuotient (kernelFibrePoint ≫ transformationQuotient) :=
+  GrpObj.isPullback_kernel_mulRight kernelIncl transformationQuotient
+    transformationKernelSquare kernelFibrePoint
 
 end AlgebraicGroupsTest.SplitKernelSemidirect
