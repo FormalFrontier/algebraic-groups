@@ -40,6 +40,7 @@ roots = [
   "AlgebraicGroupsTest.FiniteConstantPoints",
   "AlgebraicGroupsTest.GeneralLinear",
   "AlgebraicGroupsTest.GroupObject.Commutative",
+  "AlgebraicGroupsTest.GroupObject.FunctorLimits",
   "AlgebraicGroupsTest.GroupObject.TrivialKernel",
   "AlgebraicGroupsTest.GroupObjectKernel",
   "AlgebraicGroupsTest.Diagonal",
