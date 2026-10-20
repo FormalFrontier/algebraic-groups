@@ -125,7 +125,6 @@ private theorem testProductIsoInvProjection (k : i) :
 
 omit b [Finite i] in
 /-- Retain the original regression's finite-index hypothesis, even for a single coordinate. -/
-@[nolint unusedArguments]
 private theorem testProjectionGlobalCoordinate [Finite i] (b : Module.Basis i K V)
     (X : Over (Spec (.of K)))
     (h : X ⟶ (vectorGroupScheme K V).X)
@@ -136,7 +135,6 @@ private theorem testProjectionGlobalCoordinate [Finite i] (b : Module.Basis i K 
 
 omit b c [Finite i] [Finite j] in
 /-- The original regression includes both finite-index hypotheses as well as its chosen basis. -/
-@[nolint unusedArguments]
 private theorem testCoordinateMapBasis [Finite i] [Finite j]
     (b : Module.Basis i K V) (c : Module.Basis j K W) [Fintype i]
     (f : V →ₗ[K] W) (k : j) :
@@ -147,7 +145,6 @@ private theorem testCoordinateMapBasis [Finite i] [Finite j]
 
 omit b c [Finite i] [Finite j] in
 /-- Preserve the original finite-index context while checking the scheme-map coordinate. -/
-@[nolint unusedArguments]
 private theorem testSchemeMapProjectionCoordinate [Finite i] [Finite j]
     (b : Module.Basis i K V) (c : Module.Basis j K W) [Fintype i]
     (f : V →ₗ[K] W) (k : j) :
@@ -189,7 +186,6 @@ private theorem testSchemeMapPoints (f : V →ₗ[K] W) (x : V ⊗[K] R) :
 omit b c [Finite i] [Finite j] [FiniteDimensional K V] [FiniteDimensional K W]
     R [CommRing R] [Algebra K R] in
 /-- Preserve the original finite-index and finite-dimensional regression context. -/
-@[nolint unusedArguments]
 private theorem testTensorDualBasis [Finite i] [Finite j]
     (b : Module.Basis i K V) (c : Module.Basis j K W)
     [FiniteDimensional K V] [FiniteDimensional K W]
@@ -204,7 +200,6 @@ private theorem testTensorDualBasis [Finite i] [Finite j]
 omit b c [Finite i] [Finite j] [FiniteDimensional K V] [FiniteDimensional K W]
     R [CommRing R] [Algebra K R] in
 /-- Preserve the original finite-index and finite-dimensional regression context. -/
-@[nolint unusedArguments]
 private theorem testMulEquivAlgHomBasis [Finite i] [Finite j]
     (b : Module.Basis i K V) (c : Module.Basis j K W)
     [FiniteDimensional K V] [FiniteDimensional K W]
@@ -220,7 +215,6 @@ private theorem testMulEquivAlgHomBasis [Finite i] [Finite j]
 
 omit b [Finite i] [FiniteDimensional K V] R [CommRing R] [Algebra K R] in
 /-- Retain the original finite-index hypothesis in the pure-tensor coordinate regression. -/
-@[nolint unusedArguments]
 private theorem testCoordinatePureTensor [Finite i] (b : Module.Basis i K V)
     [FiniteDimensional K V] (R : Type u) [CommRing R] [Algebra K R]
     (v : V) (r : R) (k : i) :

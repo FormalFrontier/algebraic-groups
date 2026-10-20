@@ -46,7 +46,6 @@ generic subsingleton-units instance. Transport uses
 set_option autoImplicit false
 set_option relaxedAutoImplicit false
 set_option linter.mathlibStandardSet true
-set_option linter.style.header false
 
 @[expose] public noncomputable section
 

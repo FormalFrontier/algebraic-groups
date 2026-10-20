@@ -176,14 +176,12 @@ private theorem testPolynomialHopfAlgebra_original :
 
 /- Keep the original subsingleton-context regressions: these general equivalences
 do not need `[Subsingleton R]`, but removing it would change the tested statements.
-Only these two declarations are exempt from `unusedArguments`. -/
-@[nolint unusedArguments]
+-/
 private def testSubsingletonAlgHomEquiv [Subsingleton R] :
     Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
       WithConv (infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R) :=
   infinitesimalAdditiveMulEquivAlgHom K p m R
 
-@[nolint unusedArguments]
 private def testSubsingletonPointsEquiv [Subsingleton R] :
     Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
       ((Spec (.of R)).asOver (Spec (.of K)) ⟶

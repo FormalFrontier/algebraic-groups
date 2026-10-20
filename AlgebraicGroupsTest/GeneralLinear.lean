@@ -110,7 +110,6 @@ public theorem generalLinearGroup_convolution_entry
 
 /-- Retain the original stronger-context regression,
 although the equivalence works for any target. -/
-@[nolint unusedArguments]
 private def testSubsingletonMulEquiv [Subsingleton R] : Matrix.GeneralLinearGroup n R ≃*
     WithConv (CoordinateRing K n →ₐ[K] R) :=
   generalLinearGroupMulEquivAlgHom K n R
