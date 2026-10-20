@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 public import Mathlib.CategoryTheory.Monoidal.Internal.Limits
 public import Mathlib.CategoryTheory.Monoidal.Grp
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
@@ -23,6 +24,10 @@ reflection-of-limits argument, and the defining underlying composite.
 A monoidal functor between cartesian monoidal categories likewise preserves
 these limits on internal group objects. The source forgetful functor preserves
 limits, and the fully faithful target forgetful functor reflects them.
+
+It also preserves zero morphisms: it preserves terminal objects, so Mathlib's
+zero objects on internal groups and its terminal-preservation instance
+supply `Functor.PreservesZeroMorphisms` for the induced functor.
 -/
 
 @[expose] public section

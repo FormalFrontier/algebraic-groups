@@ -97,6 +97,12 @@ abbrev multiplicativeGroupScheme
     (K : Type u) [CommRing K] : Grp (Over (Spec (.of K))) :=
   ⟨multiplicativeGroupUnderlyingScheme K⟩
 
+/-- The carrier of the multiplicative group scheme over a commutative ring. -/
+@[simp]
+theorem multiplicativeGroupScheme_X (K : Type u) [CommRing K] :
+    (multiplicativeGroupScheme K).X = multiplicativeGroupUnderlyingScheme K :=
+  rfl
+
 /-- The group-valued functor sending a `K`-algebra to its group of units. -/
 def multiplicativeGroupFunctor
     (K : Type u) [CommRing K] : CommAlgCat K ⥤ GrpCat where

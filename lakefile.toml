@@ -41,6 +41,7 @@ roots = [
   "AlgebraicGroupsTest.GeneralLinear",
   "AlgebraicGroupsTest.GroupObject.Commutative",
   "AlgebraicGroupsTest.GroupObject.FunctorLimits",
+  "AlgebraicGroupsTest.GroupObject.IntegerUnitsPullback",
   "AlgebraicGroupsTest.GroupObject.TrivialKernel",
   "AlgebraicGroupsTest.GroupObjectKernel",
   "AlgebraicGroupsTest.Diagonal",

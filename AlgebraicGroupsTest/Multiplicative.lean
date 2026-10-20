@@ -6,6 +6,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.GroupScheme.Multiplicative
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 public import AlgebraicGroups.GroupScheme.Separated
 
 /-!
@@ -200,5 +201,31 @@ private theorem zero_base_projection_separated :
   multiplicative_projection_separated (ZMod 1)
 
 end Boundaries
+
+end AlgebraicGeometry
+
+namespace AlgebraicGeometry
+
+attribute [local instance] Over.cartesianMonoidalCategory
+
+/-- The multiplicative group scheme over the integers, with the distinct points
+corresponding to the units `-1` and `1`. -/
+private def integerMultiplicativeGroupPoints :
+    Σ G : Grp (Over (Spec (.of ℤ))),
+      {p : (((Spec (.of ℤ)).asOver (Spec (.of ℤ)) ⟶ G.X) ×
+          ((Spec (.of ℤ)).asOver (Spec (.of ℤ)) ⟶ G.X)) // p.1 ≠ p.2} := by
+  let Gm : Grp (Over (Spec (.of ℤ))) := multiplicativeGroupScheme ℤ
+  let e := multiplicativeGroupMulEquivPoints ℤ ℤ
+  have h : Gm.X = multiplicativeGroupUnderlyingScheme ℤ :=
+    multiplicativeGroupScheme_X ℤ
+  let pMinus : (Spec (.of ℤ)).asOver (Spec (.of ℤ)) ⟶ Gm.X :=
+    e (-1 : ℤˣ) ≫ eqToHom h.symm
+  let pPlus : (Spec (.of ℤ)).asOver (Spec (.of ℤ)) ⟶ Gm.X :=
+    e (1 : ℤˣ) ≫ eqToHom h.symm
+  refine ⟨Gm, ⟨(pMinus, pPlus), ?_⟩⟩
+  intro hp
+  have hu : (-1 : ℤˣ) = 1 :=
+    e.injective ((cancel_mono (eqToHom h.symm)).1 hp)
+  exact (by decide : (-1 : ℤ) ≠ 1) (congrArg (fun u : ℤˣ => (u : ℤ)) hu)
 
 end AlgebraicGeometry
