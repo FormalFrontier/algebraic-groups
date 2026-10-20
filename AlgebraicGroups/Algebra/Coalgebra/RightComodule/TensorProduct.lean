@@ -32,8 +32,12 @@ identifies the external tensor product of regular comodules with the regular
 comodule of the tensor coalgebra. The general right-comodule coassociativity,
 counit, injectivity and zero-map lemmas apply to the constructed object.
 
+`Coalgebra.RightComoduleHom.externalTensor` tensors specified comodule morphisms,
+with underlying linear map `TensorProduct.map`. Its pure-tensor, identity and
+composition laws make the external tensor construction functorial in both inputs.
+
 This is an external tensor product over two coalgebras, not an internal tensor
-product over a fixed bialgebra. No morphism action or coherence is asserted here.
+product over a fixed bialgebra. No coherence is asserted here.
 
 ## References
 
@@ -320,3 +324,73 @@ theorem externalTensor_regular :
   exact externalTensorCoaction_regular
 
 end Coalgebra.RightComodule
+
+
+namespace Coalgebra.RightComoduleHom
+
+universe uM0 uM1 uM2 uN0 uN1 uN2
+
+variable {R : Type uR} {C : Type uC} {D : Type uD}
+variable [CommSemiring R]
+variable [AddCommMonoid C] [Module R C] [Coalgebra R C]
+variable [AddCommMonoid D] [Module R D] [Coalgebra R D]
+variable {M0 : Type uM0} {M1 : Type uM1} {N0 : Type uN0} {N1 : Type uN1}
+variable [AddCommMonoid M0] [Module R M0] [AddCommMonoid M1] [Module R M1]
+variable [AddCommMonoid N0] [Module R N0] [AddCommMonoid N1] [Module R N1]
+variable {X0 : RightComodule R C M0} {X1 : RightComodule R C M1}
+variable {Y0 : RightComodule R D N0} {Y1 : RightComodule R D N1}
+
+/-- The external tensor product of two specified right-comodule morphisms.
+Its underlying linear map is the tensor product of the two underlying maps. -/
+def externalTensor (f : RightComoduleHom X0 X1) (g : RightComoduleHom Y0 Y1) :
+    RightComoduleHom (X0.externalTensor Y0) (X1.externalTensor Y1) where
+  toLinearMap := _root_.TensorProduct.map f.toLinearMap g.toLinearMap
+  colinear := by
+    have hshuffle :
+        (_root_.TensorProduct.tensorTensorTensorComm R M1 C N1 D).toLinearMap ∘ₗ
+            _root_.TensorProduct.map (f.toLinearMap.rTensor C) (g.toLinearMap.rTensor D) =
+          (_root_.TensorProduct.map f.toLinearMap g.toLinearMap).rTensor (C ⊗[R] D) ∘ₗ
+            (_root_.TensorProduct.tensorTensorTensorComm R M0 C N0 D).toLinearMap := by
+      simpa only [LinearMap.rTensor_def, _root_.TensorProduct.map_id] using
+        (_root_.TensorProduct.tensorTensorTensorComm_comp_map R f.toLinearMap
+          (LinearMap.id : C →ₗ[R] C) g.toLinearMap (LinearMap.id : D →ₗ[R] D))
+    simp only [RightComodule.externalTensor_coaction, RightComodule.externalTensorCoaction,
+      LinearMap.comp_assoc]
+    rw [← _root_.TensorProduct.map_comp, f.colinear, g.colinear,
+      _root_.TensorProduct.map_comp, ← LinearMap.comp_assoc, hshuffle, LinearMap.comp_assoc]
+
+/-- Forgetting colinearity gives the tensor product of the underlying linear maps. -/
+@[simp] theorem toLinearMap_externalTensor (f : RightComoduleHom X0 X1)
+    (g : RightComoduleHom Y0 Y1) :
+    (f.externalTensor g).toLinearMap = _root_.TensorProduct.map f.toLinearMap g.toLinearMap := rfl
+
+/-- Evaluate the external tensor product of morphisms at an arbitrary tensor. -/
+@[simp] theorem externalTensor_apply (f : RightComoduleHom X0 X1)
+    (g : RightComoduleHom Y0 Y1) (t : M0 ⊗[R] N0) :
+    (f.externalTensor g) t = _root_.TensorProduct.map f.toLinearMap g.toLinearMap t := rfl
+
+/-- On pure tensors, the external tensor product applies each morphism to its factor. -/
+@[simp] theorem externalTensor_tmul (f : RightComoduleHom X0 X1)
+    (g : RightComoduleHom Y0 Y1) (m : M0) (n : N0) :
+    (f.externalTensor g) (m ⊗ₜ[R] n) = f m ⊗ₜ[R] g n :=
+  _root_.TensorProduct.map_tmul f.toLinearMap g.toLinearMap m n
+
+/-- The external tensor product preserves identity morphisms. -/
+@[simp] theorem externalTensor_id (X0 : RightComodule R C M0) (Y0 : RightComodule R D N0) :
+    (id X0).externalTensor (id Y0) = id (X0.externalTensor Y0) := by
+  apply toLinearMap_injective
+  exact _root_.TensorProduct.map_id
+
+variable {M2 : Type uM2} {N2 : Type uN2}
+variable [AddCommMonoid M2] [Module R M2] [AddCommMonoid N2] [Module R N2]
+variable {X2 : RightComodule R C M2} {Y2 : RightComodule R D N2}
+
+/-- The external tensor product preserves composition in both factors. -/
+theorem externalTensor_comp (f2 : RightComoduleHom X1 X2) (f1 : RightComoduleHom X0 X1)
+    (g2 : RightComoduleHom Y1 Y2) (g1 : RightComoduleHom Y0 Y1) :
+    (f2.comp f1).externalTensor (g2.comp g1) =
+      (f2.externalTensor g2).comp (f1.externalTensor g1) := by
+  apply toLinearMap_injective
+  exact _root_.TensorProduct.map_comp f2.toLinearMap g2.toLinearMap f1.toLinearMap g1.toLinearMap
+
+end Coalgebra.RightComoduleHom

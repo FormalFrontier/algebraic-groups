@@ -25,6 +25,11 @@ The bottom subcomodule of the regular comodule on `A` gives a zero-carrier
 boundary. Its subtype and tensor domain are inhabited subsingletons, and the
 specified external tensor coaction is zero.
 
+For the scalar coalgebra `ℕ`, tensoring twice the identity with three times the
+identity sends `1 ⊗ₜ 1` to `2 ⊗ₜ 3`. The left unitor sends the latter to `6`,
+not `1`, so this morphism is not the identity. The identity and composition
+laws are also exercised on these regular comodules.
+
 ## References
 
 The specified right comodules and raw external coaction are AlgebraicGroups
@@ -252,3 +257,57 @@ private theorem bottom_regular_contract :
 end CoalgebraExternalTensorExamples
 
 end
+
+
+namespace CoalgebraExternalTensorHomExamples
+
+open Coalgebra (RightComoduleHom)
+
+example :
+    (((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).externalTensor
+      ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ))) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) =
+        (2 : ℕ) ⊗ₜ[ℕ] (3 : ℕ) := by
+  rw [RightComoduleHom.externalTensor_tmul]
+  rfl
+
+example :
+    TensorProduct.lid ℕ ℕ
+        ((((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).externalTensor
+          ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ))) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ))) = 6 ∧
+      ((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).externalTensor
+          ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)) ≠
+        RightComoduleHom.id ((regular ℕ ℕ).externalTensor (regular ℕ ℕ)) := by
+  constructor
+  · rw [RightComoduleHom.externalTensor_tmul, TensorProduct.lid_tmul]
+    rfl
+  · intro h
+    have hvalue := congrArg
+      (fun k : RightComoduleHom ((regular ℕ ℕ).externalTensor (regular ℕ ℕ))
+          ((regular ℕ ℕ).externalTensor (regular ℕ ℕ)) ↦
+        TensorProduct.lid ℕ ℕ (k ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)))) h
+    apply (by decide : (6 : ℕ) ≠ 1)
+    simpa only [RightComoduleHom.externalTensor_tmul, RightComoduleHom.smul_apply,
+      RightComoduleHom.id_apply, TensorProduct.lid_tmul, Nat.nsmul_eq_mul] using hvalue
+
+example (t : ℕ ⊗[ℕ] ℕ) :
+    ((RightComoduleHom.id (regular ℕ ℕ)).externalTensor
+      (RightComoduleHom.id (regular ℕ ℕ))) t = t := by
+  rw [RightComoduleHom.externalTensor_id, RightComoduleHom.id_apply]
+
+example :
+    ((((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).comp
+        ((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ))).externalTensor
+      (((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).comp
+        ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)))) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) =
+        (4 : ℕ) ⊗ₜ[ℕ] (9 : ℕ) := by
+  rw [RightComoduleHom.externalTensor_comp, RightComoduleHom.comp_apply,
+    RightComoduleHom.externalTensor_tmul, RightComoduleHom.externalTensor_tmul]
+  rfl
+
+example :
+    ((0 : RightComoduleHom (regular ℕ ℕ) (regular ℕ ℕ)).externalTensor
+      ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ))) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) = 0 := by
+  simp only [RightComoduleHom.externalTensor_tmul, RightComoduleHom.zero_apply,
+    TensorProduct.zero_tmul]
+
+end CoalgebraExternalTensorHomExamples

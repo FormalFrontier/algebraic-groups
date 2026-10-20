@@ -147,7 +147,9 @@ maintained project libraries; it does not claim to formalize an entire source.
   coalgebras `C` and `D` give a right comodule on `M ⊗[R] N` over the tensor
   coalgebra `C ⊗[R] D`, in five independent universes. The coaction shuffles
   the tensor of the input coaction values; regular comodules recover the
-  regular comodule of that same tensor coalgebra. No flatness, projectivity,
+  regular comodule of that same tensor coalgebra. Specified comodule morphisms
+  tensor via `TensorProduct.map`, preserving identities and composition, with
+  all six composition-carrier universes independent. No flatness, projectivity,
   finiteness or purity of coaction values is required. This is an external
   construction, not an internal tensor product over a fixed bialgebra.
   [Construction and API](AlgebraicGroups/Algebra/Coalgebra/RightComodule/TensorProduct.lean),
