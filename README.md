@@ -123,6 +123,17 @@ maintained project libraries; it does not claim to formalize an entire source.
   module-finiteness and finite generation. Ambient equivalences transport these
   carriers as an ordinary `Equiv`, not an order isomorphism; no ambient finiteness.
   [Module](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Equiv.lean).
+- **Algebra-valued tests for right-comodule stability.** Let `R` and `C` be
+  commutative semirings, with `C` an `R`-algebra and a coalgebra on its canonical
+  `R`-module, and let `X` be a specified right coaction on any additive-monoid
+  `R`-module `M`. A submodule `U` is image-stable exactly when identity evaluation
+  preserves `U.baseChange C`, the image of the tensor inclusion. Equivalently,
+  every algebra-valued evaluation preserves `U.baseChange A`, for commutative
+  `R`-algebras `A` in the compatible maximum of the coalgebra and tester
+  universes. The forward implication permits an independently sized `A`.
+  Evaluation is the stock scalar-extension lift of the commuted coaction;
+  no flatness, bialgebra structure, finiteness, basis or tensor-inclusion
+  injectivity is required. [Criteria and API](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean).
 - **Finite right subcomodules.** Over a commutative semiring, for additive-monoid
   modules, projectivity of the coacting coalgebra alone gives finite-subset
   containment in finitely generated subcomodules. Neither module need be finite,

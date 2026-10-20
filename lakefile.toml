@@ -74,6 +74,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.IdempotentIdealTensor",
   "AlgebraicGroupsTest.Algebra.Coalgebra.QuotientQuotient",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.RightComoduleStability",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.TensorProduct",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComoduleTransport",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SkewPrimitive",

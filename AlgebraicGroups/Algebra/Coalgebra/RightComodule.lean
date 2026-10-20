@@ -5,6 +5,9 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.FiniteSubcoalgebra
+public import AlgebraicGroups.Algebra.TensorProduct.Submodule
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.RingTheory.Flat.Basic
 
 /-!
@@ -33,6 +36,13 @@ flatness, projectivity or freeness.
   `RightComodule.Subcomodule` instead carries a coaction on the submodule subtype
   and a colinear inclusion, bundled as `Subcomodule.subtype`. Every such
   subcomodule is image-stable, without flatness assumptions.
+* For a commutative algebra carrying a coalgebra on its canonical module,
+  `RightComodule.isStable_iff_id_evaluation_mem_baseChange` detects image
+  stability by identity evaluation on the scalar-extension image.
+  `RightComodule.isStable_iff_forall_evaluation_mem_baseChange` gives the
+  equivalent family of algebra-valued tests in a compatible maximum universe.
+  The one-algebra forward implication has an independent target universe.
+  None of these evaluation results requires flatness or a subtype coaction.
 * Under `[Module.Flat R C]`, `Subcomodule.ofIsStable` constructs the induced
   subtype coaction using Mathlib's injective codomain lift. Flatness transfers
   the coaction laws through the tensor inclusion and makes the coaction unique;
@@ -65,6 +75,7 @@ No arbitrary-intersection or complete-lattice structure is asserted here.
 
 * M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969, for classical
   comodules and the coefficient method (bibliographic credit).
+* C. Kassel, *Quantum Groups*, §II.4, for tensor-product conventions.
 * Mathlib's coalgebra, tensor-product, flatness and linear-map formalizations.
 -/
 
@@ -777,5 +788,185 @@ theorem scalar_subtype_colinear (U : Submodule R M) :
     U.subtype.rTensor R ∘ₗ (scalar R U).coaction = (scalar R M).coaction ∘ₗ U.subtype := by
   ext m
   simp
+
+end Coalgebra.RightComodule
+
+/-! ## Algebra-valued evaluation and image stability -/
+
+universe uR uC uM uA uB
+
+namespace Coalgebra.RightComodule
+
+variable {R₀ : Type uR} {C₀ : Type uC} {M₀ : Type uM}
+variable [CommSemiring R₀] [CommSemiring C₀]
+variable [Algebra R₀ C₀] [Coalgebra R₀ C₀]
+variable [AddCommMonoid M₀] [Module R₀ M₀]
+
+/-- Evaluation on a pure tensor uses the left scalar action: a coaction term
+`mᵢ ⊗ cᵢ` contributes `(a * α cᵢ) ⊗ mᵢ`. -/
+theorem evaluation_tmul
+    (X : Coalgebra.RightComodule R₀ C₀ M₀)
+    {A : Type uA} [CommSemiring A] [Algebra R₀ A]
+    (α : C₀ →ₐ[R₀] A) (a : A) (m : M₀) :
+    LinearMap.liftBaseChange A
+        ((TensorProduct.map (AlgHom.toLinearMap α)
+            (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
+          ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction))
+        (a ⊗ₜ[R₀] m) =
+      a • TensorProduct.map (AlgHom.toLinearMap α)
+        (LinearMap.id : M₀ →ₗ[R₀] M₀)
+        (TensorProduct.comm R₀ M₀ C₀ (X.coaction m)) := by
+  rw [LinearMap.liftBaseChange_tmul]
+  rfl
+
+/-- The identity one-tensor test recovers the commuted original coaction. -/
+theorem id_evaluation_one_tmul
+    (X : Coalgebra.RightComodule R₀ C₀ M₀) (m : M₀) :
+    LinearMap.liftBaseChange C₀
+        ((TensorProduct.map (AlgHom.toLinearMap (AlgHom.id R₀ C₀))
+            (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
+          ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction))
+        (1 ⊗ₜ[R₀] m) =
+      TensorProduct.comm R₀ M₀ C₀ (X.coaction m) := by
+  rw [LinearMap.liftBaseChange_one_tmul]
+  simp only [LinearMap.comp_apply, AlgHom.toLinearMap_id,
+    TensorProduct.map_id, LinearMap.id_apply]
+  rfl
+
+/-- Evaluation is natural in its target algebra, as an equality of elements
+of the target tensor product. The tensor transport is only `R₀`-linear. -/
+theorem evaluation_naturality
+    (X : Coalgebra.RightComodule R₀ C₀ M₀)
+    {A : Type uA} {B : Type uB}
+    [CommSemiring A] [CommSemiring B] [Algebra R₀ A] [Algebra R₀ B]
+    (α : C₀ →ₐ[R₀] A) (q : A →ₐ[R₀] B) (z : A ⊗[R₀] M₀) :
+    TensorProduct.map (AlgHom.toLinearMap q)
+        (LinearMap.id : M₀ →ₗ[R₀] M₀)
+        (LinearMap.liftBaseChange A
+          ((TensorProduct.map (AlgHom.toLinearMap α)
+              (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
+            ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction)) z) =
+      LinearMap.liftBaseChange B
+        ((TensorProduct.map (AlgHom.toLinearMap (q.comp α))
+            (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
+          ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction))
+        (TensorProduct.map (AlgHom.toLinearMap q)
+          (LinearMap.id : M₀ →ₗ[R₀] M₀) z) := by
+  induction z using TensorProduct.inductionOn with
+  | tmul a m =>
+      have h (y : C₀ ⊗[R₀] M₀) :
+          TensorProduct.map (AlgHom.toLinearMap q)
+              (LinearMap.id : M₀ →ₗ[R₀] M₀)
+              (a • TensorProduct.map (AlgHom.toLinearMap α)
+                (LinearMap.id : M₀ →ₗ[R₀] M₀) y) =
+            q a • TensorProduct.map (AlgHom.toLinearMap (q.comp α))
+              (LinearMap.id : M₀ →ₗ[R₀] M₀) y := by
+        induction y using TensorProduct.inductionOn with
+        | tmul c n =>
+            simp [TensorProduct.smul_tmul', smul_eq_mul]
+        | add y y' hy hy' =>
+            simpa only [map_add, smul_add] using
+              congrArg₂ (fun x x' : B ⊗[R₀] M₀ => x + x') hy hy'
+      simpa only [evaluation_tmul, TensorProduct.map_tmul,
+        AlgHom.toLinearMap_apply, LinearMap.id_apply] using
+        h (TensorProduct.comm R₀ M₀ C₀ (X.coaction m))
+  | add z z' hz hz' =>
+      simpa only [map_add] using
+        congrArg₂ (fun x x' : B ⊗[R₀] M₀ => x + x') hz hz'
+
+/-- Stability preserves the scalar-extension image under every one-algebra
+evaluation, with the algebra universe independent of the coalgebra universe. -/
+theorem IsStable.evaluation_mem_baseChange
+    {X : Coalgebra.RightComodule R₀ C₀ M₀} {U : Submodule R₀ M₀}
+    (hU : X.IsStable U)
+    {A : Type uA} [CommSemiring A] [Algebra R₀ A]
+    (α : C₀ →ₐ[R₀] A) (z : A ⊗[R₀] M₀) (hz : z ∈ U.baseChange A) :
+    LinearMap.liftBaseChange A
+        ((TensorProduct.map (AlgHom.toLinearMap α)
+            (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
+          ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction)) z
+      ∈ U.baseChange A := by
+  have hmem (m : M₀) (hm : m ∈ U) :
+      TensorProduct.map (AlgHom.toLinearMap α)
+          (LinearMap.id : M₀ →ₗ[R₀] M₀)
+          (TensorProduct.comm R₀ M₀ C₀ (X.coaction m)) ∈ U.baseChange A := by
+    exact U.map_mem_baseChange (AlgHom.toLinearMap α)
+      ((TensorProduct.comm_mem_baseChange_iff U (X.coaction m)).mpr
+        (hU.coaction_mem_range m hm))
+  obtain ⟨w, rfl⟩ := hz
+  induction w using TensorProduct.inductionOn with
+  | tmul a u =>
+      rw [LinearMap.baseChange_tmul, evaluation_tmul]
+      exact (U.baseChange A).smul_mem a (hmem (u : M₀) u.property)
+  | add w w' hw hw' =>
+      simpa only [map_add] using (U.baseChange A).add_mem hw hw'
+
+/-- The identity-algebra evaluation criterion for image stability, with the
+right-coaction convention of Sweedler, *Hopf Algebras*. No subtype coaction or
+tensor-inclusion injectivity is required. -/
+theorem isStable_iff_id_evaluation_mem_baseChange
+    (X : Coalgebra.RightComodule R₀ C₀ M₀) (U : Submodule R₀ M₀) :
+    X.IsStable U ↔
+      ∀ z ∈ U.baseChange C₀,
+        LinearMap.liftBaseChange C₀
+          ((TensorProduct.map (AlgHom.toLinearMap (AlgHom.id R₀ C₀))
+              (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
+            ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction)) z
+          ∈ U.baseChange C₀ := by
+  constructor
+  · intro hU z hz
+    exact hU.evaluation_mem_baseChange (AlgHom.id R₀ C₀) z hz
+  · intro h
+    apply (X.isStable_iff U).2
+    intro m hm
+    apply (TensorProduct.comm_mem_baseChange_iff U (X.coaction m)).mp
+    rw [← X.id_evaluation_one_tmul m]
+    exact h (1 ⊗ₜ[R₀] m) (Submodule.tmul_mem_baseChange_of_mem 1 hm)
+
+/-- Image stability is detected by evaluations in all commutative algebras in
+the compatible maximum universe, with the right-coaction convention of Sweedler,
+*Hopf Algebras*. The lifted coefficient algebra supplies the detector without
+restricting the independently universe-polymorphic forward implication. -/
+theorem isStable_iff_forall_evaluation_mem_baseChange
+    (X : Coalgebra.RightComodule R₀ C₀ M₀) (U : Submodule R₀ M₀) :
+    X.IsStable U ↔
+      ∀ (A : Type (max uC uA)) [CommSemiring A] [Algebra R₀ A]
+          (α : C₀ →ₐ[R₀] A),
+        ∀ z ∈ U.baseChange A,
+          LinearMap.liftBaseChange A
+            ((TensorProduct.map (AlgHom.toLinearMap α)
+                (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
+              ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction)) z
+            ∈ U.baseChange A := by
+  constructor
+  · intro hX A _ _ α z hz
+    exact hX.evaluation_mem_baseChange (A := A) α z hz
+  · intro h
+    apply (X.isStable_iff U).2
+    intro m hm
+    let L : Type (max uC uA) := ULift.{uA} C₀
+    let e : L ≃ₐ[R₀] C₀ := ULift.algEquiv (R := R₀) (A := C₀)
+    let α : C₀ →ₐ[R₀] L := e.symm.toAlgHom
+    let downM : L ⊗[R₀] M₀ →ₗ[R₀] C₀ ⊗[R₀] M₀ :=
+      TensorProduct.map e.toLinearMap (LinearMap.id : M₀ →ₗ[R₀] M₀)
+    have hcancel (y : C₀ ⊗[R₀] M₀) :
+        downM (TensorProduct.map (AlgHom.toLinearMap α)
+          (LinearMap.id : M₀ →ₗ[R₀] M₀) y) = y := by
+      induction y using TensorProduct.inductionOn with
+      | tmul c m' =>
+          change e (e.symm c) ⊗ₜ[R₀] m' = c ⊗ₜ[R₀] m'
+          rw [e.apply_symm_apply]
+      | add x y hx hy =>
+          simp only [map_add, hx, hy]
+    have hz :=
+      h L α ((1 : L) ⊗ₜ[R₀] m)
+        (Submodule.tmul_mem_baseChange_of_mem (1 : L) hm)
+    rw [LinearMap.liftBaseChange_one_tmul] at hz
+    have hdown := U.map_mem_baseChange e.toLinearMap hz
+    change downM (TensorProduct.map (AlgHom.toLinearMap α)
+      (LinearMap.id : M₀ →ₗ[R₀] M₀)
+      (TensorProduct.comm R₀ M₀ C₀ (X.coaction m))) ∈ U.baseChange C₀ at hdown
+    rw [hcancel] at hdown
+    exact (TensorProduct.comm_mem_baseChange_iff U (X.coaction m)).mp hdown
 
 end Coalgebra.RightComodule
