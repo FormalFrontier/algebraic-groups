@@ -10,6 +10,7 @@ public import AlgebraicGroups.Algebra.Bialgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Bialgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
+public import AlgebraicGroups.Algebra.Coalgebra.CoefficientOperators
 public import AlgebraicGroups.Algebra.Coalgebra.Coefficients
 public import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
 public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
@@ -149,6 +150,7 @@ public import AlgebraicGroups.GroupScheme.SpecialLinearModule
 public import AlgebraicGroups.GroupScheme.Smooth
 public import AlgebraicGroups.LinearAlgebra.Basis.Semilocal
 public import AlgebraicGroups.LinearAlgebra.FiniteProjective.Charpoly
+public import AlgebraicGroups.LinearAlgebra.TensorProduct.Extension
 public import AlgebraicGroups.RingTheory.Equalizer
 public import AlgebraicGroups.RingTheory.FaithfullyFlat
 public import AlgebraicGroups.RingTheory.LocalInfiniteResidueExtension

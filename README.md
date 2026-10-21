@@ -43,6 +43,25 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Coalgebras and Hopf algebras
 
+- **Weak linear coefficient composition.** Over a commutative semiring `R`, let
+  `C` and `M` be `R`-semimodules and let `Δ : C →ₗ[R] C ⊗[R] C` and
+  `δ : M →ₗ[R] C ⊗[R] M` satisfy relative coassociativity. Arbitrary linear
+  coefficients `α β : C →ₗ[R] A`, for a possibly noncommutative semiring
+  `R`-algebra `A`, induce `A`-linear operators on `A ⊗[R] M`. Applying `α`
+  first and `β` second combines coefficients as
+  `(LinearMap.mul' R A).comp ((TensorProduct.map α β).comp Δ)`: the outer
+  coefficient `α` multiplies the inner coefficient `β` in that order. No
+  multiplication on `C`, counit or multiplicativity of the coefficients is needed.
+  [Composition theorem](AlgebraicGroups/Algebra/Coalgebra/CoefficientOperators.lean);
+  the [matrix-unit example](AlgebraicGroupsTest/Algebra/Coalgebra/CoefficientOperators.lean)
+  distinguishes the two orders.
+- **Scalar-extension postcomposition.** Over a commutative semiring `R`,
+  extending an `R`-linear map `F : M →ₗ[R] N` to an `A`-linear map
+  `A ⊗[R] M →ₗ[A] N` commutes with `A`-linear postcomposition when the target
+  modules have compatible `R`- and `A`-actions. The scalar `R`-algebra `A` may
+  be a noncommutative semiring; for commutative `A` the extension agrees with
+  `LinearMap.liftBaseChange`.
+  [API](AlgebraicGroups/LinearAlgebra/TensorProduct/Extension.lean).
 - **Group-like elements and scalar extension.** The counit-one and tensor-square
   equations are preserved by extension of commutative semirings and reflected by
   faithfully flat extension of commutative rings, requiring only weak coalgebra
