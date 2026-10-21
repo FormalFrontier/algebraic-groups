@@ -129,18 +129,14 @@ private noncomputable def persistentTestMatrixEndScheme015 : vectorGroupScheme K
     vectorGroupScheme K (Matrix j j K) :=
   endMatrixSchemeBasisChangeIso K V i j b c
 
-/- The original examples include `[FiniteDimensional K V]` although these
-equalities do not use it; retain that regression context explicitly. -/
 omit [FiniteDimensional K V] in
-@[nolint unusedArguments]
-private theorem persistentTestMatrixEndScheme016 [FiniteDimensional K V] :
+private theorem persistentTestMatrixEndScheme016 :
     endMatrixSchemeBasisChangeIso K V i i b b =
     Iso.refl (vectorGroupScheme K (Matrix i i K)) :=
   endMatrixSchemeBasisChangeIso_refl K V i b
 
 omit [FiniteDimensional K V] in
-@[nolint unusedArguments]
-private theorem persistentTestMatrixEndScheme017 [FiniteDimensional K V]
+private theorem persistentTestMatrixEndScheme017
     (l : Type u) [Fintype l] [DecidableEq l] (d : Module.Basis l K V) :
     endMatrixSchemeBasisChangeIso K V i j b c ≪≫
       endMatrixSchemeBasisChangeIso K V j l c d =
@@ -209,8 +205,7 @@ private theorem persistentTestMatrixEndScheme021 (f : Module.End R (R ⊗[K] V))
   endMatrixSchemeBasisChangeIso_evaluation K V i j b c R f
 
 omit [FiniteDimensional K V] in
-@[nolint unusedArguments]
-private theorem persistentTestMatrixEndScheme022 [FiniteDimensional K V] :
+private theorem persistentTestMatrixEndScheme022 :
     (endMatrixSchemeBasisChangeIso K V i j b c).hom.hom.hom.left =
     Spec.map (CommRingCat.ofHom
       (vectorGroupCoordinateMap K (Matrix i i K) (Matrix j j K)

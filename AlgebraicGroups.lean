@@ -176,6 +176,9 @@ public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Equiv
 /-!
 # Algebraic groups and group schemes
 
+This module is the public library facade. Its `public import`s reexport the
+intended library modules; it adds no declarations of its own.
+
 Right comodules specify linear coactions `ρ : M →ₗ[R] M ⊗[R] C` over arbitrary
 commutative semirings, on modules with additive commutative monoid structures
 and independent scalar, coalgebra and module universes. The definitions impose
@@ -233,12 +236,3 @@ The [mathematical topic guide](docs/MATHEMATICS.md) locates the specific
 antecedents and prior formalizations without identifying the general-base
 constructions with their field-base sources.
 -/
-
-namespace AlgebraicGeometry
-
-/-- The proposition that the local ring at the unit of a locally finite-type group
-scheme over a field has Krull dimension equal to the scheme's topological Krull dimension. -/
-private def unitStalkDimension.{u} : Prop :=
-  type_of% (@AlgebraicGeometry.ringKrullDim_stalk_unit_eq_topologicalKrullDim.{u})
-
-end AlgebraicGeometry

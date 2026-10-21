@@ -104,10 +104,7 @@ private theorem testEndLocallyFiniteType : LocallyOfFiniteType
     (vectorGroupUnderlyingScheme K (Module.End K V)).hom := inferInstance
 
 omit finiteDimensional in
-/-- The original regression includes finite dimension even though quasi-compactness
-does not need it. -/
-@[nolint unusedArguments]
-private theorem testEndQuasiCompact [_finiteDimensional : FiniteDimensional K V] : QuasiCompact
+private theorem testEndQuasiCompact : QuasiCompact
     (vectorGroupUnderlyingScheme K (Module.End K V)).hom := inferInstance
 
 private theorem testEndNaturality (g : R →ₐ[K] S) (x : Module.End K V ⊗[K] R) :

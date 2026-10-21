@@ -87,13 +87,13 @@ private theorem square : IsPullback inclusion projection first η[U] := by
 
 /-- The monoid structure produced by the public construction on the original apex,
 stored as a value rather than registered as an instance. -/
-@[expose, instance_reducible]
+@[instance_reducible]
 private noncomputable def inducedMonoid : MonObj ℤˣ :=
   MonObj.ofUnitPullback first inclusion projection square
 
 /-- The group structure produced by the composed public construction on the same apex,
 stored as a value rather than registered as an instance. -/
-@[expose, instance_reducible]
+@[instance_reducible]
 private noncomputable def inducedGroup : GrpObj ℤˣ :=
   GrpObj.ofUnitPullback first inclusion projection square
 
