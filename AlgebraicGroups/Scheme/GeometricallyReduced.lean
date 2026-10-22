@@ -302,7 +302,8 @@ private lemma exists_specMap_eval₂_mem
     (ι : R →+* K) (hι : Function.Injective ι)
     (U : Set (Spec (.of (MvPolynomial σ R)))) (hU : IsOpen U) (hne : U.Nonempty) :
     ∃ a : σ → K,
-      (Spec.map (CommRingCat.ofHom (MvPolynomial.eval₂Hom ι a)) : Spec (.of K) ⟶ _) default ∈ U := by
+      (Spec.map (CommRingCat.ofHom (MvPolynomial.eval₂Hom ι a)) : Spec (.of K) ⟶ _) default ∈ U
+    := by
   obtain ⟨x, hx⟩ := hne
   obtain ⟨w, hw, hxw, hwU⟩ :=
     PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hx hU

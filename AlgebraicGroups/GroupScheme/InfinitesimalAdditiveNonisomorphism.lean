@@ -105,5 +105,3 @@ theorem infinitesimalAdditiveGroupScheme_not_iso_rootsOfUnity
   exact (rootsOfUnity_primitive_eq_zero K (p ^ m) _ he).trans (map_zero equiv).symm
 
 end AlgebraicGeometry
-
-#lint

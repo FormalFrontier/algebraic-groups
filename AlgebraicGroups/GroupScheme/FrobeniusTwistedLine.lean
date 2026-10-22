@@ -468,23 +468,15 @@ theorem comul_satisfiesEquation {p : ℕ} [Fact p.Prime] [CharP K p] (t : K) :
       (CoordinateRing K p t) (CoordinateRing K p t) (algebraMap K _).injective
   let _ : CharP (CoordinateRing K p t ⊗[K] CoordinateRing K p t) p :=
     CharP.of_ringHom_of_ne_zero (algebraMap K _) p (Fact.out : p.Prime).ne_zero
-  rw [SatisfiesEquation, comulX, comulY,
-    add_pow_char (Algebra.TensorProduct.includeLeft (y K p t))
-      (Algebra.TensorProduct.includeRight (y K p t)),
-    add_pow_char (Algebra.TensorProduct.includeLeft (x K p t))
-      (Algebra.TensorProduct.includeRight (x K p t)), mul_add]
-  simp only [Algebra.TensorProduct.includeLeft_apply,
-    Algebra.TensorProduct.includeRight_apply, Algebra.TensorProduct.tmul_pow, one_pow,
-    y_pow_eq]
-  simp [Algebra.TensorProduct.tmul_mul_tmul]
-  rw [sub_eq_zero]
-  rw [show algebraMap K (CoordinateRing K p t) t * x K p t ^ p =
-      t • x K p t ^ p from (Algebra.smul_def t _).symm]
-  rw [show algebraMap K (CoordinateRing K p t) t =
-      t • (1 : CoordinateRing K p t) from by
-        simpa only [mul_one] using
-          (Algebra.smul_def t (1 : CoordinateRing K p t)).symm]
-  exact (TensorProduct.smul_tmul t (1 : CoordinateRing K p t) (x K p t ^ p)).symm
+  exact
+    SatisfiesEquation.add (K := K)
+      (A := CoordinateRing K p t ⊗[K] CoordinateRing K p t)
+      ((coordinate_satisfiesEquation K p t).map
+        (Algebra.TensorProduct.includeLeft (R := K) (S := K)
+          (A := CoordinateRing K p t) (B := CoordinateRing K p t)))
+      ((coordinate_satisfiesEquation K p t).map
+        (Algebra.TensorProduct.includeRight (R := K)
+          (A := CoordinateRing K p t) (B := CoordinateRing K p t)))
 
 /-- Comultiplication corresponding to coordinatewise addition. -/
 def comul {p : ℕ} [Fact p.Prime] [CharP K p] (t : K) :

@@ -158,7 +158,8 @@ lemma exists_mem_isUnit_apply_of_le_jacobson [Finite (MaximalSpectrum B)]
   let ℓ (P : MaximalSpectrum B) :
       (MaximalSpectrum B → IsLocalRing.ResidueField R) →ₗ[IsLocalRing.ResidueField R]
         B ⧸ P.asIdeal :=
-    { toFun := fun c ↦ ∑ Q, algebraMap (IsLocalRing.ResidueField R) (B ⧸ P.asIdeal) (c Q) * g P (x Q)
+    { toFun := fun c ↦
+        ∑ Q, algebraMap (IsLocalRing.ResidueField R) (B ⧸ P.asIdeal) (c Q) * g P (x Q)
       map_add' := by
         intro c d
         simp only [Pi.add_apply, map_add, add_mul, Finset.sum_add_distrib]
@@ -291,7 +292,7 @@ lemma repr_update_same [DecidableEq ι] (b : Basis ι A M) (i : ι) (x y : M)
     · subst k
       simpa only [update_same, Finsupp.single_eq_same] using hmul.symm
     · simp only [update_apply, Function.update_of_ne hki, repr_self,
-        Finsupp.single_apply, if_neg hki, mul_zero]
+        Finsupp.single_apply, ite_eq_right hki, mul_zero]
   simpa only [coord_apply, LinearMap.smul_apply, smul_eq_mul] using
     congrArg (fun f : M →ₗ[A] A ↦ f y) hcoord
 
@@ -311,10 +312,10 @@ lemma repr_update_of_ne [DecidableEq ι] (b : Basis ι A M) (i : ι) (x y : M)
       smul_eq_mul, repr_self]
     by_cases hki : k = i
     · subst k
-      simp only [update_same, Finsupp.single_apply, if_neg (Ne.symm hji)]
+      simp only [update_same, Finsupp.single_apply, ite_eq_right (Ne.symm hji)]
       rw [mul_right_comm _ (b.repr x j), hmul, one_mul, sub_self]
     · simp only [update_apply, Function.update_of_ne hki, repr_self,
-        Finsupp.single_apply, if_neg hki, mul_zero, sub_zero]
+        Finsupp.single_apply, ite_eq_right hki, mul_zero, sub_zero]
   calc
     (b.update i x hx).repr y j =
         b.repr y j - ((↑(hx.unit⁻¹) : A) * b.repr x j) * b.repr y i := by

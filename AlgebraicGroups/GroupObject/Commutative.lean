@@ -44,10 +44,10 @@ theorem isCommMonObj_iff_isMonHom_inv (X : C) [GrpObj X] :
     IsCommMonObj X ↔ IsMonHom (GrpObj.inv (X := X)) := by
   constructor
   · intro h
-    letI := h
+    let := h
     infer_instance
   · intro h
-    letI := h
+    let := h
     apply (isCommMonObj_iff_isMulCommutative X).2
     intro T
     refine ⟨⟨fun f g ↦ ?_⟩⟩

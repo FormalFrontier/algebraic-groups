@@ -62,7 +62,7 @@ on monoid objects, when the source category has limits of this shape. -/
 instance preservesLimitsOfShape_mapMon (F : C ⥤ D) [F.LaxMonoidal]
     (J : Type u₃) [Category.{v₃} J] [HasLimitsOfShape J C]
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J F.mapMon := by
-  letI : PreservesLimitsOfShape J (F.mapMon ⋙ Mon.forget D) := by
+  let : PreservesLimitsOfShape J (F.mapMon ⋙ Mon.forget D) := by
     change PreservesLimitsOfShape J (Mon.forget C ⋙ F)
     infer_instance
   exact preservesLimitsOfShape_of_reflects_of_preserves F.mapMon (Mon.forget D)
@@ -78,7 +78,7 @@ variable {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D]
 instance preservesLimitsOfShape_mapGrp (F : C ⥤ D) [F.Monoidal]
     (J : Type u₃) [Category.{v₃} J] [HasLimitsOfShape J C]
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J F.mapGrp := by
-  letI : PreservesLimitsOfShape J (F.mapGrp ⋙ Grp.forget₂Mon D) := by
+  let : PreservesLimitsOfShape J (F.mapGrp ⋙ Grp.forget₂Mon D) := by
     rw [mapGrp_comp_forget₂Mon]
     infer_instance
   exact preservesLimitsOfShape_of_reflects_of_preserves F.mapGrp (Grp.forget₂Mon D)

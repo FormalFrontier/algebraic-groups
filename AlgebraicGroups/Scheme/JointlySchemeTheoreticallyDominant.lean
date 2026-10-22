@@ -40,7 +40,8 @@ extension.
 - `AlgebraicGeometry.FieldValuedPoints.eq_of_schematicallyDense_of_subschemePoints_eq`
 - `AlgebraicGeometry.FieldValuedPoints.schematicallyDense_iff_isReduced_and_dense`
 - `AlgebraicGeometry.FieldValuedPoints.fieldValuedPointEquivRationalPointBaseChange`
-- `AlgebraicGeometry.FieldValuedPoints.schematicallyDense_of_geometricallyReduced_of_dense_baseChange`
+- In namespace `AlgebraicGeometry.FieldValuedPoints`:
+  `schematicallyDense_of_geometricallyReduced_of_dense_baseChange`.
 
 The rational points here are morphisms over `Spec K`. They are not identified with all closed
 points unless additional hypotheses, such as an algebraically closed base and finite type, are
