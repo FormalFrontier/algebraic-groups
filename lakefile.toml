@@ -1,5 +1,6 @@
 name = "algebraic-groups"
 version = "0.1.0"
+lintDriver = "batteries/runLinter"
 defaultTargets = ["AlgebraicGroups", "AlgebraicGroupsTest"]
 
 [leanOptions]
@@ -30,6 +31,12 @@ rev = "1112034c447b07049c12402ce0f3f25c4cffb5e4"
 
 [[lean_lib]]
 name = "AlgebraicGroups"
+roots = [
+  "AlgebraicGroups",
+  "AlgebraicGroups.Algebra.Coalgebra.IdempotentIdealTensor",
+  "AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finsupp",
+  "AlgebraicGroups.Examples.UnitStalkDimension",
+]
 
 [[lean_lib]]
 name = "AlgebraicGroupsTest"
