@@ -168,7 +168,8 @@ theorem unitriangularStageConjugation_point (R : Type) [CommRing R] [Algebra K R
       unitriangularStageConjugation K n r =
         unitriangularStagePointMulEquiv K n r R
           ⟨g * s.1 * g⁻¹,
-            (inferInstance : (Matrix.UnitriangularGroup.superdiagonalSubgroup n R r).Normal).conj_mem
+            (inferInstance :
+              (Matrix.UnitriangularGroup.superdiagonalSubgroup n R r).Normal).conj_mem
               s.1 s.2 g⟩ := by
   let f := (unitriangularStageInclusion K n r).hom.hom
   apply (cancel_mono f).mp

@@ -48,7 +48,8 @@ universe u
 namespace AlgebraicGeometry
 
 variable (K : Type u) [CommRing K] (V : Type u) [AddCommGroup V] [Module K V]
-  (indexType : Type u) [Fintype indexType] [DecidableEq indexType] (basis : Module.Basis indexType K V)
+  (indexType : Type u) [Fintype indexType] [DecidableEq indexType]
+  (basis : Module.Basis indexType K V)
 
 /-- The basis induced on a scalar extension, including the empty basis. -/
 @[expose] def generalLinearScalarBasis (R : Type u) [CommRing R] [Algebra K R] :

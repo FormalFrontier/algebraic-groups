@@ -65,8 +65,12 @@ theorem isPrimitiveElem_iff_eq_zero (x : MonoidAlgebra K M) :
             MonoidAlgebra.comul_single, CommSemiring.comul_apply,
             TensorProduct.map_tmul, MonoidAlgebra.lsingle_apply,
             MonoidAlgebra.tensorEquiv_single_tmul_single]
-          simp [Finsupp.single_apply, Prod.mk.injEq, Finsupp.mem_support_iff]
-          exact fun hg ↦ hg.symm
+          simp only [one_mul, coeff_sum, coeff_single, Finsupp.coe_finsetSum, Finset.sum_apply]
+          simp only [Finsupp.single_apply, Prod.mk.injEq, and_self, Finset.sum_ite_eq']
+          by_cases hg : g ∈ x.coeff.support
+          · rw [ite_eq_left hg]
+          · rw [ite_eq_right hg]
+            exact (Finsupp.notMem_support_iff.mp hg).symm
     have hleft (g : M) (hg : g ≠ 1) :
         ((tensorEquiv K) (1 ⊗ₜ[K] x)).coeff (g, g) = 0 := by
       conv_lhs => rw [← x.sum_coeff_single]

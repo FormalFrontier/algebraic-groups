@@ -15,8 +15,8 @@ public import Mathlib.Algebra.MvPolynomial.Rename
 
 Under the coordinate identifications, the positive-stage group-scheme coordinate
 map, after forgetting the group structure, becomes the scheme projection from
-affine space on all surviving entries onto the current-superdiagonal coordinates. Its coordinate-ring
-pullback goes in the opposite direction, from polynomials in the current
+affine space on all surviving entries onto the current-superdiagonal coordinates.
+Its coordinate-ring pullback goes in the opposite direction, from polynomials in the current
 coordinates into the stage coordinate ring. This identifies the entire arrow
 over the base, not just its points. Sending higher variables to zero defines
 the ring pullback of a section of this underlying over-scheme projection;
@@ -42,7 +42,6 @@ noncomputable section
 set_option backward.isDefEq.respectTransparency false
 
 open CategoryTheory UnitriangularStageCoordinateRing
-open scoped Classical
 
 namespace AlgebraicGeometry
 
@@ -270,7 +269,7 @@ theorem stageProductCoordinateKill_higher (hr : 1 ≤ r)
     have heq := (mem_range_stageSuperdiagonalInclusion n r hr s).1 h
     omega
   simp only [stageProductCoordinateKill, MvPolynomial.killCompl,
-    MvPolynomial.aeval_X, dif_neg hnot]
+    MvPolynomial.aeval_X, dite_eq_right hnot]
 
 /-- The coordinate-algebra pullback induced by the underlying section. -/
 def stageProductSectionPullback (hr : 1 ≤ r) :

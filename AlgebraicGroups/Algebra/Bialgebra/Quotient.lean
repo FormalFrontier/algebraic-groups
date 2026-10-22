@@ -58,7 +58,7 @@ theorem counitAlgHom_comp_liftₐ :
       (hf : I ≤ RingHom.ker ((f : A →ₐ[R] B).toRingHom)),
     (Bialgebra.counitAlgHom R B).comp
         (Ideal.Quotient.liftₐ I (f : A →ₐ[R] B)
-          (fun a ha => RingHom.mem_ker.mp (hf ha))) =
+          (fun _ ha => RingHom.mem_ker.mp (hf ha))) =
       Bialgebra.counitAlgHom R (A ⧸ I) := by
   intro R A B _ _ _ _ _ I _ _ f hf
   have hmk :
@@ -82,13 +82,13 @@ theorem map_liftₐ_comp_comulAlgHom :
       (hf : I ≤ RingHom.ker ((f : A →ₐ[R] B).toRingHom)),
     (Algebra.TensorProduct.map
         (Ideal.Quotient.liftₐ I (f : A →ₐ[R] B)
-          (fun a ha => RingHom.mem_ker.mp (hf ha)))
+          (fun _ ha => RingHom.mem_ker.mp (hf ha)))
         (Ideal.Quotient.liftₐ I (f : A →ₐ[R] B)
-          (fun a ha => RingHom.mem_ker.mp (hf ha)))).comp
+          (fun _ ha => RingHom.mem_ker.mp (hf ha)))).comp
         (Bialgebra.comulAlgHom R (A ⧸ I)) =
       (Bialgebra.comulAlgHom R B).comp
         (Ideal.Quotient.liftₐ I (f : A →ₐ[R] B)
-          (fun a ha => RingHom.mem_ker.mp (hf ha))) := by
+          (fun _ ha => RingHom.mem_ker.mp (hf ha))) := by
   intro R A B _ _ _ _ _ I _ _ f hf
   -- Keep the vanishing witness opaque to rewriting at implicit transparency.
   have hI : ∀ a : A, a ∈ I → (f : A →ₐ[R] B) a = 0 := by

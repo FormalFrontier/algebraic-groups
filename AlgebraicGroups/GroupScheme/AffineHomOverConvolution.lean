@@ -124,7 +124,7 @@ theorem affineSpecHomOverEquiv_map_mul (X : Over (Spec (.of R)))
   apply WithConv.ofConv_injective
   apply (affineSpecHomOverEquiv R X A).symm.injective
   apply (cancel_mono (affineSpecHomOverTargetIso R A).hom).1
-  simp only [WithConv.ofConv_toConv, Equiv.symm_apply_apply, inverse_mul,
+  simp only [Equiv.symm_apply_apply, inverse_mul,
     Category.assoc, Iso.inv_hom_id, Category.comp_id]
 
 /-- Morphisms from an arbitrary over-scheme to the spectrum of a commutative
@@ -214,7 +214,7 @@ theorem affineSpecHomOverMulEquiv_naturality_source
       WithConv.toConv (((algΓ (.of R)).map f).unop.hom.comp
         (affineSpecHomOverMulEquiv R X A h).ofConv) := by
   apply WithConv.ofConv_injective
-  simp only [WithConv.ofConv_toConv, affineSpecHomOverMulEquiv_apply_ofConv,
+  simp only [affineSpecHomOverMulEquiv_apply_ofConv,
     Category.assoc]
   apply AlgHom.ext
   intro a

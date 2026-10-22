@@ -365,8 +365,9 @@ theorem upperTriangularUFirstIso_point
           (upperTriangularUFirstIso K n).hom =
       upperTriangularGroupMulEquivPoints K n R
         (Matrix.UpperTriangularGroup.semidirEquiv
-          (⟨unit, diag⟩ : Matrix.UnitriangularGroup n R ⋊[Matrix.UpperTriangularGroup.diagonalAction]
-            Matrix.DiagonalGroup n R)) := by
+          (⟨unit, diag⟩ :
+            Matrix.UnitriangularGroup n R ⋊[Matrix.UpperTriangularGroup.diagonalAction]
+              Matrix.DiagonalGroup n R)) := by
   rw [upperTriangularUFirstIso_hom]
   simp only [MonObj.comp_mul, ← Category.assoc, lift_fst, lift_snd]
   rw [unitriangularToUpperTriangular_point,
