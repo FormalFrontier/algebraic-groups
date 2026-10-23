@@ -253,7 +253,7 @@ theorem externalTensor_coaction_apply (X : RightComodule R C M)
 coaction value is required to be a pure tensor. -/
 @[simp] theorem externalTensor_coaction_tmul (X : RightComodule R C M)
     (Y : RightComodule R D N) (m : M) (n : N) :
-    (externalTensor X Y).coaction (m ⊗ₜ[R] n) =
+    externalTensorCoaction X Y (m ⊗ₜ[R] n) =
       _root_.TensorProduct.tensorTensorTensorComm R M C N D
         (X.coaction m ⊗ₜ[R] Y.coaction n) := by
   exact externalTensorCoaction_tmul X Y m n
@@ -311,7 +311,7 @@ functionals followed by the left unitor. -/
           _root_.TensorProduct.map (ell.rTensor C) (eta.rTensor D) := by
         simp only [LinearMap.comp_assoc]
       _ = _ := by rw [hunitor, ← _root_.TensorProduct.map_comp]
-  simpa only [coefficient_eq, externalTensor_coaction_tmul, LinearMap.comp_apply,
+  simpa only [coefficient_eq, externalTensor, externalTensor_coaction_tmul, LinearMap.comp_apply,
     LinearEquiv.coe_coe, _root_.TensorProduct.map_tmul] using
     LinearMap.congr_fun hcontract (X.coaction m ⊗ₜ[R] Y.coaction n)
 

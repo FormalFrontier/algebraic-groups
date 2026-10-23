@@ -85,7 +85,7 @@ noncomputable def mapCoalgHom (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
 /-- The underlying linear map is the heterobasic tensor product of the factor maps. -/
 @[simp]
 theorem mapCoalgHom_toLinearMap (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
-    (mapCoalgHom f g).toLinearMap =
+    (mapCoalgHom f g : M ⊗[R] P →ₗ[S] N ⊗[R] Q) =
       AlgebraTensorModule.map f.toLinearMap g.toLinearMap :=
   rfl
 
