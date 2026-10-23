@@ -401,7 +401,9 @@ theorem subtype_lTensor_comp_coactionCodRestrict (X : RightComodule K C M)
     (D : _root_.Subcoalgebra K C)
     (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M))
     (m : M) :
-    D.subtype.toLinearMap.lTensor M (X.coactionCodRestrict D h m) = X.coaction m :=
+    DFunLike.coe (F := M ⊗[K] D →ₗ[K] M ⊗[K] C)
+      (α := M ⊗[K] D) (β := fun _ => M ⊗[K] C)
+      (D.toSubmodule.subtype.lTensor (N := D) M) (X.coactionCodRestrict D h m) = X.coaction m :=
   LinearMap.congr_fun (X.subtype_lTensor_comp_coactionCodRestrict D h) m
 
 private theorem coactionCodRestrict_coassoc (X : RightComodule K C M)
@@ -531,7 +533,9 @@ theorem subtype_lTensor_comp_coefficientComodule_coaction (X : RightComodule K C
 /-- The coefficient-comodule inclusion equation evaluated at an element. -/
 @[simp] theorem subtype_lTensor_coefficientComodule_coaction
     (X : RightComodule K C M) (m : M) :
-    X.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M
+    DFunLike.coe (F := M ⊗[K] X.coefficientSpan →ₗ[K] M ⊗[K] C)
+      (α := M ⊗[K] X.coefficientSpan) (β := fun _ => M ⊗[K] C)
+      (X.coefficientSpan.subtype.lTensor (N := X.coefficientSpan) M)
       (X.coefficientComodule.coaction m) = X.coaction m :=
   LinearMap.congr_fun X.subtype_lTensor_comp_coefficientComodule_coaction m
 

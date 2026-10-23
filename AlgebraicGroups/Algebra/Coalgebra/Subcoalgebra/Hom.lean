@@ -75,8 +75,10 @@ theorem mapIncl_comp_coalgebra_comul (D : Subcoalgebra K C) :
 /-- Comultiplication in the subcoalgebra maps to ambient comultiplication under inclusion. -/
 @[simp]
 theorem mapIncl_coalgebra_comul (D : Subcoalgebra K C) (x : D) :
-    TensorProduct.mapIncl D.toSubmodule D.toSubmodule
-        (Coalgebra.comul (R := K) (A := D) x) =
+    DFunLike.coe (F := D ⊗[K] D →ₗ[K] C ⊗[K] C)
+      (α := D ⊗[K] D) (β := fun _ => C ⊗[K] C)
+      (TensorProduct.mapIncl D.toSubmodule D.toSubmodule)
+      (Coalgebra.comul (R := K) (A := D) x) =
       Coalgebra.comul (R := K) (A := C) (x : C) :=
   LinearMap.congr_fun D.mapIncl_comp_coalgebra_comul x
 
@@ -102,7 +104,7 @@ noncomputable def subtype (D : Subcoalgebra K C) : D →ₗc[K] C where
 
 @[simp]
 theorem subtype_toLinearMap (D : Subcoalgebra K C) :
-    D.subtype.toLinearMap = D.toSubmodule.subtype :=
+    (D.subtype : D →ₗ[K] C) = D.toSubmodule.subtype :=
   rfl
 
 @[simp]
@@ -173,7 +175,7 @@ noncomputable def codRestrict (f : A →ₗc[K] C) (D : Subcoalgebra K C)
 @[simp]
 theorem codRestrict_toLinearMap (f : A →ₗc[K] C) (D : Subcoalgebra K C)
     (h : ∀ x, f x ∈ D) :
-    (f.codRestrict D h).toLinearMap = f.toLinearMap.codRestrict D.toSubmodule h :=
+    (f.codRestrict D h : A →ₗ[K] D) = (f : A →ₗ[K] C).codRestrict D.toSubmodule h :=
   rfl
 
 /-- Codomain restriction sends an element to the same value, viewed as a subcoalgebra member. -/
@@ -307,7 +309,7 @@ noncomputable def rangeRestrict (f : A →ₗc[K] B) : A →ₗc[K] f.range :=
 /-- Forgetting the coalgebra structure gives the linear map restricted to its range. -/
 @[simp]
 theorem rangeRestrict_toLinearMap (f : A →ₗc[K] B) :
-    f.rangeRestrict.toLinearMap = f.toLinearMap.rangeRestrict := by
+    (f.rangeRestrict : A →ₗ[K] f.range) = (f : A →ₗ[K] B).rangeRestrict := by
   exact codRestrict_toLinearMap f f.range (fun x => LinearMap.mem_range_self f.toLinearMap x)
 
 /-- Range restriction sends an element to its image, viewed as a range member. -/
@@ -328,8 +330,6 @@ theorem subtype_comp_rangeRestrict (f : A →ₗc[K] B) :
 
 /-- Range restriction is surjective. -/
 theorem surjective_rangeRestrict (f : A →ₗc[K] B) : Function.Surjective f.rangeRestrict := by
-  change Function.Surjective f.rangeRestrict.toLinearMap
-  rw [rangeRestrict_toLinearMap]
   exact LinearMap.surjective_rangeRestrict f.toLinearMap
 
 /-- Every factorization through the range inclusion is the range restriction. -/
@@ -375,7 +375,7 @@ variable [FunLike F A B] [CoalgHomClass F R A B]
 /-- The named bundled conversion preserves the linear map supplied by the morphism class. -/
 @[simp]
 theorem toCoalgHom_toLinearMap (f : F) :
-    (CoalgHomClass.toCoalgHom (F := F) (R := R) (A := A) (B := B) f).toLinearMap =
+    (CoalgHomClass.toCoalgHom (F := F) (R := R) (A := A) (B := B) f : A →ₗ[R] B) =
       (LinearMap.ofClass f : A →ₗ[R] B) := by
   apply LinearMap.ext
   intro x

@@ -97,8 +97,8 @@ theorem map_toSubmodule_eq_bot_iff (f : C →ₗc[K] C') (D : Subcoalgebra K C) 
           LinearMap.range (f.toLinearMap.comp D.subtype.toLinearMap) :=
         congrArg LinearMap.range (CoalgHom.comp_toLinearMap f D.subtype)
       _ = (map f D).toSubmodule := by
-        rw [subtype_toLinearMap, LinearMap.range_comp, Submodule.range_subtype,
-          map_toSubmodule]
+        rw [CoalgHom.toLinearMap_eq_coe D.subtype, subtype_toLinearMap, LinearMap.range_comp,
+          Submodule.range_subtype, map_toSubmodule]
   rw [← hrange, LinearMap.range_eq_bot, CoalgHom.toLinearMap_eq_zero_iff]
   exact Submodule.subsingleton_iff_eq_bot
 

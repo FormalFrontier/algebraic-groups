@@ -73,15 +73,20 @@ theorem counit_comp_subtype (D : Subcoalgebra K C) :
 
 /-- The image of the restricted comultiplication is the ambient comultiplication. -/
 @[simp]
-theorem mapIncl_comul (D : Subcoalgebra K C) (x : D.toSubmodule) :
-    TensorProduct.mapIncl D.toSubmodule D.toSubmodule (D.comul x) =
+theorem mapIncl_comul (D : Subcoalgebra K C) (x : D) :
+    DFunLike.coe (F := D ⊗[K] D →ₗ[K] C ⊗[K] C)
+      (α := D ⊗[K] D) (β := fun _ => C ⊗[K] C)
+      (TensorProduct.mapIncl D.toSubmodule D.toSubmodule)
+      (DFunLike.coe (F := D →ₗ[K] D ⊗[K] D)
+        (α := D) (β := fun _ => D ⊗[K] D) D.comul x) =
       Coalgebra.comul (R := K) (A := C) (x : C) :=
   LinearMap.congr_fun D.mapIncl_comp_comul x
 
 /-- The restricted counit agrees with the ambient counit on every member. -/
 @[simp]
-theorem counit_apply (D : Subcoalgebra K C) (x : D.toSubmodule) :
-    D.counit x = Coalgebra.counit (R := K) (A := C) (x : C) :=
+theorem counit_apply (D : Subcoalgebra K C) (x : D) :
+    DFunLike.coe (F := D →ₗ[K] K) (α := D) (β := fun _ => K) D.counit x =
+      Coalgebra.counit (R := K) (A := C) (x : C) :=
   rfl
 
 private lemma map_rTensor_comul (D : Subcoalgebra K C)
