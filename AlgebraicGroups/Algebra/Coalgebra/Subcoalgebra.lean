@@ -18,7 +18,8 @@ the scalar field and requires no additional closure condition.
 
 The set and type coercions use the underlying submodule. In particular, the additive and
 module structures on a subcoalgebra are those on the existing submodule subtype.
-Subcoalgebras are partially ordered by inclusion, and the greatest subcoalgebra is the whole
+Subcoalgebras are partially ordered by inclusion. The least subcoalgebra is the zero
+subspace, since comultiplication is linear. The greatest subcoalgebra is the whole
 ambient coalgebra. Its closure follows from the linear equivalence between the top submodule
 and the ambient space, and the induced equivalence on their tensor squares.
 
@@ -156,6 +157,52 @@ instance instPartialOrder : PartialOrder (Subcoalgebra K C) :=
 theorem toSubmodule_le_toSubmodule {D E : Subcoalgebra K C} :
     D.toSubmodule ≤ E.toSubmodule ↔ D ≤ E :=
   Iff.rfl
+
+/-- The zero subspace as a subcoalgebra. -/
+instance instBot : Bot (Subcoalgebra K C) where
+  bot :=
+    { toSubmodule := ⊥
+      comul_mem' := by
+        intro x hx
+        rw [Submodule.mem_bot] at hx
+        rw [hx, map_zero]
+        exact Submodule.zero_mem _ }
+
+/-- The least subcoalgebra has zero underlying submodule. -/
+@[simp]
+theorem bot_toSubmodule :
+    (⊥ : Subcoalgebra K C).toSubmodule = (⊥ : Submodule K C) :=
+  rfl
+
+/-- The carrier of the least subcoalgebra consists of zero. -/
+@[simp, norm_cast]
+theorem coe_bot : ((⊥ : Subcoalgebra K C) : Set C) = {0} :=
+  Submodule.bot_coe
+
+/-- Membership in the least subcoalgebra is equality to zero. -/
+@[simp]
+theorem mem_bot {x : C} : x ∈ (⊥ : Subcoalgebra K C) ↔ x = 0 :=
+  Submodule.mem_bot K
+
+/-- The zero subcoalgebra is least under inclusion. -/
+instance instOrderBot : OrderBot (Subcoalgebra K C) where
+  __ := instBot
+  bot_le := by
+    intro D x hx
+    rw [mem_bot.mp hx]
+    exact D.toSubmodule.zero_mem
+
+/-- A subcoalgebra is least exactly when its underlying submodule is zero. -/
+@[simp]
+theorem toSubmodule_eq_bot {D : Subcoalgebra K C} :
+    D.toSubmodule = (⊥ : Submodule K C) ↔ D = (⊥ : Subcoalgebra K C) := by
+  rw [← bot_toSubmodule, toSubmodule_inj]
+
+/-- A subcoalgebra is zero exactly when each of its members is zero. -/
+theorem eq_bot_iff {D : Subcoalgebra K C} :
+    D = (⊥ : Subcoalgebra K C) ↔ ∀ x : C, x ∈ D → x = 0 :=
+  _root_.eq_bot_iff.trans
+    ⟨fun h x hx => (mem_bot (x := x)).mp (h hx), fun h x hx => mem_bot.mpr (h x hx)⟩
 
 /-- The whole ambient coalgebra as a subcoalgebra. -/
 instance instTop : Top (Subcoalgebra K C) where

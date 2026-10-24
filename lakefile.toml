@@ -41,7 +41,7 @@ roots = [
 [[lean_lib]]
 name = "AlgebraicGroupsTest"
 # Regression tests exercise imported mathematical APIs; private-only test modules are intentional.
-leanOptions = { linter.privateModule = false }
+leanOptions = { weak.linter.privateModule = false }
 roots = [
   "AlgebraicGroupsTest.Additive",
   "AlgebraicGroupsTest.AdditivePowerQuotient",
@@ -156,6 +156,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraMapBoundaries",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraMapSupported",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraImageEquiv",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraNormalForms",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraImageFiniteGeneration",
   "AlgebraicGroupsTest.Algebra.TensorProduct.Split",
   "AlgebraicGroupsTest.GroupLikeCardinality",

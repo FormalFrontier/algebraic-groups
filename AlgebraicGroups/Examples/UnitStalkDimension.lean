@@ -4,10 +4,11 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.GroupScheme.Additive
+public import AlgebraicGroups.GroupScheme.Additive
 import AlgebraicGroups.Algebra.PolynomialRationalPointHeight
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.RingTheory.Ideal.Height
+public import Mathlib.Topology.KrullDimension
 
 /-!
 # Unit-stalk dimensions of a field point and the additive line
@@ -27,6 +28,13 @@ invertible and not the residue field.
 These examples use the Mathlib community's affine group, stalk-localization,
 height-transport and polynomial-dimension APIs, and this library's additive
 coordinate presentation and rational-point height theorem.
+
+The additive-line dimension argument follows Mathlib's spectrum-ring comparison
+`PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim`
+(`Mathlib.RingTheory.Spectrum.Prime.Topology`), polynomial-ring dimension formula
+`Polynomial.ringKrullDim_of_isNoetherianRing`
+(`Mathlib.RingTheory.KrullDimension.Polynomial`), and field dimension theorem
+`ringKrullDim_eq_zero_of_field` (`Mathlib.RingTheory.KrullDimension.Field`).
 -/
 
 noncomputable section
@@ -195,8 +203,13 @@ private theorem additiveGroup_unit_stalk_ringKrullDim :
       rw [hp, additiveGroup_counit_kernel_height K]
       exact WithBot.coe_one
 
-/-- The additive line has topological Krull dimension one over every field. -/
-private theorem additiveGroup_topologicalKrullDim :
+/-- The additive group scheme over a field has topological Krull dimension one.
+
+This is a corollary of Mathlib's `PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim`,
+`Polynomial.ringKrullDim_of_isNoetherianRing` and `ringKrullDim_eq_zero_of_field`,
+transported through `additiveGroupCoordinateAlgEquiv`.
+-/
+public theorem additiveGroup_topologicalKrullDim :
     topologicalKrullDim (additiveGroupUnderlyingScheme K).left = 1 := by
   change topologicalKrullDim (PrimeSpectrum (additiveGroupCoordinateRing K)) = 1
   rw [PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim,

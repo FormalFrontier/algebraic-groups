@@ -193,6 +193,7 @@ variable {F : C ⥤ Type u} {G : C ⥤ GrpCat.{u}}
 when it is injective and each component range is the carrier of a subgroup. -/
 structure IsPointwiseSubgroup : Type (max u w) where
   injective (X : C) : Function.Injective (p.app X)
+  /-- The subgroup of `G.obj X` whose carrier is the range of `p.app X`. -/
   subgroup (X : C) : Subgroup (G.obj X)
   range_eq (X : C) :
     Set.range (p.app X) = (subgroup X : Set (G.obj X : Type u))
@@ -205,6 +206,8 @@ lemma mem_range_iff (X : C) (y : G.obj X) :
     y ∈ Set.range (p.app X) ↔ y ∈ h.subgroup X :=
   Set.ext_iff.mp (h.range_eq X) y
 
+/-- A chosen preimage in `F.obj X` of an element of the range subgroup.
+Its image under `p.app X` is the given element, as expressed by `map_preimage`. -/
 def preimage (X : C) (y : h.subgroup X) : F.obj X :=
   Classical.choose ((h.mem_range_iff X y).mpr y.property)
 
@@ -220,6 +223,8 @@ def equivSubgroup (X : C) : F.obj X ≃ h.subgroup X where
     ⟨p.app X x, (h.mem_range_iff X _).mp ⟨x, rfl⟩⟩)
   right_inv y := Subtype.ext (h.map_preimage X y)
 
+/-- The group structure on `F.obj X` transported from `h.subgroup X` along
+`h.equivSubgroup X`. With this structure, `p.app X` preserves one and multiplication. -/
 @[instance_reducible]
 def group (X : C) : Group (F.obj X) :=
   (h.equivSubgroup X).group
@@ -297,9 +302,12 @@ def inclusion : h.toGrp ⟶ G where
     intro x
     exact NatTrans.naturality_apply p f x
 
+/-- The source functor with its transported groups regarded as group objects in types. -/
 def internalFunctor : C ⥤ Grp (Type u) :=
   h.toGrp ⋙ GrpTypeEquivalenceGrp.inverse
 
+/-- The group object in the type-valued functor category obtained from the
+transported pointwise groups on `F`. Its underlying functor is `F`. -/
 def internalGrp : Grp (C ⥤ Type u) :=
   Monoidal.GrpFunctorCategory.inverseObj h.internalFunctor
 
@@ -309,12 +317,18 @@ for the representable algebraic-scheme case; this construction only transports
 the pointwise groups in a functor category. -/
 abbrev grpObj : GrpObj F := h.internalGrp.grp
 
+/-- The group-valued functor `G`, with each group regarded as a group object in types. -/
 def targetInternalFunctor : C ⥤ Grp (Type u) :=
   G ⋙ GrpTypeEquivalenceGrp.inverse
 
+/-- The group object in the type-valued functor category induced by `G`.
+Its underlying functor is `G ⋙ forget GrpCat`. -/
 def targetInternalGrp : Grp (C ⥤ Type u) :=
   Monoidal.GrpFunctorCategory.inverseObj (targetInternalFunctor (G := G))
 
+/-- The morphism of group objects induced by the pointwise subgroup inclusion.
+Its underlying natural transformation is `p`, with the transported structure on
+`F` and the pointwise structure on `G ⋙ forget GrpCat`. -/
 def internalInclusion : h.internalGrp ⟶ targetInternalGrp (G := G) :=
   Monoidal.GrpFunctorCategory.inverse.map
     (Functor.whiskerRight h.inclusion GrpTypeEquivalenceGrp.inverse)
