@@ -74,12 +74,21 @@ theorem equivMapOfInjOn_toCoalgHom (f : C →ₗc[K] C') (D : Subcoalgebra K C)
 
 /-- Inclusion after the image equivalence recovers the ambient homomorphism restricted
 to the source subcoalgebra. -/
-@[simp]
 theorem subtype_comp_equivMapOfInjOn (f : C →ₗc[K] C') (D : Subcoalgebra K C)
     (hf : Set.InjOn f (D : Set C)) :
     (map f D).subtype.comp (equivMapOfInjOn f D hf).toCoalgHom =
       f.comp D.subtype := by
   rw [equivMapOfInjOn_toCoalgHom, CoalgHom.subtype_comp_codRestrict]
+
+/-- Inclusion after the canonically coerced image equivalence is the ambient
+homomorphism restricted to the source subcoalgebra. -/
+@[simp]
+theorem subtype_comp_coe_equivMapOfInjOn (f : C →ₗc[K] C') (D : Subcoalgebra K C)
+    (hf : Set.InjOn f (D : Set C)) :
+    (map f D).subtype.comp (equivMapOfInjOn f D hf : D →ₗc[K] map f D) =
+      f.comp D.subtype := by
+  simpa only [CoalgEquiv.toCoalgHom_eq_coe] using
+    subtype_comp_equivMapOfInjOn f D hf
 
 /-- Applying the ambient homomorphism to the inverse image recovers the image member. -/
 @[simp]
@@ -172,13 +181,11 @@ noncomputable def subcoalgebraCongr (e : C ≃ₗc[K] C') :
     rw [h, Subcoalgebra.map_id]
 
 /-- Forward transport is the subcoalgebra image under the ambient equivalence. -/
-@[simp]
 theorem subcoalgebraCongr_apply (e : C ≃ₗc[K] C') (D : Subcoalgebra K C) :
     e.subcoalgebraCongr D = Subcoalgebra.map e.toCoalgHom D := by
   rfl
 
 /-- Inverse transport is the image under the inverse ambient equivalence. -/
-@[simp]
 theorem subcoalgebraCongr_symm_apply (e : C ≃ₗc[K] C') (D : Subcoalgebra K C') :
     e.subcoalgebraCongr.symm D = Subcoalgebra.map e.symm.toCoalgHom D := by
   rfl

@@ -157,6 +157,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraMapSupported",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraImageEquiv",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraNormalForms",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraEquivNormalForms",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraImageFiniteGeneration",
   "AlgebraicGroupsTest.Algebra.TensorProduct.Split",
   "AlgebraicGroupsTest.GroupLikeCardinality",
