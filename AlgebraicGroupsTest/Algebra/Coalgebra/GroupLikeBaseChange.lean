@@ -83,7 +83,7 @@ theorem integral_polynomial_baseChange_single_one :
   have hsource_ne : (MonoidAlgebra.single 37 (1 : ℤ) : MonoidAlgebra ℤ ℕ) ≠ 0 := by
     intro h
     have hc := congrArg (fun x : MonoidAlgebra ℤ ℕ => x.coeff 37) h
-    simpa using hc
+    simp at hc
   have htwo : ¬ IsGroupLikeElem ℤ
       (MonoidAlgebra.single 37 (2 : ℤ) : MonoidAlgebra ℤ ℕ) := by
     intro h

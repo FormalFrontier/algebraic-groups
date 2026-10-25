@@ -37,6 +37,7 @@ namespace CategoryTheory
 private noncomputable abbrev integerGroup : CommGrp (Type) :=
   CommGrpTypeEquivalenceCommGrp.inverse.obj (CommGrpCat.of (Multiplicative ℤ))
 
+@[instance_reducible]
 private noncomputable def integerGroupObj : GrpObj integerGroup.X := integerGroup.grp
 
 private theorem integerGroup_comm : IsCommMonObj integerGroup.X := integerGroup.comm
@@ -48,6 +49,7 @@ private theorem integerGroup_inv_isMonHom :
 private noncomputable abbrev permutationGroup : Grp (Type) :=
   GrpTypeEquivalenceGrp.inverse.obj (GrpCat.of (Equiv.Perm (Fin 3)))
 
+@[instance_reducible]
 private noncomputable def permutationGroupObj : GrpObj permutationGroup.X :=
   permutationGroup.grp
 
