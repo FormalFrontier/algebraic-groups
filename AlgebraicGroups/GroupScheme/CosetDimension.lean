@@ -59,16 +59,15 @@ private lemma cosetTranslate_comp
     (h : IsPullback (fst G H) ((𝟙 G ⊗ₘ i) ≫ μ[G]) q q)
     (a : 𝟙_ (Over (Spec (.of K))) ⟶ G) :
     (i ≫ (GrpObj.mulLeft a).hom) ≫ q = (toUnit H ≫ a) ≫ q := by
+  rw [GrpObj.comp_mulLeft_hom_eq_mul, CategoryTheory.Hom.mul_def]
   have hmap :
-      i ≫ lift (toUnit G ≫ a) (𝟙 G) =
+      lift (toUnit H ≫ a) i =
         lift (toUnit H ≫ a) (𝟙 H) ≫ (𝟙 G ⊗ₘ i) := by
     apply CartesianMonoidalCategory.hom_ext <;> simp
   calc
-    (i ≫ (GrpObj.mulLeft a).hom) ≫ q =
+    (lift (toUnit H ≫ a) i ≫ μ[G]) ≫ q =
         (lift (toUnit H ≫ a) (𝟙 H) ≫ ((𝟙 G ⊗ₘ i) ≫ μ[G])) ≫ q := by
-          rw [GrpObj.mulLeft_hom]
-          simp only [Category.assoc]
-          rw [← Category.assoc i (lift (toUnit G ≫ a) (𝟙 G)) (μ[G] ≫ q), hmap]
+          rw [hmap]
           simp only [Category.assoc]
     _ = lift (toUnit H ≫ a) (𝟙 H) ≫ (fst G H ≫ q) := by
       simp only [Category.assoc]

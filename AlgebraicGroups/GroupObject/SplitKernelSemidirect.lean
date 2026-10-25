@@ -59,9 +59,9 @@ noncomputable def splitKernelConj : Q ⊗ N ⟶ N :=
     splitKernelConj i q e hN he ≫ i = (e ⊗ₘ i) ≫ GrpObj.conj G := by
   simp [splitKernelConj]
 
-@[simp] theorem splitKernelConj_comp_toUnit :
+theorem splitKernelConj_comp_toUnit :
     splitKernelConj i q e hN he ≫ toUnit N = toUnit (Q ⊗ N) := by
-  simp [splitKernelConj]
+  exact comp_toUnit _
 
 /-- The inclusion readback is natural in every test object, without any group structure on `N`. -/
 theorem splitKernelConj_lift_comp_i {T : C} (a : T ⟶ Q) (n : T ⟶ N) :

@@ -57,9 +57,9 @@ noncomputable def splitKernelRemainder : G ⟶ N :=
     splitKernelRemainder i q e hN he ≫ i = (q ≫ e)⁻¹ * 𝟙 G := by
   simp [splitKernelRemainder]
 
-@[simp] theorem splitKernelRemainder_comp_toUnit :
+theorem splitKernelRemainder_comp_toUnit :
     splitKernelRemainder i q e hN he ≫ toUnit N = toUnit G := by
-  simp [splitKernelRemainder]
+  exact comp_toUnit _
 
 include hN
 

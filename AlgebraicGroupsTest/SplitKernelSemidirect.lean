@@ -32,6 +32,12 @@ point, and instantiates the monoid-target chosen-lift statement. The target is
 the full composition monoid, not just its units: a constant transformation is
 not a unit.
 
+Left translation also acts on the nonmultiplicative generalized point
+`(g, h) ↦ g * (1 2)`. The same two swaps detect its left-multiplication order.
+For the additive integers, `(m, n) ↦ m + 1` is nonadditive and translation by
+one gives `m + 2`. These generalized points have nonterminal domains; neither
+composition law requires a morphism of group objects.
+
 ## References
 
 * Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp` (group-object
@@ -62,6 +68,10 @@ variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C]
 
 example : splitKernelConj i q e hN he ≫ i = (e ⊗ₘ i) ≫ GrpObj.conj G :=
   splitKernelConj_comp_i i q e hN he
+
+example (k : T ⟶ Q ⊗ N) :
+    k ≫ splitKernelConj i q e hN he ≫ toUnit N = toUnit T := by
+  simp
 
 example (a : T ⟶ Q) (n : T ⟶ N) :
     (lift a n ≫ splitKernelConj i q e hN he) ≫ i =
@@ -303,5 +313,63 @@ private theorem transformationFibre_isPullback :
       (toUnit H) transformationQuotient (kernelFibrePoint ≫ transformationQuotient) :=
   GrpObj.isPullback_kernel_mulRight kernelIncl transformationQuotient
     transformationKernelSquare kernelFibrePoint
+
+private def shiftedFirst : DoubleH ⟶ H := ↾fun p ↦ p.1 * secondSwap
+
+private def leftSwapPoint : 𝟙_ (Type) ⟶ H := ↾fun _ ↦ firstSwap
+
+private theorem shiftedFirst_leftTranslate (g h : H) :
+    (shiftedFirst ≫ (GrpObj.mulLeft leftSwapPoint).hom) (g, h) =
+      firstSwap * (g * secondSwap) := by
+  rw [GrpObj.comp_mulLeft_hom_eq_mul]
+  rfl
+
+private theorem shiftedFirst_left_not_right :
+    (shiftedFirst ≫ (GrpObj.mulLeft leftSwapPoint).hom) (1, 1) (0 : Fin 3) = 1 ∧
+      (shiftedFirst * (toUnit DoubleH ≫ leftSwapPoint)) (1, 1) (0 : Fin 3) = 2 := by
+  rw [shiftedFirst_leftTranslate]
+  decide
+
+private theorem shiftedFirst_not_isMonHom : ¬ IsMonHom shiftedFirst := by
+  intro h
+  let := h
+  have hu := ConcreteCategory.congr_hom (IsMonHom.one_hom shiftedFirst) PUnit.unit
+  change secondSwap = (1 : H) at hu
+  exact (by decide : secondSwap ≠ (1 : H)) hu
+
+private theorem leftSwap_naked_hom (g : H) :
+    (GrpObj.mulLeft leftSwapPoint).hom g = firstSwap * g := by
+  rw [GrpObj.mulLeft_hom]
+  rfl
+
+private noncomputable instance : AddGrpObj ℤ where
+  zero := ↾fun _ ↦ 0
+  add := ↾fun p ↦ p.1 + p.2
+  zero_add := by ext x; exact Int.zero_add x.2
+  add_zero := by ext x; exact Int.add_zero x.1
+  add_assoc := by ext x; exact Int.add_assoc x.1.1 x.1.2 x.2
+  neg := ↾fun n ↦ -n
+  left_neg := by ext n; exact Int.add_left_neg n
+  right_neg := by ext n; exact (Int.add_comm n (-n)).trans (Int.add_left_neg n)
+
+private noncomputable instance : AddGrpObj (ℤ × ℤ) :=
+  inferInstanceAs (AddGrpObj ((ℤ : Type) ⊗ ℤ))
+
+private def shiftedInteger : ℤ × ℤ ⟶ ℤ := ↾fun p ↦ p.1 + 1
+
+private def integerOnePoint : 𝟙_ (Type) ⟶ ℤ := ↾fun _ ↦ 1
+
+private theorem shiftedInteger_addLeft (m n : ℤ) :
+    (shiftedInteger ≫ (AddGrpObj.addLeft integerOnePoint).hom) (m, n) = m + 2 := by
+  rw [AddGrpObj.comp_addLeft_hom_eq_add]
+  change (1 : ℤ) + (m + 1) = m + (1 + 1)
+  exact Int.add_left_comm 1 m 1
+
+private theorem shiftedInteger_not_isAddMonHom : ¬ IsAddMonHom shiftedInteger := by
+  intro h
+  let := h
+  have hz := ConcreteCategory.congr_hom (IsAddMonHom.zero_hom shiftedInteger) PUnit.unit
+  change (1 : ℤ) = 0 at hz
+  exact (by decide : (1 : ℤ) ≠ 0) hz
 
 end AlgebraicGroupsTest.SplitKernelSemidirect
