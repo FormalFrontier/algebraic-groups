@@ -404,13 +404,23 @@ theorem endMatrixSchemeBasisChangeIso_coordinate_comp :
         (endMatrixBaseLinearEquiv K V i b).toLinearMap).comp
           (vectorGroupCoordinateMap K (Matrix i i K) (Matrix j j K)
             (endMatrixSchemeBasisLinearMap K V i j b c)) := by
-  apply SymmetricAlgebra.algHom_ext
-  ext φ
-  simp [vectorGroupCoordinateMap_ι, endMatrixSchemeBasisLinearMap,
-    LinearMap.comp_apply]
-  congr 1
-  ext f
-  simp [LinearMap.comp_apply]
+  have hlinear :
+      (endMatrixSchemeBasisLinearMap K V i j b c).comp
+        (endMatrixBaseLinearEquiv K V i b).toLinearMap =
+      (endMatrixBaseLinearEquiv K V j c).toLinearMap := by
+    apply LinearMap.ext
+    intro f
+    exact congrArg (endMatrixBaseLinearEquiv K V j c)
+      ((endMatrixBaseLinearEquiv K V i b).symm_apply_apply f)
+  have hcomp := vectorGroupCoordinateBialgHom_comp K
+    (Module.End K V) (Matrix i i K) (Matrix j j K)
+    (endMatrixBaseLinearEquiv K V i b).toLinearMap
+    (endMatrixSchemeBasisLinearMap K V i j b c)
+  rw [hlinear] at hcomp
+  exact congrArg (fun q : vectorGroupCoordinateRing K (Matrix j j K) →ₐc[K]
+      vectorGroupCoordinateRing K (Module.End K V) ↦
+      (q : vectorGroupCoordinateRing K (Matrix j j K) →ₐ[K]
+        vectorGroupCoordinateRing K (Module.End K V))) hcomp
 
 set_option maxRecDepth 1024 in
 /-- Matrix-coordinate evaluation after the native scheme basis change is

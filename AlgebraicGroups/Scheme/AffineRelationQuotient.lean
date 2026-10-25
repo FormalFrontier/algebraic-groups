@@ -208,7 +208,8 @@ lemma finitePresentation_of_hasExpectedAlgebra
     AlgHom.mk' (kernelPairComparison S A C f g).toRingHom fun a x ↦ by
       rw [Algebra.smul_def, Algebra.smul_def, map_mul]
       congr 1
-      simp [kernelPairComparison]
+      change kernelPairComparison S A C f g (a ⊗ₜ (1 : A)) = algebraMap A C a
+      rw [kernelPairComparison_tmul, map_one, mul_one]
       exact (DFunLike.congr_fun hf a).symm
   let _ : Module.FaithfullyFlat (invariantRing S A C f g) A := h.1
   let e := LinearEquiv.ofBijective

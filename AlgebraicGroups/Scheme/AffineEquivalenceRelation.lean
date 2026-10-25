@@ -135,10 +135,19 @@ lemma exists_composition_coordinates (s t : A →ₐ[C] B)
       TargetCopy B →ₐ[C] TargetCopy B ⊗[A] B).comp eCopy.toAlgHom
   have hp0p1 : p0.comp s = p1.comp t := by
     ext x
-    simp [p0, p1, eCopy, s]
-    change TargetCopy.mk (t x) ⊗ₜ[A] (1 : B) =
-      TargetCopy.mk (t x) ⊗ₜ[A] (1 : B)
-    rfl
+    calc
+      p0 (s x) = algebraMap A (TargetCopy B ⊗[A] B) x :=
+        (Algebra.TensorProduct.includeRight :
+          B →ₐ[A] TargetCopy B ⊗[A] B).commutes x
+      _ = (Algebra.TensorProduct.includeLeft :
+          TargetCopy B →ₐ[A] TargetCopy B ⊗[A] B)
+            (algebraMap A (TargetCopy B) x) :=
+        ((Algebra.TensorProduct.includeLeft :
+          TargetCopy B →ₐ[A] TargetCopy B ⊗[A] B).commutes x).symm
+      _ = p1 (t x) := by
+        change (algebraMap A (TargetCopy B)) x ⊗ₜ[A] (1 : B) =
+          TargetCopy.mk (t x) ⊗ₜ[A] (1 : B)
+        rfl
   let iCopy : Spec (.of (TargetCopy B)) ⟶ Spec (.of B) :=
     Spec.map (CommRingCat.ofHom eCopy.toRingHom)
   let eCat : CommRingCat.of B ≅ CommRingCat.of (TargetCopy B) :=

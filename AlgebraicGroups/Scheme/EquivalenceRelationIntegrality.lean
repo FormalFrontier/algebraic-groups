@@ -339,7 +339,8 @@ lemma isIntegral_appTop_equalizer_of_equivalenceRelation
   let _ : Fintype (Set.range p₁.finrank) :=
     AlgebraicGeometry.EquivalenceRelation.finrankRangeFintype (p₁ := p₁)
   obtain ⟨eE, hcompleteE, hbasicE⟩ :=
-    AlgebraicGeometry.EquivalenceRelation.exists_completeOrthogonalIdempotents_equalizer_finrankOpen h
+    AlgebraicGeometry.EquivalenceRelation.exists_completeOrthogonalIdempotents_equalizer_finrankOpen
+      h
   let e : Set.range p₁.finrank → Γ(X, ⊤) := fun i ↦ (eE i).1
   have hcomplete : CompleteOrthogonalIdempotents e := by
     let val : AlgHom.equalizer s t →+* Γ(X, ⊤) :=

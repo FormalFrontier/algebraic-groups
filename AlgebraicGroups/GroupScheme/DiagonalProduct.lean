@@ -9,6 +9,8 @@ public import AlgebraicGroups.GroupScheme.Diagonal
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
+import AlgebraicGroups.GroupScheme.AffineHomOverConvolution
+
 /-!
 # The diagonal group scheme is a finite product of multiplicative groups
 
@@ -205,21 +207,6 @@ private def diagonalAffineHomOfConv
     X ⟶ (Spec (.of A)).asOver (Spec (.of K)) :=
   (affineSpecHomOverEquiv K X A).symm φ.ofConv
 
--- Keep the unit's codomain canonical before composing with `Spec.mapMulEquiv`.
-private def diagonalAffineUnit (X : Over (Spec (.of K))) :
-    X ⟶ (Spec (.of (((algΓ (.of K)).obj X).unop))).asOver (Spec (.of K)) :=
-  (algΓAlgSpecAdjunction (.of K)).unit.app X
-
--- Identify one application without unfolding the canonical target in a product.
-private lemma diagonalAffineHomOfConv_eq_unit_comp
-    (X : Over (Spec (.of K))) (A : Type u) [CommRing A] [Bialgebra K A]
-    (φ : WithConv (A →ₐ[K] ((algΓ (.of K)).obj X).unop)) :
-    diagonalAffineHomOfConv K X A φ =
-      diagonalAffineUnit K X ≫
-        Spec.mapMulEquiv (R := K) (S := A) (T := ((algΓ (.of K)).obj X).unop) φ := by
-  exact (algΓAlgSpecAdjunction (.of K)).homEquiv_unit X
-    (.op (CommAlgCat.of K A)) (CommAlgCat.ofHom φ.ofConv).op
-
 -- The adjunction inverse is `Spec.map` precomposed with the adjunction unit.
 -- Thus convolution multiplication becomes multiplication of scheme morphisms.
 private lemma diagonalAffineHomOfConv_mul
@@ -227,9 +214,18 @@ private lemma diagonalAffineHomOfConv_mul
     (φ ψ : WithConv (A →ₐ[K] ((algΓ (.of K)).obj X).unop)) :
     diagonalAffineHomOfConv K X A (φ * ψ) =
       diagonalAffineHomOfConv K X A φ * diagonalAffineHomOfConv K X A ψ := by
-  rw [diagonalAffineHomOfConv_eq_unit_comp, diagonalAffineHomOfConv_eq_unit_comp,
-    diagonalAffineHomOfConv_eq_unit_comp, map_mul]
-  exact MonObj.comp_mul (diagonalAffineUnit K X) _ _
+  let e := affineSpecHomOverMulEquiv K X A
+  have inverse (q : WithConv (A →ₐ[K] ((algΓ (.of K)).obj X).unop)) :
+      diagonalAffineHomOfConv K X A q = e.symm q := by
+    change diagonalAffineHomOfConv K X A q =
+      (affineSpecHomOverMulEquiv K X A).symm q
+    rw [affineSpecHomOverMulEquiv_symm_apply]
+    apply Over.OverMorphism.ext
+    simp only [diagonalAffineHomOfConv, Over.comp_left,
+      affineSpecHomOverTargetIso_hom_left]
+    exact (Category.comp_id _).symm
+  rw [inverse, inverse, inverse]
+  exact e.symm.map_mul φ ψ
 
 private lemma multiplicativeGroupHomUnits_symm_mul
     (X : Over (Spec (.of K))) (a b : ((algΓ (.of K)).obj X).unopˣ) :
