@@ -306,7 +306,7 @@ def semidirHom :
     semidirHom coords = UnitriangularGroup.inUpperTriangular coords.left *
       diagonalSection coords.right := rfl
 
-@[simp] theorem diagonal_semidirHom
+theorem diagonal_semidirHom
     (coords : UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)]
       DiagonalGroup ι R) : diagonal (semidirHom coords) = coords.right := by
   rw [semidirHom_apply, map_mul, diagonal_inUpperTriangular, diagonal_section, one_mul]
@@ -472,12 +472,12 @@ theorem semidirEquiv_symm_map (ringHom : R →+* S)
   rw [semidirEquiv.apply_symm_apply, ← semidirEquiv_map,
     semidirEquiv.apply_symm_apply]
 
-@[simp] theorem semidirEquiv_inl (unit : UnitriangularGroup ι R) :
+theorem semidirEquiv_inl (unit : UnitriangularGroup ι R) :
     semidirEquiv (SemidirectProduct.inl unit) =
       UnitriangularGroup.inUpperTriangular unit := by
   simp [semidirEquiv_apply]
 
-@[simp] theorem semidirEquiv_inr (diag : DiagonalGroup ι R) :
+theorem semidirEquiv_inr (diag : DiagonalGroup ι R) :
     semidirEquiv (SemidirectProduct.inr diag) = diagonalSection diag := by
   simp [semidirEquiv_apply]
 

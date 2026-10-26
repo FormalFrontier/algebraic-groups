@@ -216,7 +216,7 @@ def liftQCoalgHom (I : Submodule R C) [I.IsCoideal] (f : C →ₗc[R] D)
       CoalgHomClass.map_comp_comul_apply f y
 
 /-- The linear map underlying the descended homomorphism is the linear quotient lift. -/
-@[simp]
+@[simp↓]
 theorem liftQCoalgHom_toLinearMap (I : Submodule R C) [I.IsCoideal]
     (f : C →ₗc[R] D) (h : I ≤ LinearMap.ker f.toLinearMap) :
     (I.liftQCoalgHom f h).toLinearMap = I.liftQ f.toLinearMap h :=
@@ -260,7 +260,7 @@ def mapQCoalgHom (I : Submodule R C) (J : Submodule R D) [I.IsCoideal] [J.IsCoid
         LinearMap.ker_comp, ker_mkQ] using h)
 
 /-- The linear map underlying the induced quotient homomorphism is the linear quotient map. -/
-@[simp]
+@[simp↓]
 theorem mapQCoalgHom_toLinearMap (I : Submodule R C) (J : Submodule R D)
     [I.IsCoideal] [J.IsCoideal] (f : C →ₗc[R] D) (h : I ≤ J.comap f.toLinearMap) :
     (I.mapQCoalgHom J f h).toLinearMap = I.mapQ J f.toLinearMap h :=
@@ -397,7 +397,7 @@ theorem quotientQuotientCoalgEquivQuotientSup_symm_mk (I J : Submodule R C)
   exact (quotientQuotientCoalgEquivQuotientSup I J).toLinearEquiv.symm_apply_apply _
 
 /-- The canonical equivalence intertwines the bundled two-stage and join projections. -/
-@[simp]
+@[simp↓]
 theorem quotientQuotientCoalgEquivQuotientSup_comp_mkQCoalgHom (I J : Submodule R C)
     [hI : I.IsCoideal] [hJ : J.IsCoideal] :
     (quotientQuotientCoalgEquivQuotientSup I J).toCoalgHom.comp
