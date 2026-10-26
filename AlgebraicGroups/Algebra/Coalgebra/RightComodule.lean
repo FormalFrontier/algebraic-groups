@@ -135,7 +135,7 @@ variable [AddCommMonoid M] [Module R M]
   LinearMap.congr_fun X.counit_comp m
 
 /-- Composing the right counit with the right unitor recovers the element. -/
-@[simp] theorem rid_counit_coaction (X : RightComodule R C M) (m : M) :
+theorem rid_counit_coaction (X : RightComodule R C M) (m : M) :
     TensorProduct.rid R M ((counit (R := R)).lTensor M (X.coaction m)) = m := by
   simp
 
@@ -344,6 +344,7 @@ instance instLinearMapClass : LinearMapClass (RightComoduleHom X Y) R M N where
     LinearMap.ofClass f = f.toLinearMap := rfl
 
 /-- The original linear-map coercion is the underlying linear map. -/
+@[deprecated "The linear-map coercion is definitionally `toLinearMap`." (since := "2026-10-25")]
 theorem coe_eq_toLinearMap (f : RightComoduleHom X Y) :
     (f : M →ₗ[R] N) = f.toLinearMap := rfl
 
@@ -468,6 +469,20 @@ def subtype (U : X.Subcomodule) : RightComoduleHom U.comodule X where
 
 @[simp] theorem subtype_apply (U : X.Subcomodule) (m : U.toSubmodule) :
     U.subtype m = (m : M) := rfl
+
+/-- The inclusion of a subcomodule is injective. -/
+theorem subtype_injective (U : X.Subcomodule) : Function.Injective U.subtype :=
+  U.toSubmodule.subtype_injective
+
+/-- Equality of morphisms into a subcomodule can be checked after composing with its inclusion. -/
+@[simp] theorem subtype_comp_eq_iff (U : X.Subcomodule) {N : Type z}
+    [AddCommMonoid N] [Module R N] {Y : RightComodule R C N}
+    {f g : RightComoduleHom Y U.comodule} :
+    U.subtype.comp f = U.subtype.comp g ↔ f = g :=
+  RightComoduleHom.toLinearMap_injective.eq_iff.symm.trans
+    ((LinearMap.cancel_left (f := U.subtype.toLinearMap)
+      (g := f.toLinearMap) (g' := g.toLinearMap) U.subtype_injective).trans
+      RightComoduleHom.toLinearMap_injective.eq_iff)
 
 /-- Any specified subtype coaction with colinear inclusion gives image stability,
 without flatness of the coacting coalgebra. -/
@@ -678,12 +693,7 @@ theorem existsUnique_factorization (U : X.Subcomodule) {N : Type z}
     exact LinearMap.congr_fun hl n
   refine ⟨g, hg, ?_⟩
   intro g' hg'
-  apply RightComoduleHom.ext
-  intro n
-  apply Subtype.val_injective
-  have hcomp : U.subtype.comp g' = U.subtype.comp g := hg'.trans hg.symm
-  simpa only [RightComoduleHom.comp_apply, subtype_apply] using
-    congrArg (fun k : RightComoduleHom Y X ↦ k n) hcomp
+  exact (U.subtype_comp_eq_iff).mp (hg'.trans hg.symm)
 
 end Flat
 end Subcomodule

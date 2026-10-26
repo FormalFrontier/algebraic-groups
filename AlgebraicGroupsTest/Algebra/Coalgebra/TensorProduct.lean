@@ -30,6 +30,7 @@ noncomputable section
 namespace CoalgebraTensorMapTest
 
 /-- The one primitive weak-data fixture, shared by all four factor endpoints. -/
+@[instance_reducible]
 def zeroData : CoalgebraStruct ℕ ℕ where
   comul := 0
   counit := 0

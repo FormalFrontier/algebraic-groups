@@ -85,7 +85,7 @@ lemma connectedComponentOpen_ι_componentSchemeMapLeft (c : ConnectedComponents 
           (FiniteGroupFunctions.evalAlgHom K (rationalComponentGroup f)
             ((rationalComponentGroupEquivConnectedComponents f).symm c))) := by
   rw [← G.connectedComponentSigmaIso_hom_ι c]
-  simp [componentSchemeMapLeft]
+  simp only [componentSchemeMapLeft, Category.assoc, Iso.hom_inv_id_assoc, Sigma.ι_desc]
   rw [G.connectedComponentSigmaIso_hom_ι_assoc c]
   rfl
 
@@ -372,7 +372,7 @@ omit [IsAlgClosed K]
       Scheme.identityComponentOver (Over.mk f)).left)]
     [GeometricallyConnected (Scheme.identityComponentOver (Over.mk f)).hom]
     [LocallyOfFiniteType f] [QuasiCompact f] in
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma identityComponentIsoConnectedComponent_hom_ι
     (a : groupSchemePoints f) :
     (identityComponentIsoConnectedComponent f a).hom ≫

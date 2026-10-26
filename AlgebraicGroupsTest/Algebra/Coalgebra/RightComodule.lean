@@ -495,6 +495,7 @@ theorem B_map_smul : B ((3 : ℕ) • e) = (3 : ℕ) • B e := map_smul B 3 e
 /-- The generic class preserves zero without an additional morphism lemma. -/
 theorem B_map_zero : B 0 = 0 := map_zero B
 
+set_option linter.deprecated false in
 /-- Both original coercions agree with the generic class on the coordinate map. -/
 theorem A_coercions :
     (A.toLinearMap : (ℕ × ℕ) → (ℕ × ℕ)) = (A : (ℕ × ℕ) → (ℕ × ℕ)) ∧
@@ -521,7 +522,7 @@ theorem forget_linear_combination {R : Type u} {C : Type v} {M : Type w} {N : Ty
     (r : R) (f g : RightComoduleHom X Y) :
     toLinearMapₗ X Y (r • f + g) = r • LinearMap.ofClass f + (g : M →ₗ[R] N) := by
   rw [map_add, map_smul]
-  simp only [toLinearMapₗ_apply, ofClass_eq_toLinearMap, coe_eq_toLinearMap]
+  simp only [toLinearMapₗ_apply, ofClass_eq_toLinearMap]
 
 /-- Injectivity of the bundled forgetful map detects the nonzero identity. -/
 theorem forget_id_ne_zero : toLinearMapₗ plane plane (RightComoduleHom.id plane) ≠ 0 := by

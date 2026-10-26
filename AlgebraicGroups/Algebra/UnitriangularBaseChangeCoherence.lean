@@ -49,28 +49,19 @@ theorem baseChange_self (R : Type u) [CommRing R]
     (ι : Type u) [Fintype ι] [LinearOrder ι] :
     baseChange R R ι =
       Algebra.TensorProduct.lid R (CoordinateRing R ι) := by
-  apply AlgEquiv.ext
-  intro x
-  induction x using TensorProduct.inductionOn with
-  | tmul r a =>
-      let p := (freeEquiv R ι).symm a
-      have ha : freeEquiv R ι p = a := (freeEquiv R ι).apply_symm_apply a
-      rw [← ha, baseChange_tmul_freeEquiv, Algebra.TensorProduct.lid_tmul]
-      simp only [Algebra.algebraMap_self, MvPolynomial.map_id, map_smul]
-  | add x y hx hy =>
-      simp only [map_add, hx, hy]
-
-private theorem baseChange_tower_polynomial (R S T : Type u)
-    [CommRing R] [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra S T] [Algebra R T]
-    [IsScalarTower R S T]
-    (ι : Type u) [LinearOrder ι]
-    (s : S) (p : FreeCoordinateRing R ι) :
-    MvPolynomial.map (algebraMap S T)
-        (s • MvPolynomial.map (algebraMap R S) p) =
-      (algebraMap S T s) • MvPolynomial.map (algebraMap R T) p := by
-  simp only [MvPolynomial.smul_eq_C_mul, map_mul, MvPolynomial.map_C,
-    MvPolynomial.map_map, ← IsScalarTower.algebraMap_eq R S T]
+  have hmaps : (baseChange R R ι).toAlgHom =
+      (Algebra.TensorProduct.lid R (CoordinateRing R ι)).toAlgHom := by
+    apply tensor_algHom_ext_entries R R ι (CoordinateRing R ι)
+    intro p
+    change baseChange R R ι
+        (1 ⊗ₜ[R] quotient R ι
+          (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)) =
+      Algebra.TensorProduct.lid R (CoordinateRing R ι)
+        (1 ⊗ₜ[R] quotient R ι
+          (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2))
+    rw [baseChange_tmul_entry, Algebra.TensorProduct.lid_tmul]
+    simp only [map_one, one_mul, one_smul]
+  exact AlgEquiv.ext (fun x => congrArg (fun φ => φ x) hmaps)
 
 /-- Successive base changes agree with Mathlib's
 `Algebra.TensorProduct.cancelBaseChange` as algebra equivalences. -/
@@ -85,30 +76,41 @@ theorem baseChange_tower (R S T : Type u)
           (AlgEquiv.refl : T ≃ₐ[T] T)
           (baseChange R S ι)).trans
         (baseChange S T ι) := by
-  apply AlgEquiv.ext
-  intro x
-  induction x using TensorProduct.inductionOn with
-  | tmul t y =>
-      induction y using TensorProduct.inductionOn with
-      | tmul s a =>
-          let p := (freeEquiv R ι).symm a
-          have ha : freeEquiv R ι p = a := (freeEquiv R ι).apply_symm_apply a
-          rw [← ha, AlgEquiv.trans_apply, AlgEquiv.trans_apply,
-            Algebra.TensorProduct.cancelBaseChange_tmul,
-            Algebra.TensorProduct.congr_apply, Algebra.TensorProduct.map_tmul,
-            baseChange_tmul_freeEquiv R T ι]
-          change (freeEquiv T ι) ((s • t) • MvPolynomial.map (algebraMap R T) p) =
-            baseChange S T ι
-              (t ⊗ₜ[S] (baseChange R S ι (s ⊗ₜ[R] freeEquiv R ι p)))
-          rw [baseChange_tmul_freeEquiv R S ι,
-            baseChange_tmul_freeEquiv S T ι]
-          rw [baseChange_tower_polynomial R S T ι]
-          simp only [Algebra.smul_def, mul_comm (algebraMap S T s) t,
-            map_mul, mul_assoc]
-      | add y z hy hz =>
-          simp only [TensorProduct.tmul_add, map_add, AlgEquiv.trans_apply] at *
-          rw [hy, hz]
-  | add x y hx hy =>
-      simp only [map_add, hx, hy]
+  let : Algebra S (CoordinateRing T ι) :=
+    Algebra.compHom (CoordinateRing T ι) (algebraMap S T)
+  let : IsScalarTower S T (CoordinateRing T ι) :=
+    inferInstance
+  -- Restricting algebra homomorphisms uses the algebra-induced scalar actions.
+  let := IsScalarTower.of_algebraMap_eq
+    (R := S) (S := T) (A := CoordinateRing T ι) (fun _ => rfl)
+  have hmaps :
+      ((Algebra.TensorProduct.cancelBaseChange R S T T (CoordinateRing R ι)).trans
+        (baseChange R T ι)).toAlgHom =
+      ((Algebra.TensorProduct.congr
+        (AlgEquiv.refl : T ≃ₐ[T] T) (baseChange R S ι)).trans
+          (baseChange S T ι)).toAlgHom := by
+    apply Algebra.TensorProduct.ext_ring
+    apply tensor_algHom_ext_entries R S ι (CoordinateRing T ι)
+    intro p
+    change baseChange R T ι
+        (Algebra.TensorProduct.cancelBaseChange R S T T (CoordinateRing R ι)
+          (1 ⊗ₜ[S] (1 ⊗ₜ[R] quotient R ι
+            (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)))) =
+      baseChange S T ι
+        (Algebra.TensorProduct.congr
+          (AlgEquiv.refl : T ≃ₐ[T] T) (baseChange R S ι)
+          (1 ⊗ₜ[S] (1 ⊗ₜ[R] quotient R ι
+            (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2))))
+    rw [Algebra.TensorProduct.cancelBaseChange_tmul,
+      Algebra.TensorProduct.congr_apply, Algebra.TensorProduct.map_tmul]
+    change baseChange R T ι
+        (((1 : S) • (1 : T)) ⊗ₜ[R] quotient R ι
+          (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)) =
+      baseChange S T ι
+        ((1 : T) ⊗ₜ[S] baseChange R S ι
+          ((1 : S) ⊗ₜ[R] quotient R ι
+            (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)))
+    simp only [one_smul, baseChange_tmul_entry, map_one, one_mul]
+  exact AlgEquiv.ext (fun x => congrArg (fun φ => φ x) hmaps)
 
 end UnitriangularCoordinateRing

@@ -16,7 +16,7 @@ The global-sections comparison refines `affineSpecHomOverEquiv` to a
 multiplicative equivalence with `WithConv (A →ₐ[R] Γ(X))`.
 
 The geometric target is `(Spec (.of A)).asOver (Spec (.of R))`, with Mathlib's
-bialgebra-induced `MonObj`. The target isomorphism below compares this
+bialgebra-induced `MonObj`. The target isomorphism in `AffineHomOver` compares this
 presentation with `algSpec.obj` in the underlying equivalence. The coefficient
 algebra is the bundled object of `algΓ`; no affineness assumption on the source
 or separate algebra structure on its global sections is required.
@@ -47,26 +47,6 @@ universe u
 namespace AlgebraicGeometry
 
 variable (R : Type u) [CommRing R]
-
-/-- The `algSpec` presentation of an affine target is isomorphic over the base
-to its spectrum with the algebra-induced structure morphism. -/
-def affineSpecHomOverTargetIso (A : Type u) [CommRing A] [Algebra R A] :
-    (algSpec (.of R)).obj (.op (CommAlgCat.of R A)) ≅
-      (Spec (.of A)).asOver (Spec (.of R)) :=
-  Over.isoMk (Iso.refl (Spec (.of A))) (by
-    change 𝟙 (Spec (.of A)) ≫ Spec.map (CommRingCat.ofHom (algebraMap R A)) =
-      Spec.map (CommRingCat.ofHom (algebraMap R A))
-    exact Category.id_comp _)
-
-/-- The target comparison is the identity on the underlying spectrum. -/
-@[simp] theorem affineSpecHomOverTargetIso_hom_left
-    (A : Type u) [CommRing A] [Algebra R A] :
-    (affineSpecHomOverTargetIso R A).hom.left = 𝟙 (Spec (.of A)) := rfl
-
-/-- The inverse target comparison is the identity on the underlying spectrum. -/
-@[simp] theorem affineSpecHomOverTargetIso_inv_left
-    (A : Type u) [CommRing A] [Algebra R A] :
-    (affineSpecHomOverTargetIso R A).inv.left = 𝟙 (Spec (.of A)) := rfl
 
 /-- The bundled global-sections algebra has the structural map obtained by
 pulling back along the structure morphism of the over-scheme. -/
@@ -156,17 +136,6 @@ returns to the spectrum presentation of the target. -/
       (affineSpecHomOverEquiv R X A).symm q.ofConv ≫
         (affineSpecHomOverTargetIso R A).hom := rfl
 
-private theorem affineSpecHomOverEquiv_apply_toRingHom_aux
-    (X : Over (Spec (.of R))) (A : Type u) [CommRing A] [Algebra R A]
-    (h : X ⟶ (algSpec (.of R)).obj (.op (CommAlgCat.of R A))) :
-    CommRingCat.ofHom (affineSpecHomOverEquiv R X A h).toRingHom =
-      (Scheme.ΓSpecIso (.of A)).inv ≫ h.left.appTop := by
-  change CommRingCat.ofHom
-    ((((algΓAlgSpecAdjunction (.of R)).homEquiv X
-      (.op (CommAlgCat.of R A))).symm h).unop.hom.toRingHom) = _
-  rw [Adjunction.homEquiv_symm_apply]
-  rfl
-
 /-- The forward ring map is pullback on global sections, normalized by the
 inverse of the spectrum global-sections isomorphism. -/
 theorem affineSpecHomOverMulEquiv_apply_toRingHom (X : Over (Spec (.of R)))
@@ -175,7 +144,7 @@ theorem affineSpecHomOverMulEquiv_apply_toRingHom (X : Over (Spec (.of R)))
     CommRingCat.ofHom (affineSpecHomOverMulEquiv R X A h).ofConv.toRingHom =
       (Scheme.ΓSpecIso (.of A)).inv ≫ h.left.appTop := by
   rw [affineSpecHomOverMulEquiv_apply_ofConv,
-    affineSpecHomOverEquiv_apply_toRingHom_aux]
+    affineSpecHomOverEquiv_apply_toRingHom]
   let hs : X.left ⟶ Spec (.of A) := h.left
   change (Scheme.ΓSpecIso (.of A)).inv ≫ (hs ≫ 𝟙 (Spec (.of A))).appTop =
     (Scheme.ΓSpecIso (.of A)).inv ≫ hs.appTop

@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 import AlgebraicGroups.GroupScheme.AffineHomOver
+import AlgebraicGroupsTest.AffineHomOver
 import Mathlib.Algebra.Group.Nat.Hom
 import Mathlib.AlgebraicGeometry.Limits
 import Mathlib.RingTheory.Bialgebra.MonoidAlgebra

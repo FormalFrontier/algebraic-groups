@@ -90,6 +90,7 @@ private def kernelLimit : Mon (Over S) :=
   Mon.limit (kernelDiagram S f) (kernelCone S f p i hPB)
     (kernelConeIsLimit S f p i hPB)
 
+@[instance_reducible]
 private def kernelMonoid : MonObj (Over.mk p) :=
   (kernelLimit S f p i hPB).mon
 
@@ -136,6 +137,7 @@ private lemma kernelToUnit_isMonHom :
   rw [← kernelLimitCone_right S f p i hPB]
   exact ((kernelLimitCone S f p i hPB).π.app .right).isMonHom_hom
 
+@[instance_reducible]
 private def kernelGrpObj : GrpObj (Over.mk p) := by
   letI := kernelMonoid S f p i hPB
   letI := kernelInclusion_isMonHom S f p i hPB

@@ -46,6 +46,37 @@ universe u
 
 namespace UnitriangularCoordinateRing
 
+section
+
+universe v w
+
+variable (R : Type u) [CommRing R] (S : Type v) [CommSemiring S] [Algebra R S]
+  (ι : Type u) [Fintype ι] [LinearOrder ι] (B : Type w) [Semiring B] [Algebra S B]
+
+/-- Algebra homomorphisms from the scalar extension of the unitriangular coordinate
+quotient are determined by the strictly upper entries with tensor coefficient
+one. Mathlib's `Algebra.TensorProduct.ext_ring` reduces this to
+`algHom_ext_entries`. -/
+theorem tensor_algHom_ext_entries
+    (f g : S ⊗[R] CoordinateRing R ι →ₐ[S] B)
+    (h : ∀ p : StrictUpperPair ι,
+      f (1 ⊗ₜ[R] quotient R ι
+          (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)) =
+        g (1 ⊗ₜ[R] quotient R ι
+          (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2))) : f = g := by
+  let : Algebra R B := Algebra.compHom B (algebraMap R S)
+  let : IsScalarTower R S B := IsScalarTower.of_algebraMap_eq fun _ => rfl
+  apply Algebra.TensorProduct.ext_ring
+  apply algHom_ext_entries R ι B
+  intro p
+  change f (1 ⊗ₜ[R] quotient R ι
+      (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)) =
+    g (1 ⊗ₜ[R] quotient R ι
+      (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2))
+  exact h p
+
+end
+
 variable (R S : Type u) [CommRing R] [CommRing S] [Algebra R S]
   (ι : Type u) [Fintype ι] [LinearOrder ι]
 

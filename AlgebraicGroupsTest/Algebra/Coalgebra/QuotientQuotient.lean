@@ -64,7 +64,7 @@ private def coordinate (n : ℤ) : A →ₗ[R] R :=
 
 private lemma coordinate_delta (k n : ℤ) :
     coordinate k (delta n) = if n = k then 1 else 0 := by
-  simp [coordinate, delta, Finsupp.lapply, Finsupp.single_apply]
+  simp [coordinate, delta, Finsupp.lapply]
 
 private lemma difference_mem (n : ℤ) : difference n ∈ line n :=
   Submodule.mem_span_singleton_self _
@@ -268,6 +268,7 @@ namespace Weak
 
 private abbrev M := ℕ →₀ R
 
+@[instance_reducible]
 private def zeroData : CoalgebraStruct R M where
   comul := 0
   counit := 0

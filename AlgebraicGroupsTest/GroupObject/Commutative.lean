@@ -65,7 +65,7 @@ private theorem swaps_not_commute : swap01 * swap12 ≠ swap12 * swap01 := by
 
 private theorem permutationGroup_not_comm : ¬ IsCommMonObj permutationGroup.X := by
   intro h
-  letI := h
+  have := h
   have hmul := ConcreteCategory.congr_hom (CC := fun X ↦ X)
     (IsCommMonObj.mul_comm permutationGroup.X) (swap01, swap12)
   change swap12 * swap01 = swap01 * swap12 at hmul
@@ -74,7 +74,7 @@ private theorem permutationGroup_not_comm : ¬ IsCommMonObj permutationGroup.X :
 private theorem permutationGroup_inv_not_isMonHom :
     ¬ IsMonHom (GrpObj.inv (X := permutationGroup.X)) := by
   intro h
-  letI := h
+  have := h
   have hmul := ConcreteCategory.congr_hom (CC := fun X ↦ X)
     (IsMonHom.mul_hom (GrpObj.inv (X := permutationGroup.X))) (swap01, swap12)
   have h0 := congrArg (fun σ : Equiv.Perm (Fin 3) => σ 0) hmul

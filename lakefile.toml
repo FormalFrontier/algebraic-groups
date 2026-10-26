@@ -175,6 +175,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinatesUse",
   "AlgebraicGroupsTest.Algebra.Coalgebra.TensorProduct",
   "AlgebraicGroupsTest.Algebra.Coalgebra.TensorProductQuotient",
+  "AlgebraicGroupsTest.AffineHomOver",
   "AlgebraicGroupsTest.AffineHomOverConvolution",
   "AlgebraicGroupsTest.AffineHomOverMulEquiv",
   "AlgebraicGroupsTest.GroupScheme.KernelFromPullback",

@@ -554,6 +554,35 @@ def freeEquiv : FreeCoordinateRing K ι ≃ₐ[K] CoordinateRing K ι :=
     ((freeToPolynomialQuotient K ι) (MvPolynomial.X p)) = _
   rw [freeToPolynomialQuotient_variable, polynomialEquiv_variable]
 
+section
+
+universe v
+
+/-- Algebra homomorphisms from the unitriangular coordinate quotient are determined
+by its strictly upper entries. This uses `freeEquiv` and Mathlib's
+`MvPolynomial.algHom_ext`. -/
+theorem algHom_ext_entries (R : Type u) [CommRing R]
+    (ι : Type u) [Fintype ι] [LinearOrder ι]
+    (B : Type v) [Semiring B] [Algebra R B]
+    (f g : CoordinateRing R ι →ₐ[R] B)
+    (h : ∀ p : StrictUpperPair ι,
+      f (quotient R ι (matrix R ι p.1.1 p.1.2)) =
+        g (quotient R ι (matrix R ι p.1.1 p.1.2))) : f = g := by
+  have hp : f.comp (freeEquiv R ι).toAlgHom =
+      g.comp (freeEquiv R ι).toAlgHom := by
+    apply MvPolynomial.algHom_ext
+    intro p
+    change f (freeEquiv R ι (MvPolynomial.X p)) =
+      g (freeEquiv R ι (MvPolynomial.X p))
+    rw [freeEquiv_variable]
+    exact h p
+  apply AlgHom.ext
+  intro x
+  obtain ⟨p, rfl⟩ := (freeEquiv R ι).surjective x
+  exact congrArg (fun φ => φ p) hp
+
+end
+
 instance finiteType : Algebra.FiniteType K (CoordinateRing K ι) :=
   Algebra.FiniteType.of_surjective (quotient K ι) Ideal.Quotient.mk_surjective
 

@@ -59,6 +59,46 @@ uses Mathlib's `algΓAlgSpecAdjunction`; for affine tests over a field, Milne's
   right_inv h := by
     simp only [Quiver.Hom.unop_op, Equiv.symm_apply_apply, CommAlgCat.hom_ofHom]
 
+section
+
+variable (R : Type u) [CommRing R]
+
+/-- The `algSpec` presentation of an affine target is isomorphic over the base
+to its spectrum with the algebra-induced structure morphism. -/
+@[expose]
+def affineSpecHomOverTargetIso (A : Type u) [CommRing A] [Algebra R A] :
+    (algSpec (.of R)).obj (.op (CommAlgCat.of R A)) ≅
+      (Spec (.of A)).asOver (Spec (.of R)) :=
+  Over.isoMk (Iso.refl (Spec (.of A))) (by
+    change 𝟙 (Spec (.of A)) ≫ Spec.map (CommRingCat.ofHom (algebraMap R A)) =
+      Spec.map (CommRingCat.ofHom (algebraMap R A))
+    exact Category.id_comp _)
+
+/-- The target comparison is the identity on the underlying spectrum. -/
+@[simp] theorem affineSpecHomOverTargetIso_hom_left
+    (A : Type u) [CommRing A] [Algebra R A] :
+    (affineSpecHomOverTargetIso R A).hom.left = 𝟙 (Spec (.of A)) := rfl
+
+/-- The inverse target comparison is the identity on the underlying spectrum. -/
+@[simp] theorem affineSpecHomOverTargetIso_inv_left
+    (A : Type u) [CommRing A] [Algebra R A] :
+    (affineSpecHomOverTargetIso R A).inv.left = 𝟙 (Spec (.of A)) := rfl
+
+/-- The underlying ring map of the affine-target comparison is pullback on global
+sections, normalized by the inverse spectrum global-sections isomorphism. -/
+theorem affineSpecHomOverEquiv_apply_toRingHom
+    (X : Over (Spec (.of R))) (A : Type u) [CommRing A] [Algebra R A]
+    (h : X ⟶ (algSpec (.of R)).obj (.op (CommAlgCat.of R A))) :
+    CommRingCat.ofHom (affineSpecHomOverEquiv R X A h).toRingHom =
+      (Scheme.ΓSpecIso (.of A)).inv ≫ h.left.appTop := by
+  change CommRingCat.ofHom
+    ((((algΓAlgSpecAdjunction (.of R)).homEquiv X
+      (.op (CommAlgCat.of R A))).symm h).unop.hom.toRingHom) = _
+  rw [Adjunction.homEquiv_symm_apply]
+  rfl
+
+end
+
 /-- Maps of affine targets act on global-section homomorphisms by
 precomposition, using Mathlib's naturality of `algΓAlgSpecAdjunction`. -/
 theorem affineSpecHomOverEquiv_comp (X : Over (Spec (.of K)))

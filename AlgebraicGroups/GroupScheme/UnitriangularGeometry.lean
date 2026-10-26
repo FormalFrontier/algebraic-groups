@@ -94,7 +94,8 @@ theorem unitriangularUnderlyingAffineSpaceIso_preimage_variable (p : StrictUpper
   calc
     _ = Spec.preimage
         ((Scheme.Spec.mapIso (freeEquiv K ι).toRingEquiv.toCommRingCatIso.op).hom)
-        (MvPolynomial.X p) := congrArg (fun morphism => Spec.preimage morphism (MvPolynomial.X p)) hmap
+        (MvPolynomial.X p) :=
+      congrArg (fun morphism => Spec.preimage morphism (MvPolynomial.X p)) hmap
     _ = Spec.preimage (Spec.map (CommRingCat.ofHom (freeEquiv K ι).toRingHom))
         (MvPolynomial.X p) := by rfl
     _ = _ := by rw [Spec.preimage_map]; exact freeEquiv_variable K ι p
