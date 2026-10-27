@@ -95,6 +95,25 @@ maintained project libraries; it does not claim to formalize an entire source.
   [Composition theorem](AlgebraicGroups/Algebra/Coalgebra/CoefficientOperators.lean);
   the [matrix-unit example](AlgebraicGroupsTest/Algebra/Coalgebra/CoefficientOperators.lean)
   distinguishes the two orders.
+- **Canonical-point counit criterion.** For an `R`-bialgebra `C` over a
+  commutative semiring `R` and an arbitrary linear map `δ : M →ₗ[R] C ⊗[R] M`,
+  the counit law holds exactly when the tensor-extended operator at the convolution unit is the identity for
+  every commutative coefficient algebra in `Type (max uR uC w)`. The module
+  universe is independent of this tester universe; no coaction laws, flatness
+  or injectivity of scalar extension are assumed. The bialgebra `C` need not
+  be commutative, so the commutative-coordinate case follows by specialization.
+  [Criterion](AlgebraicGroups/Algebra/Coalgebra/CanonicalPointOperators.lean),
+  [zero-map boundary test](AlgebraicGroupsTest/Algebra/Coalgebra/CanonicalPointOperators.lean).
+- **Canonical-point coassociativity and coaction-law criteria.** When the
+  coordinate bialgebra `C` is commutative, a given left linear datum `δ` is
+  coassociative exactly when applying the operator
+  for `α` and then that for `β` gives the operator at the convolution product
+  `α ⋆ β`, for all algebra points into every commutative coefficient algebra
+  in `Type (max uR uC w)`. No counit law or bound on the module universe is
+  required. The combined criterion pairs this composition law with the unit
+  law, characterizing both coaction laws together.
+  [Criteria](AlgebraicGroups/Algebra/Coalgebra/CanonicalPointOperators.lean),
+  [non-coassociative boundary test](AlgebraicGroupsTest/Algebra/Coalgebra/CanonicalPointOperators.lean).
 - **Scalar-extension postcomposition.** Over a commutative semiring `R`,
   extending an `R`-linear map `F : M →ₗ[R] N` to an `A`-linear map
   `A ⊗[R] M →ₗ[A] N` commutes with `A`-linear postcomposition when the target

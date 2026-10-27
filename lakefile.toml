@@ -190,4 +190,5 @@ roots = [
   "AlgebraicGroupsTest.AffineHomOverMulEquiv",
   "AlgebraicGroupsTest.GroupScheme.KernelFromPullback",
   "AlgebraicGroupsTest.GroupScheme.DiagonalKernel",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.CanonicalPointOperators",
 ]

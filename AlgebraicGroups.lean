@@ -9,6 +9,7 @@ public import AlgebraicGroups.Algebra.Bialgebra.GroupLikeTensorProduct
 public import AlgebraicGroups.Algebra.Bialgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Bialgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
+public import AlgebraicGroups.Algebra.Coalgebra.CanonicalPointOperators
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientOperators
 public import AlgebraicGroups.Algebra.Coalgebra.Coefficients
