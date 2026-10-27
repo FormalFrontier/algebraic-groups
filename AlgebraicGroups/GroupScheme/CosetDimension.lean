@@ -13,10 +13,12 @@ public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 /-!
 # Dimension of coset quotient targets
 
-This file gives a dimension-zero criterion for a represented coset quotient.
-If the subgroup has open underlying range and an fppf morphism has the subgroup
-right-action as its self-pullback, then an algebraic quotient over an
-algebraically closed field has topological Krull dimension at most zero.
+This file gives a dimension-zero criterion for a represented coset quotient,
+in the more general setting of a multiplication relation. If `i : H ⟶ G` has
+open underlying range and an fppf morphism `G ⟶ Q` has the relation
+`(g, h) ↦ (g, g * i(h))` as its self-pullback, then, when `G` and `Q` are
+locally of finite type over an algebraically closed field, `Q` has topological
+Krull dimension at most zero.
 
 ## References
 
@@ -53,9 +55,9 @@ universe u
 variable {K : Type u} [Field K] [IsAlgClosed K]
 variable {H G Q : Over (Spec (.of K))} [GrpObj H] [GrpObj G]
 
-omit [IsAlgClosed K] in
+omit [IsAlgClosed K] [GrpObj H] in
 private lemma cosetTranslate_comp
-    (i : H ⟶ G) [IsMonHom i] (q : G ⟶ Q)
+    (i : H ⟶ G) (q : G ⟶ Q)
     (h : IsPullback (fst G H) ((𝟙 G ⊗ₘ i) ≫ μ[G]) q q)
     (a : 𝟙_ (Over (Spec (.of K))) ⟶ G) :
     (i ≫ (GrpObj.mulLeft a).hom) ≫ q = (toUnit H ≫ a) ≫ q := by
@@ -74,10 +76,13 @@ private lemma cosetTranslate_comp
       rw [← Category.assoc (𝟙 G ⊗ₘ i) μ[G] q, ← h.w]
     _ = (toUnit H ≫ a) ≫ q := by rw [← Category.assoc, lift_fst]
 
-/-- Let `H ⟶ G` be a morphism of group schemes over an algebraically closed
-field with open underlying range. If `G` and `Q` are locally of finite type
-and a supplied fppf morphism `G ⟶ Q` has the right `H`-action as its
-self-pullback, then `Q` has topological Krull dimension at most zero.
+omit [GrpObj H] in
+/-- Let `G` be a group scheme over an algebraically closed field and
+`i : H ⟶ G` a morphism of schemes over the field with open range. If `G` and
+`Q` are locally of finite type and a supplied fppf morphism `q : G ⟶ Q` has
+the multiplication relation with maps `fst G H` and `(𝟙 G ⊗ₘ i) ≫ μ[G]` as
+its self-pullback, then `Q` has topological Krull dimension at most zero.
+No group structure on `H` or homomorphism condition on `i` is required.
 
 Milne's Proposition 5.23 yields the dimension-zero consequence for algebraic
 coset quotients by a dimension formula. This proof instead lifts each closed
@@ -85,8 +90,8 @@ point to a rational point of `G`, translates the open range of `H`, uses the
 openness of the fppf map to make the singleton open, then applies the local
 Jacobson discreteness and Mathlib topological-Krull-dimension lemmas. It does
 not construct `Q`, assert an open immersion, or prove finiteness. -/
-theorem topologicalKrullDim_quotient_le_zero_of_isOpen_range
-    (i : H ⟶ G) [IsMonHom i] (q : G ⟶ Q)
+theorem topologicalKrullDim_le_zero_of_isPullback_of_isOpen_range
+    (i : H ⟶ G) (q : G ⟶ Q)
     (h : IsPullback (fst G H) ((𝟙 G ⊗ₘ i) ≫ μ[G]) q q)
     [LocallyOfFiniteType G.hom] [LocallyOfFiniteType Q.hom]
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left]
@@ -132,22 +137,59 @@ theorem topologicalKrullDim_quotient_le_zero_of_isOpen_range
         · rintro _ ⟨_, ⟨z, rfl⟩, rfl⟩
           exact htq_point z
         · rw [Set.singleton_subset_iff]
-          exact ⟨t.left (η[H].left (IsLocalRing.closedPoint K)),
+          let b : 𝟙_ (Over (Spec (.of K))) ⟶ H :=
+            h.lift η[G] η[G] rfl ≫ snd G H
+          exact ⟨t.left (b.left (IsLocalRing.closedPoint K)),
             ⟨_, rfl⟩, htq_point _⟩
       rw [← himage]
       exact q.left.isOpenMap _ htopen
   exact topologicalKrullDim_zero_of_discreteTopology Q.left
 
-/-- A supplied fppf quotient by the reduced identity component `(G_red)⁰`
-has topological Krull dimension at most zero when `G` and `Q` are locally of
-finite type, the reduction tensor square is reduced and the reduced-component
-tensor square is connected. This uses the local theorem that `(G_red)⁰ ⟶ G`
-has open **underlying range**, not that it is an open immersion.
+/-- The group-homomorphism specialization of
+`topologicalKrullDim_le_zero_of_isPullback_of_isOpen_range`. -/
+@[deprecated topologicalKrullDim_le_zero_of_isPullback_of_isOpen_range
+  (since := "2026-10-26")]
+theorem topologicalKrullDim_quotient_le_zero_of_isOpen_range
+    (i : H ⟶ G) [IsMonHom i] (q : G ⟶ Q)
+    (h : IsPullback (fst G H) ((𝟙 G ⊗ₘ i) ≫ μ[G]) q q)
+    [LocallyOfFiniteType G.hom] [LocallyOfFiniteType Q.hom]
+    [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left]
+    (hi : IsOpen (Set.range i.left)) :
+    topologicalKrullDim Q.left ≤ 0 :=
+  topologicalKrullDim_le_zero_of_isPullback_of_isOpen_range i q h hi
 
-Milne's Proposition 8.37 uses the existence and finiteness of this quotient
-in an anti-affine argument. This specialization assumes a target and the exact
-right-action pullback square; it neither proves that quotient exists nor
-asserts normality, finiteness, reducedness or a group structure on `Q`. -/
+/-- A supplied fppf morphism whose self-pullback is the multiplication
+relation parameterized by the underlying reduced identity component `(G_red)⁰`
+has topological Krull dimension at most zero when `G` and `Q` are locally of
+finite type, the reduction tensor square is reduced and the reduction is
+locally connected. This uses the local theorem that `(G_red)⁰ ⟶ G` has open
+**underlying range**, not that it is an open immersion.
+
+Milne's Proposition 8.37 uses the existence and finiteness of the quotient by
+`(G_red)⁰` in an anti-affine argument. This specialization assumes a target
+and the exact multiplication-relation pullback square; it neither proves that
+quotient exists nor asserts normality, finiteness, reducedness or a group
+structure on `Q`. -/
+theorem reducedIdentityComponent_topologicalKrullDim_le_zero_of_isPullback
+    (G Q : Over (Spec (.of K))) [GrpObj G]
+    [IsReduced ((Scheme.reductionOver G ⊗ Scheme.reductionOver G).left)]
+    [LocallyConnectedSpace (Scheme.reductionOver G).left]
+    (q : G ⟶ Q)
+    (h : IsPullback
+      (fst G (Scheme.reducedIdentityComponentOver G))
+      ((𝟙 G ⊗ₘ Scheme.reducedIdentityComponentι G) ≫ μ[G]) q q)
+    [LocallyOfFiniteType G.hom] [LocallyOfFiniteType Q.hom]
+    [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
+    topologicalKrullDim Q.left ≤ 0 :=
+  topologicalKrullDim_le_zero_of_isPullback_of_isOpen_range
+    (Scheme.reducedIdentityComponentι G) q h
+    (Scheme.reducedIdentityComponentι_isOpen_range G)
+
+/-- The group-coset specialization of
+`reducedIdentityComponent_topologicalKrullDim_le_zero_of_isPullback`, with
+connected reduced-component tensor square. -/
+@[deprecated reducedIdentityComponent_topologicalKrullDim_le_zero_of_isPullback
+  (since := "2026-10-26")]
 theorem reducedIdentityComponent_quotient_topologicalKrullDim_le_zero
     (G Q : Over (Spec (.of K))) [GrpObj G]
     [IsReduced ((Scheme.reductionOver G ⊗ Scheme.reductionOver G).left)]
@@ -161,8 +203,6 @@ theorem reducedIdentityComponent_quotient_topologicalKrullDim_le_zero
     [LocallyOfFiniteType G.hom] [LocallyOfFiniteType Q.hom]
     [Flat q.left] [Surjective q.left] [LocallyOfFinitePresentation q.left] :
     topologicalKrullDim Q.left ≤ 0 :=
-  topologicalKrullDim_quotient_le_zero_of_isOpen_range
-    (Scheme.reducedIdentityComponentι G) q h
-    (Scheme.reducedIdentityComponentι_isOpen_range G)
+  reducedIdentityComponent_topologicalKrullDim_le_zero_of_isPullback G Q q h
 
 end AlgebraicGeometry

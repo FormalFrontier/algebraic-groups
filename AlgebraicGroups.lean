@@ -12,10 +12,15 @@ public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientOperators
 public import AlgebraicGroups.Algebra.Coalgebra.Coefficients
+public import AlgebraicGroups.Algebra.Coalgebra.Coideal
 public import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
 public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
+public import AlgebraicGroups.Algebra.Coalgebra.DualAnnihilator
 public import AlgebraicGroups.Algebra.Coalgebra.Equiv
 public import AlgebraicGroups.Algebra.Coalgebra.FiniteSubcoalgebra
+public import AlgebraicGroups.Algebra.Coalgebra.CoidealCorrespondence
+public import AlgebraicGroups.Algebra.Coalgebra.FirstIsomorphism
+public import AlgebraicGroups.Algebra.Coalgebra.GroupLike
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeBaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCardinality
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoefficients
@@ -25,8 +30,10 @@ public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
 public import AlgebraicGroups.Algebra.Coalgebra.IdempotentIdeal
 public import AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Coalgebra.Quotient
+public import AlgebraicGroups.Algebra.Coalgebra.Range
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProductQuotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightSpace
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport
 public import AlgebraicGroups.Algebra.Coalgebra.SkewPrimitive
@@ -40,6 +47,7 @@ public import AlgebraicGroups.Algebra.Smooth
 public import AlgebraicGroups.Algebra.SymmetricAlgebra
 public import AlgebraicGroups.Algebra.SymmetricAlgebraPoints
 public import AlgebraicGroups.Algebra.HopfAlgebra.Hom
+public import AlgebraicGroups.Algebra.HopfAlgebra.Ideal
 public import AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal
 public import AlgebraicGroups.Algebra.SpecialLinearCoordinateRing
 public import AlgebraicGroups.Algebra.UnitriangularCoordinateRing
@@ -149,6 +157,7 @@ public import AlgebraicGroups.GroupScheme.SpecialLinearKernel
 public import AlgebraicGroups.GroupScheme.SpecialLinearModule
 public import AlgebraicGroups.GroupScheme.Smooth
 public import AlgebraicGroups.LinearAlgebra.Basis.Semilocal
+public import AlgebraicGroups.LinearAlgebra.Coalgebra.GroupLikeBasis
 public import AlgebraicGroups.LinearAlgebra.FiniteProjective.Charpoly
 public import AlgebraicGroups.LinearAlgebra.TensorProduct.Extension
 public import AlgebraicGroups.RingTheory.Equalizer
@@ -174,6 +183,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finite
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Equiv
+public import AlgebraicGroups.Algebra.Coalgebra.Surjective
 
 /-!
 # Algebraic groups and group schemes

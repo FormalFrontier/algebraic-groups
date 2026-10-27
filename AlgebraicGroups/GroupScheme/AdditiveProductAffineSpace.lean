@@ -225,4 +225,19 @@ theorem additiveGroupProductUnderlyingAffineSpaceIso_coordinate
     (additiveGroupAffineProductProjection_globalCoordinate K D d T
       (h ≫ (additiveGroupProductUnderlyingSpecIso K D).hom))
 
+/-- Limit data for the finite affine product cone of additive group schemes. -/
+abbrev additiveGroupAffineProductFanIsLimit :
+    Limits.IsLimit (additiveGroupAffineProductFan K D) :=
+  additiveGroupAffineProductFan_isLimit K D
+
+/-- Limit data for the underlying cone of the finite product of additive groups. -/
+abbrev additiveGroupProductUnderlyingFanIsLimit :
+    Limits.IsLimit (additiveGroupProductUnderlyingFan K D) :=
+  additiveGroupProductUnderlyingFan_isLimit K D
+
+attribute [deprecated additiveGroupAffineProductFanIsLimit (since := "2026-10-26")]
+  additiveGroupAffineProductFan_isLimit
+attribute [deprecated additiveGroupProductUnderlyingFanIsLimit (since := "2026-10-26")]
+  additiveGroupProductUnderlyingFan_isLimit
+
 end AlgebraicGeometry

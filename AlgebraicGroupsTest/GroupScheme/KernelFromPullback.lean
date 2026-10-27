@@ -60,8 +60,10 @@ private def kernelInclusion : Over.mk p ⟶ G :=
         rw [← Category.assoc, hPB.w, Category.assoc]
       _ = p := by rw [(η[H]).w]; exact Category.comp_id _)
 
+omit [GrpObj G] [IsMonHom f] in
 private lemma kernelInclusion_left : (kernelInclusion S f p i hPB).left = i := rfl
 
+omit [GrpObj G] [IsMonHom f] in
 private lemma kernelIsPullback :
     IsPullback (kernelInclusion S f p i hPB) (toUnit (Over.mk p)) f η[H] := by
   have w : kernelInclusion S f p i hPB ≫ f = toUnit (Over.mk p) ≫ η[H] := by
@@ -146,8 +148,8 @@ private def kernelGrpObj : GrpObj (Over.mk p) := by
 
 private lemma kernelGrpObj_toMonObj :
     (kernelGrpObj S f p i hPB).toMonObj = (kernelLimit S f p i hPB).mon := by
-  letI := kernelMonoid S f p i hPB
-  letI := kernelInclusion_isMonHom S f p i hPB
+  let := kernelMonoid S f p i hPB
+  have := kernelInclusion_isMonHom S f p i hPB
   exact GrpObj.ofIsPullback_toMonObj f (kernelInclusion S f p i hPB)
     (kernelIsPullback S f p i hPB)
 
@@ -160,8 +162,8 @@ private def kernelProjection :
 
 private lemma kernelProjection_hom :
     (kernelProjection S f p i hPB).hom.hom = kernelInclusion S f p i hPB := by
-  letI := kernelMonoid S f p i hPB
-  letI := kernelInclusion_isMonHom S f p i hPB
+  let := kernelMonoid S f p i hPB
+  have := kernelInclusion_isMonHom S f p i hPB
   exact GrpObj.ofIsPullbackHom_hom f (kernelInclusion S f p i hPB)
     (kernelIsPullback S f p i hPB)
 
@@ -174,8 +176,8 @@ private lemma kernelProjection_isMonHom :
 private lemma kernel_inverse_comp :
     (kernelGrpObj S f p i hPB).inv ≫ kernelInclusion S f p i hPB =
       kernelInclusion S f p i hPB ≫ ι[G] := by
-  letI := kernelMonoid S f p i hPB
-  letI := kernelInclusion_isMonHom S f p i hPB
+  let := kernelMonoid S f p i hPB
+  have := kernelInclusion_isMonHom S f p i hPB
   exact GrpObj.ofIsPullback_inv_comp f (kernelInclusion S f p i hPB)
     (kernelIsPullback S f p i hPB)
 
@@ -186,21 +188,21 @@ private lemma kernel_inverse_left_comp :
 
 private lemma kernel_one_comp :
     (kernelMonoid S f p i hPB).one ≫ kernelInclusion S f p i hPB = η[G] := by
-  letI := kernelMonoid S f p i hPB
-  letI := kernelInclusion_isMonHom S f p i hPB
+  let := kernelMonoid S f p i hPB
+  have := kernelInclusion_isMonHom S f p i hPB
   exact IsMonHom.one_hom (kernelInclusion S f p i hPB)
 
 private lemma kernel_one_toUnit :
     (kernelMonoid S f p i hPB).one ≫ toUnit (Over.mk p) = 𝟙 (𝟙_ (Over S)) := by
-  letI := kernelMonoid S f p i hPB
-  letI := kernelToUnit_isMonHom S f p i hPB
+  let := kernelMonoid S f p i hPB
+  have := kernelToUnit_isMonHom S f p i hPB
   exact IsMonHom.one_hom (toUnit (Over.mk p))
 
 private lemma kernel_mul_comp :
     (kernelMonoid S f p i hPB).mul ≫ kernelInclusion S f p i hPB =
       (kernelInclusion S f p i hPB ⊗ₘ kernelInclusion S f p i hPB) ≫ μ[G] := by
-  letI := kernelMonoid S f p i hPB
-  letI := kernelInclusion_isMonHom S f p i hPB
+  let := kernelMonoid S f p i hPB
+  have := kernelInclusion_isMonHom S f p i hPB
   exact IsMonHom.mul_hom (kernelInclusion S f p i hPB)
 
 private lemma kernel_mul_toUnit :
@@ -263,7 +265,7 @@ end Boundaries
 example (H : Over S) [MonObj H] {N : Scheme.{u}} (p i : N ⟶ S)
     (hPB : IsPullback i p (η[H]).left (η[H]).left) :
     IsIso p ∧ (kernelProjection S η[H] p i hPB).hom.hom.left = p := by
-  haveI : Mono (η[H]).left := ⟨by
+  have : Mono (η[H]).left := ⟨by
     intro Z a b h
     have h' := congrArg (fun k => k ≫ H.hom) h
     simpa only [Category.assoc, (η[H]).w, Over.tensorUnit_hom,

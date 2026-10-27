@@ -199,13 +199,13 @@ def polynomialEquiv :
   rw [toPolynomialQuotient_quotient]
   exact toPolynomial_entry K n r p
 
-@[simp] theorem polynomialEquiv_surviving (s : SurvivingPair n r) :
+theorem polynomialEquiv_surviving (s : SurvivingPair n r) :
     polynomialEquiv K n r
       (quotient K n r (entry K n s.1.1.1 s.1.1.2)) = MvPolynomial.X s := by
   rcases s with ⟨p, hp⟩
   simp [hp]
 
-@[simp] theorem polynomialEquiv_forbidden
+theorem polynomialEquiv_forbidden
     (p : UnitriangularCoordinateRing.StrictUpperPair (Fin n))
     (hgap : p.1.2.val < p.1.1.val + r) :
     polynomialEquiv K n r (quotient K n r (entry K n p.1.1 p.1.2)) = 0 := by
@@ -217,7 +217,7 @@ def polynomialEquiv :
       quotient K n r (entry K n s.1.1.1 s.1.1.2) :=
   fromPolynomial_X K n r s
 
-@[simp] theorem polynomialEquiv_C (k : K) :
+theorem polynomialEquiv_C (k : K) :
     polynomialEquiv K n r
       (@algebraMap K (CoordinateRing K n r) _
         (inferInstance : Semiring (CoordinateRing K n r)) _ k) =

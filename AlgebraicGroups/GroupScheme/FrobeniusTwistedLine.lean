@@ -447,6 +447,8 @@ instance coordinateRing_charP {p : ℕ} [Fact p.Prime] [CharP K p] (t : K) :
     CharP (CoordinateRing K p t) p :=
   CharP.of_ringHom_of_ne_zero (algebraMap K _) p (Fact.out : p.Prime).ne_zero
 
+/-- The tensor `x ⊗ 1 + 1 ⊗ x`, the sum of the copies of the `X` coordinate
+in the two tensor factors. -/
 def comulX (p : ℕ) (t : K) :
     CoordinateRing K p t ⊗[K] CoordinateRing K p t :=
   Algebra.TensorProduct.includeLeft (R := K) (S := K)
@@ -454,6 +456,8 @@ def comulX (p : ℕ) (t : K) :
     Algebra.TensorProduct.includeRight (R := K)
       (A := CoordinateRing K p t) (B := CoordinateRing K p t) (x K p t)
 
+/-- The tensor `y ⊗ 1 + 1 ⊗ y`, the sum of the copies of the `Y` coordinate
+in the two tensor factors. -/
 def comulY (p : ℕ) (t : K) :
     CoordinateRing K p t ⊗[K] CoordinateRing K p t :=
   Algebra.TensorProduct.includeLeft (R := K) (S := K)

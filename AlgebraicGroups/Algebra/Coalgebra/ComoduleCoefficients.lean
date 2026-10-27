@@ -26,6 +26,8 @@ Over a field, `coefficientSubcoalgebra` has exactly this coefficient span as its
 underlying submodule. Corestriction of the coacting coalgebra uses the tensor
 inclusion `M ⊗ D → M ⊗ C`, rather than a comodule morphism with a fixed coacting
 coalgebra. The inclusion equation characterizes the corestricted coaction.
+Changing this corestricted coacting coalgebra back along its inclusion recovers
+the original specified comodule.
 The coefficient span is contained in the underlying submodule of `D` exactly
 when the coaction factors through this tensor inclusion.
 
@@ -549,6 +551,16 @@ example (X : RightComodule K C M) :
     ∃ Y : RightComodule K X.coefficientSubcoalgebra M,
       X.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M ∘ₗ Y.coaction = X.coaction :=
   ⟨X.coefficientComodule, X.subtype_lTensor_comp_coefficientComodule_coaction⟩
+
+/-- Changing the corestricted coacting coalgebra along its inclusion recovers the original
+comodule. -/
+@[simp] theorem mapCoalgebra_restrictCoalgebra (X : RightComodule K C M)
+    (D : _root_.Subcoalgebra K C)
+    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
+    (X.restrictCoalgebra D h).mapCoalgebra D.subtype = X := by
+  apply Coalgebra.RightComodule.ext
+  rw [mapCoalgebra_coaction]
+  exact X.subtype_lTensor_comp_restrictCoalgebra_coaction D h
 
 end Field
 

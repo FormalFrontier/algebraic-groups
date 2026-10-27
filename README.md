@@ -40,9 +40,49 @@ maintained project libraries; it does not claim to formalize an entire source.
   `(n, g) ↦ (i(n)g, g)`. No group structure on `N`, inverse operation on `Q`
   or global finite-limit hypothesis is required.
   [Statement](AlgebraicGroups/GroupObject/KernelTorsor.lean).
+  `GrpObj.isPullback_kernel_mul` uses this supplied `N` and `i` without a
+  monoid structure on `N` or a multiplicativity condition on `i`.
 
 ### Coalgebras and Hopf algebras
 
+- **Coalgebra data on a linear range.** Over a commutative ring, let the source and
+  codomain of a linear map be modules with additive commutative groups. If the source
+  has weak coalgebra data and the kernel is a coideal, the linear range carries the
+  quotient-transported data. The range restriction preserves counit and comultiplication;
+  no coalgebra data on the codomain or full coalgebra laws on the source are required.
+  [Construction and preservation](AlgebraicGroups/Algebra/Coalgebra/Range.lean).
+- **Coideal annihilators and convolution subalgebras.** Over a commutative ring,
+  the ordinary full-dual annihilator of a coideal contains the counit and is
+  closed under convolution. These closure results require only `CoalgebraStruct`
+  on an additive-group module, in independent universes; no coalgebra laws,
+  projectivity, flatness or finite-dimensionality hypothesis is needed.
+  With full `Coalgebra` laws, the annihilator defines a canonical subalgebra of
+  `WithConv (Module.Dual R C)`, with membership and underlying-submodule API.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/DualAnnihilator.lean).
+- **Coideals, cores and the complete lattice.** Over a commutative ring, an
+  additive commutative group with a module structure and `CoalgebraStruct`,
+  coideals bundle `Submodule.IsCoideal` and are ordered by inclusion. The greatest
+  coideal contained in a submodule is right adjoint to inclusion; their Galois
+  coinsertion induces a complete lattice. Joins and bottom have ambient submodule
+  carriers; infima and top are cores, not generally ambient intersections or top.
+  The rational natural-number-indexed group-like coalgebra has a nonzero proper
+  counit kernel and a nonzero proper top-coideal carrier.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/Coideal.lean),
+  [example](AlgebraicGroupsTest/Algebra/Coalgebra/Coideal.lean).
+- **Coideal scalar extension.** For commutative-ring algebras, extension of
+  scalars preserves coideals; faithfully flat extension reflects them. Only
+  `CoalgebraStruct` on the additive-group source module is needed, in independent
+  universes: no field, finiteness, coalgebra laws or source/quotient-flatness.
+  The canonical tensor datum and image carrier are Mathlib's; its quotient-based
+  coideal predicate determines the ring/group boundary.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/BaseChange.lean),
+  [one polynomial augmentation model](AlgebraicGroupsTest/Algebra/Coalgebra/CoidealBaseChange.lean)
+  over `ℚ → ℚ[X]` on `AddMonoidAlgebra ℚ ℤ`, with nonzero proper carriers and
+  a nonzero `X ⊗ (e₀ - e₁)` witness.
+- **Automatic counit preservation.** Over a commutative semiring, a unital
+  algebra map (`AlgHom`) from a Hopf algebra to a bialgebra that preserves
+  comultiplication automatically preserves the counit. The algebras need not be
+  commutative. [Module](AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean).
 - **Weak linear coefficient composition.** Over a commutative semiring `R`, let
   `C` and `M` be `R`-semimodules and let `Δ : C →ₗ[R] C ⊗[R] C` and
   `δ : M →ₗ[R] C ⊗[R] M` satisfy relative coassociativity. Arbitrary linear
@@ -62,6 +102,11 @@ maintained project libraries; it does not claim to formalize an entire source.
   be a noncommutative semiring; for commutative `A` the extension agrees with
   `LinearMap.liftBaseChange`.
   [API](AlgebraicGroups/LinearAlgebra/TensorProduct/Extension.lean).
+- **Unit-counit normalization.** For a commutative semiring `R` and an
+  additive-commutative-monoid `R`-module `C` carrying a full `Coalgebra R C`,
+  an element with tensor-square comultiplication and unit counit is group-like.
+  Scalar and carrier universes are independent; no multiplication on `C` is needed.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/GroupLike.lean).
 - **Group-like elements and scalar extension.** The counit-one and tensor-square
   equations are preserved by extension of commutative semirings and reflected by
   faithfully flat extension of commutative rings, requiring only weak coalgebra
@@ -99,11 +144,33 @@ maintained project libraries; it does not claim to formalize an entire source.
   evaluation and unique-factorization laws are stated alongside the constructions.
   [Module](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean),
   [infinite monoid-algebra example](AlgebraicGroupsTest/Algebra/Coalgebra/MonoidAlgebraCollapse.lean).
+- **Surjective descent of coalgebra laws.** Coassociativity
+  and both counitality laws descend over a commutative semiring from a coalgebra
+  to a fixed `CoalgebraStruct` along a surjective `CoalgHomClass` map.
+  `Coalgebra.ofSurjective` equips exactly that target structure with the laws;
+  its parent, comultiplication and counit are unchanged, and it agrees with an
+  existing full target structure. For a linear equivalence `e : D ≃ₗ[R] C`,
+  `LinearEquiv.toCoalgEquiv` identifies the weak pullback data with the given data
+  on `C`. From only `e` and a coalgebra on `C`, `Coalgebra.ofSurjective_coalgebra`
+  uses its inverse morphism to recover exactly `e.coalgebra R`.
+  Cocommutativity descends to the constructed coalgebra. The infinite semiring
+  projection model uses the constructor; the nonsurjective zero-source boundary
+  explains why surjectivity is needed. The negation example on `ℤ` distinguishes
+  the pulled-back counit from the scalar counit on the same module.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/Surjective.lean),
+  [semiring example](AlgebraicGroupsTest/Algebra/Coalgebra/Surjective.lean).
 - **Coideal quotient morphisms.** Over a commutative ring, coalgebra morphisms
   vanishing on a coideal descend uniquely; maps preserving coideals induce
   quotient maps respecting identity and composition. Additive-group modules with
   `CoalgebraStruct` suffice, in independent universes; no coalgebra laws, flatness,
   projectivity or field hypothesis. [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean).
+- **Bialgebra quotient factorization.** Over a commutative ring `R`, let `A`
+  be a possibly noncommutative ring and `B` a semiring, both full `R`-bialgebras.
+  A bialgebra morphism `f : A →ₐc[R] B` factors canonically and uniquely through
+  `A ⧸ I` for a two-sided ideal `I` contained in its ordinary ring kernel, with
+  `I.restrictScalars R` a coideal. This uses Mathlib's fixed canonical quotient
+  bialgebra and asserts uniqueness of the factor, not of quotient structures.
+  [Module](AlgebraicGroups/Algebra/Bialgebra/Quotient.lean).
 - **Kernels with a flat quotient.** Over a commutative ring, the kernel of a
   linear map preserving comultiplication and counit is a coideal when the target
   module and the ordinary module quotient by the kernel are flat. No
@@ -115,6 +182,23 @@ maintained project libraries; it does not claim to formalize an entire source.
   ordinary module quotient map by that span. Scalar and module universes are
   independent; no coalgebra laws, field, flatness, finiteness or nonemptiness are
   required. [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean).
+- **Surjective kernels.** Over a commutative ring, the linear kernel of a
+  surjective coalgebra morphism is a coideal. Independent-universe additive-group
+  modules with `CoalgebraStruct` suffice; no coalgebra laws or flatness assumption.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/Quotient.lean).
+- **Surjective first isomorphism.** Over a commutative ring, a surjective
+  coalgebra morphism identifies its target with the quotient by its linear
+  kernel, with the canonical quotient structure. Both independent-universe
+  additive-group modules need only `CoalgebraStruct`; no coalgebra laws or flatness.
+  Representative, inverse and linear-equivalence formulas characterize the map.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/FirstIsomorphism.lean).
+
+- **Coideal correspondence.** For a surjective coalgebra morphism over a commutative
+  ring, image and preimage give an order isomorphism between source coideals
+  containing its linear kernel and target coideals. Only `CoalgebraStruct` is
+  required; no coalgebra laws, flatness, field or finiteness assumption.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/CoidealCorrespondence.lean).
+
 - **Kernels over a field.** The linear kernel of any coalgebra morphism is a
   coideal, without surjectivity. Both source and target need only
   `CoalgebraStruct` on additive-group modules, in independent universes; no
@@ -153,6 +237,26 @@ maintained project libraries; it does not claim to formalize an entire source.
   Evaluation is the stock scalar-extension lift of the commuted coaction;
   no flatness, bialgebra structure, finiteness, basis or tensor-inclusion
   injectivity is required. [Criteria and API](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean).
+- **Changing the coacting coalgebra.** Over a commutative semiring, a coalgebra
+  morphism `f : C →ₗc[R] D` sends a specified right coaction `ρ` on `V` to
+  `(id_V ⊗ f)ρ` on the same module. Full coalgebras and additive-monoid modules
+  in independent universes suffice; no finiteness, flatness, projectivity or
+  injectivity hypothesis is needed. The operation preserves identity, composition
+  and colinear maps; change along the counit gives the scalar coaction for every
+  comodule. [API and use](docs/COALGEBRAS.md#changing-the-coacting-coalgebra).
+  `RightComodule.mapCoalgebra` changes the coalgebra factor;
+  `RightComoduleHom.ofCoalgHom` makes the original coalgebra map colinear
+  between the changed regular source comodule and the regular target comodule.
+- **Inverses of colinear linear equivalences.** For specified right comodules
+  `X` and `Y` over the same full coalgebra, a colinear linear equivalence
+  `e : M ≃ₗ[R] N` has colinear inverse, by
+  `Coalgebra.RightComoduleHom.colinear_symm`. This works over a commutative
+  semiring on additive-commutative-monoid modules in independent universes,
+  without flatness, a basis or finiteness. It reverses a map between fixed
+  coactions, not the coacting coalgebra. The
+  [nonidentity coordinate-swap clients over `ℕ`](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean)
+  use distinct nonzero coactions.
+  [API](docs/COALGEBRAS.md#inverses-of-colinear-linear-equivalences).
 - **Finite right subcomodules.** Over a commutative semiring, for additive-monoid
   modules, projectivity of the coacting coalgebra alone gives finite-subset
   containment in finitely generated subcomodules. Neither module need be finite,
@@ -161,6 +265,16 @@ maintained project libraries; it does not claim to formalize an entire source.
   factorization; the counit need not be onto. [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean).
   With projectivity of the coacting coalgebra, the underlying carriers of the
   module-finite subcomodules are directed and cover the whole comodule.
+- **Right-comodule weight spaces.** For a full coalgebra over a commutative
+  semiring and a specified right comodule, weight spaces are the submodules
+  where the coaction is `v ↦ v ⊗ c`, for any coalgebra element `c`. The
+  coalgebra and comodule carriers need only be additive-commutative-monoid
+  modules, in independent universes. On a regular comodule, the counit and
+  scalar multiplication by a group-like element satisfy both inverse
+  equations, without a nontriviality assumption. Over a field, the weight
+  submodules indexed by group-like elements are independent for arbitrary
+  modules; no spanning or finite-dimensional hypothesis is used.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule/WeightSpace.lean).
 - **External tensor products of specified right comodules.** Over a commutative
   semiring, right comodules on arbitrary additive-monoid modules over full
   coalgebras `C` and `D` give a right comodule on `M ⊗[R] N` over the tensor
@@ -205,6 +319,21 @@ maintained project libraries; it does not claim to formalize an entire source.
   them. Over a field, injections increase coefficient spans, with the same
   comparisons for the underlying submodules of coefficient subcoalgebras.
   [Module](AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean).
+- **Coefficients under comodule morphisms.** For specified right comodules
+  `X`, `Y` over one full coalgebra and `h : Coalgebra.RightComoduleHom X Y`,
+  `RightComoduleHom.coefficient_apply` gives
+  `Y.coefficient ell (h m) = X.coefficient (ell.comp h.toLinearMap) m`.
+  Over a commutative semiring, surjectivity gives
+  `Y.coefficientSpan ≤ X.coefficientSpan`, and bijectivity gives equality.
+  Over a field, injectivity gives `X.coefficientSpan ≤ Y.coefficientSpan`.
+  The carriers need only be additive-commutative-monoid modules in independent
+  universes; no finite-generation hypothesis is required. Over a field with
+  an additive-group ambient coalgebra, the coefficient subcoalgebras have the
+  same respective underlying-submodule containments, and are equal for a
+  bijective map. The rational `GL₂` column representation and its
+  universe-lifted carrier retain a finitely generated, proper nonzero
+  coefficient span with a nonzero off-diagonal coefficient.
+  [API and models](docs/COALGEBRAS.md#coefficients-under-comodule-morphisms).
 - **Finite tensor-image containment.** Over a commutative semiring, a projective
   coalgebra's finite subsets lie in finitely generated `U` with `Δ(U)` in the
   image of `U ⊗ C`; over a field one obtains `D ⊗ D`. These are module, not
@@ -271,6 +400,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   [Coordinates](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoordinates.lean),
   [free extension](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean),
   [nonidentity `ℕ[Bool]` equivalence, noninjective collapse and empty-index examples](AlgebraicGroupsTest/Algebra/Coalgebra/GroupLikeCoordinates.lean).
+- **Group-like coalgebra coordinates.** Over a commutative semiring, arbitrary
+  families of group-like elements in additive-commutative-monoid module coalgebras correspond
+  to coalgebra maps from the free diagonal monoid-algebra coalgebra; the index needs
+  no monoid structure. Over a field, evaluation is a coalgebra equivalence onto the
+  group-like span, with diagonal coproduct and counit equal to the coefficient sum.
+  No target multiplication, finite dimension or nonempty group-like family is required.
+  [Extension](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean),
+  [span coordinates](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoordinates.lean).
 - **Monoid-algebra bialgebra maps.** Over a commutative semiring `R`, monoid
   homomorphisms `M →* GroupLike R A` correspond by an explicit equivalence to
   bialgebra maps `R[M] →ₐc[R] A`, for any monoid `M` and full `R`-bialgebra `A`.
@@ -286,6 +423,22 @@ maintained project libraries; it does not claim to formalize an entire source.
   type and agrees with Mathlib's monomial classification over commutative domains.
   [Basis coordinates](AlgebraicGroups/LinearAlgebra/Coalgebra/GroupLikeCoordinates.lean),
   [coefficients](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCoefficients.lean).
+- **Group-like basis rigidity.** Over a nontrivial commutative semiring with
+  preconnected prime spectrum, every group-like element equals the vector at a
+  unique index of a given group-like basis. The module carries a full coalgebra;
+  scalar, module and index universes are independent, with no finiteness or
+  inhabitedness assumption on the index. The
+  [theorem](AlgebraicGroups/LinearAlgebra/Coalgebra/GroupLikeBasis.lean) uses
+  pairwise orthogonal, normalized coordinates and Mathlib's complemented-scalar
+  clopen correspondence. An [infinite-basis example over field dual numbers](AlgebraicGroupsTest/LinearAlgebra/Coalgebra/GroupLikeBasis.lean)
+  has a non-domain scalar ring with preconnected spectrum.
+- **Comultiplicative algebra maps.** A unital algebra map from a full Hopf
+  algebra to a bialgebra over a commutative semiring, preserving comultiplication,
+  refines canonically to a bialgebra homomorphism with the same underlying
+  algebra map, linear map and function. Counit preservation is automatic;
+  neither algebra need be commutative, and the target need not be Hopf.
+  [Module](AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean),
+  [infinite noncommutative group-algebra example](AlgebraicGroupsTest/Algebra/HopfAlgebra/Hom.lean).
 - **Antipodes.** For full Hopf algebras over a commutative semiring, either
   commutative multiplication **or** cocommutative comultiplication suffices for
   `S² = id`; these are alternatives, not an iff or simultaneous requirements.
@@ -294,6 +447,16 @@ maintained project libraries; it does not claim to formalize an entire source.
   either commutativity assumption. [Involutivity](AlgebraicGroups/Algebra/HopfAlgebra/Antipode.lean),
   [maps](AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean),
   [comultiplication](AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean).
+
+- **Hopf-ideal kernels and inverse images.** Over a field, a bundled bialgebra
+  homomorphism between full Hopf algebras has ordinary kernel with
+  `Ideal.IsHopfIdeal`; inverse images preserve that property. Source rings may
+  be noncommutative; kernels allow semiring targets and inverse images use ring
+  targets. Over a commutative base ring, the corresponding statements assume
+  scalar-restricted coideality of the kernel or preimage. This property alone
+  asserts neither two-sidedness nor a quotient Hopf algebra.
+  [Module](AlgebraicGroups/Algebra/HopfAlgebra/Ideal.lean),
+  [proper augmentation example](AlgebraicGroupsTest/Algebra/HopfAlgebra/Ideal.lean).
 
 ### Matrix groups and group schemes
 
@@ -305,6 +468,10 @@ maintained project libraries; it does not claim to formalize an entire source.
   closed-section theorem. By Mathlib's postcomposition criterion, every
   over-map from such a group object to any scheme over the same base is separated;
   the target need not be a group object.
+  `isSeparated_of_grpObj_of_subsingleton` includes the empty base, while
+  `isSeparated_of_grpObj` is the field specialization; neither assumes
+  reducedness. The additive-group clients distinguish zero and one points
+  over every field and include arbitrary over-maps and the empty-base unit group.
   [Module](AlgebraicGroups/GroupScheme/Separated.lean),
   [additive-group and empty-base examples](AlgebraicGroupsTest/Additive.lean).
 - **Separated morphisms and kernel units.** For any scheme `S`, a monoid
@@ -330,6 +497,13 @@ maintained project libraries; it does not claim to formalize an entire source.
   case.
   [Module](AlgebraicGroups/GroupObject/KernelTorsor.lean),
   [permutation and full-transformation-monoid example](AlgebraicGroupsTest/SplitKernelSemidirect.lean).
+  The chosen-lift map is `GrpObj.isPullback_kernel_mulRight`.
+  The [split-kernel clients](AlgebraicGroupsTest/SplitKernelSemidirect.lean)
+  distinguish right from left translation using noncommuting permutations.
+  Postcomposing the same projection with the canonical map to the full
+  transformation monoid `Function.End (Fin 3)` retains the original kernel,
+  inclusion and chosen point; the constant-zero transformation is not a unit.
+
 - **Scalar extension of endomorphisms and automorphisms.** For an arbitrary
   module over a commutative ring, every map of commutative coefficient algebras
   induces maps on scalar-extended endomorphisms and invertible endomorphisms,
@@ -494,6 +668,11 @@ rev = "main"
 GitHub `main` contains reviewed releases; Lake records the resolved commit in
 `lake-manifest.json`. Use a commit from that history to pin a particular release.
 Import `AlgebraicGroups` or a focused module linked above. For example:
+
+```lean
+import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
+#check HopfAlgebra.antipode_involutive
+```
 
 ```lean
 import AlgebraicGroups.GroupScheme.RootsOfUnity

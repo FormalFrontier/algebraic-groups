@@ -124,7 +124,7 @@ lemma Scheme.reduction_map_comp_subschemeι {X Y : Scheme.{u}} (f : X ⟶ Y) :
 lemma Scheme.reductionι_app (X : Scheme.{u}) :
     Scheme.reductionι.app X = X.nilradical.subschemeι := rfl
 
-@[simp, reassoc]
+@[reassoc]
 lemma Scheme.reduction_map_comp_reductionι_app {X Y : Scheme.{u}} (f : X ⟶ Y) :
     Scheme.reduction.map f ≫ Scheme.reductionι.app Y =
       Scheme.reductionι.app X ≫ f :=

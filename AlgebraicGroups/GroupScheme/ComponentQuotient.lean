@@ -54,6 +54,10 @@ variable [ConnectedSpace ((Scheme.identityComponentOver (Over.mk f) ⊗
 variable [GeometricallyConnected (Scheme.identityComponentOver (Over.mk f)).hom]
 variable [LocallyOfFiniteType f] [QuasiCompact f]
 
+/-- A finite enumeration of the rational component group of a quasi-compact group
+scheme locally of finite type over an algebraically closed field. The associated
+finite constant group scheme represents the scheme-theoretic identity-component
+fppf quotient. -/
 noncomputable local instance : Fintype (rationalComponentGroup f) :=
   Fintype.ofFinite _
 

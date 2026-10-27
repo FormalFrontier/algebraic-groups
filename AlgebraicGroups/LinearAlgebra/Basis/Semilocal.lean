@@ -272,7 +272,6 @@ lemma update_apply [DecidableEq ι] (b : Basis ι A M) (i : ι) (x : M)
     update b i x hx j = Function.update b i x j := by
   apply Basis.mk_apply
 
-@[simp]
 lemma update_same [DecidableEq ι] (b : Basis ι A M) (i : ι) (x : M)
     (hx : IsUnit (b.repr x i)) : update b i x hx i = x := by
   simp

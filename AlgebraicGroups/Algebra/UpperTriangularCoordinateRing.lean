@@ -62,11 +62,18 @@ def quotient : GeneralLinearCoordinateRing.CoordinateRing K ι →ₐ[K] Coordin
 theorem relation_mem (i j : ι) : relation K ι i j ∈ ideal K ι :=
   Ideal.subset_span ⟨(i, j), rfl⟩
 
-@[simp] theorem quotient_lower (i j : ι) (h : j < i) :
-    quotient K ι (matrix K ι i j) = 0 := by
+/-- Below-diagonal polynomial coordinates vanish after localization and quotienting. -/
+@[simp] theorem quotient_algebraMap_X (i j : ι) (h : j < i) :
+    quotient K ι
+      (algebraMap (PolynomialRing K ι) (GeneralLinearCoordinateRing.CoordinateRing K ι)
+        (MvPolynomial.X (i, j))) = 0 := by
   have hz : quotient K ι (relation K ι i j) = 0 :=
     Ideal.Quotient.eq_zero_iff_mem.mpr (relation_mem K ι i j)
   simpa [relation, h] using hz
+
+theorem quotient_lower (i j : ι) (h : j < i) :
+    quotient K ι (matrix K ι i j) = 0 := by
+  simpa only [matrix_apply] using quotient_algebraMap_X K ι i j h
 
 /-- The universal GL unit remains a unit in the quotient and is upper triangular. -/
 def universal : Matrix.UpperTriangularGroup ι (CoordinateRing K ι) :=

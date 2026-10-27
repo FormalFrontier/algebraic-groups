@@ -47,7 +47,11 @@ variable (K : Type) [CommRing K] (n r : ℕ)
 
 namespace UnitriangularStageNormality
 
+/-- The coordinate `K`-algebra of the ambient upper unitriangular group on `Fin n`,
+the first tensor factor in `productRing`. -/
 abbrev ambientRing := UnitriangularCoordinateRing.CoordinateRing K (Fin n)
+/-- The coordinate `K`-algebra of the closed `r`-th superdiagonal stage of the
+upper unitriangular group, the second tensor factor in `productRing`. -/
 abbrev stageRing := UnitriangularStageCoordinateRing.CoordinateRing K n r
 
 /-- The algebra of functions on the affine product of the ambient group and a stage. -/

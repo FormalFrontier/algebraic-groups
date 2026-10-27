@@ -61,11 +61,18 @@ def quotient : GeneralLinearCoordinateRing.CoordinateRing K ι →ₐ[K] Coordin
 theorem relation_mem (i j : ι) : relation K ι i j ∈ ideal K ι :=
   Ideal.subset_span ⟨(i, j), rfl⟩
 
-@[simp] theorem quotient_offDiagonal (i j : ι) (h : i ≠ j) :
-    quotient K ι (matrix K ι i j) = 0 := by
+/-- Off-diagonal polynomial coordinates vanish after localization and quotienting. -/
+@[simp] theorem quotient_algebraMap_X (i j : ι) (h : i ≠ j) :
+    quotient K ι
+      (algebraMap (PolynomialRing K ι) (GeneralLinearCoordinateRing.CoordinateRing K ι)
+        (MvPolynomial.X (i, j))) = 0 := by
   have hz : quotient K ι (relation K ι i j) = 0 :=
     Ideal.Quotient.eq_zero_iff_mem.mpr (relation_mem K ι i j)
   simpa [relation, h] using hz
+
+theorem quotient_offDiagonal (i j : ι) (h : i ≠ j) :
+    quotient K ι (matrix K ι i j) = 0 := by
+  simpa only [matrix_apply] using quotient_algebraMap_X K ι i j h
 
 /-- The universal invertible diagonal matrix in the quotient coordinate ring. -/
 def universal : Matrix.DiagonalGroup ι (CoordinateRing K ι) :=

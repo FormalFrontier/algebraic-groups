@@ -7,12 +7,19 @@ module
 public import AlgebraicGroups.GroupScheme.UnitriangularStageProjectionBridge
 public import Mathlib.Data.ZMod.Basic
 
+/-!
+# Coordinates and sections of unitriangular stage projections
+
+Examples for the coordinate maps, their affine-space realizations and the sections
+onto products of additive groups, including empty-index and higher-superdiagonal
+boundary cases over the integers and the zero ring.
+-/
+
 @[expose] public section
 
 noncomputable section
 
 open CategoryTheory AlgebraicGeometry UnitriangularStageCoordinateRing
-open scoped Classical
 
 variable (K : Type) [CommRing K] (n r : ℕ) (hr : 1 ≤ r)
 

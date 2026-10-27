@@ -207,7 +207,7 @@ theorem unitriangularStageCoordinateMap_underlying_spec (hr : 1 ≤ r) :
           (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom =
       (unitriangularStageUnderlyingSpecIso K n r).hom ≫
         stageProductSpecRename K n r hr := by
-  apply (additiveGroupAffineProductFan_isLimit K
+  apply (additiveGroupAffineProductFanIsLimit K
     (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom_ext
   intro ⟨ij⟩
   exact unitriangularStage_projection_triangle K n r hr ij
@@ -389,7 +389,7 @@ theorem unitriangularStageCoordinateSectionOver_preimage (hr : 1 ≤ r)
 /-- The actual underlying section preserves each current superdiagonal
 coordinate after identifying the real group product with its polynomial
 spectrum. -/
-@[simp] theorem unitriangularStageCoordinateSectionOver_coordinate (hr : 1 ≤ r)
+@[simp↓] theorem unitriangularStageCoordinateSectionOver_coordinate (hr : 1 ≤ r)
     (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
     Spec.preimage
       (((additiveGroupProductUnderlyingSpecIso K

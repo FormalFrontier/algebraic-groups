@@ -490,4 +490,21 @@ theorem vectorGroupBasisMap_changeBasis_comp
         vectorGroupBasisMap K V V b d LinearMap.id := by
   simpa using (vectorGroupBasisMap_comp K V V b c V d LinearMap.id LinearMap.id).symm
 
+/-- Limit data for the underlying cone of the finite basis-coordinate product. -/
+@[expose] abbrev vectorGroupBasisFanForgetIsLimit {i : Type u} [Finite i]
+    (b : Module.Basis i K V) :
+    Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
+      (vectorGroupBasisFan K V b)) :=
+  vectorGroupBasisFan_forget_isLimit K V b
+
+/-- Limit data for a vector group's finite basis-coordinate product. -/
+abbrev vectorGroupBasisFanIsLimit {i : Type u} [Finite i]
+    (b : Module.Basis i K V) : Limits.IsLimit (vectorGroupBasisFan K V b) :=
+  vectorGroupBasisFan_isLimit K V b
+
+attribute [deprecated vectorGroupBasisFanForgetIsLimit (since := "2026-10-26")]
+  vectorGroupBasisFan_forget_isLimit
+attribute [deprecated vectorGroupBasisFanIsLimit (since := "2026-10-26")]
+  vectorGroupBasisFan_isLimit
+
 end AlgebraicGeometry

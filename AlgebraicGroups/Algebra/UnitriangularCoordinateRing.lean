@@ -336,7 +336,19 @@ def polynomialQuotientToCoordinateRing :
       exact RingHom.mem_ker.mpr (polynomialToCoordinateRing_relation K ι i j)
     exact RingHom.mem_ker.mp (h hx))
 
-@[simp] theorem localizationToPolynomialQuotient_variable (i j : ι) :
+/-- The localization map extends the canonical polynomial quotient map. -/
+@[simp] theorem localizationToPolynomialQuotient_algebraMap
+    (p : PolynomialRing K ι) :
+    localizationToPolynomialQuotient K ι
+      (algebraMap (PolynomialRing K ι)
+        (GeneralLinearCoordinateRing.CoordinateRing K ι) p) =
+      polynomialQuotient K ι p := by
+  simp only [localizationToPolynomialQuotient,
+    IsLocalization.Away.liftAlgHom_apply, IsLocalization.Away.lift_eq,
+    AlgHom.toRingHom_eq_coe]
+  rfl
+
+theorem localizationToPolynomialQuotient_variable (i j : ι) :
     localizationToPolynomialQuotient K ι (matrix K ι i j) =
       polynomialQuotient K ι (MvPolynomial.X (i, j)) := by
   simp only [matrix_apply, localizationToPolynomialQuotient,
@@ -431,16 +443,24 @@ all-entry polynomial quotient. -/
 def coordinatePolynomialEquiv : CoordinateRing K ι ≃ₐ[K] PolynomialCoordinateRing K ι :=
   (polynomialEquiv K ι).symm
 
+/-- The coordinate equivalence commutes with the canonical quotient map. -/
+@[simp] theorem coordinatePolynomialEquiv_quotient
+    (x : GeneralLinearCoordinateRing.CoordinateRing K ι) :
+    coordinatePolynomialEquiv K ι (quotient K ι x) =
+      localizationToPolynomialQuotient K ι x := by
+  exact DFunLike.congr_fun
+    (coordinateRingToPolynomialQuotient_comp_quotient K ι) x
+
 @[simp] theorem polynomialEquiv_variable (i j : ι) :
     polynomialEquiv K ι (polynomialQuotient K ι (MvPolynomial.X (i, j))) =
       quotient K ι (matrix K ι i j) :=
   polynomialToCoordinateRing_variable K ι i j
 
-@[simp] theorem polynomialEquiv_symm_detInverse :
+theorem polynomialEquiv_symm_detInverse :
     (polynomialEquiv K ι).symm (quotient K ι (detInverse K ι)) = 1 := by
   rw [quotient_detInverse, map_one]
 
-@[simp] theorem coordinatePolynomialEquiv_entry (i j : ι) :
+theorem coordinatePolynomialEquiv_entry (i j : ι) :
     coordinatePolynomialEquiv K ι (quotient K ι (matrix K ι i j)) =
       polynomialQuotient K ι (MvPolynomial.X (i, j)) := by
   apply (polynomialEquiv K ι).injective
@@ -448,7 +468,7 @@ def coordinatePolynomialEquiv : CoordinateRing K ι ≃ₐ[K] PolynomialCoordina
     ((polynomialEquiv K ι).symm (quotient K ι (matrix K ι i j))) = _
   rw [AlgEquiv.apply_symm_apply, polynomialEquiv_variable]
 
-@[simp] theorem coordinatePolynomialEquiv_detInverse :
+theorem coordinatePolynomialEquiv_detInverse :
     coordinatePolynomialEquiv K ι (quotient K ι (detInverse K ι)) = 1 :=
   polynomialEquiv_symm_detInverse K ι
 

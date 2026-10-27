@@ -57,11 +57,15 @@ namespace AlgebraicGeometry
 
 variable {K : Type u} [Field K]
 
+/-- The Cartesian monoidal structure on schemes locally of finite type over `Spec K`, obtained
+from finite products. -/
 noncomputable local instance commutativeLftOverCartesianMonoidal :
     CartesianMonoidalCategory
       (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))) :=
   .ofHasFiniteProducts
 
+/-- The braiding induced by the Cartesian monoidal structure on schemes locally of finite type
+over `Spec K`. -/
 noncomputable local instance commutativeLftOverBraided :
     BraidedCategory
       (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))) :=

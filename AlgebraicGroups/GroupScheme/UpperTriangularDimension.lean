@@ -88,8 +88,8 @@ def localizedPolynomialEquiv :
     (MvPolynomial.localizedCoordinateQuotientEquiv K (retainedIndices ι)
       (GeneralLinearCoordinateRing.determinant K ι))
 
-/-- A native retained GL entry maps to its localized polynomial variable. -/
-@[simp] theorem localizedPolynomialEquiv_entry (i j : ι) (hji : ¬ j < i) :
+/-- A retained GL matrix entry maps to its localized polynomial variable. -/
+theorem localizedPolynomialEquiv_entry (i j : ι) (hji : ¬ j < i) :
     localizedPolynomialEquiv K ι
       (quotient K ι (GeneralLinearCoordinateRing.matrix K ι i j)) =
     algebraMap (MvPolynomial (retainedIndices ι) K)
@@ -102,7 +102,20 @@ def localizedPolynomialEquiv :
     (GeneralLinearCoordinateRing.determinant K ι) (i, j)
     (by simpa [retainedIndices] using hji)
 
-/-- Conversely, a localized retained variable maps to the actual native entry. -/
+/-- A retained polynomial generator maps to its localized polynomial variable. -/
+@[simp] theorem localizedPolynomialEquiv_quotient_algebraMap_X (i j : ι) (hji : ¬ j < i) :
+    localizedPolynomialEquiv K ι
+      (quotient K ι
+        (algebraMap (GeneralLinearCoordinateRing.PolynomialRing K ι)
+          (GeneralLinearCoordinateRing.CoordinateRing K ι) (MvPolynomial.X (i, j)))) =
+    algebraMap (MvPolynomial (retainedIndices ι) K)
+      (Localization.Away (MvPolynomial.eraseCoordinates K (retainedIndices ι)
+        (GeneralLinearCoordinateRing.determinant K ι)))
+      (MvPolynomial.X ⟨(i, j), by simpa [retainedIndices] using hji⟩) := by
+  simpa only [GeneralLinearCoordinateRing.matrix_apply] using
+    localizedPolynomialEquiv_entry K ι i j hji
+
+/-- Conversely, a localized retained variable maps to the corresponding quotient matrix entry. -/
 @[simp] theorem localizedPolynomialEquiv_symm_entry (i j : ι) (hji : ¬ j < i) :
     (localizedPolynomialEquiv K ι).symm
       (algebraMap (MvPolynomial (retainedIndices ι) K)

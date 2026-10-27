@@ -141,6 +141,8 @@ lemma Scheme.reductionOverInv_comp_ι (G : Over S) [GrpObj G] :
 Cartesian square of the reduction are reduced. Milne, *Algebraic Groups*, Corollary 1.39
 gives the perfect-field algebraic-group case; no preservation of self-products by reduction
 is assumed here. -/
+-- The registered instance name is part of the existing API.
+@[nolint defsWithUnderscore]
 noncomputable instance Scheme.reductionOver_grpObj (G : Over S) [GrpObj G] [IsReduced S]
     [IsReduced ((Scheme.reductionOver G ⊗ Scheme.reductionOver G).left)] :
     GrpObj (Scheme.reductionOver G) := by
@@ -204,6 +206,12 @@ noncomputable instance Scheme.reductionOver_grpObj (G : Over S) [GrpObj G] [IsRe
         change (lift (𝟙 _) inv ≫ mul) ≫ i = (toUnit _ ≫ one) ≫ i
         rw [Category.assoc, mul_i, ← Category.assoc, lift_map]
         simp [inv_i, one_i] }
+
+@[inherit_doc Scheme.reductionOver_grpObj]
+noncomputable abbrev Scheme.reductionOverGrpObj := @Scheme.reductionOver_grpObj
+
+attribute [deprecated Scheme.reductionOverGrpObj (since := "2026-10-26")]
+  Scheme.reductionOver_grpObj
 
 /-- The canonical inclusion from the reduction of a group scheme is a
 monoid-object homomorphism. -/

@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.Quotient
+public import AlgebraicGroups.Algebra.Coalgebra.Range
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.LinearAlgebra.Basis.VectorSpace
@@ -256,7 +257,7 @@ private theorem flat_quotient_ker_mapDomainBialgHom_double_fst :
     Module.Flat ℤ (AddMonoidAlgebra ℤ (ℤ × ℤ) ⧸
       LinearMap.ker (mapDomainBialgHom ℤ doubleFst :
         AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ)) := by
-  letI : Module.Free ℤ (AddMonoidAlgebra ℤ ℤ) := Module.Free.of_basis (basis ℤ ℤ)
+  let : Module.Free ℤ (AddMonoidAlgebra ℤ ℤ) := Module.Free.of_basis (basis ℤ ℤ)
   let p : AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ :=
     mapDomainBialgHom ℤ (AddMonoidHom.fst ℤ ℤ)
   let j : AddMonoidAlgebra ℤ ℤ →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ :=
@@ -294,8 +295,8 @@ private theorem mapDomainBialgHom_double_fst_kernel :
     (LinearMap.ker (mapDomainBialgHom ℤ doubleFst :
       AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ)) ≠ ⊤ ∧
     ¬ Function.Surjective (mapDomainBialgHom ℤ doubleFst) := by
-  letI : Module.Free ℤ (AddMonoidAlgebra ℤ ℤ) := Module.Free.of_basis (basis ℤ ℤ)
-  letI := flat_quotient_ker_mapDomainBialgHom_double_fst
+  let : Module.Free ℤ (AddMonoidAlgebra ℤ ℤ) := Module.Free.of_basis (basis ℤ ℤ)
+  let := flat_quotient_ker_mapDomainBialgHom_double_fst
   refine ⟨CoalgHomClass.ker_isCoideal_of_flat_quotient
     (mapDomainBialgHom ℤ doubleFst), ?_, ?_,
     mapDomainBialgHom_not_surjective doubleFst (fun n => double_ne_one n.1)⟩
@@ -309,6 +310,42 @@ private theorem mapDomainBialgHom_double_fst_kernel :
     have hz : mapDomainBialgHom ℤ doubleFst (single (0, 0) 1) = 0 := hx
     have hcoeff := congrArg (fun x : AddMonoidAlgebra ℤ ℤ => x.coeff 0) hz
     norm_num [mapDomainBialgHom_single, doubleFst, double] at hcoeff
+
+/-- The selected range counit for the doubled first-coordinate map agrees with
+its source counit on every range representative. -/
+private theorem mapDomainBialgHom_double_fst_rangeCoalgebraStruct_counit
+    (x : AddMonoidAlgebra ℤ (ℤ × ℤ)) :
+    let l : AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ :=
+      mapDomainBialgHom ℤ
+        ((AddMonoidHom.id ℤ + AddMonoidHom.id ℤ).comp (AddMonoidHom.fst ℤ ℤ))
+    @CoalgebraStruct.counit ℤ (LinearMap.range l) _ _ _
+        (LinearMap.rangeCoalgebraStruct l
+          (hker := mapDomainBialgHom_double_fst_kernel.1)) (l.rangeRestrict x) =
+      Coalgebra.counit (R := ℤ) x := by
+  let : (LinearMap.ker (mapDomainBialgHom ℤ doubleFst :
+      AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ)).IsCoideal :=
+    mapDomainBialgHom_double_fst_kernel.1
+  exact LinearMap.rangeCoalgebraStruct_counit_apply_rangeRestrict
+    (mapDomainBialgHom ℤ doubleFst :
+      AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ) x
+
+/-- The selected range comultiplication for the doubled first-coordinate map is
+computed by the tensor square of its ordinary range restriction. -/
+private theorem mapDomainBialgHom_double_fst_rangeCoalgebraStruct_comul
+    (x : AddMonoidAlgebra ℤ (ℤ × ℤ)) :
+    let l : AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ :=
+      mapDomainBialgHom ℤ
+        ((AddMonoidHom.id ℤ + AddMonoidHom.id ℤ).comp (AddMonoidHom.fst ℤ ℤ))
+    @CoalgebraStruct.comul ℤ (LinearMap.range l) _ _ _
+        (LinearMap.rangeCoalgebraStruct l
+          (hker := mapDomainBialgHom_double_fst_kernel.1)) (l.rangeRestrict x) =
+      TensorProduct.map l.rangeRestrict l.rangeRestrict (Coalgebra.comul (R := ℤ) x) := by
+  let : (LinearMap.ker (mapDomainBialgHom ℤ doubleFst :
+      AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ)).IsCoideal :=
+    mapDomainBialgHom_double_fst_kernel.1
+  exact LinearMap.rangeCoalgebraStruct_comul_apply_rangeRestrict
+    (mapDomainBialgHom ℤ doubleFst :
+      AddMonoidAlgebra ℤ (ℤ × ℤ) →ₗ[ℤ] AddMonoidAlgebra ℤ ℤ) x
 
 /-- The flat-quotient kernel criterion includes the identity map over a field. -/
 private theorem ker_id_rat_isCoideal :

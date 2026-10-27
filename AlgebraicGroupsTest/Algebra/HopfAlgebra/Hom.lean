@@ -20,7 +20,9 @@ an infinite index type and a noncommutative group algebra; the trivial
 endomorphism is not injective. The scalar identity also covers the zero ring.
 
 Mathlib's group-algebra Hopf structures and `mapDomainBialgHom` provide the
-structures and morphisms used here.
+structures and morphisms used here. Ordinary augmentation is also refined using
+comultiplication preservation, recovering the same bundled map and the same
+noninjective finite-sum collapse formulas.
 -/
 
 @[expose] public section
@@ -99,5 +101,96 @@ theorem permutationLattice_algebra_noncommutative :
   have hn : ((Equiv.swap (0 : Fin 3) 1 * Equiv.swap (1 : Fin 3) 2) (0 : Fin 3)) ≠
       ((Equiv.swap (1 : Fin 3) 2 * Equiv.swap (0 : Fin 3) 1) (0 : Fin 3)) := by decide
   exact hn he
+
+/-- Augmentation of a group algebra over `ℕ` preserves comultiplication. -/
+theorem nat_augmentation_map_comp_comul {G : Type u} [Group G] :
+    (TensorProduct.map
+      (Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ G)).toLinearMap
+      (Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ G)).toLinearMap) ∘ₗ
+        (Coalgebra.comul (R := ℕ) (A := MonoidAlgebra ℕ G)) =
+      (Coalgebra.comul (R := ℕ) (A := ℕ)) ∘ₗ
+        (Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ G)).toLinearMap := by
+  exact CoalgHomClass.map_comp_comul
+    (Bialgebra.counitBialgHom ℕ (MonoidAlgebra ℕ G))
+
+/-- Automatic counit preservation for augmentation of the infinite, noncommutative
+`ℕ`-group algebra on `S₃ × ℤ`. -/
+theorem permutationLattice_augmentation_counit_comp :
+    (Coalgebra.counit (R := ℕ) (A := ℕ)) ∘ₗ
+        (Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ PermutationLattice)).toLinearMap =
+      Coalgebra.counit (R := ℕ) (A := MonoidAlgebra ℕ PermutationLattice) := by
+  exact AlgHom.counit_comp_of_map_comp_comul
+    (Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ PermutationLattice))
+    (nat_augmentation_map_comp_comul (G := PermutationLattice))
+
+/-- For a nontrivial group, distinct basis terms have the same augmentation `1`. -/
+theorem nat_augmentation_noninjective_witness {G : Type u} [Group G] [Nontrivial G] :
+    ∃ g : G, g ≠ 1 ∧
+      (MonoidAlgebra.single g 1 : MonoidAlgebra ℕ G) ≠ MonoidAlgebra.single 1 1 ∧
+      Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ G) (MonoidAlgebra.single g 1) = 1 ∧
+      Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ G) (MonoidAlgebra.single 1 1) = 1 := by
+  obtain ⟨g, hg⟩ := exists_ne (1 : G)
+  refine ⟨g, hg, ?_, ?_, ?_⟩
+  · intro h
+    exact hg (MonoidAlgebra.single_left_injective (by decide : (1 : ℕ) ≠ 0) h)
+  · simp
+  · simp
+
+/-- Evaluation at zero on the diagonal bialgebra `ℕ[ℕ]` gives an algebra map
+preserving comultiplication but not the counit. -/
+theorem nat_addMonoidAlgebra_exists_map_comp_comul_not_counit :
+    ∃ f : AddMonoidAlgebra ℕ ℕ →ₐ[ℕ] ℕ,
+      ((TensorProduct.map f.toLinearMap f.toLinearMap) ∘ₗ
+        (Coalgebra.comul (R := ℕ) (A := AddMonoidAlgebra ℕ ℕ)) =
+          (Coalgebra.comul (R := ℕ) (A := ℕ)) ∘ₗ f.toLinearMap) ∧
+      ¬ ((Coalgebra.counit (R := ℕ) (A := ℕ)) ∘ₗ f.toLinearMap =
+        Coalgebra.counit (R := ℕ) (A := AddMonoidAlgebra ℕ ℕ)) := by
+  let f : AddMonoidAlgebra ℕ ℕ →ₐ[ℕ] ℕ :=
+    AddMonoidAlgebra.lift ℕ ℕ ℕ (powersHom ℕ 0)
+  refine ⟨f, ?_, ?_⟩
+  · apply AddMonoidAlgebra.lhom_ext'
+    intro n
+    apply LinearMap.ext
+    intro a
+    cases n <;> simp [f, pow_succ]
+  · intro h
+    have he := LinearMap.congr_fun h (AddMonoidAlgebra.single 1 1)
+    have hz : (0 : ℕ) = 1 := by simp [f] at he
+    exact Nat.zero_ne_one hz
+
+/-- Augmentation of the infinite noncommutative group algebra, obtained by
+refining its ordinary algebra map using comultiplication preservation. -/
+def augmentation : MonoidAlgebra ℕ PermutationLattice →ₐc[ℕ] ℕ :=
+  (Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ PermutationLattice)).toBialgHomOfComul
+    nat_augmentation_map_comp_comul
+
+/-- The refined augmentation has exactly the original underlying algebra map. -/
+@[simp]
+theorem augmentation_toAlgHom :
+    augmentation.toAlgHom = Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ PermutationLattice) :=
+  AlgHom.toBialgHomOfComul_toAlgHom _ _
+
+/-- Refining ordinary augmentation recovers the same bundled counit map. -/
+theorem augmentation_eq_counitBialgHom :
+    augmentation = Bialgebra.counitBialgHom ℕ (MonoidAlgebra ℕ PermutationLattice) :=
+  BialgHom.toAlgHom_toBialgHomOfComul
+    (Bialgebra.counitBialgHom ℕ (MonoidAlgebra ℕ PermutationLattice))
+
+/-- Collapse factors through the refined augmentation on every finite sum. -/
+theorem collapse_eq_single_augmentation (x : MonoidAlgebra ℕ PermutationLattice) :
+    collapse x = MonoidAlgebra.single 1 (augmentation x) := by
+  simpa only [augmentation_eq_counitBialgHom, Bialgebra.counitBialgHom_apply] using
+    collapse_eq_augmentation x
+
+/-- The same distinct basis terms remain a noninjectivity witness after refinement. -/
+theorem augmentation_not_injective : ¬ Function.Injective augmentation := by
+  obtain ⟨g, _, hne, hg, h1⟩ :=
+    nat_augmentation_noninjective_witness (G := PermutationLattice)
+  intro h
+  have hval (x : MonoidAlgebra ℕ PermutationLattice) :
+      augmentation x = Bialgebra.counitAlgHom ℕ (MonoidAlgebra ℕ PermutationLattice) x :=
+    DFunLike.congr_fun augmentation_toAlgHom x
+  exact hne (h (by rw [hval, hval, hg, h1]))
+
 
 end HopfAlgebraExamples

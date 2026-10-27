@@ -261,7 +261,7 @@ private def diagonalUnderlyingProductIso (index : Type u) [Fintype index]
     [DecidableEq index] :
     diagonalGroupUnderlyingScheme K index ≅
       (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K) :=
-  (diagonalGroupProductFan_forget_isLimit K index).conePointUniqueUpToIso
+  (diagonalGroupProductFanForgetIsLimit K index).conePointUniqueUpToIso
     (productIsProduct fun _ : index => multiplicativeGroupUnderlyingScheme K)
 
 /-- The finite diagonal structure morphism is smooth over any commutative base,

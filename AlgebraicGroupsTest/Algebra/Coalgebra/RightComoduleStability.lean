@@ -61,10 +61,7 @@ private theorem q_e (i j : ℤ) : q i (e j) = if i = j then 1 else 0 := by
   by_cases h : i = j
   · subst j
     simp
-  · have hji : Multiplicative.ofAdd j ≠ Multiplicative.ofAdd i := by
-      intro hij
-      exact h (congrArg Multiplicative.toAdd hij).symm
-    simp [Finsupp.single_apply, h, hji]
+  · simp [h]
 
 private theorem coaction_e (i : ℤ) :
     regularComodule.coaction (e i) = e i ⊗ₜ[ℕ] e i := by
@@ -81,17 +78,17 @@ private theorem sum_mem_V : e 0 + e 1 ∈ V :=
 private theorem e_zero_ne_zero : e 0 ≠ 0 := by
   intro h
   have hq := congrArg (q 0) h
-  simpa [q_e] using hq
+  simp [q_e] at hq
 
 private theorem sum_ne_zero : e 0 + e 1 ≠ 0 := by
   intro h
   have hq := congrArg (q 0) h
-  simpa [map_add, q_e] using hq
+  simp [map_add, q_e] at hq
 
 private theorem e_zero_ne_one : e 0 ≠ e 1 := by
   intro h
   have hq := congrArg (q 0) h
-  simpa [q_e] using hq
+  simp [q_e] at hq
 
 private theorem q_one_zero_on_U {x : C} (hx : x ∈ U) : q 1 x = 0 := by
   obtain ⟨n, rfl⟩ := Submodule.mem_span_singleton.mp hx
@@ -117,12 +114,12 @@ private theorem U_ne_top : U ≠ ⊤ := by
   intro h
   have hx : e 1 ∈ U := h.symm ▸ (Submodule.mem_top : e 1 ∈ (⊤ : Submodule ℕ C))
   have hq := q_one_zero_on_U hx
-  simpa [q_e] using hq
+  simp [q_e] at hq
 
 private theorem e_zero_not_mem_V : e 0 ∉ V := by
   intro hx
   have hq := q_zero_eq_one_on_V hx
-  simpa [q_e] using hq
+  simp [q_e] at hq
 
 private theorem V_ne_bot : V ≠ ⊥ := by
   intro h
@@ -242,22 +239,22 @@ its source algebra, full coalgebra, module and comodule are then fixed to the
 original model, before any specialization of the target to `C`. -/
 private def originalTargetPredicate (W : Submodule ℕ C)
     (A : Type uA) [CommSemiring A] (β : Algebra ℕ A) : Prop :=
-  (fun (R₀ C₀ M₀ : Type) [instR₀ : CommSemiring R₀] [instC₀ : CommSemiring C₀]
-      [sourceAlgebra : Algebra R₀ C₀] [sourceCoalgebra : Coalgebra R₀ C₀]
-      [instM₀ : AddCommMonoid M₀] [sourceModule : Module R₀ M₀]
+  (fun (R₀ C₀ M₀ : Type) [_instR₀ : CommSemiring R₀] [_instC₀ : CommSemiring C₀]
+      [_sourceAlgebra : Algebra R₀ C₀] [_sourceCoalgebra : Coalgebra R₀ C₀]
+      [_instM₀ : AddCommMonoid M₀] [_sourceModule : Module R₀ M₀]
       (X : Coalgebra.RightComodule R₀ C₀ M₀) (W₀ : Submodule R₀ M₀)
-      (B : Type uA) [instB : CommSemiring B] [targetAlgebra : Algebra R₀ B] =>
+      (B : Type uA) [_instB : CommSemiring B] [_targetAlgebra : Algebra R₀ B] =>
     ∀ (α : C₀ →ₐ[R₀] B), ∀ z ∈ W₀.baseChange B,
       LinearMap.liftBaseChange B
         ((TensorProduct.map (AlgHom.toLinearMap α)
             (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
           ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction)) z
         ∈ W₀.baseChange B)
-    ℕ C C (instR₀ := inferInstance) (instC₀ := inferInstance)
-      (sourceAlgebra := (MonoidAlgebra.algebra : Algebra ℕ C))
-      (sourceCoalgebra := (inferInstance : Coalgebra ℕ C))
-      (instM₀ := inferInstance) (sourceModule := (inferInstance : Module ℕ C))
-      regularComodule W A (instB := inferInstance) (targetAlgebra := β)
+    ℕ C C (_instR₀ := inferInstance) (_instC₀ := inferInstance)
+      (_sourceAlgebra := (MonoidAlgebra.algebra : Algebra ℕ C))
+      (_sourceCoalgebra := (inferInstance : Coalgebra ℕ C))
+      (_instM₀ := inferInstance) (_sourceModule := (inferInstance : Module ℕ C))
+      regularComodule W A (_instB := inferInstance) (_targetAlgebra := β)
 
 /-- Unfolding the original predicate exposes precisely the stock range of the
 base-changed subtype map and the stock lifted evaluation. In the abstract
@@ -266,22 +263,22 @@ factor and the source coalgebra are independent of `β`. -/
 private theorem originalTargetPredicate_apply (W : Submodule ℕ C)
     (A : Type uA) [CommSemiring A] (β : Algebra ℕ A) :
     originalTargetPredicate W A β =
-    (fun (R₀ C₀ M₀ : Type) [instR₀ : CommSemiring R₀] [instC₀ : CommSemiring C₀]
-        [sourceAlgebra : Algebra R₀ C₀] [sourceCoalgebra : Coalgebra R₀ C₀]
-        [instM₀ : AddCommMonoid M₀] [sourceModule : Module R₀ M₀]
+    (fun (R₀ C₀ M₀ : Type) [_instR₀ : CommSemiring R₀] [_instC₀ : CommSemiring C₀]
+        [_sourceAlgebra : Algebra R₀ C₀] [_sourceCoalgebra : Coalgebra R₀ C₀]
+        [_instM₀ : AddCommMonoid M₀] [_sourceModule : Module R₀ M₀]
         (X : Coalgebra.RightComodule R₀ C₀ M₀) (W₀ : Submodule R₀ M₀)
-        (B : Type uA) [instB : CommSemiring B] [targetAlgebra : Algebra R₀ B] =>
+        (B : Type uA) [_instB : CommSemiring B] [_targetAlgebra : Algebra R₀ B] =>
       ∀ (α : C₀ →ₐ[R₀] B), ∀ z ∈ LinearMap.range (W₀.subtype.baseChange B),
         LinearMap.liftBaseChange B
           ((TensorProduct.map (AlgHom.toLinearMap α)
               (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
             ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction)) z
           ∈ LinearMap.range (W₀.subtype.baseChange B))
-      ℕ C C (instR₀ := inferInstance) (instC₀ := inferInstance)
-        (sourceAlgebra := (MonoidAlgebra.algebra : Algebra ℕ C))
-        (sourceCoalgebra := (inferInstance : Coalgebra ℕ C))
-        (instM₀ := inferInstance) (sourceModule := (inferInstance : Module ℕ C))
-        regularComodule W A (instB := inferInstance) (targetAlgebra := β) := by
+      ℕ C C (_instR₀ := inferInstance) (_instC₀ := inferInstance)
+        (_sourceAlgebra := (MonoidAlgebra.algebra : Algebra ℕ C))
+        (_sourceCoalgebra := (inferInstance : Coalgebra ℕ C))
+        (_instM₀ := inferInstance) (_sourceModule := (inferInstance : Module ℕ C))
+        regularComodule W A (_instB := inferInstance) (_targetAlgebra := β) := by
   rfl
 
 /-- At the canonical target dictionary this is exactly the displayed model

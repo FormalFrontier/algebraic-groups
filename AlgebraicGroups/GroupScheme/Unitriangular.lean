@@ -241,14 +241,14 @@ def unitriangularGroupMulEquivAlgHom :
     exact congrArg WithConv.ofConv
       ((generalLinearGroupMulEquivAlgHom K n R).map_mul s.1 t.1)
 
-@[simp] theorem unitriangularGroupMulEquivAlgHom_entry
+theorem unitriangularGroupMulEquivAlgHom_entry
     (s : Matrix.UnitriangularGroup n R) (i j : n) :
     (unitriangularGroupMulEquivAlgHom K n R s).ofConv
       (quotient K n (matrix K n i j)) = s.1 i j := by
   change (unitriangularFromGL K n R s) (quotient K n (matrix K n i j)) = _
   rw [← AlgHom.comp_apply, unitriangularFromGL_comp_quotient, evaluate_matrix]
 
-@[simp] theorem unitriangularGroupMulEquivAlgHom_detInverse
+theorem unitriangularGroupMulEquivAlgHom_detInverse
     (s : Matrix.UnitriangularGroup n R) :
     (unitriangularGroupMulEquivAlgHom K n R s).ofConv
       (quotient K n (detInverse K n)) = 1 := by

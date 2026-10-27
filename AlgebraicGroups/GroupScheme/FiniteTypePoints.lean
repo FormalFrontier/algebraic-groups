@@ -52,11 +52,15 @@ noncomputable local instance lftPoints_preservesFiniteLimits
       (Presheaf.restrictedULiftYoneda.{0} (finiteAlgSpecOver K)) :=
   lftPointsPreservesFiniteLimits K
 
+/-- The Cartesian monoidal structure on schemes locally of finite type over `K`,
+built from their finite products. -/
 noncomputable local instance lftOverCartesianMonoidal
     (K : Type u) [Field K] :
     CartesianMonoidalCategory (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))) :=
   .ofHasFiniteProducts
 
+/-- The monoidal structure on the functor of points on finitely generated algebras,
+induced by its preservation of finite products. -/
 noncomputable local instance lftPointsMonoidal
     (K : Type u) [Field K] :
     (Presheaf.restrictedULiftYoneda.{0} (finiteAlgSpecOver K)).Monoidal :=

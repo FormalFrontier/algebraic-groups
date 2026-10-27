@@ -135,14 +135,14 @@ private theorem shiftedCoaction_delta_zero_ne :
           ((counit (R := ℕ) (A := Diagonal)).rTensor Diagonal t)) h
       simpa only [hshifted, hregular, hdetect] using ht
     have hc := congrArg (fun d : Diagonal => d.coeff (Multiplicative.ofAdd (-1 : ℤ))) hd
-    simpa [delta] using hc
+    simp [delta] at hc
   · intro h
     have hd : delta (-1) = 0 := by
       have ht := congrArg (fun t : Diagonal ⊗[ℕ] Diagonal =>
         TensorProduct.lid ℕ Diagonal
           ((counit (R := ℕ) (A := Diagonal)).rTensor Diagonal t)) h
       simpa only [hshifted, hdetect, map_zero] using ht
-    simpa [delta] using hd
+    simp [delta] at hd
 
 /-- The canonical colinear pair on a genuinely changed coaction, its second
 transport and inverse recovery, evaluated on the integer-labelled basis. -/

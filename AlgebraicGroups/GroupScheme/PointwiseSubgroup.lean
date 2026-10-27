@@ -64,10 +64,13 @@ abbrev lftPoints :=
 local instance : Limits.PreservesFiniteLimits (lftPoints K) :=
   lftPointsPreservesFiniteLimits K
 
+/-- The Cartesian monoidal structure on schemes locally of finite type over `K`,
+built from their finite products. -/
 local instance : CartesianMonoidalCategory
     (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))) :=
   .ofHasFiniteProducts
 
+/-- The monoidal structure on `lftPoints K` induced by preservation of finite products. -/
 local instance : (lftPoints K).Monoidal :=
   Functor.Monoidal.ofChosenFiniteProducts _
 

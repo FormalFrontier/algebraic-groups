@@ -122,7 +122,7 @@ theorem integral_punit_baseChange_zero :
   · intro h
     exact hzero h.counit_eq_one
   · intro h
-    letI := h
+    let := h
     have h01 : (0 : ℤ) = 1 :=
       FaithfulSMul.algebraMap_injective ℤ PUnit (Subsingleton.elim _ _)
     exact zero_ne_one h01

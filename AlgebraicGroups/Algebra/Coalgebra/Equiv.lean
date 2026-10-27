@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import Mathlib.RingTheory.Coalgebra.Basic
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
 # Coalgebra data along a linear equivalence
@@ -16,7 +16,8 @@ is explicit, so these formulas do not require a coalgebra instance on the source
 
 The data formulas only require a commutative semiring and additive commutative monoids.
 The formulas for `LinearEquiv.coalgebra` use the same data formulas when the target is a
-coalgebra.
+coalgebra. `LinearEquiv.toCoalgEquiv` bundles the equivalence from the pulled-back
+coalgebra data to the given data; neither side needs the coalgebra laws.
 
 For example, a pure-tensor expression in the target gives a pure-tensor expression in
 the source. Under the module hypotheses below, one can write:
@@ -33,6 +34,7 @@ example [Coalgebra R B] (e : A ≃ₗ[R] B) (x : A) (b₁ b₂ : B)
 
 `Mathlib.RingTheory.Coalgebra.Basic` defines both transported structures, including
 coassociativity and the two counitality laws for `LinearEquiv.coalgebra`.
+`Mathlib.RingTheory.Coalgebra.Equiv` supplies coalgebra equivalences and their inverses.
 -/
 
 @[expose] public section
@@ -78,6 +80,35 @@ theorem coalgebraStruct_counit_apply [CoalgebraStruct R B] (e : A ≃ₗ[R] B) (
     @CoalgebraStruct.counit R A _ _ _ (e.coalgebraStruct R) x =
       Coalgebra.counit (R := R) (A := B) (e x) :=
   LinearMap.congr_fun (coalgebraStruct_counit e) x
+
+/-- A linear equivalence identifies its pulled-back coalgebra data with the given data.
+The source structure is exactly `LinearEquiv.coalgebraStruct`; no coalgebra laws are needed. -/
+def toCoalgEquiv [c : CoalgebraStruct R B] (e : A ≃ₗ[R] B) :
+    @CoalgEquiv R _ A B _ _ _ _ (e.coalgebraStruct R) c :=
+  letI : CoalgebraStruct R A := e.coalgebraStruct R
+  { e with
+    counit_comp := rfl
+    map_comp_comul := by
+      simp only [coalgebraStruct_comul, ← LinearMap.comp_assoc,
+        ← TensorProduct.map_comp, LinearEquiv.comp_symm, TensorProduct.map_id,
+        LinearMap.id_comp] }
+
+/-- The coalgebra equivalence of pulled-back data has the original linear equivalence. -/
+@[simp]
+theorem toCoalgEquiv_toLinearEquiv [c : CoalgebraStruct R B] (e : A ≃ₗ[R] B) :
+    @CoalgEquiv.toLinearEquiv R _ A B _ _ _ _ (e.coalgebraStruct R) c
+      (@toCoalgEquiv R A B _ _ _ _ _ c e) = e := rfl
+
+/-- The coalgebra equivalence of pulled-back data acts by the original equivalence. -/
+theorem toCoalgEquiv_apply [c : CoalgebraStruct R B] (e : A ≃ₗ[R] B) (x : A) :
+    (@CoalgEquiv.toLinearEquiv R _ A B _ _ _ _ (e.coalgebraStruct R) c
+      (@toCoalgEquiv R A B _ _ _ _ _ c e)) x = e x := rfl
+
+/-- The inverse coalgebra equivalence acts by the inverse linear equivalence. -/
+theorem toCoalgEquiv_symm_apply [c : CoalgebraStruct R B] (e : A ≃ₗ[R] B) (y : B) :
+    (@CoalgEquiv.toLinearEquiv R _ B A _ _ _ _ c (e.coalgebraStruct R)
+      (@CoalgEquiv.symm R A B _ _ _ _ _ (e.coalgebraStruct R) c
+        (@toCoalgEquiv R A B _ _ _ _ _ c e))) y = e.symm y := rfl
 
 /-- Comultiplication of the transported coalgebra is conjugated by the linear equivalence
 and the tensor product of its inverse. -/

@@ -164,12 +164,20 @@ def diagonalGroupMulEquivAlgHom :
     exact congrArg WithConv.ofConv
       ((generalLinearGroupMulEquivAlgHom K n R).map_mul s.1 t.1)
 
-@[simp] theorem diagonalGroupMulEquivAlgHom_entry
+theorem diagonalGroupMulEquivAlgHom_entry
     (s : Matrix.DiagonalGroup n R) (i j : n) :
     (diagonalGroupMulEquivAlgHom K n R s).ofConv
       (quotient K n (matrix K n i j)) = s.1 i j := by
   change (diagonalFromGL K n R s) (quotient K n (matrix K n i j)) = _
   rw [← AlgHom.comp_apply, diagonalFromGL_comp_quotient, evaluate_matrix]
+
+@[simp] theorem diagonalGroupMulEquivAlgHom_algebraMap_X
+    (s : Matrix.DiagonalGroup n R) (i j : n) :
+    (diagonalGroupMulEquivAlgHom K n R s).ofConv
+      (quotient K n (algebraMap (GeneralLinearCoordinateRing.PolynomialRing K n)
+        (GeneralLinearCoordinateRing.CoordinateRing K n) (MvPolynomial.X (i, j)))) =
+      s.1 i j := by
+  simpa only [matrix_apply] using diagonalGroupMulEquivAlgHom_entry K n R s i j
 
 theorem diagonalGroupMulEquivAlgHom_detInverse
     (s : Matrix.DiagonalGroup n R) :

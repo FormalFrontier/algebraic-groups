@@ -13,7 +13,7 @@ public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 
 /-!
-# Right comodules with proper finite support
+# Right comodules with proper finite support and change of coalgebra
 
 The scalar coalgebra `ℕ` coacts on `ℕ →₀ ZMod 2` by `m ↦ m ⊗ 1`.
 The ambient module is infinite, not module-finite, not projective and not free.
@@ -36,10 +36,18 @@ the subtype coactions are specified directly; finite generation and properness
 follow from the supported submodules. Separate clients apply the finite-containment
 theorem to finite subsets of these comodules.
 
+The regular coalgebra `MonoidAlgebra ℕ ℕ` has an infinite basis over the genuine
+semiring `ℕ`. Its stock counit identifies two distinct nonzero basis points.
+Changing the regular coaction along this counit gives the existing scalar
+coaction, retaining the module factor: each basis point maps to itself tensored
+with one. The changed coaction still separates those points, and the counit
+itself is colinear from the changed regular source to the regular scalar target.
+
 ## References
 
-Mathlib supplies Finsupp, supported submodules and scalar coalgebras. The
-idempotent-ideal coalgebra and split-tensor examples supply the ideal model.
+Mathlib supplies Finsupp, supported submodules, scalar and monoid-algebra
+coalgebras, and the standard monoid-algebra basis. The idempotent-ideal coalgebra
+and split-tensor examples supply the ideal model.
 -/
 
 @[expose] public section
@@ -49,6 +57,7 @@ universe u v w
 open scoped TensorProduct
 
 open Coalgebra (RightComodule)
+
 
 namespace RightComoduleExamples
 
@@ -406,6 +415,75 @@ theorem finite_containment_independent_universes {R : Type u} {C : Type v} {M : 
       ∀ m ∈ U, X.coaction m ∈ LinearMap.range (U.toSubmodule.subtype.rTensor C) := by
   obtain ⟨U, hsU, hfg⟩ := X.exists_fg_subcomodule_of_finite hs
   exact ⟨U, hsU, hfg, U.coaction_mem⟩
+
+
+
+section CounitChange
+
+local notation "C" => MonoidAlgebra ℕ ℕ
+local notation "X" => RightComodule.regular ℕ C
+local notation "ε" => Coalgebra.counitCoalgHom ℕ C
+local notation "e₀" => (MonoidAlgebra.single (0 : ℕ) (1 : ℕ) : C)
+local notation "e₁" => (MonoidAlgebra.single (1 : ℕ) (1 : ℕ) : C)
+
+/-- The standard infinite basis obstructs module-finiteness over the natural semiring. -/
+theorem natural_coalgebra_not_finite : ¬ Module.Finite ℕ C :=
+  Module.not_finite_of_infinite_basis (MonoidAlgebra.basis ℕ ℕ)
+
+/-- The standard counit identifies distinct nonzero basis points, so is not injective. -/
+theorem natural_counit_noninjective :
+    e₀ ≠ 0 ∧ e₁ ≠ 0 ∧ e₀ ≠ e₁ ∧ ε e₀ = 1 ∧ ε e₁ = 1 ∧
+      ¬ Function.Injective ε := by
+  have h0 : e₀ ≠ 0 := by
+    intro h
+    have hc := congrArg (fun a : C ↦ a.coeff 0) h
+    simp at hc
+  have h1 : e₁ ≠ 0 := by
+    intro h
+    have hc := congrArg (fun a : C ↦ a.coeff 1) h
+    simp at hc
+  have hne : e₀ ≠ e₁ := by
+    intro h
+    have hc := congrArg (fun a : C ↦ a.coeff 0) h
+    simp at hc
+  have hc0 : ε e₀ = 1 := by simp
+  have hc1 : ε e₁ = 1 := by simp
+  refine ⟨h0, h1, hne, hc0, hc1, ?_⟩
+  intro hinj
+  exact hne (hinj (hc0.trans hc1.symm))
+
+/-- The definition changes only the coalgebra factor of each diagonal basis tensor. -/
+theorem natural_counit_changed_coaction (i : ℕ) :
+    ((X).mapCoalgebra ε).coaction (MonoidAlgebra.single i 1) =
+      (MonoidAlgebra.single i 1 : C) ⊗ₜ[ℕ] 1 := by
+  rw [RightComodule.mapCoalgebra_counit, RightComodule.scalar_coaction]
+
+/-- Changing the regular coaction along the stock counit gives the stock scalar coaction. -/
+theorem natural_counit_change_eq_scalar :
+    (X).mapCoalgebra ε = RightComodule.scalar ℕ C :=
+  RightComodule.mapCoalgebra_counit X
+
+/-- The counit is colinear from the changed regular source to the regular scalar target. -/
+private theorem natural_counit_colinear :
+    let h : Coalgebra.RightComoduleHom ((X).mapCoalgebra ε) (RightComodule.regular ℕ ℕ) :=
+      Coalgebra.RightComoduleHom.ofCoalgHom ε
+    h.toLinearMap = (ε).toLinearMap ∧ h e₀ = 1 := by
+  exact ⟨Coalgebra.RightComoduleHom.ofCoalgHom_toLinearMap ε, by simp⟩
+
+/-- The module factor survives: counital cancellation still distinguishes the two points. -/
+theorem natural_counit_changed_coaction_separates :
+    ((X).mapCoalgebra ε).coaction e₀ ≠ ((X).mapCoalgebra ε).coaction e₁ := by
+  intro h
+  exact natural_counit_noninjective.2.2.1 (((X).mapCoalgebra ε).coaction_injective h)
+
+end CounitChange
+
+
+/-- The counit-to-scalar identity also connects the existing zero boundary comodules. -/
+theorem zeroCoalgebraComodule_map_counit :
+    zeroCoalgebraComodule.mapCoalgebra (Coalgebra.counitCoalgHom ℕ (Empty →₀ ℕ)) =
+      zeroAmbientComodule :=
+  RightComodule.mapCoalgebra_counit zeroCoalgebraComodule
 
 end RightComoduleExamples
 

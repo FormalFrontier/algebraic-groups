@@ -181,7 +181,6 @@ theorem coalgHom_ext {F H : C →ₗc[R] D} (h : ∀ i, F (b i) = H (b i)) : F =
 variable {E : Type uE} [AddCommMonoid E] [Module R E] [Coalgebra R E]
 
 /-- Evaluation on the basis commutes with postcomposition of coalgebra maps. -/
-@[simp]
 theorem groupLikeCoalgHomEquiv_comp (h : D →ₗc[R] E) (F : C →ₗc[R] D) (i : I) :
     b.groupLikeCoalgHomEquiv hb (h.comp F) i =
       GroupLike.map h (b.groupLikeCoalgHomEquiv hb F i) := by
@@ -304,7 +303,8 @@ theorem spanCoalgebraEquiv_eq_groupLikeCoalgebraEquiv :
 @[simp]
 theorem subtype_comp_spanCoalgebraEquiv :
     (Subcoalgebra.groupLikeSpan K C).subtype.comp
-        (spanCoalgebraEquiv (K := K) (C := C)).toCoalgHom =
+        (spanCoalgebraEquiv (K := K) (C := C) :
+          K[GroupLike K C] →ₗc[K] Subcoalgebra.groupLikeSpan K C) =
       MonoidAlgebra.liftGroupLikeCoalgHom
         (id : GroupLike K C → GroupLike K C) := by
   rw [spanCoalgebraEquiv_eq_groupLikeCoalgebraEquiv]

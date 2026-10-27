@@ -32,11 +32,11 @@ a field example.
 
 ## Limitations
 
-These examples use only dual contraction and its submodule span. They neither
-construct a coefficient subcoalgebra nor use any general closure, factorization,
-minimality or finite-generation theorem for that construction. Scalar and zero
-examples do not supply a proper matrix-coefficient model in an infinite-dimensional
-coalgebra.
+The coefficient-span and zero examples concern dual contraction and its submodule
+span. The scalar round trip also uses the coefficient subcoalgebra and the general
+coaction-range criterion: restricting to this subcoalgebra and changing back along
+its inclusion recovers the original scalar comodule. These examples do not supply a
+proper matrix-coefficient model in an infinite-dimensional coalgebra.
 
 ## References
 
@@ -68,6 +68,21 @@ noncomputable def finiteScalarComodule : RightComodule ℚ ℚ ℚ :=
 
 @[simp] theorem finiteScalarComodule_coaction (q : ℚ) :
     finiteScalarComodule.coaction q = q ⊗ₜ[ℚ] (1 : ℚ) := rfl
+
+/-- Changing the coefficient corestriction along its inclusion recovers the scalar comodule. -/
+private theorem finiteScalar_restrict_mapCoalgebra :
+    ∃ h : ∀ q : ℚ, finiteScalarComodule.coaction q ∈
+        LinearMap.range
+          (finiteScalarComodule.coefficientSubcoalgebra.subtype.toLinearMap.lTensor ℚ),
+      (finiteScalarComodule.restrictCoalgebra
+        finiteScalarComodule.coefficientSubcoalgebra h).mapCoalgebra
+          finiteScalarComodule.coefficientSubcoalgebra.subtype = finiteScalarComodule := by
+  have h := (finiteScalarComodule.coaction_mem_range_iff_coefficientSpan_le
+      finiteScalarComodule.coefficientSubcoalgebra).mpr (by
+    simpa only [RightComodule.coefficientSubcoalgebra_toSubmodule] using
+      (le_rfl : finiteScalarComodule.coefficientSpan ≤ finiteScalarComodule.coefficientSpan))
+  exact ⟨h, finiteScalarComodule.mapCoalgebra_restrictCoalgebra
+    finiteScalarComodule.coefficientSubcoalgebra h⟩
 
 /-- The one-dimensional scalar comodule is module-finite. -/
 theorem finiteScalar_moduleFinite : Module.Finite ℚ ℚ := inferInstance

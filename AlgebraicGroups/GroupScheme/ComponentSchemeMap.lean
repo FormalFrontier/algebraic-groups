@@ -63,6 +63,8 @@ variable [ConnectedSpace ((Scheme.identityComponentOver (Over.mk f) ⊗
 variable [GeometricallyConnected (Scheme.identityComponentOver (Over.mk f)).hom]
 variable [LocallyOfFiniteType f] [QuasiCompact f]
 
+/-- A choice of a finite enumeration of `rationalComponentGroup f`, the quotient of the
+rational-point group by the rational points of the identity-component subgroup scheme. -/
 noncomputable local instance componentMapFintype :
     Fintype (rationalComponentGroup f) := Fintype.ofFinite _
 

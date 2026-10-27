@@ -57,6 +57,76 @@ isomorphism), preserving and reflecting `Module.Finite`. No ambient
 finiteness is assumed. See the [API](../AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Equiv.lean) and the
 [infinite-dimensional, globally noninjective but locally injective example](../AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraImageEquiv.lean).
 
+## Changing the coacting coalgebra
+
+Given a specified `X : Coalgebra.RightComodule R C V` and a coalgebra morphism
+`f : C →ₗc[R] D`, `X.mapCoalgebra f` is a right `D`-comodule on the same `V`.
+Its coaction is `(id_V ⊗ f) ∘ X.coaction`, expressed as
+`f.toLinearMap.lTensor V ∘ₗ X.coaction`. The scalars form a commutative semiring;
+`C` and `D` have full coalgebra structures, and `C`, `D` and `V` are arbitrary
+additive-commutative-monoid modules, with independent scalar and carrier universes.
+No field, finiteness, projectivity, flatness or injectivity/surjectivity of `f`
+is required.
+
+The [right-comodule API](../AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean)
+provides the characteristic equations and uses:
+
+- `RightComodule.mapCoalgebra_coaction` and `mapCoalgebra_coaction_apply`
+  describe the coaction without unfolding the construction.
+- `mapCoalgebra_id` and `mapCoalgebra_comp` give
+  `X.mapCoalgebra (CoalgHom.id R C) = X` and
+  `(X.mapCoalgebra f).mapCoalgebra g = X.mapCoalgebra (g.comp f)`.
+- For a colinear map `h : Coalgebra.RightComoduleHom X Y`,
+  `h.mapCoalgebra f` has the same underlying linear map and sends
+  `X.mapCoalgebra f` to `Y.mapCoalgebra f`. For fixed `f`, this preserves
+  comodule-morphism identities and composition.
+- `RightComoduleHom.ofCoalgHom f` makes `f.toLinearMap` colinear from
+  `(RightComodule.regular R C).mapCoalgebra f` to `RightComodule.regular R D`.
+- For every `X`, `mapCoalgebra_counit` identifies
+  `X.mapCoalgebra (Coalgebra.counitCoalgHom R C)` with the existing
+  `RightComodule.scalar R V`, whose coaction is `v ↦ v ⊗ 1`.
+
+For example, take `R = D = ℕ`, `C = V = ℕ[ℕ]` (`MonoidAlgebra ℕ ℕ`),
+the regular coaction and the standard counit. This module has an infinite basis
+and its scalars are not a ring. The distinct nonzero basis elements `e₀` and `e₁`
+both have counit `1`, but the changed coaction sends `eᵢ` to `eᵢ ⊗ 1` and
+remains injective: only the coalgebra factor is collapsed, not the module factor.
+
+This forward change differs from `X.restrictCoalgebra S h` in the
+[coefficient API](../AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean).
+Over a field `K`, with an additive-group ambient coalgebra `C` and an
+additive-monoid module `V`, the latter lifts the coaction to a subcoalgebra
+`S : Subcoalgebra K C`. It requires every coaction value to lie in the range of
+`S.subtype.toLinearMap.lTensor V`. Its characteristic equation is
+`S.subtype.toLinearMap.lTensor V ∘ₗ (X.restrictCoalgebra S h).coaction = X.coaction`
+(`subtype_lTensor_comp_restrictCoalgebra_coaction`). The bridge
+`mapCoalgebra_restrictCoalgebra` expresses the inclusion round trip:
+`(X.restrictCoalgebra S h).mapCoalgebra S.subtype = X`.
+These field hypotheses belong to the inverse lift and its bridge, not to
+`mapCoalgebra`.
+
+In the elementwise inclusion formulas, the linear map is the tensor of the
+underlying submodule inclusion. Both `subtype_lTensor_coactionCodRestrict` and
+`subtype_lTensor_coefficientComodule_coaction` recover `X.coaction m`; their
+explicit `DFunLike.coe` carriers specify this same map without choosing a new
+factorization.
+
+## Inverses of colinear linear equivalences
+
+Let `X : Coalgebra.RightComodule R C M` and
+`Y : Coalgebra.RightComodule R C N` be specified right comodules over the same
+coalgebra. If `e : M ≃ₗ[R] N` satisfies
+`h : Y.coaction ∘ₗ e.toLinearMap = e.toLinearMap.rTensor C ∘ₗ X.coaction`, then
+`RightComoduleHom.colinear_symm e h` gives
+`X.coaction ∘ₗ e.symm.toLinearMap = e.symm.toLinearMap.rTensor C ∘ₗ Y.coaction`.
+Thus the inverse linear map supplies the colinearity field of a morphism from
+`Y` to `X`; this is not a change of coacting coalgebra. The scalars may be a
+commutative semiring, the carriers need only be additive commutative monoid
+modules, and their universes are independent. No flatness, basis or finiteness
+hypothesis is needed. The [clients](../AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean)
+include a nonidentity coordinate swap between distinct nonzero coactions over
+`ℕ`, as well as the identity case.
+
 ## Finite right-subcomodule containment
 
 `Coalgebra.RightComodule R C M`
@@ -99,6 +169,39 @@ generation of the coefficient subcoalgebra's underlying module, not algebra
 finite generation. See the [intrinsic API](../AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean),
 [rational GL₂ model](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsGL2.lean)
 and [corestriction clients](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsUse.lean).
+
+### Coefficients under comodule morphisms
+
+For `h : Coalgebra.RightComoduleHom X Y`, with the coacting coalgebra fixed,
+`RightComoduleHom.coefficient_apply` states
+`Y.coefficient ell (h m) = X.coefficient (ell.comp h.toLinearMap) m`.
+Over a commutative semiring, a surjective `h` gives
+`Y.coefficientSpan ≤ X.coefficientSpan`
+(`coefficientSpan_le_of_surjective`), while a bijective `h` gives
+`X.coefficientSpan = Y.coefficientSpan` (`coefficientSpan_eq_of_bijective`).
+Over a field, an injective `h` gives the opposite containment
+`X.coefficientSpan ≤ Y.coefficientSpan` (`coefficientSpan_le_of_injective`):
+linear functionals extend from the source subspace. The coacted-on carriers
+are additive commutative monoid modules in independent universes, with no
+finite-generation premise. The injective result is not asserted over an
+arbitrary commutative semiring.
+
+For a field and an ambient coalgebra with its additive commutative group
+structure, `coefficientSubcoalgebra_toSubmodule_le_of_surjective` and
+`coefficientSubcoalgebra_toSubmodule_le_of_injective` give the same respective
+containments of underlying submodules; `coefficientSubcoalgebra_eq_of_bijective`
+gives equality of subcoalgebras. These are morphisms between comodules over
+one fixed coalgebra, not the coalgebra-changing corestriction described above.
+
+The [GL₂ clients](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsGL2.lean)
+transport the rational column representation to a universe-lifted carrier.
+The resulting bijective comodule morphism compares individual coefficients,
+coefficient spans and coefficient subcoalgebras. Its coefficient span remains
+finitely generated, proper and nonzero; a nonzero off-diagonal coefficient
+remains visible. Carrier transport uses
+[`RightComodule.transport`](../AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean),
+whose coaction is `(e ⊗ id_C) ∘ ρ ∘ e.symm`; unlike `mapCoalgebra`, it changes
+the module factor and keeps the coalgebra fixed.
 
 ## Finite coalgebra containment
 
@@ -298,6 +401,11 @@ Sweedler, *Hopf Algebras* (1969). Mathlib supplies the coalgebra, tensor, module
 and morphism interfaces; the detailed mathematical and formalization credits
 are in [CREDITS.md](../CREDITS.md#mathematical-sources). These citations do not
 assert a general two-factor containment theorem over semirings.
+
+The determinant-localized coordinate-ring model of `GL₂` follows J. S. Milne,
+*Algebraic Groups* (2017), §2, item 2.8. The coefficient comparisons use Mathlib's
+linear maps, duals and extension of linear functionals; carrier transport uses
+its linear equivalences and tensor naturality interfaces.
 
 For antipode involutivity, bialgebra maps and comultiplication, see the
 [mathematical topic guide](MATHEMATICS.md#antipode-involutivity). For pinned

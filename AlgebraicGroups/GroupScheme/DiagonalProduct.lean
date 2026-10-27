@@ -368,4 +368,19 @@ def diagonalGroupSchemeFin0IsTerminal (K : Type) [CommRing K] :
     (diagonalGroupProductFan K (Fin 0)))
     (diagonalGroupProductFan_isLimit K (Fin 0))
 
+/-- Limit data for the finite diagonal product after forgetting group structure. -/
+abbrev diagonalGroupProductFanForgetIsLimit :
+    Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
+      (diagonalGroupProductFan K n)) :=
+  diagonalGroupProductFan_forget_isLimit K n
+
+/-- Limit data for the finite diagonal product of multiplicative group schemes. -/
+abbrev diagonalGroupProductFanIsLimit : Limits.IsLimit (diagonalGroupProductFan K n) :=
+  diagonalGroupProductFan_isLimit K n
+
+attribute [deprecated diagonalGroupProductFanForgetIsLimit (since := "2026-10-26")]
+  diagonalGroupProductFan_forget_isLimit
+attribute [deprecated diagonalGroupProductFanIsLimit (since := "2026-10-26")]
+  diagonalGroupProductFan_isLimit
+
 end AlgebraicGeometry

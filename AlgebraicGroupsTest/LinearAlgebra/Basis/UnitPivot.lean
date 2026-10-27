@@ -162,7 +162,7 @@ private def negativePivotBasis : Basis ℕ ℤ (ℕ →₀ ℤ) :=
 
 private theorem negativePivot_inverse : (↑(negativeReplacement_unit.unit⁻¹) : ℤ) = -1 := by
   have hmul : (↑(negativeReplacement_unit.unit⁻¹) : ℤ) * (-1) = 1 := by
-    simpa [integerBasis, negativeReplacement] using (Units.inv_mul negativeReplacement_unit.unit)
+    simp [integerBasis, negativeReplacement]
   simpa using congrArg (fun z : ℤ ↦ -z) hmul
 
 private theorem negativePivotBasis_zero :
@@ -199,6 +199,6 @@ private theorem negativePivotBasis_recovers_zero :
       rw [negativePivotBasis_repr_one]
       simp
     · rw [negativePivotBasis_repr_other _ n hn0 hn1]
-      simp [Finsupp.single_apply, hn0, hn1, Ne.symm hn0, Ne.symm hn1]
+      simp [hn0, hn1]
 
 end Basis

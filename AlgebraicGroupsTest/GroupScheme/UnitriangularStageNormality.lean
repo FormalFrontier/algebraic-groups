@@ -42,7 +42,8 @@ example (K : Type) [CommRing K] (R : Type) [CommRing R] [Algebra K R]
       unitriangularStageConjugation K 3 2 =
         unitriangularStagePointMulEquiv K 3 2 R
           ⟨g * s.1 * g⁻¹,
-            (inferInstance : (Matrix.UnitriangularGroup.superdiagonalSubgroup 3 R 2).Normal).conj_mem
+            (inferInstance :
+              (Matrix.UnitriangularGroup.superdiagonalSubgroup 3 R 2).Normal).conj_mem
               s.1 s.2 g⟩ :=
   unitriangularStageConjugation_point K 3 2 R g s
 

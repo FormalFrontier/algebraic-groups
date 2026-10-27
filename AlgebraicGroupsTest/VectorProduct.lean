@@ -67,7 +67,7 @@ private def testProductIso : vectorGroupScheme K V ≅ (∏ᶜ fun _ : i ↦ add
 
 private def testUnderlyingIsLimit : Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
     (vectorGroupBasisFan K V b)) :=
-  vectorGroupBasisFan_forget_isLimit K V b
+  vectorGroupBasisFanForgetIsLimit K V b
 
 private def testHomOverEquiv (X : Over (Spec (.of K))) :
     (X ⟶ (vectorGroupScheme K V).X) ≃
@@ -106,7 +106,7 @@ section UnderlyingFanLift
 open Classical in
 private theorem testUnderlyingFanLift
     (s : Limits.Fan (fun _ : i ↦ (additiveGroupScheme K).X)) :
-    (vectorGroupBasisFan_forget_isLimit K V b).lift s =
+    (vectorGroupBasisFanForgetIsLimit K V b).lift s =
       (vectorGroupHomOverEquiv K V s.pt).symm
         (b.dualBasis.constr K (fun j ↦ additiveGroupHomOverEquiv K s.pt (s.proj j))) := by
   classical

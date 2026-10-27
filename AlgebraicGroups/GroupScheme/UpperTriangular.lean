@@ -168,7 +168,7 @@ def upperTriangularGroupMulEquivAlgHom :
     exact congrArg WithConv.ofConv
       ((generalLinearGroupMulEquivAlgHom K n R).map_mul s.1 t.1)
 
-@[simp] theorem upperTriangularGroupMulEquivAlgHom_entry
+theorem upperTriangularGroupMulEquivAlgHom_entry
     (s : Matrix.UpperTriangularGroup n R) (i j : n) :
     (upperTriangularGroupMulEquivAlgHom K n R s).ofConv
       (quotient K n (matrix K n i j)) = s.1 i j := by

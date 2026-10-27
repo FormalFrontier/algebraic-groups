@@ -8,6 +8,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.FiniteSubcoalgebra
 public import AlgebraicGroups.Algebra.TensorProduct.Submodule
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Flat.Basic
 
 /-!
@@ -27,8 +28,14 @@ flatness, projectivity or freeness.
   Equality and zero simp lemmas cancel the coaction, and
   `RightComodule.coaction_eq_zero_iff` characterizes the zero coaction map by
   `Subsingleton M`.
+* `RightComodule.mapCoalgebra` changes a coaction along a coalgebra morphism,
+  applying the morphism only to the right coalgebra factor. It preserves identity
+  and composition, and change along the counit gives the scalar coaction.
 * `RightComoduleHom` is a linear map intertwining the specified coactions, with
   underlying map `toLinearMap`, identities and composition.
+  `RightComoduleHom.mapCoalgebra` preserves this underlying map and respects
+  identities and composition. `RightComoduleHom.ofCoalgHom` regards a coalgebra
+  morphism as a colinear map from its changed regular source to its regular target.
   `RightComoduleHom.colinear_symm` gives colinearity of the inverse of a linear
   equivalence whose forward map intertwines the two specified coactions.
 * `RightComodule.IsStable` describes image stability for every member of an
@@ -220,6 +227,97 @@ theorem IsStable.coaction_mem_range {X : RightComodule R C M} {U : Submodule R M
     (h : X.IsStable U) (m : M) (hm : m ∈ U) :
     ∃ t : U ⊗[R] C, U.subtype.rTensor C t = X.coaction m := h m hm
 
+section MapCoalgebra
+
+variable {D E : Type*}
+variable [AddCommMonoid D] [Module R D] [Coalgebra R D]
+variable [AddCommMonoid E] [Module R E] [Coalgebra R E]
+
+private theorem mapCoalgebra_coassoc (X : RightComodule R C M) (f : C →ₗc[R] D) :
+    TensorProduct.assoc R M D D ∘ₗ
+        (f.toLinearMap.lTensor M ∘ₗ X.coaction).rTensor D ∘ₗ
+        (f.toLinearMap.lTensor M ∘ₗ X.coaction) =
+      (comul (R := R) (A := D)).lTensor M ∘ₗ
+        (f.toLinearMap.lTensor M ∘ₗ X.coaction) := by
+  let ρ := f.toLinearMap.lTensor M ∘ₗ X.coaction
+  have h_tensor :
+      ρ.rTensor D ∘ₗ f.toLinearMap.lTensor M =
+        TensorProduct.map (f.toLinearMap.lTensor M) f.toLinearMap ∘ₗ
+          X.coaction.rTensor C := by
+    dsimp only [ρ]
+    rw [LinearMap.rTensor_comp, LinearMap.comp_assoc,
+      LinearMap.rTensor_comp_lTensor,
+      ← LinearMap.lTensor_comp_rTensor M X.coaction f.toLinearMap,
+      ← LinearMap.comp_assoc, LinearMap.rTensor_comp_lTensor]
+  have h_assoc :
+      (TensorProduct.assoc R M D D).toLinearMap ∘ₗ
+          TensorProduct.map (f.toLinearMap.lTensor M) f.toLinearMap =
+        (TensorProduct.map f.toLinearMap f.toLinearMap).lTensor M ∘ₗ
+          (TensorProduct.assoc R M C C).toLinearMap := by
+    simpa only [LinearMap.lTensor_def] using
+      (TensorProduct.map_map_comp_assoc_eq (LinearMap.id : M →ₗ[R] M)
+        f.toLinearMap f.toLinearMap).symm
+  change TensorProduct.assoc R M D D ∘ₗ ρ.rTensor D ∘ₗ ρ =
+    (comul (R := R) (A := D)).lTensor M ∘ₗ ρ
+  calc
+    TensorProduct.assoc R M D D ∘ₗ ρ.rTensor D ∘ₗ ρ =
+        ((TensorProduct.assoc R M D D).toLinearMap ∘ₗ
+          TensorProduct.map (f.toLinearMap.lTensor M) f.toLinearMap) ∘ₗ
+            X.coaction.rTensor C ∘ₗ X.coaction := by
+      simpa only [ρ, LinearMap.comp_assoc] using
+        congrArg (fun k : M ⊗[R] C →ₗ[R] (M ⊗[R] D) ⊗[R] D ↦
+          (TensorProduct.assoc R M D D).toLinearMap ∘ₗ k ∘ₗ X.coaction) h_tensor
+    _ = (TensorProduct.map f.toLinearMap f.toLinearMap).lTensor M ∘ₗ
+        (TensorProduct.assoc R M C C ∘ₗ X.coaction.rTensor C ∘ₗ X.coaction) := by
+      simpa only [LinearMap.comp_assoc] using
+        congrArg (fun k : (M ⊗[R] C) ⊗[R] C →ₗ[R] M ⊗[R] (D ⊗[R] D) ↦
+          k ∘ₗ X.coaction.rTensor C ∘ₗ X.coaction) h_assoc
+    _ = (TensorProduct.map f.toLinearMap f.toLinearMap).lTensor M ∘ₗ
+        (comul (R := R) (A := C)).lTensor M ∘ₗ X.coaction := by
+      rw [X.coassoc]
+    _ = (comul (R := R) (A := D)).lTensor M ∘ₗ ρ := by
+      dsimp only [ρ]
+      rw [← LinearMap.comp_assoc, ← LinearMap.lTensor_comp,
+        f.map_comp_comul, LinearMap.lTensor_comp, LinearMap.comp_assoc]
+
+private theorem mapCoalgebra_counit_comp (X : RightComodule R C M)
+    (f : C →ₗc[R] D) :
+    (counit (R := R) (A := D)).lTensor M ∘ₗ
+        (f.toLinearMap.lTensor M ∘ₗ X.coaction) =
+      (TensorProduct.rid R M).symm.toLinearMap := by
+  rw [← LinearMap.comp_assoc, ← LinearMap.lTensor_comp, f.counit_comp, X.counit_comp]
+
+/-- Change the coacting coalgebra along a coalgebra morphism, leaving the module fixed. -/
+def mapCoalgebra (X : RightComodule R C M) (f : C →ₗc[R] D) : RightComodule R D M where
+  coaction := f.toLinearMap.lTensor M ∘ₗ X.coaction
+  coassoc := by exact mapCoalgebra_coassoc X f
+  counit_comp := by exact mapCoalgebra_counit_comp X f
+
+@[simp] theorem mapCoalgebra_coaction (X : RightComodule R C M) (f : C →ₗc[R] D) :
+    (X.mapCoalgebra f).coaction = f.toLinearMap.lTensor M ∘ₗ X.coaction := rfl
+
+@[simp] theorem mapCoalgebra_coaction_apply (X : RightComodule R C M)
+    (f : C →ₗc[R] D) (m : M) :
+    (X.mapCoalgebra f).coaction m = f.toLinearMap.lTensor M (X.coaction m) := rfl
+
+/-- Changing along the identity coalgebra morphism leaves a right comodule unchanged. -/
+@[simp] theorem mapCoalgebra_id (X : RightComodule R C M) :
+    X.mapCoalgebra (CoalgHom.id R C) = X := by
+  apply ext
+  change (LinearMap.id : C →ₗ[R] C).lTensor M ∘ₗ X.coaction = X.coaction
+  rw [LinearMap.lTensor_id, LinearMap.id_comp]
+
+/-- Successive changes of the coacting coalgebra compose in the same order. -/
+@[simp] theorem mapCoalgebra_comp (X : RightComodule R C M)
+    (f : C →ₗc[R] D) (g : D →ₗc[R] E) :
+    (X.mapCoalgebra f).mapCoalgebra g = X.mapCoalgebra (g.comp f) := by
+  apply ext
+  change g.toLinearMap.lTensor M ∘ₗ (f.toLinearMap.lTensor M ∘ₗ X.coaction) =
+    (g.toLinearMap ∘ₗ f.toLinearMap).lTensor M ∘ₗ X.coaction
+  rw [LinearMap.lTensor_comp, LinearMap.comp_assoc]
+
+end MapCoalgebra
+
 end RightComodule
 
 /-- A linear map intertwining two specified right coactions. -/
@@ -309,6 +407,66 @@ theorem comp_assoc {Q : Type*} [AddCommMonoid Q] [Module R Q]
     {W : RightComodule R C Q} (h : RightComoduleHom Z W)
     (g : RightComoduleHom Y Z) (f : RightComoduleHom X Y) :
     (h.comp g).comp f = h.comp (g.comp f) := by ext; rfl
+
+section MapCoalgebra
+
+variable {D : Type*} [AddCommMonoid D] [Module R D] [Coalgebra R D]
+
+private theorem mapCoalgebra_colinear (h : RightComoduleHom X Y) (f : C →ₗc[R] D) :
+    (f.toLinearMap.lTensor N ∘ₗ Y.coaction) ∘ₗ h.toLinearMap =
+      h.toLinearMap.rTensor D ∘ₗ (f.toLinearMap.lTensor M ∘ₗ X.coaction) := by
+  rw [LinearMap.comp_assoc, h.colinear, ← LinearMap.comp_assoc,
+    LinearMap.lTensor_comp_rTensor, ← LinearMap.rTensor_comp_lTensor,
+    LinearMap.comp_assoc]
+
+private theorem ofCoalgHom_colinear (f : C →ₗc[R] D) :
+    (RightComodule.regular R D).coaction ∘ₗ f.toLinearMap =
+      f.toLinearMap.rTensor D ∘ₗ
+        (f.toLinearMap.lTensor C ∘ₗ (RightComodule.regular R C).coaction) := by
+  change comul (R := R) ∘ₗ f.toLinearMap =
+    f.toLinearMap.rTensor D ∘ₗ (f.toLinearMap.lTensor C ∘ₗ comul (R := R))
+  rw [← LinearMap.comp_assoc, LinearMap.rTensor_comp_lTensor]
+  exact f.map_comp_comul.symm
+
+/-- Change the coacting coalgebra of a colinear map without changing its linear map. -/
+def mapCoalgebra (h : RightComoduleHom X Y) (f : C →ₗc[R] D) :
+    RightComoduleHom (X.mapCoalgebra f) (Y.mapCoalgebra f) where
+  toLinearMap := h.toLinearMap
+  colinear := by exact mapCoalgebra_colinear h f
+
+@[simp] theorem mapCoalgebra_toLinearMap (h : RightComoduleHom X Y) (f : C →ₗc[R] D) :
+    (h.mapCoalgebra f).toLinearMap = h.toLinearMap := rfl
+
+@[simp] theorem mapCoalgebra_apply (h : RightComoduleHom X Y) (f : C →ₗc[R] D) (m : M) :
+    h.mapCoalgebra f m = h m := rfl
+
+/-- Changing both endpoints along a fixed coalgebra morphism preserves identities. -/
+@[simp] theorem mapCoalgebra_id (X : RightComodule R C M) (f : C →ₗc[R] D) :
+    (id X).mapCoalgebra f = id (X.mapCoalgebra f) := by
+  ext m
+  rfl
+
+/-- Changing along a fixed coalgebra morphism preserves composition of colinear maps. -/
+@[simp] theorem mapCoalgebra_comp (k : RightComoduleHom Y Z) (h : RightComoduleHom X Y)
+    (f : C →ₗc[R] D) :
+    (k.comp h).mapCoalgebra f = (k.mapCoalgebra f).comp (h.mapCoalgebra f) := by
+  ext m
+  rfl
+
+/-- A coalgebra morphism is colinear from its changed regular source to its regular target. -/
+def ofCoalgHom (f : C →ₗc[R] D) :
+    RightComoduleHom ((RightComodule.regular R C).mapCoalgebra f)
+      (RightComodule.regular R D) where
+  toLinearMap := f.toLinearMap
+  colinear := by exact ofCoalgHom_colinear f
+
+@[simp] theorem ofCoalgHom_toLinearMap (f : C →ₗc[R] D) :
+    (ofCoalgHom f).toLinearMap = f.toLinearMap := rfl
+
+@[simp] theorem ofCoalgHom_apply (f : C →ₗc[R] D) (c : C) :
+    ofCoalgHom f c = f c := rfl
+
+end MapCoalgebra
 
 end RightComoduleHom
 
@@ -798,6 +956,15 @@ theorem scalar_subtype_colinear (U : Submodule R M) :
     U.subtype.rTensor R ∘ₗ (scalar R U).coaction = (scalar R M).coaction ∘ₗ U.subtype := by
   ext m
   simp
+
+/-- Changing any right comodule along the counit gives the scalar coaction. -/
+@[simp] theorem mapCoalgebra_counit {C : Type*}
+    [AddCommMonoid C] [Module R C] [Coalgebra R C] (X : RightComodule R C M) :
+    X.mapCoalgebra (counitCoalgHom R C) = scalar R M := by
+  apply ext
+  change (counit (R := R) (A := C)).lTensor M ∘ₗ X.coaction =
+    (TensorProduct.rid R M).symm.toLinearMap
+  exact X.counit_comp
 
 end Coalgebra.RightComodule
 

@@ -164,7 +164,6 @@ theorem liftGroupLikeBialgHom_mapDomain_toCoalgHom (f : M →* GroupLike R A) :
   simpa only [groupLikeHomOfBialgHom_apply_val, BialgHom.toCoalgHom_apply] using h
 
 /-- Group-like evaluation sends each monomial to the corresponding scalar multiple. -/
-@[simp]
 theorem liftGroupLikeBialgHom_mapDomain_single (f : M →* GroupLike R A) (m : M) (r : R) :
     ((liftGroupLikeBialgHom (R := R) (A := A)).comp (mapDomainBialgHom R f)) (single m r) =
       r • (f m).val := by

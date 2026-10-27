@@ -41,6 +41,13 @@ For kernel coideality, flatness of the target and of the ordinary kernel quotien
 is sufficient, without surjectivity. The quotient in this hypothesis is formed as
 a module before any coideal proof or quotient coalgebra structure is available.
 
+`CoalgHomClass.ker_isCoideal_of_surjective` states that the kernel of a
+surjective coalgebra morphism is a coideal. The scalars are a commutative ring,
+the modules are additive commutative
+groups, and the scalar, source and target universes are independent. Preservation
+of counit and comultiplication requires only `CoalgebraStruct`, not the coalgebra
+laws. No algebra structure, field hypothesis, flatness or projectivity is required.
+
 Over a field, `CoalgHomClass.ker_isCoideal` states that the linear kernel of any
 coalgebra morphism is a coideal. Both source and target need only
 `CoalgebraStruct`, in independent universes, and the morphism need not be
@@ -77,6 +84,53 @@ It uses the existing coideal predicate and the generic linear-span APIs.
 universe u v w z uF
 
 open Coalgebra
+
+namespace Coalgebra.Quotient
+
+variable {R : Type u} [CommRing R]
+variable {C : Type v} [AddCommGroup C] [Module R C] [CoalgebraStruct R C]
+
+/-- The linear map underlying the quotient coalgebra projection is the submodule quotient map. -/
+@[simp]
+theorem mkQCoalgHom_toLinearMap (I : Submodule R C) [I.IsCoideal] :
+    (mkQCoalgHom I : C →ₗ[R] (C ⧸ I)) = I.mkQ := by
+  rw [← CoalgHom.toLinearMap_eq_coe]
+  rfl
+
+end Coalgebra.Quotient
+
+namespace CoalgHomClass
+
+variable {R : Type u} [CommRing R]
+variable {C : Type v} [AddCommGroup C] [Module R C] [CoalgebraStruct R C]
+variable {D : Type w} [AddCommGroup D] [Module R D] [CoalgebraStruct R D]
+variable {F : Type z} [FunLike F C D] [CoalgHomClass F R C D]
+
+/-- The kernel of a surjective coalgebra morphism is a coideal.
+
+Surjectivity identifies the kernel of `f ⊗ f` with the sum of the kernel contributions in the two
+tensor factors, by tensor right-exactness. -/
+theorem ker_isCoideal_of_surjective (f : F) (hf : Function.Surjective f) :
+    (f : C →ₗ[R] D).ker.IsCoideal := by
+  let g : C →ₗ[R] D := f
+  refine (Submodule.isCoideal_iff_comul_mem g.ker).2 ⟨?_, ?_⟩
+  · intro x hx
+    have hx0 : f x = 0 := hx
+    calc
+      counit (R := R) x = counit (R := R) (f x) :=
+        (CoalgHomClass.counit_comp_apply f x).symm
+      _ = 0 := by rw [hx0, map_zero]
+  · intro x hx
+    rw [← TensorProduct.map_ker (LinearMap.exact_subtype_ker_map g) hf
+      (LinearMap.exact_subtype_ker_map g) hf]
+    apply LinearMap.mem_ker.mpr
+    have hx0 : f x = 0 := hx
+    calc
+      TensorProduct.map g g (comul x) = comul (f x) :=
+        CoalgHomClass.map_comp_comul_apply f x
+      _ = 0 := by rw [hx0, map_zero]
+
+end CoalgHomClass
 
 namespace Submodule
 

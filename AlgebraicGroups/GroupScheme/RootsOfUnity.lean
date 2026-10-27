@@ -127,7 +127,9 @@ instance rootsOfUnityScheme_locallyOfFiniteType
   rw [HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)]
   simpa [RingHom.finiteType_algebraMap]
 
-instance rootsOfUnityScheme_quasiCompact
+@[deprecated "Use the generic IsAffineHom and QuasiCompact instances."
+  (since := "2026-10-25")]
+theorem rootsOfUnityScheme_quasiCompact
     (K : Type u) [CommRing K] (n : ℕ) [NeZero n] :
     QuasiCompact (rootsOfUnityScheme K n).hom := by
   change QuasiCompact (Spec.map (CommRingCat.ofHom
@@ -237,7 +239,6 @@ lemma monoidHomRoot_coe {n : ℕ} (f : Multiplicative (ZMod n) →* R) :
   rfl
 
 /-- The underlying value of the inverse character construction is generator evaluation. -/
-@[simp]
 lemma monoidHomRoot_val {n : ℕ} (f : Multiplicative (ZMod n) →* R) :
     ((monoidHomRoot f : Rˣ) : R) = f (.ofAdd 1) := by
   rw [monoidHomRoot_coe, MonoidHom.coe_toHomUnits]
@@ -331,17 +332,26 @@ lemma rootsOfUnityMulEquivAlgHom_symm_apply (n : ℕ)
 
 /-- The algebra-map equivalence is natural in the target algebra. -/
 @[simp]
+lemma rootsOfUnityMulEquivAlgHom_lift_naturality
+    {S : Type w} [CommSemiring S] [Algebra K S]
+    (f : R →ₐ[K] S) (n : ℕ) (ζ : rootsOfUnity n R) :
+    AddMonoidAlgebra.lift K S (ZMod n)
+        ((f : R →* S).comp (RootsOfUnity.rootMonoidHom ζ)) =
+      f.comp (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv := by
+  rw [rootsOfUnityMulEquivAlgHom_apply]
+  apply (AddMonoidAlgebra.lift K S (ZMod n)).symm.injective
+  ext a
+  simp
+
+@[deprecated rootsOfUnityMulEquivAlgHom_lift_naturality (since := "2026-10-25")]
 lemma rootsOfUnityMulEquivAlgHom_naturality
     {S : Type w} [CommSemiring S] [Algebra K S]
     (f : R →ₐ[K] S) (n : ℕ) (ζ : rootsOfUnity n R) :
     (rootsOfUnityMulEquivAlgHom K S n
       (restrictRootsOfUnity f n ζ)).ofConv =
       f.comp (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv := by
-  rw [rootsOfUnityMulEquivAlgHom_apply, rootsOfUnityMulEquivAlgHom_apply,
-    RootsOfUnity.rootMonoidHom_restrict]
-  apply (AddMonoidAlgebra.lift K S (ZMod n)).symm.injective
-  ext a
-  simp
+  simpa only [rootsOfUnityMulEquivAlgHom_apply, RootsOfUnity.rootMonoidHom_restrict]
+    using rootsOfUnityMulEquivAlgHom_lift_naturality K R f n ζ
 
 end AlgebraMaps
 
@@ -381,8 +391,8 @@ lemma rootsOfUnityMulEquivPoints_naturality
       (algSpec (.of K)).map (CommAlgCat.ofHom f).op ≫
         rootsOfUnityMulEquivPoints K R n ζ := by
   apply Over.OverMorphism.ext
-  simp only [rootsOfUnityMulEquivPoints_apply_left,
-    rootsOfUnityMulEquivAlgHom_naturality]
+  simp only [rootsOfUnityMulEquivPoints_apply_left, rootsOfUnityMulEquivAlgHom_apply,
+    RootsOfUnity.rootMonoidHom_restrict, rootsOfUnityMulEquivAlgHom_lift_naturality]
   exact Spec.map_comp
     (CommRingCat.ofHom (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv.toRingHom)
     (CommRingCat.ofHom f.toRingHom)
@@ -405,7 +415,10 @@ def rootsOfUnityPointsIso (n : ℕ) :
 @[simp]
 lemma rootsOfUnityPointsIso_hom_app_apply
     (R : Type u) [CommRing R] [Algebra K R] (n : ℕ) (ζ : rootsOfUnity n R) :
-    (rootsOfUnityPointsIso K n).hom.app (CommAlgCat.of K R) ζ =
+    (CategoryTheory.ConcreteCategory.hom
+        ((rootsOfUnityPointsIso K n).hom.app (CommAlgCat.of K R)) :
+      rootsOfUnity n R →*
+        ((Spec (.of R)).asOver (Spec (.of K)) ⟶ rootsOfUnityScheme K n)) ζ =
       rootsOfUnityMulEquivPoints K R n ζ := by
   rfl
 
@@ -414,7 +427,10 @@ lemma rootsOfUnityPointsIso_hom_app_apply
 lemma rootsOfUnityPointsIso_inv_app_apply
     (R : Type u) [CommRing R] [Algebra K R] (n : ℕ)
     (p : (Spec (.of R)).asOver (Spec (.of K)) ⟶ rootsOfUnityScheme K n) :
-    (rootsOfUnityPointsIso K n).inv.app (CommAlgCat.of K R) p =
+    (CategoryTheory.ConcreteCategory.hom
+        ((rootsOfUnityPointsIso K n).inv.app (CommAlgCat.of K R)) :
+      (((Spec (.of R)).asOver (Spec (.of K)) ⟶ rootsOfUnityScheme K n) →*
+        rootsOfUnity n R)) p =
       (rootsOfUnityMulEquivPoints K R n).symm p := by
   rfl
 
@@ -437,9 +453,8 @@ lemma rootsOfUnityCoordinateGenerator_pow (n : ℕ) :
 @[simp]
 lemma rootsOfUnityMulEquivAlgHom_generator
     (R : Type v) [CommSemiring R] [Algebra K R] (n : ℕ) (ζ : rootsOfUnity n R) :
-    (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv
+    AddMonoidAlgebra.lift K R (ZMod n) (RootsOfUnity.rootMonoidHom ζ)
       (rootsOfUnityCoordinateGenerator K n) = ((ζ : Rˣ) : R) := by
-  rw [rootsOfUnityMulEquivAlgHom_apply]
   simpa only [rootsOfUnityCoordinateGenerator, AddMonoidAlgebra.lift_single, one_smul]
     using RootsOfUnity.rootMonoidHom_generator ζ
 
@@ -466,13 +481,10 @@ lemma rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_symm_apply
 /-- The zero-order coordinate generator corresponds to the multiplicative-group coordinate. -/
 @[simp]
 lemma rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_generator :
-    rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K
-      (rootsOfUnityCoordinateGenerator K 0) = multiplicativeGroupCoordinate K := by
-  rw [rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_apply]
+    rootsOfUnityCoordinateGenerator K 0 = multiplicativeGroupCoordinate K := by
   rfl
 
 /-- The multiplicative-group coordinate pulls back to the zero-order coordinate generator. -/
-@[simp]
 lemma rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_symm_coordinate :
     (rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup K).symm
       (multiplicativeGroupCoordinate K) = rootsOfUnityCoordinateGenerator K 0 := by
@@ -525,7 +537,8 @@ lemma rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup_point
         (multiplicativeGroupMulEquivAlgHom K R (ζ : Rˣ)).ofConv
           (multiplicativeGroupCoordinate K)
       rw [rootsOfUnityCoordinateZeroBialgEquivMultiplicativeGroup_symm_coordinate,
-        rootsOfUnityMulEquivAlgHom_generator, multiplicativeGroupMulEquivAlgHom_coordinate]
+        rootsOfUnityMulEquivAlgHom_apply, rootsOfUnityMulEquivAlgHom_generator,
+        multiplicativeGroupMulEquivAlgHom_coordinate]
     · ext
   apply Over.OverMorphism.ext
   -- Normalize the scheme endpoints before applying contravariant functoriality.
@@ -579,13 +592,13 @@ lemma rootsOfUnityGroupSchemeInclusion_coordinate (n : ℕ) :
 @[simp]
 lemma rootsOfUnityGroupSchemeInclusion_algHom
     (R : Type v) [CommSemiring R] [Algebra K R] (n : ℕ) (ζ : rootsOfUnity n R) :
-    (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv.comp
+    (AddMonoidAlgebra.lift K R (ZMod n) (RootsOfUnity.rootMonoidHom ζ)).comp
         (AddMonoidAlgebra.mapDomainBialgHom K
           (Int.castAddHom (ZMod n))).toAlgHom =
       (multiplicativeGroupMulEquivAlgHom K R (ζ : Rˣ)).ofConv := by
   apply AddMonoidAlgebra.algHom_ext'
   · apply MonoidHom.ext_mint
-    change (rootsOfUnityMulEquivAlgHom K R n ζ).ofConv
+    change AddMonoidAlgebra.lift K R (ZMod n) (RootsOfUnity.rootMonoidHom ζ)
         (AddMonoidAlgebra.mapDomainBialgHom K (Int.castAddHom (ZMod n))
           (multiplicativeGroupCoordinate K)) =
       (multiplicativeGroupMulEquivAlgHom K R (ζ : Rˣ)).ofConv
@@ -1003,7 +1016,8 @@ instance rootsOfUnityScheme_locallyOfFinitePresentation (n : ℕ) :
 base. The base may be any commutative ring; the spectrum of the zero ring is empty. -/
 @[simp]
 lemma rootsOfUnityScheme_finrank (n : ℕ) [NeZero n] (x : Spec (.of K)) :
-    (rootsOfUnityScheme K n).hom.finrank x = n := by
+    (Spec.map (CommRingCat.ofHom
+      (algebraMap K (rootsOfUnityCoordinateRing K n)))).finrank x = n := by
   let : Nontrivial K := x.nontrivial
   have h : Module.finrank K (rootsOfUnityCoordinateRing K n) = n := by
     simpa only [ZMod.card] using

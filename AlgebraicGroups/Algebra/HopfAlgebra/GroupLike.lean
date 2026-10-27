@@ -48,16 +48,23 @@ theorem toUnits_injective : Function.Injective (GroupLike.toUnits R (A := A)) :=
   apply GroupLike.ext
   exact congrArg Units.val h
 
-/-- A unit lies in the image of the group-like homomorphism exactly when its
-underlying value is group-like. -/
+/-- A unit is the unit of a group-like element exactly when its underlying value
+is group-like. -/
 @[simp]
-theorem mem_range_toUnits (u : Aˣ) :
-    u ∈ Set.range (GroupLike.toUnits R (A := A)) ↔ IsGroupLikeElem R (u : A) := by
+theorem exists_toUnits_eq (u : Aˣ) :
+    (∃ g : GroupLike R A, GroupLike.toUnits R g = u) ↔ IsGroupLikeElem R (u : A) := by
   constructor
   · rintro ⟨g, rfl⟩
     exact g.isGroupLikeElem_val
   · intro hu
     exact ⟨⟨(u : A), hu⟩, Units.ext rfl⟩
+
+/-- A unit lies in the image of the group-like homomorphism exactly when its
+underlying value is group-like. -/
+-- `Set.mem_range` reduces range membership to the existential simp lemma above.
+theorem mem_range_toUnits (u : Aˣ) :
+    u ∈ Set.range (GroupLike.toUnits R (A := A)) ↔ IsGroupLikeElem R (u : A) :=
+  exists_toUnits_eq u
 
 /-- Forming the unit of a group-like element commutes with a bialgebra morphism. -/
 @[simp]

@@ -39,6 +39,8 @@ namespace UnitriangularStageCoordinateRing
 
 variable (K : Type) [CommRing K] (n r : ℕ)
 
+/-- The coordinate Hopf algebra of upper unitriangular `n × n` matrices over `K`,
+before imposing the relations for a superdiagonal stage. -/
 abbrev Ambient := UnitriangularCoordinateRing.CoordinateRing K (Fin n)
 
 /-- Universal strict upper entry in the ambient Hopf algebra. -/
@@ -52,6 +54,9 @@ defined by vanishing individual entries. -/
 def ideal : Ideal (Ambient K n) :=
   Ideal.span {x | ∃ i j : Fin n, i < j ∧ j.val < i.val + r ∧ x = entry K n i j}
 
+/-- The coordinate Hopf algebra of the `r`-th superdiagonal stage, obtained from
+`Ambient K n` by killing the strict upper entries with `j.val < i.val + r`.
+The defining ideal is zero for `r = 0` and `r = 1`. -/
 abbrev CoordinateRing := Ambient K n ⧸ ideal K n r
 
 /-- The canonical map from the full unitriangular coordinate Hopf algebra. -/
@@ -263,6 +268,9 @@ theorem ideal_isHopfIdeal_proof : (ideal K n r).IsHopfIdeal K := by
 instance ideal_isHopfIdeal : (ideal K n r).IsHopfIdeal K :=
   ideal_isHopfIdeal_proof K n r
 
+/-- The canonical quotient bialgebra homomorphism from the full unitriangular
+coordinate algebra to the `r`-th stage coordinate algebra. Its underlying
+`K`-algebra homomorphism is `quotient K n r`. -/
 def quotientBialgHom : Ambient K n →ₐc[K] CoordinateRing K n r :=
   Bialgebra.Quotient.mkBialgHom (ideal K n r)
 

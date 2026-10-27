@@ -17,7 +17,7 @@ isomorphism.
 `additiveProductCoordinateAlgHom K D d` sends the additive coordinate to
 `MvPolynomial.X d`. Its over-scheme map
 `additiveGroupAffineProductProjection K D d` is the `d`-th projection of
-the affine candidate. `additiveGroupAffineProductFan_isLimit K D` proves the
+the affine candidate. `additiveGroupAffineProductFanIsLimit K D` proves the
 universal property for maps from **every** scheme over `Spec K`, including
 nonaffine schemes: `affineSpecHomOverEquiv` relates an affine target to its
 algebra maps into global sections, `additiveGroupHomOverEquiv` reads a single
@@ -25,7 +25,7 @@ section, and `MvPolynomial.aeval` collects the sections. Both equivalences
 live in the independent `AlgebraicGroups.GroupScheme.AffineHomOver` module
 and work over any commutative base ring.
 
-`additiveGroupProductUnderlyingFan_isLimit` identifies the cone obtained
+`additiveGroupProductUnderlyingFanIsLimit` identifies the cone obtained
 from the genuine group-object product. Comparing the two limit cones gives
 the spectrum isomorphism;
 `additiveGroupProductUnderlyingSpecIso_hom_projection` identifies its

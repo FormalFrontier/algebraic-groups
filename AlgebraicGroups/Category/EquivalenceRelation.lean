@@ -172,4 +172,11 @@ def isLimit_composition_fst (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
         Category.assoc, h.transitivity₂]
       simp only [Category.assoc]
 
+/-- Composition and the first projection form a limiting pullback cone. -/
+abbrev isLimitCompositionFst (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
+    IsLimit (PullbackCone.mk h.t h.c.fst h.transitivity₁) :=
+  isLimit_composition_fst h
+
+attribute [deprecated isLimitCompositionFst (since := "2026-10-26")] isLimit_composition_fst
+
 end CategoryTheory.EquivalenceRelation

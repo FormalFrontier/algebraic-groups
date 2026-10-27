@@ -35,9 +35,9 @@ morphisms to affine targets into algebra maps on global sections without a
 field assumption. `diagonalGroupProjection_globalUnit K n j X hom` proves
 composition with the genuine projection reads exactly the `j`-th unit.
 `diagonalGroupProductFan K n` and
-`diagonalGroupProductFan_forget_isLimit K n` use this classification to
+`diagonalGroupProductFanForgetIsLimit K n` use this classification to
 construct the universal lift and prove its uniqueness for **every** `X`.
-`diagonalGroupProductFan_isLimit K n` reflects the limit from underlying
+`diagonalGroupProductFanIsLimit K n` reflects the limit from underlying
 schemes through `Grp.forget`, producing the product iso. Both projection
 triangles are available as simp lemmas
 `diagonalGroupSchemeProductIso_hom_π` and

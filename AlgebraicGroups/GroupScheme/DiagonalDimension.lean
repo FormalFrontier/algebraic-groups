@@ -85,18 +85,30 @@ def localizedPolynomialEquiv :
     (MvPolynomial.localizedCoordinateQuotientEquiv K (diagonalIndices ι)
       (GeneralLinearCoordinateRing.determinant K ι))
 
-/-- The forward presentation sends a native diagonal entry to its retained variable. -/
-@[simp] theorem localizedPolynomialEquiv_diagonal (i : ι) :
+/-- The forward presentation sends a diagonal polynomial coordinate to its retained variable. -/
+@[simp] theorem localizedPolynomialEquiv_coordinate (i : ι) :
+    localizedPolynomialEquiv K ι
+      (quotient K ι
+        (algebraMap (MvPolynomial (ι × ι) K) (GeneralLinearCoordinateRing.CoordinateRing K ι)
+          (MvPolynomial.X (i, i)))) =
+    algebraMap (MvPolynomial (diagonalIndices ι) K)
+      (Localization.Away (MvPolynomial.eraseCoordinates K (diagonalIndices ι)
+        (GeneralLinearCoordinateRing.determinant K ι)))
+      (MvPolynomial.X ⟨(i, i), rfl⟩) := by
+  simp only [localizedPolynomialEquiv, AlgEquiv.trans_apply, quotient]
+  exact MvPolynomial.localizedCoordinateQuotientEquiv_coordinate K (diagonalIndices ι)
+    (GeneralLinearCoordinateRing.determinant K ι) (i, i) rfl
+
+/-- The forward presentation sends a diagonal matrix entry to its retained variable. -/
+theorem localizedPolynomialEquiv_diagonal (i : ι) :
     localizedPolynomialEquiv K ι
       (quotient K ι (GeneralLinearCoordinateRing.matrix K ι i i)) =
     algebraMap (MvPolynomial (diagonalIndices ι) K)
       (Localization.Away (MvPolynomial.eraseCoordinates K (diagonalIndices ι)
         (GeneralLinearCoordinateRing.determinant K ι)))
       (MvPolynomial.X ⟨(i, i), rfl⟩) := by
-  simp only [localizedPolynomialEquiv, AlgEquiv.trans_apply, quotient,
-    GeneralLinearCoordinateRing.matrix_apply]
-  exact MvPolynomial.localizedCoordinateQuotientEquiv_coordinate K (diagonalIndices ι)
-    (GeneralLinearCoordinateRing.determinant K ι) (i, i) rfl
+  simpa only [GeneralLinearCoordinateRing.matrix_apply] using
+    localizedPolynomialEquiv_coordinate K ι i
 
 /-- The inverse presentation sends a retained variable to the actual diagonal entry. -/
 @[simp] theorem localizedPolynomialEquiv_symm_diagonal (i : ι) :

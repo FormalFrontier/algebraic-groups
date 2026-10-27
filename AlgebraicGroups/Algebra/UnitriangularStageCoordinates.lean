@@ -42,9 +42,13 @@ namespace UnitriangularStageCoordinateRing
 
 variable (K : Type) [CommRing K] (n r : ℕ)
 
+/-- The quotient `K`-coalgebra on the stage coordinate ring, with comultiplication
+and counit inherited from its bialgebra structure. -/
 noncomputable local instance : Coalgebra K (CoordinateRing K n r) :=
   (inferInstance : Bialgebra K (CoordinateRing K n r)).toCoalgebra
 
+/-- The comultiplication and counit data underlying the inherited `K`-coalgebra
+structure on the stage coordinate ring. -/
 noncomputable local instance : CoalgebraStruct K (CoordinateRing K n r) :=
   (inferInstance : Coalgebra K (CoordinateRing K n r)).toCoalgebraStruct
 

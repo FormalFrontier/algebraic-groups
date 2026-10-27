@@ -80,7 +80,7 @@ lemma groupSchemePointEquivClosedPoint_apply_value (f : G ⟶ Spec (.of K))
 
 /-- The rational point associated to a closed point evaluates back to that
 closed point. -/
-@[simp]
+@[simp↓]
 lemma groupSchemePointEquivClosedPoint_symm_apply_value
     (f : G ⟶ Spec (.of K)) [LocallyOfFiniteType f] [IsAlgClosed K]
     (x : closedPoints G) :

@@ -283,7 +283,7 @@ theorem multiplicativeGroupCoordinate_isUnit
 /-- Comultiplication sends the distinguished coordinate to its tensor square,
 as in Milne's *Algebraic Groups*, item 2.2. This uses Mathlib's
 `LaurentPolynomial.comul_T`. -/
-@[simp]
+@[simp↓]
 theorem multiplicativeGroupCoordinate_comul
     (K : Type u) [CommRing K] :
     CoalgebraStruct.comul (multiplicativeGroupCoordinate K) =
@@ -291,7 +291,7 @@ theorem multiplicativeGroupCoordinate_comul
   exact LaurentPolynomial.comul_T 1
 
 /-- The counit sends the distinguished coordinate to one. -/
-@[simp]
+@[simp↓]
 theorem multiplicativeGroupCoordinate_counit
     (K : Type u) [CommRing K] :
     CoalgebraStruct.counit (R := K) (multiplicativeGroupCoordinate K) = (1 : K) := by
