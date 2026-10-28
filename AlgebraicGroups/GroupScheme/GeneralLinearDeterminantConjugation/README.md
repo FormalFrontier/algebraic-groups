@@ -4,9 +4,9 @@ For any commutative base ring `K`, finite decidable matrix index type `n` and
 chosen `pivot : n`, `AlgebraicGeometry.generalLinearDeterminantConj K n pivot`
 is an **actual arrow in** `Over (Spec (.of K))`:
 
-```lean
-multiplicativeGroupUnderlyingScheme K ⊗ specialLinearGroupUnderlyingScheme K n ⟶
-  specialLinearGroupUnderlyingScheme K n
+```text
+(TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X ⊗ (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X ⟶
+  (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X
 ```
 
 It restricts conjugation by the one-pivot determinant section to the genuine
@@ -22,10 +22,11 @@ For every commutative `K`-algebra `R`, unit `t : Rˣ` and native
 `A : Matrix.SpecialLinearGroup n R`, theorems
 `generalLinearDiagonalConjSL_toGL` and `generalLinearDeterminantConj_point`
 identify its affine point with the native determinant-one conjugate whose GL
-readback is `D(t) * toGL(A) * D(t)⁻¹`. This comparison uses the existing
-`multiplicativeGroupMulEquivPoints`, `specialLinearGroupMulEquivPoints`,
-`generalLinearGroupMulEquivPoints`, `generalLinearDeterminantSection_point`
-and `specialLinearInclusion_point` for **every** coefficient algebra. Equality
+readback is `D(t) * toGL(A) * D(t)⁻¹`. This comparison uses canonical Gm
+and indexed GL/SL point equivalences,
+`generalLinearDeterminantSection_point` and
+`TauCeti.SpecialLinear.reindexedSchemePoint_comp_groupSchemeι` for **every**
+coefficient algebra. Equality
 of points at `R = K` alone would not establish a morphism equality; the arrow
 has already been defined using the categorical pullback. The construction does
 not assume enough points or replace the genuine kernel by a pointwise one.

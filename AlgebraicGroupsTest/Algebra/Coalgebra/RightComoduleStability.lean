@@ -19,7 +19,7 @@ evaluation in the scalar-extension image at `1 ⊗ (e₀ + e₁)`.
 
 The examples apply both evaluation criteria, the identity one-tensor law and
 the independently universe-polymorphic forward preservation theorem. The zero
-and whole submodules give the boundary cases. No subtype coaction is chosen.
+and whole submodules give the boundary cases. No subtype coact is chosen.
 
 ## References
 
@@ -36,14 +36,16 @@ open scoped TensorProduct
 
 noncomputable section
 
-namespace Coalgebra.RightComodule
+open Coalgebra
+
+namespace TauCeti.Comodule
 
 namespace NatMonoidAlgebraExamples
 
 private abbrev C := MonoidAlgebra ℕ (Multiplicative ℤ)
 
-private def regularComodule : Coalgebra.RightComodule ℕ C C :=
-  Coalgebra.RightComodule.regular ℕ C
+@[instance_reducible] private def regularComodule : TauCeti.Comodule ℕ C C :=
+  TauCeti.Comodule.instSelf ℕ C
 
 private def e (i : ℤ) : C :=
   MonoidAlgebra.single (Multiplicative.ofAdd i) 1
@@ -63,8 +65,8 @@ private theorem q_e (i j : ℤ) : q i (e j) = if i = j then 1 else 0 := by
     simp
   · simp [h]
 
-private theorem coaction_e (i : ℤ) :
-    regularComodule.coaction (e i) = e i ⊗ₜ[ℕ] e i := by
+private theorem coact_e (i : ℤ) :
+    regularComodule.coact (e i) = e i ⊗ₜ[ℕ] e i := by
   change Coalgebra.comul (R := ℕ) (e i) = e i ⊗ₜ[ℕ] e i
   simp [e, MonoidAlgebra.comul_single, CommSemiring.comul_apply,
     TensorProduct.map_tmul, MonoidAlgebra.lsingle_apply]
@@ -131,15 +133,15 @@ private theorem V_ne_top : V ≠ ⊤ := by
   exact e_zero_not_mem_V
     (h.symm ▸ (Submodule.mem_top : e 0 ∈ (⊤ : Submodule ℕ C)))
 
-/-- Direct image witness for the original right-order coaction. -/
+/-- Direct image witness for the original right-order coact. -/
 private theorem U_isStable : regularComodule.IsStable U := by
   intro x hx
   obtain ⟨n, rfl⟩ := Submodule.mem_span_singleton.mp hx
   refine ⟨n • ((⟨e 0, e_zero_mem_U⟩ : U) ⊗ₜ[ℕ] e 0), ?_⟩
-  rw [(U.subtype.rTensor C).map_smul, regularComodule.coaction.map_smul]
-  exact congrArg (fun t : C ⊗[ℕ] C => n • t) (coaction_e 0).symm
+  rw [(U.subtype.rTensor C).map_smul, regularComodule.coact.map_smul]
+  exact congrArg (fun t : C ⊗[ℕ] C => n • t) (coact_e 0).symm
 
-/-- First-factor slice of the original right-order coaction. -/
+/-- First-factor slice of the original right-order coact. -/
 private def firstSlice (i : ℤ) : C ⊗[ℕ] C →ₗ[ℕ] C :=
   (TensorProduct.lid ℕ C).toLinearMap.comp ((q i).rTensor C)
 
@@ -157,28 +159,28 @@ private theorem first_slices_equal_on_V_image (t : V ⊗[ℕ] C) :
   | add x y hx hy =>
       simpa only [map_add] using congrArg₂ (fun a b : C => a + b) hx hy
 
-private theorem firstSlice_zero_coaction_sum :
-    firstSlice 0 (regularComodule.coaction (e 0 + e 1)) = e 0 := by
-  simp only [map_add, coaction_e, firstSlice_tmul]
+private theorem firstSlice_zero_coact_sum :
+    firstSlice 0 (regularComodule.coact (e 0 + e 1)) = e 0 := by
+  simp only [map_add, coact_e, firstSlice_tmul]
   simp [q_e]
 
-private theorem firstSlice_one_coaction_sum :
-    firstSlice 1 (regularComodule.coaction (e 0 + e 1)) = e 1 := by
-  simp only [map_add, coaction_e, firstSlice_tmul]
+private theorem firstSlice_one_coact_sum :
+    firstSlice 1 (regularComodule.coact (e 0 + e 1)) = e 1 := by
+  simp only [map_add, coact_e, firstSlice_tmul]
   simp [q_e]
 
-/-- First-factor coefficient slices separate the coaction from the inclusion image. -/
+/-- First-factor coefficient slices separate the coact from the inclusion image. -/
 private theorem V_not_isStable : ¬ regularComodule.IsStable V := by
   intro h
-  obtain ⟨t, ht⟩ := h.coaction_mem_range (e 0 + e 1) sum_mem_V
+  obtain ⟨t, ht⟩ := h.coact_mem_range (e 0 + e 1) sum_mem_V
   have hs := first_slices_equal_on_V_image t
   rw [ht] at hs
   apply e_zero_ne_one
   calc
-    e 0 = firstSlice 0 (regularComodule.coaction (e 0 + e 1)) :=
-      firstSlice_zero_coaction_sum.symm
-    _ = firstSlice 1 (regularComodule.coaction (e 0 + e 1)) := hs
-    _ = e 1 := firstSlice_one_coaction_sum
+    e 0 = firstSlice 0 (regularComodule.coact (e 0 + e 1)) :=
+      firstSlice_zero_coact_sum.symm
+    _ = firstSlice 1 (regularComodule.coact (e 0 + e 1)) := hs
+    _ = e 1 := firstSlice_one_coact_sum
 
 /-- Second-factor slice in the scalar-extension order. -/
 private def secondSlice (i : ℤ) : C ⊗[ℕ] C →ₗ[ℕ] C :=
@@ -209,11 +211,11 @@ private theorem id_evaluation_sum :
     LinearMap.liftBaseChange C
       ((TensorProduct.map (AlgHom.toLinearMap (AlgHom.id ℕ C))
           (LinearMap.id : C →ₗ[ℕ] C)).comp
-        ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coaction))
+        ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coact))
       ((1 : C) ⊗ₜ[ℕ] (e 0 + e 1)) =
         e 0 ⊗ₜ[ℕ] e 0 + e 1 ⊗ₜ[ℕ] e 1 := by
   rw [regularComodule.id_evaluation_one_tmul]
-  simp [map_add, coaction_e, TensorProduct.comm_tmul]
+  simp [map_add, e]
 
 /-- Identity evaluation leaves the scalar-extension image at a specified member. -/
 private theorem V_id_counterexample :
@@ -221,7 +223,7 @@ private theorem V_id_counterexample :
       LinearMap.liftBaseChange C
         ((TensorProduct.map (AlgHom.toLinearMap (AlgHom.id ℕ C))
             (LinearMap.id : C →ₗ[ℕ] C)).comp
-          ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coaction)) z
+          ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coact)) z
         ∉ V.baseChange C := by
   refine ⟨(1 : C) ⊗ₜ[ℕ] (e 0 + e 1),
     Submodule.tmul_mem_baseChange_of_mem 1 sum_mem_V, ?_⟩
@@ -242,13 +244,13 @@ private def originalTargetPredicate (W : Submodule ℕ C)
   (fun (R₀ C₀ M₀ : Type) [_instR₀ : CommSemiring R₀] [_instC₀ : CommSemiring C₀]
       [_sourceAlgebra : Algebra R₀ C₀] [_sourceCoalgebra : Coalgebra R₀ C₀]
       [_instM₀ : AddCommMonoid M₀] [_sourceModule : Module R₀ M₀]
-      (X : Coalgebra.RightComodule R₀ C₀ M₀) (W₀ : Submodule R₀ M₀)
+      (X : TauCeti.Comodule R₀ C₀ M₀) (W₀ : Submodule R₀ M₀)
       (B : Type uA) [_instB : CommSemiring B] [_targetAlgebra : Algebra R₀ B] =>
     ∀ (α : C₀ →ₐ[R₀] B), ∀ z ∈ W₀.baseChange B,
       LinearMap.liftBaseChange B
         ((TensorProduct.map (AlgHom.toLinearMap α)
             (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
-          ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction)) z
+          ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coact)) z
         ∈ W₀.baseChange B)
     ℕ C C (_instR₀ := inferInstance) (_instC₀ := inferInstance)
       (_sourceAlgebra := (MonoidAlgebra.algebra : Algebra ℕ C))
@@ -266,13 +268,13 @@ private theorem originalTargetPredicate_apply (W : Submodule ℕ C)
     (fun (R₀ C₀ M₀ : Type) [_instR₀ : CommSemiring R₀] [_instC₀ : CommSemiring C₀]
         [_sourceAlgebra : Algebra R₀ C₀] [_sourceCoalgebra : Coalgebra R₀ C₀]
         [_instM₀ : AddCommMonoid M₀] [_sourceModule : Module R₀ M₀]
-        (X : Coalgebra.RightComodule R₀ C₀ M₀) (W₀ : Submodule R₀ M₀)
+        (X : TauCeti.Comodule R₀ C₀ M₀) (W₀ : Submodule R₀ M₀)
         (B : Type uA) [_instB : CommSemiring B] [_targetAlgebra : Algebra R₀ B] =>
       ∀ (α : C₀ →ₐ[R₀] B), ∀ z ∈ LinearMap.range (W₀.subtype.baseChange B),
         LinearMap.liftBaseChange B
           ((TensorProduct.map (AlgHom.toLinearMap α)
               (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
-            ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction)) z
+            ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coact)) z
           ∈ LinearMap.range (W₀.subtype.baseChange B))
       ℕ C C (_instR₀ := inferInstance) (_instC₀ := inferInstance)
         (_sourceAlgebra := (MonoidAlgebra.algebra : Algebra ℕ C))
@@ -290,7 +292,7 @@ private theorem originalTargetPredicate_canonical (W : Submodule ℕ C)
         LinearMap.liftBaseChange A
           ((TensorProduct.map (AlgHom.toLinearMap α)
               (LinearMap.id : C →ₗ[ℕ] C)).comp
-            ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coaction)) z
+            ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coact)) z
           ∈ W.baseChange A := by
   rfl
 
@@ -301,7 +303,7 @@ private theorem U_evaluation_mem_baseChange
     LinearMap.liftBaseChange A
       ((TensorProduct.map (AlgHom.toLinearMap α)
           (LinearMap.id : C →ₗ[ℕ] C)).comp
-        ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coaction)) z
+        ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coact)) z
       ∈ U.baseChange A :=
   U_isStable.evaluation_mem_baseChange α z hz
 
@@ -312,9 +314,9 @@ private theorem U_forall_evaluation_mem_baseChange (A : Type uA) [CommSemiring A
       LinearMap.liftBaseChange A
         ((TensorProduct.map (AlgHom.toLinearMap α)
             (LinearMap.id : C →ₗ[ℕ] C)).comp
-          ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coaction)) z
+          ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coact)) z
         ∈ U.baseChange A := by
-  exact ((Coalgebra.RightComodule.isStable_iff_forall_evaluation_mem_baseChange
+  exact ((TauCeti.Comodule.isStable_iff_forall_evaluation_mem_baseChange
     regularComodule U).mp U_isStable) A α
 
 /-- Quantifying every original target dictionary is equivalent to the canonical
@@ -328,7 +330,7 @@ private theorem forall_originalTargetPredicate_iff (W : Submodule ℕ C) :
         LinearMap.liftBaseChange A
           ((TensorProduct.map (AlgHom.toLinearMap α)
               (LinearMap.id : C →ₗ[ℕ] C)).comp
-            ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coaction)) z
+            ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coact)) z
           ∈ W.baseChange A) := by
   constructor
   · intro h A _
@@ -355,11 +357,11 @@ private theorem V_not_id_evaluation_mem_baseChange :
       LinearMap.liftBaseChange C
         ((TensorProduct.map (AlgHom.toLinearMap (AlgHom.id ℕ C))
             (LinearMap.id : C →ₗ[ℕ] C)).comp
-          ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coaction)) z
+          ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coact)) z
         ∈ V.baseChange C) := by
   intro h
   exact V_not_isStable
-    ((Coalgebra.RightComodule.isStable_iff_id_evaluation_mem_baseChange
+    ((TauCeti.Comodule.isStable_iff_id_evaluation_mem_baseChange
       regularComodule V).mpr h)
 
 /-- The same explicit C/id witness disproves the all-algebra test at level zero. -/
@@ -369,7 +371,7 @@ private theorem V_not_forall_evaluation_mem_baseChange :
         LinearMap.liftBaseChange A
           ((TensorProduct.map (AlgHom.toLinearMap α)
               (LinearMap.id : C →ₗ[ℕ] C)).comp
-            ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coaction)) z
+            ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coact)) z
           ∈ V.baseChange A) := by
   intro h
   have hcanonical : originalTargetPredicate V C
@@ -385,7 +387,7 @@ private theorem V_not_forall_evaluation_mem_baseChange :
         LinearMap.liftBaseChange C
           ((TensorProduct.map (AlgHom.toLinearMap α)
               (LinearMap.id : C →ₗ[ℕ] C)).comp
-            ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coaction)) z
+            ((TensorProduct.comm ℕ C C).toLinearMap.comp regularComodule.coact)) z
           ∈ V.baseChange C := hold
   obtain ⟨z, hz, hn⟩ := V_id_counterexample
   exact hn (horiginal (AlgHom.id ℕ C) z hz)
@@ -406,8 +408,8 @@ private theorem top_isStable : regularComodule.IsStable (⊤ : Submodule ℕ C) 
     | tmul c d =>
         exact ⟨(⟨c, Submodule.mem_top⟩ : (⊤ : Submodule ℕ C)) ⊗ₜ[ℕ] d, rfl⟩
     | add a b ha hb => exact Submodule.add_mem _ ha hb
-  exact hall (regularComodule.coaction x)
+  exact hall (regularComodule.coact x)
 
 end NatMonoidAlgebraExamples
 
-end Coalgebra.RightComodule
+end TauCeti.Comodule

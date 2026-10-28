@@ -56,18 +56,6 @@ universe u
 
 namespace AlgebraicGeometry
 
-private theorem rootsOfUnity_primitive_eq_zero (K : Type u) [Field K]
-    (n : ℕ) (x : rootsOfUnityCoordinateRing K n)
-    (hx : Bialgebra.IsPrimitiveElem K x) : x = 0 := by
-  let equiv := AddMonoidAlgebra.toMultiplicativeBialgEquiv K K (ZMod n)
-  have he : Bialgebra.IsPrimitiveElem K (equiv x) := by
-    simpa only [map_one] using
-      (Coalgebra.isSkewPrimitiveElem_map_equiv (R := K)
-        (g := (1 : rootsOfUnityCoordinateRing K n)) (h := 1) (a := x) equiv).2 hx
-  apply (EquivLike.injective equiv)
-  exact ((MonoidAlgebra.isPrimitiveElem_iff_eq_zero (equiv x)).1 he).trans
-    (map_zero equiv).symm
-
 /-- In positive characteristic, no group-scheme isomorphism identifies the
 characteristic-power infinitesimal additive group with roots of unity of the
 same order. This is the corrected `0 < m` form of the assertion in Milne's
@@ -77,7 +65,7 @@ theorem infinitesimalAdditiveGroupScheme_not_iso_rootsOfUnity
     (K : Type u) [Field K] (p : ℕ) [Fact p.Prime] [CharP K p]
     (m : ℕ) (hm : 0 < m) :
     ¬ Nonempty (infinitesimalAdditiveGroupScheme K p m ≅
-      rootsOfUnityGroupScheme K (p ^ m)) := by
+      (TauCeti.RootsOfUnityGroup.groupScheme K (p ^ m))) := by
   intro ⟨iso⟩
   have hN : 1 < p ^ m := Nat.one_lt_pow (Nat.ne_of_gt hm) (Fact.out : p.Prime).one_lt
   have hcoord : infinitesimalAdditiveCoordinate K p m ≠ 0 :=
@@ -89,9 +77,10 @@ theorem infinitesimalAdditiveGroupScheme_not_iso_rootsOfUnity
     · simpa only [add_comm] using infinitesimalAdditiveCoordinate_comul K p m
   let isoHopf : (hopfSpec (.of K)).obj
       (.op (.of K (infinitesimalAdditiveCoordinateRing K p m))) ≅
-      (hopfSpec (.of K)).obj (.op (.of K (rootsOfUnityCoordinateRing K (p ^ m)))) := iso
+      (hopfSpec (.of K)).obj (.op (.of K ((MonoidAlgebra K
+        (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m)))))) := iso
   let equiv : infinitesimalAdditiveCoordinateRing K p m ≃ₐc[K]
-      rootsOfUnityCoordinateRing K (p ^ m) :=
+      (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))) :=
     CommHopfAlgCat.ofIso
       (((hopfSpec.fullyFaithful (R := .of K)).preimageIso isoHopf).unop.symm)
   have he : Bialgebra.IsPrimitiveElem K
@@ -102,6 +91,6 @@ theorem infinitesimalAdditiveGroupScheme_not_iso_rootsOfUnity
         (a := infinitesimalAdditiveCoordinate K p m) equiv).2 hprim
   apply hcoord
   apply (EquivLike.injective equiv)
-  exact (rootsOfUnity_primitive_eq_zero K (p ^ m) _ he).trans (map_zero equiv).symm
+  exact ((MonoidAlgebra.isPrimitiveElem_iff_eq_zero _).mp he).trans (map_zero equiv).symm
 
 end AlgebraicGeometry

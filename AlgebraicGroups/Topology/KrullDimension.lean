@@ -6,7 +6,7 @@ module
 
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.JacobsonSpace
-public import Mathlib.Topology.KrullDimension
+public import TauCeti.Topology.KrullDimension.Basic
 
 /-!
 # Topological Krull dimension and open covers
@@ -93,28 +93,12 @@ theorem topologicalKrullDim_eq_iSup_of_isOpen_cover
     {ι : Type*} (U : ι → Set X) (hU : ∀ i, IsOpen (U i))
     (hcover : ⋃ i, U i = Set.univ) :
     topologicalKrullDim X = ⨆ i, topologicalKrullDim (U i) := by
-  apply le_antisymm
-  · rw [topologicalKrullDim, Order.krullDim]
-    apply iSup_le
-    intro p
-    obtain ⟨z, hz⟩ := p.head.isIrreducible.nonempty
-    have hzcover : z ∈ ⋃ i, U i := by
-      rw [hcover]
-      exact Set.mem_univ z
-    rw [Set.mem_iUnion] at hzcover
-    obtain ⟨i, hi⟩ := hzcover
-    let e := orderIsoOfIsOpenEmbedding (Subtype.val : U i → X)
-      (hU i).isOpenEmbedding_subtypeVal
-    let q : LTSeries (IrreducibleCloseds (U i)) :=
-      LTSeries.mk p.length
-        (fun j ↦ e.symm ⟨p j, ⟨⟨z, hi⟩, p.head_le j hz⟩⟩)
-        (fun _ _ hjk ↦ e.symm.strictMono (p.strictMono hjk))
-    apply le_iSup_of_le i
-    change (q.length : WithBot ℕ∞) ≤ Order.krullDim (IrreducibleCloseds (U i))
-    exact q.length_le_krullDim
-  · apply iSup_le
-    intro i
-    exact topologicalKrullDim_subspace_le X (U i)
+  apply TauCeti.topologicalKrullDim_eq_iSup_of_isOpenEmbedding
+    (fun i ↦ (Subtype.val : U i → X)) (fun i ↦ (hU i).isOpenEmbedding_subtypeVal)
+  intro x
+  have hx : x ∈ ⋃ i, U i := by rw [hcover]; trivial
+  obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
+  exact ⟨i, ⟨x, hi⟩, rfl⟩
 
 /-- In a locally connected space, topological Krull dimension is the supremum
 of the dimensions of the connected components. Specializes the open-cover

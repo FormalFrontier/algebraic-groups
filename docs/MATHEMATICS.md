@@ -37,14 +37,14 @@ and categorical product APIs supply the formal foundations; see the
 - `AlgebraicGeometry.affineSpecHomOverEquiv` and
   `additiveGroupHomOverEquiv` classify affine-target maps and additive
   coordinates by global sections of *any* over-scheme over a commutative
-  ring. `additiveGroupAffineProductFan_isLimit` identifies the polynomial
+  ring. `additiveGroupAffineProductFanIsLimit` identifies the polynomial
   affine scheme with the underlying *literal* categorical finite product of
   additive group schemes. `additiveGroupProductUnderlyingSpecIso` preserves
   actual projections and `additiveGroupProductUnderlyingAffineSpaceIso`
   compares the underlying product with affine space, even for empty indices
   and zero rings. These are underlying over-scheme, not group/Hopf, results;
   see the [finite-product guide](../AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace/README.md).
-- `SymmetricAlgebra.linearMapMulEquivAlgHom` identifies linear maps into any
+- `(TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := A)).symm` identifies linear maps into any
   commutative algebra with algebra maps out of a symmetric algebra under
   convolution. It works for arbitrary modules over a commutative ring; on
   primitive generators convolution is addition of linear maps.
@@ -173,124 +173,65 @@ are in the [projection module](../AlgebraicGroups/GroupScheme/UnitriangularStage
 
 ## Unitriangular base change
 
-- **Unitriangular coordinate-algebra base change.** For arbitrary commutative
-  rings `R`, `S` with `[Algebra R S]` and finite linearly ordered `ι`, scalar
-  extension of the actual unitriangular GL quotient is `S`-algebra equivalent
-  to its quotient over `S`, including the zero ring and empty indices. Its
-  presentation, coefficient and all-entry laws are in the
-  [base-change guide](../AlgebraicGroups/Algebra/UnitriangularBaseChange/README.md).
+The comparisons use `TauCeti.UpperUnitriangular.coordinateHopfAlgebra` directly,
+a polynomial algebra on strict upper pairs with its canonical Hopf structure.
+There is no external GL-quotient model or old-to-new comparison.
 
-- **Canonical unitriangular Hopf base change.** Over the same arbitrary
-  commutative base rings and finite linearly ordered indices, the algebra
-  comparison preserves the counit and coproduct of the independently given
-  tensor-product and quotient Hopf structures, hence gives a bialgebra
-  equivalence and intertwines their antipodes. The all-entry coproduct
-  formula and nonprimitive `Fin 3` client are in the
-  [Hopf base-change guide](../AlgebraicGroups/Algebra/UnitriangularHopfBaseChange/README.md).
+- [Algebra base change](../AlgebraicGroups/Algebra/UnitriangularBaseChange/README.md)
+  supplies the arbitrary-commutative-base tensor comparison and all-entry laws.
+- [Hopf base change](../AlgebraicGroups/Algebra/UnitriangularHopfBaseChange/README.md)
+  preserves coproduct, counit and antipode, including the rank-three cross term.
+- [Algebra coherence](../AlgebraicGroups/Algebra/UnitriangularBaseChangeCoherence/README.md)
+  and [scheme coherence](UnitriangularSchemeBaseChangeCoherence.md) identify
+  identity and scalar-tower comparisons with canonical tensor and pullback maps.
+- [Scheme base change](UnitriangularSchemeBaseChange.md) compares the actual
+  pulled-back group object with the canonical group scheme over the new base.
 
-- **Unitriangular base-change coherence.** The actual quotient comparison
-  agrees with the tensor unit along the identity and with tensor cancellation
-  along a commutative scalar tower, as equalities of algebra equivalences.
-  See the [coherence guide](../AlgebraicGroups/Algebra/UnitriangularBaseChangeCoherence/README.md).
-
-- **Native unitriangular group-scheme base change.** Over arbitrary same-universe
-  commutative rings and finite linearly ordered indices, the actual pulled-back
-  unitriangular group object is isomorphic to the group scheme over the new
-  base. The forward map and base projection have readbacks; an ordinary-import
-  `Fin 3` client retains the group-product cross term. See the
-  [standalone scheme base-change guide](../docs/UnitriangularSchemeBaseChange.md).
-
-- **Unitriangular group-scheme identity and tower coherence.** The native
-  one-step base-change map agrees with the canonical pullback identity unit
-  and direct-to-iterated scalar-tower compositor. An ordinary-import `Fin 2`
-  client checks the inverse coordinate through both routes. See the
-  [standalone group-scheme coherence guide](../docs/UnitriangularSchemeBaseChangeCoherence.md).
+Same-universe commutative bases, finite linearly ordered indices, empty ranks
+and zero rings are allowed; no flatness or injectivity assumption is added.
+The focused guides preserve the original method and contributor credits.
 
 ## Triangular geometry and coordinates
 
-- **Finite triangular geometry and native dimension.** Over any commutative
-  ring, the native multiplicative, finite diagonal and finite upper-triangular
-  schemes are smooth with geometrically integral *fibers* over `Spec K`; their
-  total underlying schemes are integral when `K` is a domain. Empty index
-  types and zero rings are allowed for the relative assertions. Independently
-  importable diagonal/strict/retained-index equivalences split weakly ordered
-  pairs without finiteness and count finite pairs as `card ι + (card ι).choose 2`.
-  For the **actual native** upper-triangular GL quotient, both ideal inclusions
-  and the localized coordinate equivalence identify native retained entries
-  and polynomial variables in both directions over *any* commutative ring.
-  Its identity-determinant point gives native ring and affine `Spec` dimension
-  `card ι + (card ι).choose 2` over every field, including finite fields and
-  empty indices; no arbitrary-base or general product-dimension formula follows.
-  See the [geometry guide](../AlgebraicGroups/GroupScheme/FiniteTriangularGeometry/README.md),
-  [indices guide](../AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices/README.md)
-  and [native dimension guide](../AlgebraicGroups/GroupScheme/UpperTriangularDimension/README.md),
-  each linking its focused producer and ordinary-import client.
+The group schemes are canonical Tau Ceti models: `SplitTorus.groupScheme`,
+`GeneralLinear.UpperTriangular.groupScheme` and `UpperUnitriangular.groupScheme`.
+Upper-triangular scheme results use numerical rank `N` and native `Fin N`
+matrices, covering every finite rank including zero. Native arbitrary-index
+matrix group mathematics uses `TauCeti.upperTriangularGroup` and
+`TauCeti.upperUnitriangularGroup`; the diagonal projection takes values in
+unit tuples. There are no parallel diagonal or triangular coordinate models.
 
-- **Coordinate elimination and finite diagonal dimension.** For any commutative
-  ring, `MvPolynomial.localizedCoordinateQuotientEquiv` identifies a polynomial
-  localization modulo eliminated coordinates with localization at the erased
-  polynomial, even if that polynomial erases to zero or the base ring is trivial.
-  Over any field and finite variable type, the independent theorem
-  `MvPolynomial.ringKrullDim_localizationAway_of_eval_ne_zero` gives dimension
-  `Fintype.card σ` when a *supplied* field-valued point does not annihilate the
-  denominator; a nonzero denominator alone need not supply that nonvanishing
-  field-valued point over a finite field. This limitation concerns the supplied-point
-  hypothesis, not the general full-dimension formula for a nonzero denominator.
-  Applying both APIs to the **actual** finite diagonal Hopf quotient,
-  `DiagonalCoordinateRing.localizedPolynomialEquiv` identifies both directions
-  of its retained coordinates, and
-  `AlgebraicGeometry.diagonalGroupUnderlyingScheme_topologicalKrullDim` gives
-  dimension `Fintype.card ι` for every field and finite decidable `ι`, including
-  empty indices. Use the independent [elimination guide](../AlgebraicGroups/Algebra/LocalizedCoordinateQuotient/README.md),
-  [localization-dimension guide](../AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension/README.md)
-  and [native diagonal guide](../AlgebraicGroups/GroupScheme/DiagonalDimension/README.md),
-  with their focused producer modules and `AlgebraicGroupsTest` ordinary clients.
+- [Finite triangular geometry](../AlgebraicGroups/GroupScheme/FiniteTriangularGeometry/README.md)
+  gives smooth structure morphisms and geometrically integral fibers over
+  arbitrary commutative bases; total spaces are integral over domains.
+- [Diagonal dimension](../AlgebraicGroups/GroupScheme/DiagonalDimension/README.md)
+  presents the canonical group algebra on `Multiplicative (ι →₀ ℤ)` as a
+  polynomial localization and computes field dimension `card ι`.
+  [Upper-triangular dimension](../AlgebraicGroups/GroupScheme/UpperTriangularDimension/README.md)
+  gives the canonical retained-coordinate presentation and field dimension
+  `N + N.choose 2`. Empty ranks and zero-ring algebra presentations are included.
+- [Coordinate elimination](../AlgebraicGroups/Algebra/LocalizedCoordinateQuotient/README.md)
+  remains independent. Localization dimension uses canonical
+  `TauCeti.ringKrullDim_localization_away`; a supplied nonvanishing point is
+  sufficient, but need not exist over every finite field.
+- [Split kernels](../AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md)
+  identify the actual diagonal identity fiber with the unitriangular group.
+  [U-first products](../AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md)
+  give `U ⊗ D ≅ T` as underlying schemes. Forward multiplication is `i(u)e(d)`;
+  conjugation scales `(i,j)` by `dᵢ dⱼ⁻¹`, and the product has the U-first
+  semidirect law rather than the direct-product group law.
+- [Diagonal products](../AlgebraicGroups/GroupScheme/DiagonalProduct/README.md)
+  prove the categorical product of copies of canonical `Gₘ` against every
+  test scheme, including the empty terminal case.
+- [Point-group series](../AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration/README.md)
+  and [exact class](../AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass/README.md)
+  extend the canonical unitriangular carrier and filtration with stronger
+  lower-central, derived, quotient and exponent results under their stated
+  hypotheses.
 
-- **Represented U-first upper-triangular coordinates.** For any commutative
-  ring `K` and same-universe finite linearly ordered index type `n`, the
-  unitriangular scheme `U`, diagonal scheme `D` and upper-triangular scheme
-  `T` over `Spec K` admit a categorical isomorphism of underlying schemes
-  `U ⊗ D ≅ T` in `Over (Spec K)`. Its forward arrow is `i(u)e(d)`; its inverse
-  recovers the diagonal by projection and the unitriangular factor by right
-  (column) normalization. The represented diagonal action on the actual
-  scheme-theoretic identity fiber sends the `(i,j)` entry of `u` to
-  `d_i * u_ij * d_j⁻¹`. For arbitrary test schemes, multiplication in these
-  coordinates is `(u,d)*(u',d') = (u*α(d,u'), d*d')`: the categorical product
-  does **not** carry the canonical direct-product group law under this iso.
-  Point readbacks hold over every commutative `K`-algebra, including zero and
-  nonreduced rings; empty indices and noninjective coefficient maps need no
-  exception. Import
-  `AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct`; see its
-  [producer](../AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean),
-  [ordinary-import client](../AlgebraicGroupsTest/GroupScheme/UpperTriangularSchemeProduct.lean)
-  and [mathematical guide](../AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct/README.md).
-
-- **Split identity fiber and finite diagonal product.** The diagonal
-  projection `T ⟶ D` has a section, and the closed unitriangular subgroup
-  identifies with its *scheme-theoretic* identity fiber. See the
-  [split producer](../AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean)
-  and [split guide](../AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md).
-  For finite decidable same-universe `n`, `D` is the categorical product of
-  copies of `Gₘ` over `Spec K`, including the empty-index terminal case;
-  see the [diagonal-product guide](../AlgebraicGroups/GroupScheme/DiagonalProduct/README.md).
-  Earlier [native triangular](../AlgebraicGroups/GroupTheory/UpperTriangular/README.md),
-  [represented triangular](../AlgebraicGroups/GroupScheme/UpperTriangular/README.md),
-  [unitriangular](../AlgebraicGroups/GroupScheme/Unitriangular/README.md) and
-  [common-zero](../AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero/README.md)
-  interfaces remain available under their documented hypotheses.
-
-- **Unitriangular point-group series.** Over an arbitrary commutative ring,
-  superdiagonal subgroups of native finite unitriangular matrix groups give
-  central and lower-central series, successive additive quotients, a derived
-  series and sharp nilpotency bounds under the guides' stated hypotheses. In
-  prime characteristic the exponent results have their own coefficient and
-  size conditions. See the [point-group guides](../AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration/README.md)
-  and [exact-class guide](../AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass/README.md).
-
-The represented-product assertions are over the fixed base `Spec K`; they assert
-neither a global transported group-object instance, arbitrary-base change,
-normality of `U` in `GL`, nor source-specific coverage. The finite triangular
-geometry and dimension above are separately scoped results.
+These relative assertions allow arbitrary commutative and zero bases. Field
+dimension is separate from arbitrary-base integrality; the represented product
+assertions do not claim normality of `U` in all of `GL`.
 
 ## General and special linear geometry
 
@@ -307,57 +248,28 @@ isomorphism. Mathlib's matrix groups, affine Hopf `Spec` and Krull-dimension
 results underpin the [finite GL construction](../AlgebraicGroups/GroupScheme/GeneralLinear.lean)
 and [GL/SL dimension formulas](../AlgebraicGroups/GroupScheme/GeneralSpecialLinearDimension.lean).
 
-- `GeneralLinearCoordinateRing.CoordinateRing K n` is the determinant
-  localization of the polynomial algebra on square-matrix entries. It has a
-  universal native `Matrix.GeneralLinearGroup` matrix and an explicit
-  `quotientEquiv` with the inverse-adjoining polynomial quotient;
-  `extraVariableEquiv` identifies the polynomial algebra with one additional
-  indeterminate over the matrix-entry algebra. `homEquiv` classifies its algebra maps by
-  invertible matrices over every commutative test algebra. The native Hopf
-  structure has matrix-product comultiplication, identity counit and inverse
-  antipode (without cocommutativity). `AlgebraicGeometry.generalLinearGroupScheme`
-  is the corresponding finite-type affine group scheme, and
-  `generalLinearGroupPointsIso` is its natural **multiplicative** comparison
-  with the native matrix GL functor. All these constructions admit arbitrary
-  commutative base and target rings, including zero rings and empty finite
-  index types; finite indices need `Fintype` and `DecidableEq`. See
-  `AlgebraicGroupsTest/GeneralLinear.lean` for direct examples. Arbitrary-module
-  automorphisms and the finite determinant character are treated separately
-  below; special linear group schemes are described separately below.
-- `AlgebraicGeometry.generalLinearDeterminantSchemeHom K n` is the native
-  group-scheme morphism from finite matrix GL to the multiplicative group over
-  any commutative base ring. Its coordinate map sends the Laurent generator
-  to the determinant of the universal matrix and its inverse to `detInverse`.
-  The API proves the actual GL comultiplication, counit and antipode equations;
-  `generalLinearDeterminantBialgHom` and `hopfSpec` construct the scheme map.
-  `generalLinearDeterminant_point` identifies its action on every coefficient
-  algebra with the unit-valued matrix determinant, and
-  `generalLinearDeterminantFunctorHom` packages coefficient naturality.
-  Empty finite indices, zero rings and non-flat coefficient maps are allowed;
-  no field or nontriviality assumption is added. The section and determinant-one
-  kernel are separate focused imports below; neither constructs a canonical
-  determinant on arbitrary modules.
-- `AlgebraicGroups.GroupScheme.GeneralLinearDeterminantSection` constructs
-  `generalLinearDeterminantSectionSchemeHom K n pivot`, a multiplicative
-  one-pivot diagonal section of finite GL's determinant character, natural in
-  coefficient algebras over every commutative base. The explicit `pivot : n`
-  is necessary: a rank-zero determinant need not have a section. The coordinate
-  entries, inverse coordinate, native matrix points, non-affine scheme tests and
-  `generalLinearDeterminantSplitEpi` give the section law. Its focused client is
-  `AlgebraicGroupsTest.GeneralLinearDeterminantSection`.
-- `AlgebraicGroups.Algebra.SpecialLinearCoordinateRing` defines the quotient
-  of the finite GL coordinate algebra by the Hopf ideal generated by determinant
-  minus one, with a polynomial quotient equivalence. The `SpecialLinear` module
-  constructs its native Hopf/group scheme, closed immersion into finite GL and
-  natural native `Matrix.SpecialLinearGroup` points. `SpecialLinearKernel` proves
-  this closed subgroup is the actual determinant kernel by pushout of coordinate
-  rings and pullback in schemes over `Spec K` and group schemes, with universal
-  properties for arbitrary scheme and group-scheme tests. All of this allows
-  arbitrary commutative bases, empty finite indices and zero rings; it asserts
-  neither a basis-free SL(V) nor determinant-map smoothness or flatness by itself.
-  Finite GL/SL smoothness and determinant-map smoothness are separate focused
-  modules below. The client is
-  `AlgebraicGroupsTest.SpecialLinear`.
+The canonical GL and SL coordinate Hopf algebras and group schemes are
+`TauCeti.GeneralLinear.coordinateHopfAlgebra/groupScheme` and
+`TauCeti.SpecialLinear.coordinateHopfAlgebra/groupScheme`. The finite native
+index extension uses rank `Fintype.card n` and existing matrix reindexing:
+`TauCeti.GeneralLinear.reindexedGenericMatrix`, `reindexedPointsMulEquiv`,
+and the corresponding special-linear point API. The represented indexed
+functors are `generalLinearIndexedFunctor` and `specialLinearIndexedFunctor`.
+All commutative bases and coefficient algebras, empty indices and zero rings
+remain permitted; there is no duplicate localization or GL/SL scheme model.
+
+`SpecialLinearCoordinateRing.polynomialEquiv` retains the independent
+all-entry determinant-one polynomial presentation of the canonical SL algebra.
+`generalLinearDeterminantSchemeCoordinateMap` defines the actual character
+from the canonical lifted-integer Gm coordinate algebra, and
+`generalLinearDeterminantSchemeHom` has the native unit-valued determinant
+point formula. A chosen pivot gives `generalLinearDeterminantSectionSchemeHom`,
+including explicit coordinate, affine-point and nonaffine-test formulas.
+`SpecialLinearKernel` identifies the canonical SL inclusion as this determinant
+kernel by a ring pushout, scheme and group-scheme pullbacks, and unique lifts
+from arbitrary scheme or group-scheme tests. Rank zero is included in the
+kernel statement; the section requires an actual pivot.
+
 - `endBaseChangeRingHom` packages scalar extension of endomorphisms of an
   arbitrary module as a composition-preserving ring map. For any commutative
   base `K`, `generalLinearModuleFunctor` uses native invertible endomorphisms
@@ -386,35 +298,19 @@ and [GL/SL dimension formulas](../AlgebraicGroups/GroupScheme/GeneralSpecialLine
   commutative and zero rings are allowed. No canonical basis-free SL(V) scheme
   or construction for arbitrary/projective modules is asserted. Its focused
   client is `AlgebraicGroupsTest.SpecialLinearModule`.
-- `AlgebraicGroups.GroupScheme.GeneralSpecialLinearSmooth` proves finite matrix
-  GL and SL coordinate algebras smooth over every commutative base and the actual
-  `Spec` structure morphisms smooth, including empty indices and zero rings.
-  For nonempty indices a chosen pivot normalizes the universal GL matrix to
-  determinant one and splits the quotient **as an algebra map**, not as a
-  group/Hopf map; empty rank uses the bottom-ideal quotient equivalence.
-  These results alone do not assert smoothness of the determinant morphism,
-  faithful flatness or a semidirect-product decomposition. The focused client is
-  `AlgebraicGroupsTest.GeneralSpecialLinearSmooth`.
-- `AlgebraicGroups.GroupScheme.GeneralSpecialLinearGeometricIntegral` proves
-  `IsDomain` for the actual finite GL and SL coordinate rings and `IsIntegral`
-  for their underlying schemes when the commutative base `K` is a domain.
-  Their *actual structure morphisms* are `GeometricallyIntegral` over every
-  commutative `K`, including the zero ring (where field-valued fibers are
-  vacuous). Finite decidable indices include ranks zero, one and two; no
-  integral total space is claimed over an arbitrary non-domain base. The
-  ordinary-import client is `AlgebraicGroupsTest.GeneralSpecialLinearGeometricIntegral`;
-  see its [guide](../AlgebraicGroups/GroupScheme/GeneralSpecialLinearGeometricIntegral/README.md).
-- `AlgebraicGroups.Algebra.PolynomialRationalPointHeight` proves
-  `MvPolynomial.height_ker_eval` over a field for any finite index type,
-  including different field/index universes, without `DecidableEq`. The focused
-  `AlgebraicGroups.GroupScheme.GeneralSpecialLinearDimension` import publicly
-  exposes that helper and computes the actual GL/SL coordinate-ring Krull
-  dimensions and underlying-scheme topological Krull dimensions over a field:
-  `N ^ 2` for GL and `N ^ 2 - 1` for SL, with natural subtraction *before*
-  casting to `WithBot ℕ∞` and rank zero handled separately. Its client
-  `AlgebraicGroupsTest.GeneralSpecialLinearDimension` covers different
-  universes, ranks zero/one/two and `ZMod 2`; see the
-  [guide](../AlgebraicGroups/GroupScheme/GeneralSpecialLinearDimension/README.md).
+- [Smoothness](../AlgebraicGroups/GroupScheme/GeneralSpecialLinearSmooth.lean)
+  uses canonical GL/SL smooth coordinate algebras and retains the chosen-pivot
+  normalization section and smooth structure morphisms. The normalization
+  splits an algebra map, rather than a Hopf map.
+- [Integral geometry](../AlgebraicGroups/GroupScheme/GeneralSpecialLinearGeometricIntegral/README.md)
+  retains the SL domain result over arbitrary integral bases, integral total
+  spaces for GL and SL over domains, and geometrically integral structure
+  morphisms over every commutative base, using canonical scalar extension.
+- [Field dimensions](../AlgebraicGroups/GroupScheme/GeneralSpecialLinearDimension/README.md)
+  are `N ^ 2` and `N ^ 2 - 1`, with natural subtraction before casting and
+  rank zero explicit. Canonical Mathlib/Tau Ceti height and localization
+  theorems replace the removed local rational-point-height helper.
+
 - `AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct` uses the
   section and actual determinant-one kernel pullback to construct
   `generalLinearDeterminantProductIso K n pivot : SL(n,K) ⊗ Gₘ,K ≅ GL(n,K)`
@@ -442,8 +338,8 @@ and [GL/SL dimension formulas](../AlgebraicGroups/GroupScheme/GeneralSpecialLine
 - **Infinite vector-space dimension of general linear coordinates.** Over any
   field `K` and nonempty finite decidable index type `n`, the powers of any
   universal matrix entry are linearly independent. Thus the determinant-localized
-  coordinate algebra `GeneralLinearCoordinateRing.CoordinateRing K n` satisfies
-  `¬ Module.Finite K (GeneralLinearCoordinateRing.CoordinateRing K n)`.
+  coordinate algebra `TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)`
+  is not module-finite over `K`.
   This is vector-space nonfiniteness, not merely carrier infinitude or a
   ring/scheme Krull-dimension assertion; the empty-index coordinate algebra is
   the base field. See the [dimension API](../AlgebraicGroups/Algebra/GeneralLinearCoordinateRing/Dimension.lean)
@@ -462,9 +358,8 @@ arbitrary noncommutative Hopf algebra without cocommutativity.
 ## Antipodes of commutative Hopf algebras
 
 For a commutative semiring `R` and a commutative semiring Hopf algebra `A`
-over `R`, `HopfAlgebra.antipode_involutive` states that the antipode is
-involutive. The pointwise simp lemma `HopfAlgebra.antipode_antipode` removes
-two successive antipodes. Import the focused
+over `R`, `TauCeti.HopfAlgebra.antipode_antipode` states the pointwise
+involutivity identity and removes two successive antipodes. Import the focused
 [antipode module](../AlgebraicGroups/Algebra/HopfAlgebra/Antipode.lean).
 The proof uses Mathlib's convolution group of algebra endomorphisms and
 involutivity of group inversion; it requires neither cocommutativity nor
@@ -528,9 +423,9 @@ that additive inverses are not needed.
 ## Antipodes and comultiplication
 
 For a commutative semiring `R` and a possibly noncommutative semiring Hopf
-algebra `A`, `HopfAlgebra.comul_comp_antipode` states
+algebra `A`, `TauCeti.HopfAlgebra.antipode_comul_antidistrib` states
 `Δ ∘ S = (S ⊗ S) ∘ τ ∘ Δ`. The pointwise simp lemma
-`HopfAlgebra.comul_antipode` rewrites `Δ(S(x))`. Import the focused
+`TauCeti.HopfAlgebra.antipode_comul_antidistrib_apply` rewrites `Δ(S(x))`. Import the focused
 [comultiplication module](../AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean).
 Neither cocommutativity nor additive inverses, finiteness or nontriviality is
 assumed; the scalar and algebra universes are independent. The flip `τ` is
@@ -587,7 +482,7 @@ does not establish quotient effectivity from finite locally free hypotheses.
   pairs. Its `equalizerMapOfCommuting_isLocalizationAway` theorem identifies
   this map as localization away from an invariant idempotent when both ambient
   maps are the corresponding idempotent localizations.
-- `CategoryTheory.EquivalenceRelation.isLimit_composition_fst` gives the
+- `CategoryTheory.EquivalenceRelation.isLimitCompositionFst` gives the
   cartesian composition square of an internal equivalence relation. For a
   finite flat relation in schemes, `AlgebraicGeometry.EquivalenceRelation`
   proves that the two projections have the same rank, that rank is invariant
@@ -619,22 +514,20 @@ does not establish quotient effectivity from finite locally free hypotheses.
   family to the global equalizer. This does not prove faithful flatness,
   identify a tensor comparison, construct a quotient, or prove quotient
   effectivity.
-- `Module.FiniteProjective.finiteProjectiveCharpoly` defines the canonical
-  characteristic polynomial of an endomorphism of a finite projective module
-  of constant local rank, with base-change, monicity, and Cayley--Hamilton
-  theorems. Its reusable core is the presentation-independent Fredholm
-  polynomial in [finite-projective Fredholm](../AlgebraicGroups/LinearAlgebra/FiniteProjective/Fredholm.lean):
-  its independence proof uses Mathlib's rectangular Weinstein--Aronszajn
-  identity `Matrix.det_one_sub_mul_comm`, `Matrix.charpolyRev` and a
-  finite-free split presentation. The [characteristic-polynomial module](../AlgebraicGroups/LinearAlgebra/FiniteProjective/Charpoly.lean)
-  credits Stacks [03BH](https://stacks.math.columbia.edu/tag/03BH) and
-  [03BJ](https://stacks.math.columbia.edu/tag/03BJ) for the invariant-norm
-  and Cayley--Hamilton context; its coefficient-invariance lemma is
-  conditional, not a proof of general groupoid invariance. It does not
-  construct or specialize fixed-degree exterior-power
-  base change: that API remains an upstream mathlib responsibility, while the
-  `projective-modules` exterior-algebra, projectivity, determinant,
-  and invertible-line APIs remain separate reusable results.
+- Canonical `LinearMap.projectiveCharpolyRev` is the presentation-independent
+  Fredholm polynomial of a finite projective module endomorphism. The retained
+  [characteristic-polynomial module](../AlgebraicGroups/LinearAlgebra/FiniteProjective/Charpoly.lean)
+  proves ordinary characteristic-polynomial comparisons, monicity and
+  Cayley–Hamilton after reflection under constant local-rank hypotheses, and
+  supplies the conditional coefficient-invariance integrality argument.
+  The original split-presentation independence method uses Mathlib's rectangular
+  Weinstein–Aronszajn identity `Matrix.det_one_sub_mul_comm` and
+  `Matrix.charpolyRev`; that foundation now comes from Tau Ceti.
+  Stacks [03BH](https://stacks.math.columbia.edu/tag/03BH) and
+  [03BJ](https://stacks.math.columbia.edu/tag/03BJ) retain the invariant-norm
+  and Cayley–Hamilton credit. The coefficient-invariance lemma is conditional;
+  it does not prove general groupoid invariance. Exterior-power base change
+  remains canonical Mathlib mathematics, separate from this argument.
   `AlgebraicGeometry.EquivalenceRelation.isIntegral_appTop_equalizer_of_equivalenceRelation`
   applies it rank-stratum by rank-stratum to prove that the coordinate ring of
   an affine finite locally free internal equivalence relation over a compact
@@ -762,9 +655,10 @@ does not assert surjectivity at every test object.
   `L[W,X]/(W^p)`. The equivalence sends `X` to the free line coordinate and
   `Y - αX` to `W`; forward and inverse coordinate equations expose the
   order-`p` thickening directly.
-- `CategoryTheory.GrpObj.mulLeft`: left translation by a point is an
+- `TauCeti.leftTranslation`: left translation by a point is an
   isomorphism of a group object; its point action, unit image, and composition
-  laws are exposed directly, with generated additive forms.
+  laws are exposed directly. The retained translation module adds the
+  extra unit/composition formulas and additive translation API.
 - `CategoryTheory.GrpObj.isPullback_kernel_mul`: when `N` is the kernel of a
   group-object homomorphism `G ⟶ Q`, multiplication identifies `N × G`
   with the self-pullback `G ×_Q G`.
@@ -811,83 +705,50 @@ does not assert surjectivity at every test object.
 
 ## Roots of unity at all orders
 
-Import [`AlgebraicGroups.GroupScheme.RootsOfUnity`](../AlgebraicGroups/GroupScheme/RootsOfUnity.lean).
-For any `K : Type u` with `[CommRing K]`, `rootsOfUnityCoordinateRing K n` is
-`K[ZMod n]`, and `rootsOfUnityGroupScheme K n` is its affine group scheme over
-`Spec K`. The roots-of-unity API names below are in `AlgebraicGeometry`.
+Import [RootsOfUnity](../AlgebraicGroups/GroupScheme/RootsOfUnity.lean). The
+canonical scheme is `TauCeti.RootsOfUnityGroup.groupScheme K n`; its character
+group is `ULift (Multiplicative (ZMod n))`, with coordinate algebra
+`MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup n)`. The lift keeps
+the group in the scheme universe. There is no second cyclic coordinate model.
+`rootsOfUnityPointsIso` gives native roots of unity naturally in coefficient
+algebras. Canonical `TauCeti.RootsOfUnityGroup.adjoinRootEquiv` describes the
+positive-order polynomial presentation, and canonical character relabelling
+handles its universe lift.
 
-`rootsOfUnityPointsIso` identifies its group-valued functor of points with
-`n`-th roots of unity for every natural `n`. Character maps need only a
-commutative monoid target; the algebra-map equivalence allows commutative
-semiring targets in a separate universe. Affine points use commutative rings
-in the same ambient universe as the base, as in Mathlib's `Spec` equivalence.
-For positive `n`, `rootsOfUnityCoordinateAlgEquiv K n` gives the presentation
-`K[T]/(T^n - 1)`. At zero, all units are roots, and
-`rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup K` identifies the group
-object with the existing multiplicative group by the identity on integer
-monomials. Its coordinate algebra is Laurent, not `K[T]/(T^0 - 1)`. This
-zero-order extension goes beyond the positive-order formulation in Milne's
-item 2.4.
+At zero, every unit is a root and the canonical scheme is the multiplicative
+group. Its Laurent presentation differs from the degenerate polynomial
+quotient by `T^0 - 1`. This zero-order extension goes beyond the positive-order
+formulation in Milne's *Algebraic Groups* (2017), item 2.4.
 
 ### Finite properties and usage
 
-Mathlib's `AddMonoidAlgebra.basis (ZMod n) K` is a basis of the coordinate
-module at every order. For positive `n` its index type has cardinality `n`,
-even when `K` is the zero ring. The public properties are:
+`rootsOfUnityCoordinate_finitePresentation` gives algebra finite presentation
+at every order. `rootsOfUnityScheme_flat` and
+`rootsOfUnityScheme_locallyOfFinitePresentation` apply to the actual canonical
+structure map at every order. At positive order, `rootsOfUnityScheme_isFinite`
+and `rootsOfUnityScheme_finrank` give finiteness and pointwise rank `n`.
+No field, Noetherian or invertibility-of-`n` hypothesis is added. The coordinate
+basis is Mathlib’s canonical group-algebra basis on the lifted cyclic group.
 
-| API | Orders | Conclusion |
-| --- | --- | --- |
-| `rootsOfUnityCoordinateRing_finitePresentation K n` | All `n` | `Algebra.FinitePresentation K (rootsOfUnityCoordinateRing K n)` |
-| `rootsOfUnityScheme_isFinite K n` | `[NeZero n]` | `IsFinite (rootsOfUnityScheme K n).hom` |
-| `rootsOfUnityScheme_flat K n` | All `n` | `Flat (rootsOfUnityScheme K n).hom` |
-| `rootsOfUnityScheme_locallyOfFinitePresentation K n` | All `n` | `LocallyOfFinitePresentation (rootsOfUnityScheme K n).hom` |
-| `rootsOfUnityScheme_finrank K n x` | `[NeZero n]`, `x : Spec (.of K)` | `(rootsOfUnityScheme K n).hom.finrank x = n` |
-
-The first four declarations are instances, usable either by their names or by
-instance inference. The rank theorem is also a simp lemma. No field,
-Noetherian, global nontriviality or invertibility-of-`n` assumption is imposed,
-and the base universe `u` is arbitrary. In particular, positive order does not
-mean that `n` is a unit in `K`.
-
-The finite indexed coordinate basis together with these morphism properties
-expresses the usual finite locally free geometry of rank `n` at positive order.
-The Lean interface supplies the basis, separate finite/flat/local-finite-presentation
-properties and pointwise rank, not a bundled finite-locally-free morphism class
-or a comparison with a locally free pushforward. Algebra finite presentation
-here is not a claim of module finite presentation at every order. Nor is any
-general implication from finite and flat to finite presentation over arbitrary
-rings asserted. At zero, the Laurent algebra still has algebra finite
-presentation and its structure map is flat and locally of finite presentation;
-no finiteness or rank-zero conclusion is stated.
-
-The scheme rank formula is pointwise on the base, not a count of field-valued
-roots. At positive order, a numerical global
-`Module.finrank K (rootsOfUnityCoordinateRing K n) = n` from the finite basis
-needs the usual nontriviality/strong-rank-condition hypotheses. For a nontrivial
-commutative ring these are available, but over the zero ring Mathlib's
-`Module.finrank_subsingleton` gives `1`, not arbitrary `n`.
-The indexed basis is still valid there, and the spectrum has no points, so the
-pointwise scheme formula remains consistent.
+The pointwise scheme rank is not a count of field-valued roots. Numerical
+module finrank needs its usual nontriviality assumptions; over the zero ring
+the indexed basis still exists but the spectrum has no points. At zero order,
+algebra finite presentation and flatness remain, without a finiteness or
+rank-zero assertion. No bundled finite-locally-free morphism class or general
+finite-flat-to-finite-presentation implication is asserted.
 
 ### Standard examples and limits
 
-The rational unit `2` gives a nonidentity order-zero root, character,
-coordinate-algebra map and affine point in the
-[coordinate client](../AlgebraicGroupsTest/RootsOfUnity.lean), which also
-instantiates algebra finite presentation, flatness and local finite presentation
-at order zero over `ℚ`.
-
-For `μ₂` over `𝔽₂`, the [translation client](../AlgebraicGroupsTest/InfinitesimalAdditiveTranslation.lean)
-applies all five properties, with scheme rank two at the zero prime of `𝔽₂`.
-The coordinate algebra has dimension two by the Mathlib basis and contains the
-nonzero square-zero element `ε = U - 1`, where `U` is
-`rootsOfUnityCoordinateGenerator (ZMod 2) 2`. Thus positive order need not be
-inverted, and finite flatness does not assert reducedness or étaleness.
-Translation `U = 1 + T` is an algebra and underlying-scheme equivalence, not a
-Hopf or group-scheme identification with `α₂`; the
-[group-nonisomorphism theorem](../AlgebraicGroups/GroupScheme/InfinitesimalAdditiveNonisomorphism.lean)
-rules out such a group-scheme isomorphism at positive height. These results
-assert nothing about Tate modules or torsion of abelian varieties.
+The [root client](../AlgebraicGroupsTest/RootsOfUnity.lean) retains the
+nonidentity order-zero rational unit `2`. The
+[translation client](../AlgebraicGroupsTest/InfinitesimalAdditiveTranslation.lean)
+uses the canonical coordinate algebra of `μ₂` over `𝔽₂`, with its nonzero
+square-zero element `U - 1`, rank two and all five finite properties.
+Translation `U = 1 + T` identifies underlying algebras and schemes with the
+infinitesimal additive presentation, but not Hopf algebras or group schemes.
+The [nonisomorphism theorem](../AlgebraicGroups/GroupScheme/InfinitesimalAdditiveNonisomorphism.lean)
+retains the positive-height obstruction. These results make no claim about
+Tate modules or torsion of abelian varieties.
 
 ## Dimension, components and density
 

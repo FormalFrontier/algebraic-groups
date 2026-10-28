@@ -19,7 +19,7 @@ public section
 
 set_option warningAsError true
 
-open AlgebraicGeometry GeneralLinearCoordinateRing SpecialLinearCoordinateRing
+open AlgebraicGeometry TauCeti.GeneralLinear SpecialLinearCoordinateRing
 
 universe u
 
@@ -27,42 +27,42 @@ namespace AlgebraicGroupsTest.GeneralSpecialLinearGeometricIntegral
 
 variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
 
-example : GeometricallyIntegral (generalLinearGroupUnderlyingScheme K n).hom :=
+example : GeometricallyIntegral ((groupScheme K (Fintype.card n)).X).hom :=
   inferInstance
 
-example : GeometricallyIntegral (specialLinearGroupUnderlyingScheme K n).hom :=
+example : GeometricallyIntegral ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X).hom :=
   inferInstance
 
-example [IsDomain K] : IsDomain (GeneralLinearCoordinateRing.CoordinateRing K n) :=
+example [IsDomain K] : IsDomain ((coordinateHopfAlgebra K (Fintype.card n))) :=
   inferInstance
 
-example [IsDomain K] : IsIntegral (specialLinearGroupUnderlyingScheme K n).left :=
+example [IsDomain K] : IsIntegral ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X).left :=
   inferInstance
 
-example : IsDomain (SpecialLinearCoordinateRing.CoordinateRing ℤ (Fin 0)) :=
+example : IsDomain ((TauCeti.SpecialLinear.coordinateHopfAlgebra ℤ (Fintype.card (Fin 0)))) :=
   inferInstance
 
-example : IsIntegral (generalLinearGroupUnderlyingScheme ℤ (Fin 0)).left :=
+example : IsIntegral ((groupScheme ℤ (Fintype.card (Fin 0))).X).left :=
   inferInstance
 
-example : IsDomain (GeneralLinearCoordinateRing.CoordinateRing ℤ (Fin 1)) :=
+example : IsDomain ((coordinateHopfAlgebra ℤ (Fintype.card (Fin 1)))) :=
   inferInstance
 
-example : IsIntegral (specialLinearGroupUnderlyingScheme ℤ (Fin 1)).left :=
+example : IsIntegral ((TauCeti.SpecialLinear.groupScheme ℤ (Fintype.card (Fin 1))).X).left :=
   inferInstance
 
-example : IsDomain (SpecialLinearCoordinateRing.CoordinateRing ℤ (Fin 2)) :=
+example : IsDomain ((TauCeti.SpecialLinear.coordinateHopfAlgebra ℤ (Fintype.card (Fin 2)))) :=
   inferInstance
 
-example : IsIntegral (generalLinearGroupUnderlyingScheme ℤ (Fin 2)).left :=
-  inferInstance
-
-example : GeometricallyIntegral
-    (generalLinearGroupUnderlyingScheme (ZMod 1) (Fin 0)).hom :=
+example : IsIntegral ((groupScheme ℤ (Fintype.card (Fin 2))).X).left :=
   inferInstance
 
 example : GeometricallyIntegral
-    (specialLinearGroupUnderlyingScheme (ZMod 1) (Fin 2)).hom :=
+    ((groupScheme (ZMod 1) (Fintype.card (Fin 0))).X).hom :=
+  inferInstance
+
+example : GeometricallyIntegral
+    ((TauCeti.SpecialLinear.groupScheme (ZMod 1) (Fintype.card (Fin 2))).X).hom :=
   inferInstance
 
 end AlgebraicGroupsTest.GeneralSpecialLinearGeometricIntegral

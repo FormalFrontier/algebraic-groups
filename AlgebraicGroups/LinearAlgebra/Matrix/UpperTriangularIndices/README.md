@@ -26,7 +26,7 @@ exercise forward/inverse laws, generic empty indices, and `Fin 0`, `Fin 1`
 and `Fin 3`. From this repository's root:
 
 ```sh
-elan toolchain install leanprover/lean4:v4.34.0-rc2
+elan toolchain install leanprover/lean4:v4.36.0-rc1
 lake exe cache get
 lake build AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices \
   AlgebraicGroupsTest.LinearAlgebra.Matrix.UpperTriangularIndices

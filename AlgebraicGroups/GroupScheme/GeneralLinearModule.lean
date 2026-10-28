@@ -40,7 +40,7 @@ public section
 
 noncomputable section
 
-open CategoryTheory TensorProduct GeneralLinearCoordinateRing
+open CategoryTheory TensorProduct TauCeti.GeneralLinear
 open scoped CategoryTheory.MonObj TensorProduct Matrix
 
 universe u
@@ -142,7 +142,7 @@ theorem generalLinearModuleMatrixEquiv_natural (R S : Type u)
 compare Milne, *Algebraic Groups*, item 2.8, for a finite-dimensional vector
 space over a field. -/
 @[expose] def generalLinearModuleMatrixIso :
-    generalLinearModuleFunctor K V ≅ generalLinearGroupFunctor K indexType :=
+    generalLinearModuleFunctor K V ≅ generalLinearIndexedFunctor K indexType :=
   NatIso.ofComponents
     (fun R ↦ (generalLinearModuleMatrixEquiv K V indexType basis R).toGrpIso)
     (fun {R S} g ↦ by
@@ -153,77 +153,96 @@ space over a field. -/
 
 /-- The literal tensor order has the same chosen-basis matrix presentation. -/
 def sourceOrderedGeneralLinearMatrixIso :
-    sourceOrderedGeneralLinearFunctor K V ≅ generalLinearGroupFunctor K indexType :=
+    sourceOrderedGeneralLinearFunctor K V ≅ generalLinearIndexedFunctor K indexType :=
   sourceOrderedGeneralLinearIso K V ≪≫ generalLinearModuleMatrixIso K V indexType basis
 
 /-- With a chosen finite basis, the automorphism functor has the affine
 finite-type matrix GL representation of Milne, *Algebraic Groups*, item 2.8;
 the comparison also holds over commutative base rings. -/
 @[expose] def generalLinearModulePointsIso :
-    generalLinearModuleFunctor K V ≅ generalLinearGroupPointsFunctor K indexType :=
-  (generalLinearModuleMatrixIso K V indexType basis) ≪≫ generalLinearGroupPointsIso K indexType
+    generalLinearModuleFunctor K V ≅ TauCeti.GroupScheme.algebraPointsFunctor K
+      (TauCeti.GeneralLinear.groupScheme K (Fintype.card indexType)) :=
+  (generalLinearModuleMatrixIso K V indexType basis) ≪≫ generalLinearIndexedPointsIso K indexType
 
 /-- Coordinate evaluation of an automorphism, through its chosen-basis matrix. -/
 @[expose] def generalLinearModuleCoordinateEval (R : Type u) [CommRing R] [Algebra K R]
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
-    CoordinateRing K indexType →ₐ[K] R :=
-  evaluate (K := K) (generalLinearModuleMatrixEquiv K V indexType basis R f)
+    TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card indexType) →ₐ[K] R :=
+  ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K indexType R).symm
+    (generalLinearModuleMatrixEquiv K V indexType basis R f)).ofConv
 
 theorem generalLinearModuleCoordinateEval_entry (R : Type u)
     [CommRing R] [Algebra K R]
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R))
     (row column : indexType) :
     generalLinearModuleCoordinateEval K V indexType basis R f
-        (matrix K indexType row column) =
+        (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType row column) =
       (generalLinearScalarBasis K V indexType basis R).repr
         (f.val ((generalLinearScalarBasis K V indexType basis R) column)) row := by
-  exact (evaluate_matrix _ _ _).trans
+  exact (TauCeti.GeneralLinear.reindexedPointsMulEquiv_symm_apply K indexType R _
+    row column).trans
     (generalLinearModuleMatrixEquiv_entry K V indexType basis R f row column)
 
 @[simp] theorem generalLinearModuleCoordinateEval_detInverse (R : Type u)
     [CommRing R] [Algebra K R]
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
-    generalLinearModuleCoordinateEval K V indexType basis R f (detInverse K indexType) =
+    generalLinearModuleCoordinateEval K V indexType basis R f ((Ring.inverse
+      (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType).det)) =
       ↑(Matrix.GeneralLinearGroup.det
         (generalLinearModuleMatrixEquiv K V indexType basis R f))⁻¹ :=
-  evaluate_detInverse _
+  TauCeti.GeneralLinear.reindexedPointsMulEquiv_symm_apply_ringInverse_det K indexType R _
 
 /-- The represented point has the expected `Spec.map` on its underlying schemes. -/
 theorem generalLinearModulePointsIso_apply_left (R : CommAlgCat K)
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
     ((generalLinearModulePointsIso K V indexType basis).hom.app R f).left =
       Spec.map (CommRingCat.ofHom
-        (generalLinearModuleCoordinateEval K V indexType basis R f).toRingHom) := rfl
+        (generalLinearModuleCoordinateEval K V indexType basis R f).toRingHom) := by
+  change ((TauCeti.GeneralLinear.groupSchemePointMulEquiv
+    (R := K) (Fintype.card indexType) R)
+      ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K indexType R).symm
+        (generalLinearModuleMatrixEquiv K V indexType basis R f))).left = _
+  rw [TauCeti.GeneralLinear.groupSchemePointMulEquiv_apply_left]
+  rfl
 
 /-- Pullback of an entry coordinate at the represented automorphism point. -/
 theorem generalLinearModulePoint_preimage_entry (R : Type u)
     [CommRing R] [Algebra K R]
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R))
     (row column : indexType) :
-    (Spec.preimage (generalLinearGroupMulEquivPoints K indexType R
+    (Spec.preimage (((TauCeti.GeneralLinear.reindexedPointsMulEquiv K indexType R).symm.trans
+      (TauCeti.GeneralLinear.groupSchemePointMulEquiv (R := K) (Fintype.card indexType) R))
       (generalLinearModuleMatrixEquiv K V indexType basis R f)).left).hom
-        (matrix K indexType row column) =
+        (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType row column) =
       (generalLinearScalarBasis K V indexType basis R).repr
         (f.val ((generalLinearScalarBasis K V indexType basis R) column)) row := by
-  exact (generalLinearGroupPoint_preimage_entry K indexType R
-    (generalLinearModuleMatrixEquiv K V indexType basis R f) row column).trans
-    (generalLinearModuleMatrixEquiv_entry K V indexType basis R f row column)
+  rw [MulEquiv.trans_apply,
+    TauCeti.GeneralLinear.groupSchemePointMulEquiv_apply_left]
+  erw [Spec.preimage_map]
+  exact (TauCeti.GeneralLinear.reindexedPointsMulEquiv_symm_apply K indexType R _
+    row column).trans
+      (generalLinearModuleMatrixEquiv_entry K V indexType basis R f row column)
 
 /-- Pullback of the inverse determinant coordinate, not a determinant scheme morphism. -/
 theorem generalLinearModulePoint_preimage_detInverse (R : Type u)
     [CommRing R] [Algebra K R]
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
-    (Spec.preimage (generalLinearGroupMulEquivPoints K indexType R
+    (Spec.preimage (((TauCeti.GeneralLinear.reindexedPointsMulEquiv K indexType R).symm.trans
+      (TauCeti.GeneralLinear.groupSchemePointMulEquiv (R := K) (Fintype.card indexType) R))
       (generalLinearModuleMatrixEquiv K V indexType basis R f)).left).hom
-        (detInverse K indexType) =
+        ((Ring.inverse (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType).det)) =
       ↑(Matrix.GeneralLinearGroup.det
         (generalLinearModuleMatrixEquiv K V indexType basis R f))⁻¹ := by
-  exact generalLinearGroupPoint_preimage_detInverse K indexType R
-    (generalLinearModuleMatrixEquiv K V indexType basis R f)
+  rw [MulEquiv.trans_apply,
+    TauCeti.GeneralLinear.groupSchemePointMulEquiv_apply_left]
+  erw [Spec.preimage_map]
+  exact TauCeti.GeneralLinear.reindexedPointsMulEquiv_symm_apply_ringInverse_det
+    K indexType R _
 
 /-- The literal-order module is represented by the same group scheme after transport. -/
 def sourceOrderedGeneralLinearPointsIso :
-    sourceOrderedGeneralLinearFunctor K V ≅ generalLinearGroupPointsFunctor K indexType :=
+    sourceOrderedGeneralLinearFunctor K V ≅ TauCeti.GroupScheme.algebraPointsFunctor K
+      (TauCeti.GeneralLinear.groupScheme K (Fintype.card indexType)) :=
   sourceOrderedGeneralLinearIso K V ≪≫ generalLinearModulePointsIso K V indexType basis
 
 variable (otherBasis thirdBasis : Module.Basis indexType K V)
@@ -269,14 +288,14 @@ theorem generalLinearModuleChangeBasis_natural
 
 /-- Natural change between finite-basis matrix presentations. -/
 def generalLinearModuleChangeBasisIso :
-    generalLinearGroupFunctor K indexType ≅ generalLinearGroupFunctor K indexType :=
+    generalLinearIndexedFunctor K indexType ≅ generalLinearIndexedFunctor K indexType :=
   (generalLinearModuleMatrixIso K V indexType basis).symm ≪≫
     generalLinearModuleMatrixIso K V indexType otherBasis
 
 theorem generalLinearModulePointsIso_changeBasis (R : CommAlgCat K)
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
     (generalLinearModulePointsIso K V indexType otherBasis).hom.app R f =
-      (generalLinearGroupPointsIso K indexType).hom.app R
+      (generalLinearIndexedPointsIso K indexType).hom.app R
         (generalLinearModuleChangeBasis K V indexType basis otherBasis R
           (generalLinearModuleMatrixEquiv K V indexType basis R f)) := by
   simp only [generalLinearModulePointsIso, generalLinearModuleChangeBasis,

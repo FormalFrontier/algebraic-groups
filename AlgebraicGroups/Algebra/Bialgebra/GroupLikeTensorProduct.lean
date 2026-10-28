@@ -5,7 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeTensorProduct
-public import AlgebraicGroups.Algebra.Bialgebra.GroupLike
+public import TauCeti.Algebra.Bialgebra.GroupLike.Map
 public import Mathlib.RingTheory.Bialgebra.TensorProduct
 
 /-!
@@ -19,7 +19,7 @@ projections, and the inverse has value the pure tensor of the two factors.
 The scalar semiring is commutative, but the two bialgebras need not be. No
 nontriviality assumption is needed: group-like elements are normalized by their
 counits, including over a subsingleton scalar semiring. Naturality is inherited
-from `GroupLike.tensorEquiv_mapCoalgHoms` using `BialgHom.groupLikeMap`. When group
+from `GroupLike.tensorEquiv_mapCoalgHoms` using `TauCeti.GroupLike.map`. When group
 structures are available, preservation of inverses follows from `map_inv`.
 
 ## References

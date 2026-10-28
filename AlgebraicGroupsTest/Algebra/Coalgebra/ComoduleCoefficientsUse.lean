@@ -7,7 +7,7 @@ module
 public import AlgebraicGroupsTest.Algebra.Coalgebra.ComoduleCoefficientsGL2
 
 /-!
-# Corestriction of the standard general linear coaction
+# Corestriction of the standard general linear coact
 
 These uses express corestriction to an existing subcoalgebra of the coordinate
 coalgebra and to the intrinsic coefficient subcoalgebra. They retain the
@@ -24,6 +24,9 @@ equation equals the coefficient comodule.
 
 @[expose] public section
 
+open TauCeti
+
+
 noncomputable section
 
 open scoped TensorProduct
@@ -31,33 +34,34 @@ open scoped TensorProduct
 namespace ComoduleCoefficientsGL2
 
 example (D : Subcoalgebra ℚ C)
-    (h : ∀ m : M, comodule.coaction m ∈
+    (h : ∀ m : M, comodule.coact m ∈
       LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    Coalgebra.RightComodule ℚ D M :=
+    TauCeti.Comodule ℚ D.toSubmodule M :=
   comodule.restrictCoalgebra D h
 
 example (D : Subcoalgebra ℚ C)
-    (h : ∀ m : M, comodule.coaction m ∈
+    (h : ∀ m : M, comodule.coact m ∈
       LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
     D.subtype.toLinearMap.lTensor M ∘ₗ
-        (comodule.restrictCoalgebra D h).coaction = comodule.coaction :=
-  comodule.subtype_lTensor_comp_restrictCoalgebra_coaction D h
+        (comodule.restrictCoalgebra D h).coact = comodule.coact :=
+  comodule.subtype_lTensor_comp_restrictCoalgebra_coact D h
 
-example : Coalgebra.RightComodule ℚ comodule.coefficientSubcoalgebra M :=
+example : TauCeti.Comodule ℚ comodule.coefficientSubcoalgebra.toSubmodule M :=
   comodule.coefficientComodule
 
 example : comodule.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M ∘ₗ
-    comodule.coefficientComodule.coaction = comodule.coaction :=
-  comodule.subtype_lTensor_comp_coefficientComodule_coaction
+    comodule.coefficientComodule.coact = comodule.coact :=
+  comodule.subtype_lTensor_comp_coefficientComodule_coact
 
 /-- The standard representation has a unique corestriction to its coefficient subcoalgebra. -/
 theorem existsUnique_coefficientComodule :
-    ∃! Y : Coalgebra.RightComodule ℚ comodule.coefficientSubcoalgebra M,
-      comodule.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M ∘ₗ Y.coaction =
-        comodule.coaction := by
+    ∃! Y : TauCeti.Comodule ℚ comodule.coefficientSubcoalgebra.toSubmodule M,
+      comodule.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M ∘ₗ Y.coact =
+        comodule.coact := by
   apply (comodule.existsUnique_restrictCoalgebra_iff comodule.coefficientSubcoalgebra).mpr
-  simpa only [Coalgebra.RightComodule.coefficientSubcoalgebra_toSubmodule] using
-    (le_rfl : comodule.coefficientSpan ≤ comodule.coefficientSpan)
+  simpa only [TauCeti.Comodule.coefficientSubcoalgebra_toSubmodule] using
+    (le_rfl : (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _ comodule) ≤
+        (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _ comodule))
 
 /-- The intrinsic coefficient subcoalgebra is module-finitely-generated, nonzero and proper. -/
 theorem coefficientSubcoalgebra_fg_nonzero_proper :
@@ -65,18 +69,18 @@ theorem coefficientSubcoalgebra_fg_nonzero_proper :
       comodule.coefficientSubcoalgebra.toSubmodule ≠ ⊥ ∧
       comodule.coefficientSubcoalgebra.toSubmodule ≠ ⊤ := by
   refine ⟨comodule.coefficientSubcoalgebra_fg, ?_⟩
-  simpa only [Coalgebra.RightComodule.coefficientSubcoalgebra_toSubmodule,
+  simpa only [TauCeti.Comodule.coefficientSubcoalgebra_toSubmodule,
     coefficientSpan_eq_entrySpan] using entrySpan_nonzero_proper
 
 /-- Any corestriction with the inclusion equation is the standard coefficient comodule. -/
 theorem eq_coefficientComodule_of_inclusion
-    (Y : Coalgebra.RightComodule ℚ comodule.coefficientSubcoalgebra M)
-    (hY : comodule.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M ∘ₗ Y.coaction =
-      comodule.coaction) :
+    (Y : TauCeti.Comodule ℚ comodule.coefficientSubcoalgebra.toSubmodule M)
+    (hY : comodule.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M ∘ₗ Y.coact =
+      comodule.coact) :
     Y = comodule.coefficientComodule := by
   obtain ⟨Z, _, hunique⟩ := existsUnique_coefficientComodule
   exact (hunique Y hY).trans
     (hunique comodule.coefficientComodule
-      comodule.subtype_lTensor_comp_coefficientComodule_coaction).symm
+      comodule.subtype_lTensor_comp_coefficientComodule_coact).symm
 
 end ComoduleCoefficientsGL2

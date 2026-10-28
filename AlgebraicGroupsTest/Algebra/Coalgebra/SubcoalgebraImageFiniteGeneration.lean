@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
+public import TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map
 public import AlgebraicGroupsTest.Algebra.Coalgebra.MonoidAlgebraCollapse
 public import Mathlib.Algebra.Field.Rat
@@ -29,7 +29,7 @@ Top and bottom in the statements refer only to submodules, not to subcoalgebras.
 
 The diagonal coalgebra, index-collapse homomorphism, and its range and kernel calculations
 are supplied by Mathlib and `AlgebraicGroupsTest.Algebra.Coalgebra.MonoidAlgebraCollapse`.
-The full carrier uses `Subcoalgebra.mk'`, the group-like-span closure theorem in
+The full carrier uses `Subcoalgebra.ofSubmodule`, the group-like-span closure theorem in
 `AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan`, and `Module.Basis.span_eq`.
 The restricted coalgebra, inclusion, and codomain restriction are those of
 `Subcoalgebra.Hom`; the image and its carrier projection are those of `Subcoalgebra.Map`.
@@ -38,6 +38,9 @@ Non-finite generation uses Mathlib's `Module.not_finite_of_infinite_basis` and
 -/
 
 @[expose] public section
+
+open TauCeti
+
 
 noncomputable section
 
@@ -51,26 +54,18 @@ variable (K : Type u) [Field K]
 
 /-- The full diagonal coalgebra, packaged using its underlying top submodule. -/
 private abbrev wholeSubcoalgebra : Subcoalgebra K (AddMonoidAlgebra K ℕ) :=
-  Subcoalgebra.mk' (⊤ : Submodule K (AddMonoidAlgebra K ℕ)) <| by
-    intro x hx
-    rw [← (AddMonoidAlgebra.basis ℕ K).span_eq] at hx ⊢
-    exact comul_mem_range_mapIncl_span_of_isGroupLikeElem
-      (by
-        rintro y ⟨i, rfl⟩
-        rw [AddMonoidAlgebra.basis_apply]
-        exact AddMonoidAlgebra.isGroupLikeElem_single_one (R := K) (A := K) i) hx
+  ⊤
 
 private lemma wholeSubcoalgebra_toSubmodule :
     (wholeSubcoalgebra K).toSubmodule = ⊤ :=
-  Subcoalgebra.toSubmodule_mk' _ _
+  Subcoalgebra.top_toSubmodule
 
 private lemma mem_wholeSubcoalgebra (x : AddMonoidAlgebra K ℕ) :
     x ∈ wholeSubcoalgebra K := by
-  rw [Subcoalgebra.mem_iff, wholeSubcoalgebra_toSubmodule]
-  exact Submodule.mem_top
+  exact Subcoalgebra.mem_top _
 
 /-- Identity with its codomain restricted to the full carrier. -/
-private abbrev wholeLift : AddMonoidAlgebra K ℕ →ₗc[K] wholeSubcoalgebra K :=
+private abbrev wholeLift : AddMonoidAlgebra K ℕ →ₗc[K] (wholeSubcoalgebra K).toSubmodule :=
   (CoalgHom.id K (AddMonoidAlgebra K ℕ)).codRestrict (wholeSubcoalgebra K)
     (fun x => mem_wholeSubcoalgebra K x)
 
@@ -104,17 +99,17 @@ theorem exists_non_fg_subcoalgebra_with_fg_collapse_image :
       (AddMonoidAlgebra.mapDomainBialgHom K (0 : ℕ →+ ℕ)).toCoalgHom
     ∃ D : Subcoalgebra K (AddMonoidAlgebra K ℕ),
       D.toSubmodule = ⊤ ∧
-      (∀ i : ℕ, ∃ x : D,
+      (∀ i : ℕ, ∃ x : D.toSubmodule,
         D.subtype x = AddMonoidAlgebra.basis ℕ K i ∧
         counit (R := K) x = 1 ∧ comul (R := K) x = x ⊗ₜ[K] x ∧
         f (D.subtype x) = AddMonoidAlgebra.basis ℕ K 0) ∧
-      ¬ D.toSubmodule.FG ∧ ¬ Module.Finite K D ∧
+      ¬ D.toSubmodule.FG ∧ ¬ Module.Finite K D.toSubmodule ∧
       (Subcoalgebra.map f D).toSubmodule = Submodule.span K
         ({AddMonoidAlgebra.basis ℕ K 0} : Set (AddMonoidAlgebra K ℕ)) ∧
       (Subcoalgebra.map f D).toSubmodule ≠ ⊥ ∧
       (Subcoalgebra.map f D).toSubmodule ≠ ⊤ ∧
       (Subcoalgebra.map f D).toSubmodule.FG ∧
-      Module.Finite K (Subcoalgebra.map f D) ∧
+      Module.Finite K (Subcoalgebra.map f D).toSubmodule ∧
       ¬ Set.InjOn f (D : Set (AddMonoidAlgebra K ℕ)) ∧
       ¬ Function.Injective (f.comp D.subtype) := by
   let f : AddMonoidAlgebra K ℕ →ₗc[K] AddMonoidAlgebra K ℕ :=

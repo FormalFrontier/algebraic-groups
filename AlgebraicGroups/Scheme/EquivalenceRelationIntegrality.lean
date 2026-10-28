@@ -4,7 +4,10 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Scheme.AffineEquivalenceRelationIntegrality
+public import TauCeti.RingTheory.Invariant.EquivalenceRelation
+public import Mathlib.RingTheory.Finiteness.ModuleFinitePresentation
+public import AlgebraicGroups.LinearAlgebra.FiniteProjective.Charpoly
+public import AlgebraicGroups.Scheme.AffineEquivalenceRelation
 public import AlgebraicGroups.Scheme.EquivalenceRelationRankEqualizer
 public import AlgebraicGroups.Scheme.EquivalenceRelationRankRestrict
 
@@ -46,7 +49,7 @@ tensor comparison or effectivity is asserted.
   and the general idempotent polynomial patcher.
 -/
 
-open CategoryTheory TopologicalSpace
+open CategoryTheory CategoryTheory.Limits TopologicalSpace
 open scoped Polynomial
 
 noncomputable section
@@ -93,7 +96,7 @@ def appTopFinrankOpen {R X : Scheme.{w}} {p₁ p₂ : R ⟶ X}
 
 /-- The canonical fixed-rank characteristic polynomial on a restricted rank
 stratum has invariant coefficients in its literal affine coordinate rings. -/
-lemma finiteProjectiveCharpoly_coeff_invariant_finrankOpen
+lemma projectiveCharpolyRev_reflect_coeff_invariant_finrankOpen
     {R X : Scheme.{w}} {p₁ p₂ : R ⟶ X}
     [Flat p₁] [IsFinite p₁] [LocallyOfFinitePresentation p₁] [IsAffine X]
     (h : EquivalenceRelation p₁ p₂) (r : ℕ) :
@@ -117,10 +120,10 @@ lemma finiteProjectiveCharpoly_coeff_invariant_finrankOpen
     let _ : Module.Projective Γ(U, ⊤) Γ(V, ⊤) :=
       Module.Flat.projective_of_finitePresentation
     ∀ (x : Γ(U, ⊤)) (k : ℕ),
-      s ((finiteProjectiveCharpoly Γ(U, ⊤) Γ(V, ⊤) r
-        (Algebra.lmul Γ(U, ⊤) Γ(V, ⊤) (t x))).coeff k) =
-      t ((finiteProjectiveCharpoly Γ(U, ⊤) Γ(V, ⊤) r
-        (Algebra.lmul Γ(U, ⊤) Γ(V, ⊤) (t x))).coeff k) := by
+      s (((LinearMap.projectiveCharpolyRev
+        (Algebra.lmul Γ(U, ⊤) Γ(V, ⊤) (t x))).reflect r).coeff k) =
+      t (((LinearMap.projectiveCharpolyRev
+        (Algebra.lmul Γ(U, ⊤) Γ(V, ⊤) (t x))).reflect r).coeff k) := by
   dsimp only
   let U := finrankOpen (p₁ := p₁) r
   let V := p₁ ⁻¹ᵁ U
@@ -143,16 +146,55 @@ lemma finiteProjectiveCharpoly_coeff_invariant_finrankOpen
       (by infer_instance)
   let _ : Module.Projective Γ(U, ⊤) Γ(V, ⊤) :=
     Module.Flat.projective_of_finitePresentation
-  let hrank :=
-    appTop_localizedModule_finrank_morphismRestrict_finrankOpen
-      (p₁ := p₁) r
-  have hs : IsScalarTower.toAlgHom ℤ Γ(U, ⊤) Γ(V, ⊤) = s := rfl
-  have hrel : EquivalenceRelation (specMap s) (specMap t) := by
-    change EquivalenceRelation (Spec.map f.appTop) (Spec.map g.appTop)
-    exact appTopFinrankOpen h r
+  let sr := s.toRingHom
+  let tr := t.toRingHom
+  have hrel : EquivalenceRelation (Spec.map (CommRingCat.ofHom sr))
+      (Spec.map (CommRingCat.ofHom tr)) := appTopFinrankOpen h r
+  have hSpec : sr.IsSpecEquivRel tr := by
+    have hi {U V : Type w} [CommRing U] [CommRing V] :
+        Function.Injective (fun f : U →+* V => Spec.map (CommRingCat.ofHom f)) := by
+      intro f g he
+      exact congrArg CommRingCat.Hom.hom (Spec.map_injective he)
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · intro T _ x y hs ht
+      apply hi
+      apply hrel.right_cancellation
+      · simpa only [← Spec.map_comp, CommRingCat.ofHom_comp] using congrArg
+          (fun f : Γ(U, ⊤) →+* T => Spec.map (CommRingCat.ofHom f)) hs
+      · simpa only [← Spec.map_comp, CommRingCat.ofHom_comp] using congrArg
+          (fun f : Γ(U, ⊤) →+* T => Spec.map (CommRingCat.ofHom f)) ht
+    · intro T _ x
+      refine ⟨(Spec.preimage (Spec.map (CommRingCat.ofHom x) ≫ hrel.r)).hom, ?_, ?_⟩
+      all_goals
+        apply hi
+        simp only [CommRingCat.ofHom_comp, Spec.map_comp, Spec.map_preimage, CommRingCat.ofHom_hom]
+        simp [Category.assoc, hrel.reflexivity₁, hrel.reflexivity₂]
+    · intro T _ x
+      refine ⟨(Spec.preimage (Spec.map (CommRingCat.ofHom x) ≫ hrel.s)).hom, ?_, ?_⟩
+      all_goals
+        apply hi
+        simp only [CommRingCat.ofHom_comp, Spec.map_comp, Spec.map_preimage, CommRingCat.ofHom_hom]
+        simp [Category.assoc, hrel.symmetry₁, hrel.symmetry₂]
+    · intro T _ x y he
+      have hc : Spec.map (CommRingCat.ofHom x) ≫ Spec.map (CommRingCat.ofHom tr) =
+          Spec.map (CommRingCat.ofHom y) ≫ Spec.map (CommRingCat.ofHom sr) := by
+        simpa only [← Spec.map_comp, CommRingCat.ofHom_comp] using congrArg
+          (fun f : Γ(U, ⊤) →+* T => Spec.map (CommRingCat.ofHom f)) he
+      let c := PullbackCone.mk (Spec.map (CommRingCat.ofHom x))
+        (Spec.map (CommRingCat.ofHom y)) hc
+      refine ⟨(Spec.preimage (hrel.isLimit.lift c ≫ hrel.t)).hom, ?_, ?_⟩
+      all_goals
+        apply hi
+        simp only [CommRingCat.ofHom_comp, Spec.map_comp, Spec.map_preimage, CommRingCat.ofHom_hom]
+      · rw [Category.assoc, hrel.transitivity₁, ← Category.assoc]
+        rw [hrel.isLimit.fac c WalkingCospan.left]
+        rfl
+      · rw [Category.assoc, hrel.transitivity₂, ← Category.assoc]
+        rw [hrel.isLimit.fac c WalkingCospan.right]
+        rfl
   intro x k
-  exact finiteProjectiveCharpoly_coeff_invariant
-    s t hs hrel r hrank x k
+  rw [Polynomial.coeff_reflect]
+  exact hSpec.coeff_projectiveCharpolyRev_mem_eqLocus x _
 
 /-- A monic equation on one invariant rank stratum lifts to an ambient monic
 equation whose coefficients and value satisfy the equalizer conditions after
@@ -238,13 +280,13 @@ lemma exists_monic_lift_finrankOpen_charpoly
       (p₁ := p₁) r
   let xU : Γ(U, ⊤) := U.topIso.inv
     (algebraMap Γ(X, ⊤) Γ(X, U) x)
-  let q : Γ(U, ⊤)[X] := finiteProjectiveCharpoly Γ(U, ⊤) Γ(V, ⊤) r
-    (Algebra.lmul Γ(U, ⊤) Γ(V, ⊤) (t xU))
+  let q : Γ(U, ⊤)[X] := (LinearMap.projectiveCharpolyRev
+    (Algebra.lmul Γ(U, ⊤) Γ(V, ⊤) (t xU))).reflect r
   have hqmonic : q.Monic :=
-    finiteProjectiveCharpoly_monic_of_local_finrank
+    projectiveCharpolyRev_reflect_monic_of_local_finrank
       (Algebra.lmul Γ(U, ⊤) Γ(V, ⊤) (t xU)) hrank
   have hqcoeff : ∀ k, s (q.coeff k) = t (q.coeff k) := by
-    exact finiteProjectiveCharpoly_coeff_invariant_finrankOpen h r xU
+    exact projectiveCharpolyRev_reflect_coeff_invariant_finrankOpen h r xU
   have hs : IsScalarTower.toAlgHom ℤ Γ(U, ⊤) Γ(V, ⊤) = s := rfl
   have hrel : EquivalenceRelation (specMap s) (specMap t) := by
     change EquivalenceRelation (Spec.map f.appTop) (Spec.map g.appTop)
@@ -268,7 +310,7 @@ lemma exists_monic_lift_finrankOpen_charpoly
         rw [hsRing, Polynomial.eval_map_algebraMap]
         apply Algebra.lmul_injective (R := Γ(U, ⊤))
         simpa [← Polynomial.aeval_algHom_apply, q] using
-          (finiteProjectiveCharpoly_aeval_eq_zero_of_local_finrank
+          (projectiveCharpolyRev_reflect_aeval_eq_zero_of_local_finrank
             (Algebra.lmul Γ(U, ⊤) Γ(V, ⊤) (t xU)) hrank)
       _ = t 0 := (map_zero t).symm
   let qA : Γ(X, U)[X] := q.map U.topIso.hom.hom
@@ -328,7 +370,7 @@ with rank strata as in
 lemma isIntegral_appTop_equalizer_of_equivalenceRelation
     {R X : Scheme.{u}} {p₁ p₂ : R ⟶ X}
     [Flat p₁] [IsFinite p₁] [LocallyOfFinitePresentation p₁]
-    [IsAffine X] [CompactSpace X]
+    [IsAffine X]
     (h : EquivalenceRelation p₁ p₂) (x : Γ(X, ⊤)) :
     let s : Γ(X, ⊤) →ₐ[ℤ] Γ(R, ⊤) := p₁.appTop.hom.toIntAlgHom
     let t : Γ(X, ⊤) →ₐ[ℤ] Γ(R, ⊤) := p₂.appTop.hom.toIntAlgHom
@@ -336,23 +378,64 @@ lemma isIntegral_appTop_equalizer_of_equivalenceRelation
   dsimp only
   let s : Γ(X, ⊤) →ₐ[ℤ] Γ(R, ⊤) := p₁.appTop.hom.toIntAlgHom
   let t : Γ(X, ⊤) →ₐ[ℤ] Γ(R, ⊤) := p₂.appTop.hom.toIntAlgHom
-  let _ : Fintype (Set.range p₁.finrank) :=
-    AlgebraicGeometry.EquivalenceRelation.finrankRangeFintype (p₁ := p₁)
-  obtain ⟨eE, hcompleteE, hbasicE⟩ :=
-    AlgebraicGeometry.EquivalenceRelation.exists_completeOrthogonalIdempotents_equalizer_finrankOpen
-      h
-  let e : Set.range p₁.finrank → Γ(X, ⊤) := fun i ↦ (eE i).1
-  have hcomplete : CompleteOrthogonalIdempotents e := by
-    let val : AlgHom.equalizer s t →+* Γ(X, ⊤) :=
-      (AlgHom.equalizer s t).val.toRingHom
-    change CompleteOrthogonalIdempotents
-      (val ∘ eE)
-    exact hcompleteE.map val
-  choose p hpmonic hpcoeff hpeval using fun i : Set.range p₁.finrank ↦
-    exists_monic_lift_finrankOpen_charpoly h i (e i)
-      (hcomplete.idem i) (hbasicE i) x
-  exact AlgHom.isIntegral_equalizer_of_idempotent_polynomial_patches
-    s t e hcomplete.idem hcomplete.complete x p hpmonic hpcoeff hpeval
+  let _ : IsAffine R := isAffine_of_isAffineHom p₁
+  let _ : Algebra Γ(X, ⊤) Γ(R, ⊤) := s.toRingHom.toAlgebra
+  let _ : Module.Finite Γ(X, ⊤) Γ(R, ⊤) := p₁.finite_appTop
+  let _ : Module.Flat Γ(X, ⊤) Γ(R, ⊤) := p₁.flat_appTop
+  let _ : Algebra.FinitePresentation Γ(X, ⊤) Γ(R, ⊤) := p₁.finitePresentation_appTop
+  let _ : Module.FinitePresentation Γ(X, ⊤) Γ(R, ⊤) :=
+    (Module.FinitePresentation.iff_finitePresentation_of_finite Γ(X, ⊤) Γ(R, ⊤)).mpr
+      (by infer_instance)
+  let _ : Module.Projective Γ(X, ⊤) Γ(R, ⊤) :=
+    Module.Flat.projective_of_finitePresentation
+  let sr := s.toRingHom
+  let tr := t.toRingHom
+  have hrel : EquivalenceRelation (Spec.map (CommRingCat.ofHom sr))
+      (Spec.map (CommRingCat.ofHom tr)) := appTop h
+  have hSpec : sr.IsSpecEquivRel tr := by
+    have hi {U V : Type u} [CommRing U] [CommRing V] :
+        Function.Injective (fun f : U →+* V => Spec.map (CommRingCat.ofHom f)) := by
+      intro f g he
+      exact congrArg CommRingCat.Hom.hom (Spec.map_injective he)
+    refine ⟨?_, ?_, ?_, ?_⟩
+    · intro T _ x y hs ht
+      apply hi
+      apply hrel.right_cancellation
+      · simpa only [← Spec.map_comp, CommRingCat.ofHom_comp] using congrArg
+          (fun f : Γ(X, ⊤) →+* T => Spec.map (CommRingCat.ofHom f)) hs
+      · simpa only [← Spec.map_comp, CommRingCat.ofHom_comp] using congrArg
+          (fun f : Γ(X, ⊤) →+* T => Spec.map (CommRingCat.ofHom f)) ht
+    · intro T _ x
+      refine ⟨(Spec.preimage (Spec.map (CommRingCat.ofHom x) ≫ hrel.r)).hom, ?_, ?_⟩
+      all_goals
+        apply hi
+        simp only [CommRingCat.ofHom_comp, Spec.map_comp, Spec.map_preimage, CommRingCat.ofHom_hom]
+        simp [Category.assoc, hrel.reflexivity₁, hrel.reflexivity₂]
+    · intro T _ x
+      refine ⟨(Spec.preimage (Spec.map (CommRingCat.ofHom x) ≫ hrel.s)).hom, ?_, ?_⟩
+      all_goals
+        apply hi
+        simp only [CommRingCat.ofHom_comp, Spec.map_comp, Spec.map_preimage, CommRingCat.ofHom_hom]
+        simp [Category.assoc, hrel.symmetry₁, hrel.symmetry₂]
+    · intro T _ x y he
+      have hc : Spec.map (CommRingCat.ofHom x) ≫ Spec.map (CommRingCat.ofHom tr) =
+          Spec.map (CommRingCat.ofHom y) ≫ Spec.map (CommRingCat.ofHom sr) := by
+        simpa only [← Spec.map_comp, CommRingCat.ofHom_comp] using congrArg
+          (fun f : Γ(X, ⊤) →+* T => Spec.map (CommRingCat.ofHom f)) he
+      let c := PullbackCone.mk (Spec.map (CommRingCat.ofHom x))
+        (Spec.map (CommRingCat.ofHom y)) hc
+      refine ⟨(Spec.preimage (hrel.isLimit.lift c ≫ hrel.t)).hom, ?_, ?_⟩
+      all_goals
+        apply hi
+        simp only [CommRingCat.ofHom_comp, Spec.map_comp, Spec.map_preimage, CommRingCat.ofHom_hom]
+      · rw [Category.assoc, hrel.transitivity₁, ← Category.assoc]
+        rw [hrel.isLimit.fac c WalkingCospan.left]
+        rfl
+      · rw [Category.assoc, hrel.transitivity₂, ← Category.assoc]
+        rw [hrel.isLimit.fac c WalkingCospan.right]
+        rfl
+  change _root_.IsIntegral ((algebraMap Γ(X, ⊤) Γ(R, ⊤)).eqLocus tr) x
+  exact hSpec.isIntegral.1 x
 
 /-- Algebra-level form of
 `isIntegral_appTop_equalizer_of_equivalenceRelation`: the full coordinate ring
@@ -361,7 +444,7 @@ is integral over the invariant equalizer, as in Stacks Project
 theorem algebraIsIntegral_appTop_equalizer_of_equivalenceRelation
     {R X : Scheme.{u}} {p₁ p₂ : R ⟶ X}
     [Flat p₁] [IsFinite p₁] [LocallyOfFinitePresentation p₁]
-    [IsAffine X] [CompactSpace X]
+    [IsAffine X]
     (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
     let s : Γ(X, ⊤) →ₐ[ℤ] Γ(R, ⊤) := p₁.appTop.hom.toIntAlgHom
     let t : Γ(X, ⊤) →ₐ[ℤ] Γ(R, ⊤) := p₂.appTop.hom.toIntAlgHom

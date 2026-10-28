@@ -21,19 +21,17 @@ open AlgebraicGeometry
 universe u
 
 example (K : Type u) [Field K] :
-    GeometricallyIrreducible (multiplicativeGroupUnderlyingScheme K).hom := by
-  let _ : IsIntegral (multiplicativeGroupUnderlyingScheme K).left := by
-    change IsIntegral (Spec (.of (multiplicativeGroupCoordinateRing K)))
-    infer_instance
+    GeometricallyIrreducible ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom := by
+  let _ : IsIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).left :=
+    inferInstance
   exact geometricallyIrreducible_of_grpObj_of_connectedSpace
-    (multiplicativeGroupUnderlyingScheme K)
+    ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X)
 
 example (K : Type u) [Field K] :
-    GeometricallyIntegral (multiplicativeGroupUnderlyingScheme K).hom := by
-  let _ : IsIntegral (multiplicativeGroupUnderlyingScheme K).left := by
-    change IsIntegral (Spec (.of (multiplicativeGroupCoordinateRing K)))
-    infer_instance
-  let _ : GeometricallyReduced (multiplicativeGroupUnderlyingScheme K).hom :=
-    Smooth.geometricallyReduced _
+    GeometricallyIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom := by
+  let _ : IsIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).left :=
+    inferInstance
+  let _ : GeometricallyReduced ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom :=
+    inferInstance
   exact geometricallyIntegral_of_grpObj_of_connectedSpace
-    (multiplicativeGroupUnderlyingScheme K)
+    ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X)

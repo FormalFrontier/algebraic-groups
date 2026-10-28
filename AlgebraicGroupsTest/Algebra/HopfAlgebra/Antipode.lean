@@ -50,12 +50,14 @@ theorem natIntegerGroupAlgebra_antipode_antipode_sum {ι : Type*} (s : Finset ι
     (g : ι → Multiplicative ℤ) (c : ι → ℕ) :
     antipode ℕ (antipode ℕ (∑ i ∈ s, MonoidAlgebra.single (g i) (c i))) =
       ∑ i ∈ s, MonoidAlgebra.single (g i) (c i) := by
-  simp only [antipode_antipode]
+  simp only [TauCeti.HopfAlgebra.antipode_antipode]
 
 /-- Every element of the infinite group algebra `ℕ[ℤ]` is the antipode of an element. -/
 theorem natIntegerGroupAlgebra_antipode_surjective :
     Function.Surjective (antipode ℕ (A := MonoidAlgebra ℕ (Multiplicative ℤ))) :=
-  antipode_involutive.surjective
+by
+  intro x
+  exact ⟨antipode ℕ x, TauCeti.HopfAlgebra.antipode_antipode x⟩
 
 /-- The antipode sends the basis element at weight `1` to the basis element at weight `-1`. -/
 theorem natIntegerGroupAlgebra_antipode_weight_one :
@@ -76,12 +78,12 @@ theorem natIntegerGroupAlgebra_antipode_weight_one_ne :
 theorem zeroRingIntegerGroupAlgebra_antipode_antipode
     (f : MonoidAlgebra (ZMod 1) (Multiplicative ℤ)) :
     antipode (ZMod 1) (antipode (ZMod 1) f) = f := by
-  simp only [antipode_antipode]
+  simp only [TauCeti.HopfAlgebra.antipode_antipode]
 
 /-- Double antipodes recover every matrix coordinate of `GL₂` over `ℚ`. -/
 theorem generalLinearTwo_antipode_antipode_matrix (i j : Fin 2) :
-    antipode ℚ (antipode ℚ (GeneralLinearCoordinateRing.matrix ℚ (Fin 2) i j)) =
-      GeneralLinearCoordinateRing.matrix ℚ (Fin 2) i j := by
-  simp only [antipode_antipode]
+    antipode ℚ (antipode ℚ ((TauCeti.GeneralLinear.reindexedGenericMatrix ℚ (Fin 2)) i j)) =
+      (TauCeti.GeneralLinear.reindexedGenericMatrix ℚ (Fin 2)) i j := by
+  simp only [TauCeti.HopfAlgebra.antipode_antipode]
 
 end HopfAlgebra

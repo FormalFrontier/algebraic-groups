@@ -4,6 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.CategoryTheory.HomCongr
+
 public import AlgebraicGroups.GroupScheme.Additive
 public import Mathlib.AlgebraicGeometry.AffineSpace
 
@@ -120,11 +122,13 @@ section. On affine field-based tests this recovers Milne's *Algebraic Groups*
 (2017), item 2.1; the general equivalence uses Mathlib's
 `SymmetricAlgebra.lift`. -/
 @[expose] def additiveGroupHomOverEquiv (X : Over (Spec (.of K))) :
-    (X ⟶ (additiveGroupScheme K).X) ≃
+    (X ⟶ (TauCeti.AdditiveGroup.groupScheme K).X) ≃
       ((algΓ (.of K)).obj X).unop :=
-  ((affineSpecHomOverEquiv K X (additiveGroupCoordinateRing K)).trans
-    SymmetricAlgebra.lift.symm).trans
-      (LinearMap.ringLmapEquivSelf K K ((algΓ (.of K)).obj X).unop).toEquiv
+  (Iso.homCongr (Iso.refl X)
+    ((Grp.forget _).mapIso (eqToIso (TauCeti.AdditiveGroup.groupScheme_def K)))).trans
+    (((affineSpecHomOverEquiv K X (SymmetricAlgebra K K)).trans
+      SymmetricAlgebra.lift.symm).trans
+        (LinearMap.ringLmapEquivSelf K K ((algΓ (.of K)).obj X).unop).toEquiv)
 
 namespace AffineHomOver
 

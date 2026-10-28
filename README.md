@@ -1,5 +1,11 @@
 # Algebraic groups
 
+The library imports Tau Ceti for shared foundations. Retained results use its
+canonical structures directly; duplicate foundations have been removed. See
+[the migration guide](docs/TAUCETIFY.md) for the replacement APIs and local
+dependency branches, and [retained attribution](CREDITS.md#foundation-reuse-and-retained-attribution)
+for the removed modules' original credits.
+
 Lean definitions and theorems about matrix groups, affine group schemes and their
 coordinate algebras, and coalgebras. The library builds on Mathlib and separately
 maintained project libraries; it does not claim to formalize an entire source.
@@ -263,13 +269,13 @@ maintained project libraries; it does not claim to formalize an entire source.
   injectivity hypothesis is needed. The operation preserves identity, composition
   and colinear maps; change along the counit gives the scalar coaction for every
   comodule. [API and use](docs/COALGEBRAS.md#changing-the-coacting-coalgebra).
-  `RightComodule.mapCoalgebra` changes the coalgebra factor;
-  `RightComoduleHom.ofCoalgHom` makes the original coalgebra map colinear
+  `TauCeti.Comodule.Corestrict` changes the coalgebra factor;
+  `CoalgHom.toComoduleHom` makes the original coalgebra map colinear
   between the changed regular source comodule and the regular target comodule.
 - **Inverses of colinear linear equivalences.** For specified right comodules
   `X` and `Y` over the same full coalgebra, a colinear linear equivalence
   `e : M ≃ₗ[R] N` has colinear inverse, by
-  `Coalgebra.RightComoduleHom.colinear_symm`. This works over a commutative
+  `TauCeti.Comodule.Hom.colinear_symm`. This works over a commutative
   semiring on additive-commutative-monoid modules in independent universes,
   without flatness, a basis or finiteness. It reverses a map between fixed
   coactions, not the coacting coalgebra. The
@@ -293,6 +299,8 @@ maintained project libraries; it does not claim to formalize an entire source.
   equations, without a nontriviality assumption. Over a field, the weight
   submodules indexed by group-like elements are independent for arbitrary
   modules; no spanning or finite-dimensional hypothesis is used.
+  The arbitrary-element equalizer is retained locally; group-like weight spaces
+  and their independence use Tau Ceti’s canonical API.
   [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule/WeightSpace.lean).
 - **External tensor products of specified right comodules.** Over a commutative
   semiring, right comodules on arbitrary additive-monoid modules over full
@@ -314,9 +322,9 @@ maintained project libraries; it does not claim to formalize an entire source.
   [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean),
   [coordinate and zero-module examples](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean).
 - **Carrier transport of right comodules.** For a specified right `C`-comodule
-  `X` and an `R`-linear equivalence `e : V ≃ₗ[R] W`, `X.transport e` is a lawful
+  `X` and an `R`-linear equivalence `e : V ≃ₗ[R] W`, `TauCeti.Comodule.Transport e` is a lawful
   right `C`-comodule on the given target module. The coalgebra stays fixed:
-  its coaction at `w` is `(e tensor id_C) (X.coaction (e.symm w))`, changing
+  its coaction at `w` is `(e tensor id_C) (X.coact (e.symm w))`, changing
   only the first tensor factor. The canonical colinear maps with underlying
   maps `e` and `e.symm` are mutual inverses. Transport respects identity,
   successive equivalences and inverse equivalences as equalities of specified
@@ -338,20 +346,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   them. Over a field, injections increase coefficient spans, with the same
   comparisons for the underlying submodules of coefficient subcoalgebras.
   [Module](AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean).
-- **Coefficients under comodule morphisms.** For specified right comodules
-  `X`, `Y` over one full coalgebra and `h : Coalgebra.RightComoduleHom X Y`,
-  `RightComoduleHom.coefficient_apply` gives
-  `Y.coefficient ell (h m) = X.coefficient (ell.comp h.toLinearMap) m`.
-  Over a commutative semiring, surjectivity gives
-  `Y.coefficientSpan ≤ X.coefficientSpan`, and bijectivity gives equality.
-  Over a field, injectivity gives `X.coefficientSpan ≤ Y.coefficientSpan`.
-  The carriers need only be additive-commutative-monoid modules in independent
-  universes; no finite-generation hypothesis is required. Over a field with
-  an additive-group ambient coalgebra, the coefficient subcoalgebras have the
-  same respective underlying-submodule containments, and are equal for a
-  bijective map. The rational `GL₂` column representation and its
-  universe-lifted carrier retain a finitely generated, proper nonzero
-  coefficient span with a nonzero off-diagonal coefficient.
+- **Coefficients under comodule morphisms.** Canonical
+  `TauCeti.Comodule.matrixCoefficient` and `matrixCoefficientSubmodule` pull
+  back along `TauCeti.Comodule.Hom` maps. Surjections decrease coefficient
+  spans over commutative semirings, bijections preserve them, and injections
+  increase them over fields. The retained coefficient-subcoalgebra comparisons
+  require no finite-generation hypothesis. The rational GL₂ column representation
+  and its universe-lifted carrier retain a proper, nonzero, finitely generated
+  span and a nonzero off-diagonal coefficient.
   [API and models](docs/COALGEBRAS.md#coefficients-under-comodule-morphisms).
 - **Finite tensor-image containment.** Over a commutative semiring, a projective
   coalgebra's finite subsets lie in finitely generated `U` with `Δ(U)` in the
@@ -388,18 +390,19 @@ maintained project libraries; it does not claim to formalize an entire source.
   at `1`, without multiplication or nontriviality. `GroupLike.map` along
   coalgebra morphisms respects identity and composition, and this correspondence
   is natural. For possibly noncommutative semiring bialgebras,
-  `BialgHom.groupLikeMap` induces a monoid homomorphism with the same laws,
+  `TauCeti.GroupLike.map` induces a monoid homomorphism with the same laws,
   without Hopf structure. In possibly noncommutative semiring Hopf algebras,
   Mathlib's `GroupLike.toUnits` is injective, has image exactly the units with
   group-like underlying values, and commutes with `Units.map` under bialgebra
   morphisms, pointwise and as monoid homomorphisms. Mathlib provides the carrier,
   monoid/group structures, unit construction and antipode identities; this
-  library adds transport maps and characterization/naturality laws. These
+  library retains the additional coalgebra-map and Hopf-unit characterization
+  laws; shared bialgebra transport comes from Tau Ceti. These
   transport and unit results allow independent universes, with no finiteness
   or nontriviality assumptions.
   [Cardinality](AlgebraicGroups/Algebra/Coalgebra/GroupLikeCardinality.lean),
   [coalgebra maps](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean),
-  [bialgebra maps](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean),
+  [bialgebra maps](https://github.com/TauCetiProject/TauCeti/blob/31e387c73506f4de0ba05e251d2905c46bea1419/TauCeti/Algebra/Bialgebra/GroupLike/Map.lean),
   [Hopf units](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean).
   For full coalgebras on additive-group modules over a commutative semiring,
   group-like differences are ordered skew primitives; see
@@ -600,8 +603,8 @@ maintained project libraries; it does not claim to formalize an entire source.
   Zero rings and empty indices are allowed; no quotient or additive splitting.
   [Modules and guides](docs/MATHEMATICS.md#closed-unitriangular-stages).
 - **Unitriangular base change.** For arbitrary same-universe commutative rings
-  `R → S` and finite linearly ordered indices, scalar extension of the actual
-  GL quotient is the quotient over `S`. The comparison preserves the independently
+  `R → S` and finite linearly ordered indices, scalar extension of the canonical
+  polynomial Hopf algebra is its algebra over `S`. The comparison preserves the independently
   given coproduct, counit and antipode and induces an isomorphism of the actual
   pulled-back group object. Identity and scalar-tower laws agree with tensor
   unit/cancellation and canonical pullback compositors (direct to iterated).
@@ -624,8 +627,8 @@ maintained project libraries; it does not claim to formalize an entire source.
   the supplied-point hypothesis, not of the general nonzero-denominator formula.
   [Elimination](AlgebraicGroups/Algebra/LocalizedCoordinateQuotient/README.md),
   [dimension](AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension/README.md).
-- **Represented triangular products.** Over any commutative ring, for finite
-  same-universe linearly ordered indices, `U ⊗ D ≅ T` as schemes over `Spec K`.
+- **Represented triangular products.** Over any commutative ring, at each finite
+  numerical rank, `U ⊗ D ≅ T` as schemes over `Spec K`.
   The forward map is `i(u)e(d)`; the inverse uses diagonal projection and column
   normalization. Conjugation on the actual identity fiber is `dᵢ uᵢⱼ dⱼ⁻¹`,
   and multiplication is `(u,d)(u',d') = (u α(d,u'), dd')`, **not** a direct-product
@@ -661,7 +664,7 @@ maintained project libraries; it does not claim to formalize an entire source.
 | [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean) | Carrier transport with fixed coalgebra, object-coherence laws, canonical inverse colinear maps and target characterization. |
 | [`AlgebraicGroups.GroupScheme.AffineHomOverConvolution`](AlgebraicGroups/GroupScheme/AffineHomOverConvolution.lean) | Affine-target global-sections comparison with convolution, target and coefficient readbacks, naturality, and affine specialization. |
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
-| [`AlgebraicGroups.Algebra.Bialgebra.GroupLike`](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean) | Monoid homomorphism `BialgHom.groupLikeMap` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |
+| [`TauCeti.Algebra.Bialgebra.GroupLike.Map`](https://github.com/TauCetiProject/TauCeti/blob/31e387c73506f4de0ba05e251d2905c46bea1419/TauCeti/Algebra/Bialgebra/GroupLike/Map.lean) | Monoid homomorphism `TauCeti.GroupLike.map` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |
 | [`AlgebraicGroups.Algebra.HopfAlgebra.GroupLike`](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean) | Injectivity, image characterization and pointwise/monoid-homomorphism `Units.map` naturality of Mathlib's `GroupLike.toUnits` for possibly noncommutative semiring Hopf algebras over a commutative semiring. |
 | [`AlgebraicGroups.Algebra.Bialgebra.MonoidAlgebra`][bialg-monoid] | Group-like map equivalence. |
 | [`AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra`](AlgebraicGroups/Algebra/Coalgebra/MonoidAlgebra.lean) | Universal extension of group-like families and diagonal structural formulas. |
@@ -690,7 +693,7 @@ Import `AlgebraicGroups` or a focused module linked above. For example:
 
 ```lean
 import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
-#check HopfAlgebra.antipode_involutive
+#check TauCeti.HopfAlgebra.antipode_antipode
 ```
 
 ```lean
@@ -704,16 +707,17 @@ map `T → μₙ` whose composite with the canonical inclusion is `f`.
 The [rational-point example](AlgebraicGroupsTest/RootsOfUnity.lean) identifies this
 lift of `−1` at order two with the point of the explicit root `−1 : ℚ`.
 
-Lean `v4.34.0-rc2` and exact GitHub dependencies are pinned in
+Lean `v4.36.0-rc1` and exact GitHub dependencies are pinned in
 [lean-toolchain](lean-toolchain), [lakefile.toml](lakefile.toml) and
 [lake-manifest.json](lake-manifest.json). Direct requirements are Mathlib,
+Tau Ceti,
 SchemeProperties, GeneralLinearGroups and CoherentModules; building requires
 access to them.
 At the root, install the pinned toolchain and fetch the matching cache **before**
 building both library and test targets:
 
 ```sh
-elan toolchain install leanprover/lean4:v4.34.0-rc2
+elan toolchain install leanprover/lean4:v4.36.0-rc1
 lake exe cache get
 lake build AlgebraicGroups AlgebraicGroupsTest
 ```
@@ -735,7 +739,9 @@ give precise locators, qualifications and further sources; none asserts whole-so
 Authors: Formal Frontier Agents. AI agents developed the proofs and examples under
 human project direction, reusing Mathlib and project libraries. Group-like coalgebra
 coordinates combine Mathlib's diagonal coalgebra and linear-independence APIs with
-this library's span-closure and restricted-subcoalgebra constructions. Original project
+the span-closure and restricted-subcoalgebra constructions originally developed
+here; the shared foundations now use Tau Ceti directly. Historical contributions
+remain credited in CREDITS.md. Original project
 contributions use [Apache-2.0](LICENSE). [CREDITS.md](CREDITS.md) preserves contributor
 roles, mathematical-method credit and authentic third-party notices separately
 from redistribution rights.

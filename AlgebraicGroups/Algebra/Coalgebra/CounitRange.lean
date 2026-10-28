@@ -114,7 +114,7 @@ variable [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
       simpa only [map_add] using (I * I).add_mem hx hy
   have hε : _root_.TensorProduct.map (counit (R := R)) (counit (R := R)) (comul c) =
       (1 : R) ⊗ₜ[R] counit (R := R) c := by
-    simpa only [CoalgHom.toLinearMap_eq_coe, counitCoalgHom_toLinearMap,
+    simpa only [CoalgHom.toLinearMap_eq_ofClass, counitCoalgHom_toLinearMap,
       LinearMap.comp_apply, CommSemiring.comul_apply] using
       (LinearMap.congr_fun (counitCoalgHom R C).map_comp_comul c)
   simpa only [hε, _root_.TensorProduct.lid_tmul, one_smul] using h (comul c)

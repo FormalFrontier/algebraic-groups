@@ -26,7 +26,7 @@ spectrum of the zero ring is empty.
 
 ## Main results
 
-* `AlgebraicGeometry.FiniteGroupFunctions.locallyConstantMulEquivAlgHom`
+* `AlgebraicGeometry.TauCeti.ConstantGroup.locallyConstantMulEquivAlgHom`
   identifies locally constant labels with coordinate algebra maps, equipped
   with convolution.
 * `AlgebraicGeometry.finiteConstantLocallyConstantMulEquivPoints` identifies
@@ -56,11 +56,12 @@ spectrum of the zero ring is empty.
 open CategoryTheory
 open scoped CategoryTheory.MonObj TensorProduct
 
-namespace AlgebraicGeometry
+open AlgebraicGeometry
+
 
 universe u v
 
-namespace FiniteGroupFunctions
+namespace TauCeti.ConstantGroup
 
 variable {K : Type u} {Γ : Type v} {R S : Type*}
 variable [CommRing K] [Fintype Γ]
@@ -73,77 +74,84 @@ abbrev IdempotentPartitions (Γ R : Type*) [Fintype Γ] [CommRing R] :=
 
 /-- The characteristic function of the singleton `g`, as an element of the finite
 function algebra on `Γ`. -/
-noncomputable def delta (g : Γ) : FiniteGroupFunctions K Γ := by
+noncomputable def delta (g : Γ) : coordinateRing K Γ := by
   classical
-  exact Pi.single g 1
+  exact (functionAlgEquiv K Γ).symm (Pi.single g 1)
 
-omit [Fintype Γ] in
-private theorem basis_eq_delta [Finite Γ] (g : Γ) :
-    basis K Γ g = delta (K := K) g := by
+private noncomputable def coordinateBasis [Finite Γ] :
+    Module.Basis Γ K (coordinateRing K Γ) :=
+  (Pi.basisFun K Γ).map (functionAlgEquiv K Γ).symm.toLinearEquiv
+
+private theorem basis_eq_delta (g : Γ) :
+    coordinateBasis (K := K) (Γ := Γ) g = delta (K := K) g := by
   classical
-  simpa only [delta] using basis_apply K Γ g
+  simp only [coordinateBasis, Module.Basis.map_apply, Pi.basisFun_apply,
+    AlgEquiv.toLinearEquiv_apply, delta]
 
 /-- The complete orthogonal family obtained by evaluating an algebra homomorphism
 on the singleton characteristic functions. -/
 noncomputable def idempotentsOfAlgHom [CommRing R] [Algebra K R]
-    (φ : FiniteGroupFunctions K Γ →ₐ[K] R) : Γ → R :=
+    (φ : coordinateRing K Γ →ₐ[K] R) : Γ → R :=
   fun g ↦ φ (delta g)
 
 theorem idempotentsOfAlgHom_complete [CommRing R] [Algebra K R]
-    (φ : FiniteGroupFunctions K Γ →ₐ[K] R) :
+    (φ : coordinateRing K Γ →ₐ[K] R) :
     CompleteOrthogonalIdempotents (idempotentsOfAlgHom φ) := by
   classical
   unfold idempotentsOfAlgHom
-  change CompleteOrthogonalIdempotents
-    (φ.toRingHom ∘ fun g : Γ ↦ Pi.single g 1)
-  exact (CompleteOrthogonalIdempotents.single (fun _ : Γ ↦ K)).map φ.toRingHom
+  exact (CompleteOrthogonalIdempotents.single (fun _ : Γ ↦ K)).map
+    (φ.comp (functionAlgEquiv K Γ).symm.toAlgHom).toRingHom
 
 /-- The algebra homomorphism associated to a complete orthogonal family of
 idempotents, sending `f` to `∑ g, algebraMap K R (f g) * e g`. -/
 noncomputable def algHomOfIdempotents [CommRing R] [Algebra K R]
     (e : Γ → R) (he : CompleteOrthogonalIdempotents e) :
-    FiniteGroupFunctions K Γ →ₐ[K] R where
-  toFun f := ∑ g, algebraMap K R (f g) * e g
-  map_zero' := by
-    change (∑ g, algebraMap K R (0 : K) * e g) = 0
-    simp
-  map_one' := by
-    change (∑ g, algebraMap K R (1 : K) * e g) = 1
-    simpa using he.complete
-  map_add' f h := by
-    change (∑ g, algebraMap K R (f g + h g) * e g) =
-      (∑ g, algebraMap K R (f g) * e g) + ∑ g, algebraMap K R (h g) * e g
-    simp only [map_add, add_mul, Finset.sum_add_distrib]
-  map_mul' f h := by
-    classical
-    change (∑ g, algebraMap K R (f g * h g) * e g) =
-      (∑ g, algebraMap K R (f g) * e g) * ∑ g, algebraMap K R (h g) * e g
-    simp only [map_mul]
-    rw [Finset.sum_mul]
-    simp_rw [Finset.mul_sum]
-    apply Finset.sum_congr rfl
-    intro g _
-    rw [Finset.sum_eq_single g]
-    · calc
-        _ = algebraMap K R (f g) * algebraMap K R (h g) * (e g * e g) := by
-          rw [(he.idem g).eq]
-        _ = _ := by ring
-    · intro j _ hne
-      calc
-        _ = (algebraMap K R (f g) * algebraMap K R (h j)) * (e g * e j) := by ring
-        _ = 0 := by rw [he.ortho (Ne.symm hne), mul_zero]
-    · simp
-  commutes' r := by
-    change (∑ g, algebraMap K R r * e g) = algebraMap K R r
-    rw [← Finset.mul_sum]
-    simp [he.complete]
+    coordinateRing K Γ →ₐ[K] R :=
+  ({
+    toFun f := ∑ g, algebraMap K R (f g) * e g
+    map_zero' := by
+      change (∑ g, algebraMap K R (0 : K) * e g) = 0
+      simp
+    map_one' := by
+      change (∑ g, algebraMap K R (1 : K) * e g) = 1
+      simpa using he.complete
+    map_add' f h := by
+      change (∑ g, algebraMap K R (f g + h g) * e g) =
+        (∑ g, algebraMap K R (f g) * e g) + ∑ g, algebraMap K R (h g) * e g
+      simp only [map_add, add_mul, Finset.sum_add_distrib]
+    map_mul' f h := by
+      classical
+      change (∑ g, algebraMap K R (f g * h g) * e g) =
+        (∑ g, algebraMap K R (f g) * e g) * ∑ g, algebraMap K R (h g) * e g
+      simp only [map_mul]
+      rw [Finset.sum_mul]
+      simp_rw [Finset.mul_sum]
+      apply Finset.sum_congr rfl
+      intro g _
+      rw [Finset.sum_eq_single g]
+      · calc
+          _ = algebraMap K R (f g) * algebraMap K R (h g) * (e g * e g) := by
+            rw [(he.idem g).eq]
+          _ = _ := by ring
+      · intro j _ hne
+        calc
+          _ = (algebraMap K R (f g) * algebraMap K R (h j)) * (e g * e j) := by ring
+          _ = 0 := by rw [he.ortho (Ne.symm hne), mul_zero]
+      · simp
+    commutes' r := by
+      change (∑ g, algebraMap K R r * e g) = algebraMap K R r
+      rw [← Finset.mul_sum]
+      simp [he.complete]
+  } : (Γ → K) →ₐ[K] R).comp (functionAlgEquiv K Γ).toAlgHom
 
 @[simp]
 theorem algHomOfIdempotents_single [CommRing R] [Algebra K R]
     (e : Γ → R) (he : CompleteOrthogonalIdempotents e) (g : Γ) :
     algHomOfIdempotents (K := K) e he (delta g) = e g := by
   classical
-  change (∑ h, algebraMap K R ((Pi.single g 1 : Γ → K) h) * e h) = e g
+  change (∑ h, algebraMap K R
+    (functionAlgEquiv K Γ ((functionAlgEquiv K Γ).symm (Pi.single g 1)) h) * e h) = e g
+  rw [AlgEquiv.apply_symm_apply]
   rw [Finset.sum_eq_single g]
   · simp
   · intro h _ hne
@@ -154,12 +162,12 @@ theorem algHomOfIdempotents_single [CommRing R] [Algebra K R]
 complete orthogonal idempotent partitions indexed by the function domain,
 using Mathlib's `CompleteOrthogonalIdempotents` and `Pi.basisFun`. -/
 noncomputable def algHomEquivIdempotentPartitions [CommRing R] [Algebra K R] :
-    (FiniteGroupFunctions K Γ →ₐ[K] R) ≃ IdempotentPartitions Γ R where
+    (coordinateRing K Γ →ₐ[K] R) ≃ IdempotentPartitions Γ R where
   toFun φ := ⟨idempotentsOfAlgHom φ, idempotentsOfAlgHom_complete φ⟩
   invFun e := algHomOfIdempotents e.1 e.2
   left_inv φ := by
     apply AlgHom.toLinearMap_injective
-    apply (basis K Γ).ext
+    apply (coordinateBasis (K := K) (Γ := Γ)).ext
     intro g
     simp only [AlgHom.toLinearMap_apply, basis_eq_delta]
     simp [idempotentsOfAlgHom]
@@ -329,11 +337,11 @@ The construction uses Mathlib's idempotent–clopen correspondence and complete
 orthogonal idempotents. -/
 noncomputable def locallyConstantEquivAlgHom [CommRing R] [Algebra K R] :
     LocallyConstant (PrimeSpectrum R) Γ ≃
-      (FiniteGroupFunctions K Γ →ₐ[K] R) :=
+      (coordinateRing K Γ →ₐ[K] R) :=
   locallyConstantEquivIdempotentPartitions.trans algHomEquivIdempotentPartitions.symm
 
 theorem locallyConstantEquivAlgHom_symm_apply_eq_iff [CommRing R] [Algebra K R]
-    (φ : FiniteGroupFunctions K Γ →ₐ[K] R) (p : PrimeSpectrum R) (g : Γ) :
+    (φ : coordinateRing K Γ →ₐ[K] R) (p : PrimeSpectrum R) (g : Γ) :
     locallyConstantEquivAlgHom.symm φ p = g ↔
       φ (delta g) ∉ p.asIdeal := by
   change locallyConstantOfIdempotents (idempotentsOfAlgHom φ)
@@ -345,19 +353,19 @@ variable [Group Γ]
 
 omit [Group Γ] in
 theorem quotient_comp_algHom_eq_eval [CommRing R] [Algebra K R]
-    (φ : FiniteGroupFunctions K Γ →ₐ[K] R) (p : PrimeSpectrum R) :
+    (φ : coordinateRing K Γ →ₐ[K] R) (p : PrimeSpectrum R) :
     (Ideal.Quotient.mkₐ K p.asIdeal).comp φ =
       (Algebra.ofId K (R ⧸ p.asIdeal)).comp
-        (evalAlgHom K Γ (locallyConstantEquivAlgHom.symm φ p)) := by
+        (eval K Γ (locallyConstantEquivAlgHom.symm φ p)) := by
   classical
   let g := locallyConstantEquivAlgHom.symm φ p
   apply AlgHom.toLinearMap_injective
-  apply (basis K Γ).ext
+  apply (coordinateBasis (K := K) (Γ := Γ)).ext
   intro h
   simp only [AlgHom.toLinearMap_apply, AlgHom.comp_apply, Algebra.ofId_apply,
-    basis_eq_delta]
+    basis_eq_delta, eval_apply]
   change (Ideal.Quotient.mkₐ K p.asIdeal) (φ (delta h)) =
-    algebraMap K (R ⧸ p.asIdeal) (delta h g)
+    algebraMap K (R ⧸ p.asIdeal) (functionAlgEquiv K Γ (delta h) g)
   by_cases hh : h = g
   · subst h
     have hnot : φ (delta g) ∉ p.asIdeal :=
@@ -368,25 +376,19 @@ theorem quotient_comp_algHom_eq_eval [CommRing R] [Algebra K R]
         (Ideal.Quotient.mkₐ K p.asIdeal).toRingHom
     rcases IsIdempotentElem.iff_eq_zero_or_one.mp hi with hzero | hone
     · exact absurd ((Ideal.Quotient.eq_zero_iff_mem).mp hzero) hnot
-    · simpa [delta] using hone
+    · rw [delta, AlgEquiv.apply_symm_apply]
+      simpa only [delta, Pi.single_eq_same, map_one] using hone
   · have hmem : φ (delta h) ∈ p.asIdeal := by
       by_contra hnot
       have heq := (locallyConstantEquivAlgHom_symm_apply_eq_iff φ p h).2 hnot
       exact hh heq.symm
     rw [show (Ideal.Quotient.mkₐ K p.asIdeal) (φ (delta h)) = 0 from
       Ideal.Quotient.eq_zero_iff_mem.mpr hmem]
-    simp [delta, hh]
-
-theorem evalAlgHom_convMul (g h : Γ) :
-    (WithConv.toConv (evalAlgHom K Γ g) *
-      WithConv.toConv (evalAlgHom K Γ h)).ofConv =
-        evalAlgHom K Γ (g * h) := by
-  ext f
-  rw [AlgHom.convMul_apply]
-  exact DFunLike.congr_fun (evalAlgHom_comp_comulAlgHom K Γ g h) f
+    rw [delta, AlgEquiv.apply_symm_apply]
+    simp [hh]
 
 theorem locallyConstantEquivAlgHom_symm_mul [CommRing R] [Algebra K R]
-    (φ ψ : WithConv (FiniteGroupFunctions K Γ →ₐ[K] R)) :
+    (φ ψ : WithConv (coordinateRing K Γ →ₐ[K] R)) :
     locallyConstantEquivAlgHom.symm (φ * ψ).ofConv =
       locallyConstantEquivAlgHom.symm φ.ofConv *
         locallyConstantEquivAlgHom.symm ψ.ofConv := by
@@ -395,23 +397,23 @@ theorem locallyConstantEquivAlgHom_symm_mul [CommRing R] [Algebra K R]
   let h := locallyConstantEquivAlgHom.symm ψ.ofConv p
   let q : R →ₐ[K] R ⧸ p.asIdeal := Ideal.Quotient.mkₐ K p.asIdeal
   let b : K →ₐ[K] R ⧸ p.asIdeal := Algebra.ofId K (R ⧸ p.asIdeal)
-  have hφ : q.comp φ.ofConv = b.comp (evalAlgHom K Γ g) :=
+  have hφ : q.comp φ.ofConv = b.comp (eval K Γ g) :=
     quotient_comp_algHom_eq_eval φ.ofConv p
-  have hψ : q.comp ψ.ofConv = b.comp (evalAlgHom K Γ h) :=
+  have hψ : q.comp ψ.ofConv = b.comp (eval K Γ h) :=
     quotient_comp_algHom_eq_eval ψ.ofConv p
-  have hconv : q.comp (φ * ψ).ofConv = b.comp (evalAlgHom K Γ (g * h)) := by
+  have hconv : q.comp (φ * ψ).ofConv = b.comp (eval K Γ (g * h)) := by
     calc
       q.comp (φ * ψ).ofConv =
           (WithConv.toConv (q.comp φ.ofConv) *
             WithConv.toConv (q.comp ψ.ofConv)).ofConv :=
         AlgHom.comp_convMul_distrib q φ ψ
-      _ = (WithConv.toConv (b.comp (evalAlgHom K Γ g)) *
-            WithConv.toConv (b.comp (evalAlgHom K Γ h))).ofConv := by rw [hφ, hψ]
+      _ = (WithConv.toConv (b.comp (eval K Γ g)) *
+            WithConv.toConv (b.comp (eval K Γ h))).ofConv := by rw [hφ, hψ]
       _ = b.comp
-          (WithConv.toConv (evalAlgHom K Γ g) *
-            WithConv.toConv (evalAlgHom K Γ h)).ofConv :=
+          (WithConv.toConv (eval K Γ g) *
+            WithConv.toConv (eval K Γ h)).ofConv :=
         (AlgHom.comp_convMul_distrib b _ _).symm
-      _ = b.comp (evalAlgHom K Γ (g * h)) := by rw [evalAlgHom_convMul]
+      _ = b.comp (eval K Γ (g * h)) := by rw [← eval_mul, WithConv.ofConv_toConv]
   apply (locallyConstantEquivAlgHom_symm_apply_eq_iff (φ * ψ).ofConv p (g * h)).2
   intro hmem
   have hzero : q ((φ * ψ).ofConv (delta (g * h))) = 0 :=
@@ -419,11 +421,13 @@ theorem locallyConstantEquivAlgHom_symm_mul [CommRing R] [Algebra K R]
   have hone : q ((φ * ψ).ofConv (delta (g * h))) = 1 := by
     change q.comp (φ * ψ).ofConv (delta (g * h)) = 1
     rw [hconv]
-    change b (evalAlgHom K Γ (g * h) (delta (g * h))) = 1
-    have hd : delta (K := K) (g * h) (g * h) = 1 := by
+    change b (eval K Γ (g * h) (delta (g * h))) = 1
+    have hd : functionAlgEquiv K Γ (delta (K := K) (g * h)) (g * h) = 1 := by
       classical
-      simp [delta]
-    change b (delta (K := K) (g * h) (g * h)) = 1
+      rw [delta, AlgEquiv.apply_symm_apply]
+      simp
+    rw [eval_apply]
+    change b (functionAlgEquiv K Γ (delta (K := K) (g * h)) (g * h)) = 1
     rw [hd, map_one]
   exact one_ne_zero (hone.symm.trans hzero)
 
@@ -436,9 +440,9 @@ description accompanying Milne's *Algebraic Groups*, item 2.3. -/
 noncomputable def locallyConstantMulEquivAlgHom (K : Type u) (Γ : Type v) (R : Type*)
     [CommRing K] [CommRing R] [Algebra K R] [Fintype Γ] [Group Γ] :
     LocallyConstant (PrimeSpectrum R) Γ ≃*
-      WithConv (FiniteGroupFunctions K Γ →ₐ[K] R) where
+      WithConv (coordinateRing K Γ →ₐ[K] R) where
   toEquiv := (Points.locallyConstantEquivAlgHom (K := K) (Γ := Γ) (R := R)).trans
-    (WithConv.equiv (FiniteGroupFunctions K Γ →ₐ[K] R)).symm
+    (WithConv.equiv (coordinateRing K Γ →ₐ[K] R)).symm
   map_mul' f h := by
     apply WithConv.ofConv_injective
     apply (Points.locallyConstantEquivAlgHom (K := K) (Γ := Γ) (R := R)).symm.injective
@@ -447,7 +451,7 @@ noncomputable def locallyConstantMulEquivAlgHom (K : Type u) (Γ : Type v) (R : 
 
 private theorem locallyConstantEquivAlgHom_symm_comp [CommRing R] [CommRing S]
     [Algebra K R] [Algebra K S] (a : R →ₐ[K] S)
-    (φ : FiniteGroupFunctions K Γ →ₐ[K] R) :
+    (φ : coordinateRing K Γ →ₐ[K] R) :
     Points.locallyConstantEquivAlgHom.symm (a.comp φ) =
       LocallyConstant.comap
         ⟨PrimeSpectrum.comap a.toRingHom,
@@ -462,7 +466,7 @@ private theorem locallyConstantEquivAlgHom_symm_comp [CommRing R] [CommRing S]
   exact hnot
 
 /-- Coordinate-algebra naturality of
-`FiniteGroupFunctions.locallyConstantMulEquivAlgHom`. -/
+`TauCeti.ConstantGroup.locallyConstantMulEquivAlgHom`. -/
 theorem locallyConstantMulEquivAlgHom_naturality
     (K : Type u) (Γ : Type v) {R S : Type*}
     [CommRing K] [CommRing R] [CommRing S] [Algebra K R] [Algebra K S]
@@ -491,22 +495,23 @@ theorem locallyConstantMulEquivAlgHom_const
     (K : Type u) (Γ : Type v) [CommRing K] [Fintype Γ] [Group Γ] (g : Γ) :
     (locallyConstantMulEquivAlgHom K Γ K
       (LocallyConstant.const (PrimeSpectrum K) g)).ofConv =
-        evalAlgHom K Γ g := by
+        eval K Γ g := by
   apply (Points.locallyConstantEquivAlgHom
     (K := K) (Γ := Γ) (R := K)).symm.injective
   change Points.locallyConstantEquivAlgHom.symm
       (Points.locallyConstantEquivAlgHom
         (LocallyConstant.const (PrimeSpectrum K) g)) =
-    Points.locallyConstantEquivAlgHom.symm (evalAlgHom K Γ g)
+    Points.locallyConstantEquivAlgHom.symm (eval K Γ g)
   rw [Equiv.symm_apply_apply]
   ext p
   symm
   apply (Points.locallyConstantEquivAlgHom_symm_apply_eq_iff
-    (evalAlgHom K Γ g) p g).2
-  change Points.delta (K := K) g g ∉ p.asIdeal
-  have hdelta : Points.delta (K := K) g g = 1 := by
+    (eval K Γ g) p g).2
+  rw [eval_apply]
+  have hdelta : functionAlgEquiv K Γ (Points.delta (K := K) g) g = 1 := by
     classical
-    simp [Points.delta]
+    rw [Points.delta, AlgEquiv.apply_symm_apply]
+    simp
   rw [hdelta]
   intro hone
   exact p.2.ne_top ((Ideal.eq_top_iff_one p.asIdeal).2 hone)
@@ -514,11 +519,15 @@ theorem locallyConstantMulEquivAlgHom_const
 /-- If the indexing type is unique, its finite function algebra is just the
 base algebra, as in the trivial-group case of Milne's *Algebraic Groups*,
 item 2.3. -/
-def uniqueAlgEquiv (K : Type u) (Γ : Type v) [CommRing K] [Unique Γ] :
-    FiniteGroupFunctions K Γ ≃ₐ[K] K :=
-  (toPiAlgEquiv K Γ).trans (AlgEquiv.funUnique K Γ K)
+noncomputable def uniqueAlgEquiv (K : Type u) (Γ : Type v) [CommRing K] [Unique Γ] :
+    coordinateRing K Γ ≃ₐ[K] K :=
+  (functionAlgEquiv K Γ).trans (AlgEquiv.funUnique K Γ K)
 
-end FiniteGroupFunctions
+end TauCeti.ConstantGroup
+
+namespace AlgebraicGeometry
+
+open TauCeti.ConstantGroup
 
 variable (K Γ R : Type u)
 variable [CommRing K] [CommRing R] [Algebra K R] [Fintype Γ] [Group Γ]
@@ -531,18 +540,18 @@ The result also holds for the zero ring. -/
 noncomputable def finiteConstantLocallyConstantMulEquivPoints :
     LocallyConstant (PrimeSpectrum R) Γ ≃*
       ((Spec (.of R)).asOver (Spec (.of K)) ⟶
-        (finiteConstantGroupScheme K Γ).X) :=
-  (FiniteGroupFunctions.locallyConstantMulEquivAlgHom K Γ R).trans
-    (Spec.mapMulEquiv
-      (R := K) (S := FiniteGroupFunctions K Γ) (T := R))
+        (groupScheme K Γ).X) :=
+  (TauCeti.ConstantGroup.locallyConstantMulEquivAlgHom K Γ R).trans
+    (groupSchemePointMulEquiv K Γ R)
 
 @[simp]
 theorem finiteConstantLocallyConstantMulEquivPoints_apply_left
     (f : LocallyConstant (PrimeSpectrum R) Γ) :
     (finiteConstantLocallyConstantMulEquivPoints K Γ R f).left =
       Spec.map (CommRingCat.ofHom
-        (FiniteGroupFunctions.locallyConstantMulEquivAlgHom K Γ R f).ofConv.toRingHom) :=
-  rfl
+        (TauCeti.ConstantGroup.locallyConstantMulEquivAlgHom K Γ R f).ofConv.toRingHom) ≫
+        eqToHom (groupScheme_X_left K Γ).symm := by
+  exact groupSchemePointMulEquiv_apply_left K Γ R _
 
 /-- Naturality of finite-constant points under a map of base algebras. -/
 theorem finiteConstantLocallyConstantMulEquivPoints_naturality
@@ -555,32 +564,34 @@ theorem finiteConstantLocallyConstantMulEquivPoints_naturality
       (Spec.map (CommRingCat.ofHom a.toRingHom)).asOver (Spec (.of K)) ≫
         finiteConstantLocallyConstantMulEquivPoints K Γ R f := by
   apply Over.OverMorphism.ext
-  rw [finiteConstantLocallyConstantMulEquivPoints_apply_left]
+  simp only [Over.comp_left, finiteConstantLocallyConstantMulEquivPoints_apply_left]
   change Spec.map (CommRingCat.ofHom
-      (FiniteGroupFunctions.locallyConstantMulEquivAlgHom K Γ S
+      (TauCeti.ConstantGroup.locallyConstantMulEquivAlgHom K Γ S
         (LocallyConstant.comap
           ⟨PrimeSpectrum.comap a.toRingHom,
-            PrimeSpectrum.continuous_comap a.toRingHom⟩ f)).ofConv.toRingHom) =
+            PrimeSpectrum.continuous_comap a.toRingHom⟩ f)).ofConv.toRingHom) ≫
+      eqToHom (groupScheme_X_left K Γ).symm =
     Spec.map (CommRingCat.ofHom a.toRingHom) ≫
       Spec.map (CommRingCat.ofHom
-        (FiniteGroupFunctions.locallyConstantMulEquivAlgHom K Γ R f).ofConv.toRingHom)
-  rw [← Spec.map_comp]
-  congr 1
-  exact congrArg (fun h : FiniteGroupFunctions K Γ →ₐ[K] S ↦
-      CommRingCat.ofHom h.toRingHom)
-    (congrArg WithConv.ofConv
-      (FiniteGroupFunctions.locallyConstantMulEquivAlgHom_naturality K Γ a f))
+        (TauCeti.ConstantGroup.locallyConstantMulEquivAlgHom K Γ R f).ofConv.toRingHom) ≫
+          eqToHom (groupScheme_X_left K Γ).symm
+  rw [← Category.assoc, ← Spec.map_comp]
+  congr 2
+  ext x
+  have h := congrArg WithConv.ofConv
+    (TauCeti.ConstantGroup.locallyConstantMulEquivAlgHom_naturality K Γ a f)
+  exact DFunLike.congr_fun h x
 
 /-- At the base algebra, a constant label is the already constructed labelled
 rational point. -/
-@[simp]
 theorem finiteConstantLocallyConstantMulEquivPoints_const (g : Γ) :
     (finiteConstantLocallyConstantMulEquivPoints K Γ K
         (LocallyConstant.const (PrimeSpectrum K) g)).left =
-      (finiteConstantGroupSchemePoint K Γ g).left := by
+      (groupSchemePointMulEquiv K Γ K (toPoints K Γ g)).left := by
   rw [finiteConstantLocallyConstantMulEquivPoints_apply_left,
-    FiniteGroupFunctions.locallyConstantMulEquivAlgHom_const]
-  rfl
+    TauCeti.ConstantGroup.locallyConstantMulEquivAlgHom_const,
+    groupSchemePointMulEquiv_apply_left, toPoints_apply]
+  congr 2
 
 /-- Evaluation at any point is a multiplicative equivalence from locally
 constant functions on a connected space to their target group. -/
@@ -657,7 +668,7 @@ elements. -/
 noncomputable def finiteConstantMulEquivPointsOfConnected
     [ConnectedSpace (PrimeSpectrum R)] :
     Γ ≃* ((Spec (.of R)).asOver (Spec (.of K)) ⟶
-      (finiteConstantGroupScheme K Γ).X) :=
+      (groupScheme K Γ).X) :=
   (locallyConstantMulEquivOfConnected (PrimeSpectrum R) Γ).symm.trans
     (finiteConstantLocallyConstantMulEquivPoints K Γ R)
 
@@ -670,7 +681,7 @@ noncomputable def finiteConstantMulEquivPointsOfTrivialIdempotents
     [Nontrivial R]
     (h : ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1) :
     Γ ≃* ((Spec (.of R)).asOver (Spec (.of K)) ⟶
-      (finiteConstantGroupScheme K Γ).X) := by
+      (groupScheme K Γ).X) := by
   letI : ConnectedSpace (PrimeSpectrum R) :=
     (connectedSpace_primeSpectrum_iff_trivialIdempotents R).2 ⟨inferInstance, h⟩
   exact finiteConstantMulEquivPointsOfConnected K Γ R

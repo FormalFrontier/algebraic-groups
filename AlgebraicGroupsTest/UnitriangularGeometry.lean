@@ -15,66 +15,75 @@ actual affine-space identification, with no assumptions on positive rank.
 
 @[expose] public section
 
+open TauCeti.UpperUnitriangularGroup
+
+
 noncomputable section
 
-open CategoryTheory AlgebraicGeometry UnitriangularCoordinateRing
+open CategoryTheory AlgebraicGeometry
 
 universe u
 
 variable (K : Type u) [CommRing K] (ι : Type u) [Fintype ι] [LinearOrder ι]
 
-example : unitriangularGroupUnderlyingScheme K ι ≅
-    (AffineSpace (StrictUpperPair ι) (Spec (.of K))).asOver (Spec (.of K)) :=
+example : (TauCeti.UpperUnitriangular.groupScheme K ι).X ≅
+    (AffineSpace (TauCeti.UpperUnitriangular.Index ι) (Spec (.of K))).asOver (Spec (.of K)) :=
   unitriangularUnderlyingAffineSpaceIso K ι
 
-example (p : StrictUpperPair ι) :
+example (p : TauCeti.UpperUnitriangular.Index ι) :
     Spec.preimage ((unitriangularUnderlyingAffineSpaceIso K ι).hom.left ≫
-      (AffineSpace.SpecIso (StrictUpperPair ι) (.of K)).hom) (MvPolynomial.X p) =
-        quotient K ι (GeneralLinearCoordinateRing.matrix K ι p.1.1 p.1.2) :=
+      (AffineSpace.SpecIso (TauCeti.UpperUnitriangular.Index ι) (.of K)).hom) (MvPolynomial.X p) =
+        (TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K ι
+          (TauCeti.UpperUnitriangular.genericMatrix K ι p.1.1 p.1.2)) :=
   unitriangularUnderlyingAffineSpaceIso_preimage_variable K ι p
 
-example (f : CoordinateRing K ι) :
-    Spec.preimage ((AffineSpace.SpecIso (StrictUpperPair ι) (.of K)).inv ≫
+example (f : (TauCeti.UpperUnitriangular.coordinateHopfAlgebra K ι)) :
+    Spec.preimage ((AffineSpace.SpecIso (TauCeti.UpperUnitriangular.Index ι) (.of K)).inv ≫
       (unitriangularUnderlyingAffineSpaceIso K ι).inv.left) f =
-        (freeEquiv K ι).symm f :=
+        ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K ι)).symm f :=
   unitriangularUnderlyingAffineSpaceIso_preimage_inverse K ι f
 
-example : Algebra.Smooth K (CoordinateRing K ι) := inferInstance
-example : Algebra.FinitePresentation K (CoordinateRing K ι) := inferInstance
-example : Module.Flat K (CoordinateRing K ι) := inferInstance
+example : Algebra.Smooth K ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra K ι)) := inferInstance
+example : Algebra.FinitePresentation K ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra K
+  ι)) := inferInstance
+example : Module.Flat K ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra K ι)) := inferInstance
 
-example : Smooth (unitriangularGroupUnderlyingScheme K ι).hom := inferInstance
-example : Flat (unitriangularGroupUnderlyingScheme K ι).hom := inferInstance
-example : LocallyOfFinitePresentation (unitriangularGroupUnderlyingScheme K ι).hom :=
+example : Smooth ((TauCeti.UpperUnitriangular.groupScheme K ι).X).hom := inferInstance
+example : Flat ((TauCeti.UpperUnitriangular.groupScheme K ι).X).hom := inferInstance
+example : LocallyOfFinitePresentation ((TauCeti.UpperUnitriangular.groupScheme K ι).X).hom :=
   inferInstance
-example : GeometricallyIntegral (unitriangularGroupUnderlyingScheme K ι).hom :=
+example : GeometricallyIntegral ((TauCeti.UpperUnitriangular.groupScheme K ι).X).hom :=
   inferInstance
 
-example [IsDomain K] : IsIntegral (unitriangularGroupUnderlyingScheme K ι).left :=
+example [IsDomain K] : IsIntegral ((TauCeti.UpperUnitriangular.groupScheme K ι).X).left :=
   inferInstance
 
 variable (F : Type u) [Field F] (index : Type u) [Fintype index] [LinearOrder index]
 
-example : ringKrullDim (CoordinateRing F index) =
+example : ringKrullDim ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra F index)) =
     (((Fintype.card index).choose 2 : ℕ) : WithBot ℕ∞) :=
   unitriangularCoordinateRing_ringKrullDim F index
 
-example : topologicalKrullDim (unitriangularGroupUnderlyingScheme F index).left =
+example : topologicalKrullDim ((TauCeti.UpperUnitriangular.groupScheme F index).X).left =
     (((Fintype.card index).choose 2 : ℕ) : WithBot ℕ∞) :=
   unitriangularGroupUnderlyingScheme_topologicalKrullDim F index
 
-example : Smooth (unitriangularGroupUnderlyingScheme (ZMod 1) (Fin 0)).hom := inferInstance
-example : Flat (unitriangularGroupUnderlyingScheme (ZMod 1) (Fin 0)).hom := inferInstance
+example : Smooth ((TauCeti.UpperUnitriangular.groupScheme (ZMod 1) (Fin 0)).X).hom := inferInstance
+example : Flat ((TauCeti.UpperUnitriangular.groupScheme (ZMod 1) (Fin 0)).X).hom := inferInstance
 example : LocallyOfFinitePresentation
-    (unitriangularGroupUnderlyingScheme (ZMod 1) (Fin 0)).hom := inferInstance
+    ((TauCeti.UpperUnitriangular.groupScheme (ZMod 1) (Fin 0)).X).hom := inferInstance
 example : GeometricallyIntegral
-    (unitriangularGroupUnderlyingScheme (ZMod 1) (Fin 0)).hom := inferInstance
+    ((TauCeti.UpperUnitriangular.groupScheme (ZMod 1) (Fin 0)).X).hom := inferInstance
 
-example : topologicalKrullDim (unitriangularGroupUnderlyingScheme ℚ (Fin 0)).left =
-    (0 : WithBot ℕ∞) := by simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 0
-example : topologicalKrullDim (unitriangularGroupUnderlyingScheme ℚ (Fin 1)).left =
-    (0 : WithBot ℕ∞) := by simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 1
-example : topologicalKrullDim (unitriangularGroupUnderlyingScheme ℚ (Fin 2)).left =
-    (1 : WithBot ℕ∞) := by simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 2
-example : topologicalKrullDim (unitriangularGroupUnderlyingScheme ℚ (Fin 3)).left =
-    (3 : WithBot ℕ∞) := by simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 3
+example : topologicalKrullDim ((TauCeti.UpperUnitriangular.groupScheme ℚ (Fin 0)).X).left =
+    (0 : WithBot ℕ∞) := by simpa using
+      unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 0
+example : topologicalKrullDim ((TauCeti.UpperUnitriangular.groupScheme ℚ (Fin 1)).X).left =
+    (0 : WithBot ℕ∞) := by simpa using
+      unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 1
+example : topologicalKrullDim ((TauCeti.UpperUnitriangular.groupScheme ℚ (Fin 2)).X).left =
+    (1 : WithBot ℕ∞) := by simpa using
+      unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 2
+example : topologicalKrullDim ((TauCeti.UpperUnitriangular.groupScheme ℚ (Fin 3)).X).left =
+    (3 : WithBot ℕ∞) := by simpa using
+      unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 3

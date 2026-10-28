@@ -187,7 +187,7 @@ theorem vectorGroupSchemeMap_points [FiniteDimensional K V] [FiniteDimensional K
 
 /-- The Hopf-algebra pullback of a chosen additive coordinate. -/
 def vectorGroupProjectionBialgHom {i : Type u} (b : Module.Basis i K V) (j : i) :
-    additiveGroupCoordinateRing K →ₐc[K] vectorGroupCoordinateRing K V :=
+    (SymmetricAlgebra K K) →ₐc[K] vectorGroupCoordinateRing K V :=
   BialgHom.ofAlgHom
     (SymmetricAlgebra.lift ((SymmetricAlgebra.ι K (Module.Dual K V)).comp
       ((LinearMap.ringLmapEquivSelf K K (Module.Dual K V)).symm (b.coord j)))) (by
@@ -199,15 +199,16 @@ def vectorGroupProjectionBialgHom {i : Type u} (b : Module.Basis i K V) (j : i) 
 @[simp]
 theorem vectorGroupProjectionBialgHom_coordinate {i : Type u}
     (b : Module.Basis i K V) (j : i) :
-    vectorGroupProjectionBialgHom K V b j (additiveGroupCoordinate K) =
+    vectorGroupProjectionBialgHom K V b j ((SymmetricAlgebra.ι K K 1)) =
       SymmetricAlgebra.ι K (Module.Dual K V) (b.coord j) := by
-  simp [vectorGroupProjectionBialgHom, additiveGroupCoordinate]
+  simp [vectorGroupProjectionBialgHom]
 
 /-- A basis coordinate as a genuine group-scheme projection onto `Gₐ`. -/
 @[expose] def vectorGroupProjection {i : Type u} (b : Module.Basis i K V) (j : i) :
-    vectorGroupScheme K V ⟶ additiveGroupScheme K :=
+    vectorGroupScheme K V ⟶ TauCeti.AdditiveGroup.groupScheme K :=
   (hopfSpec (.of K)).map
-    (CommHopfAlgCat.ofHom (vectorGroupProjectionBialgHom K V b j)).op
+    (CommHopfAlgCat.ofHom (vectorGroupProjectionBialgHom K V b j)).op ≫
+      eqToHom (TauCeti.AdditiveGroup.groupScheme_def K).symm
 
 @[simp]
 theorem vectorGroupProjection_left {i : Type u}
@@ -215,8 +216,12 @@ theorem vectorGroupProjection_left {i : Type u}
     (vectorGroupProjection K V b j).hom.hom.left =
       Spec.map (CommRingCat.ofHom
         ((vectorGroupProjectionBialgHom K V b j :
-          additiveGroupCoordinateRing K →ₐ[K] vectorGroupCoordinateRing K V)).toRingHom) :=
-  rfl
+          (SymmetricAlgebra K K) →ₐ[K] vectorGroupCoordinateRing K V)).toRingHom) ≫
+          eqToHom (TauCeti.AdditiveGroup.groupScheme_X_left K).symm := by
+  unfold vectorGroupProjection
+  erw [Grp.comp_hom_hom, Over.comp_left]
+  congr 1
+
 
 /-- A projection reads off the corresponding dual-basis global coordinate, for
 maps from any scheme over the base (not only affine test schemes). -/
@@ -225,17 +230,24 @@ theorem vectorGroupProjection_globalCoordinate {i : Type u}
     (h : X ⟶ (vectorGroupScheme K V).X) :
     additiveGroupHomOverEquiv K X (h ≫ (vectorGroupProjection K V b j).hom.hom) =
       (vectorGroupHomOverEquiv K V X h) (b.coord j) := by
-  have hp : (vectorGroupProjection K V b j).hom.hom =
-      (algSpec (.of K)).map (CommAlgCat.ofHom
-        (vectorGroupProjectionBialgHom K V b j :
-          additiveGroupCoordinateRing K →ₐ[K] vectorGroupCoordinateRing K V)).op := rfl
-  rw [hp]
+  have hcancel : (eqToHom (TauCeti.AdditiveGroup.groupScheme_def K).symm).hom.hom ≫
+      (Grp.forget _).map (eqToHom (TauCeti.AdditiveGroup.groupScheme_def K)) =
+      𝟙 (((hopfSpec (.of K)).obj
+        (Opposite.op (TauCeti.AdditiveGroup.coordinateHopfAlgebra K))).X) := by
+    change (Grp.forget _).map (eqToHom (TauCeti.AdditiveGroup.groupScheme_def K).symm) ≫
+      (Grp.forget _).map (eqToHom (TauCeti.AdditiveGroup.groupScheme_def K)) = _
+    rw [← Functor.map_comp, eqToHom_trans, eqToHom_refl, CategoryTheory.Functor.map_id]
+    rfl
+  unfold additiveGroupHomOverEquiv vectorGroupProjection
+  erw [Equiv.trans_apply, Equiv.trans_apply, Equiv.trans_apply, Iso.homCongr_apply]
+  erw [Iso.refl_inv, Category.id_comp, Functor.mapIso_hom, eqToIso.hom,
+    Grp.comp_hom_hom, Category.assoc, Category.assoc, hcancel, Category.comp_id]
   change (LinearMap.ringLmapEquivSelf K K ((algΓ (.of K)).obj X).unop)
       (SymmetricAlgebra.lift.symm
-        (affineSpecHomOverEquiv K X (additiveGroupCoordinateRing K)
+        (affineSpecHomOverEquiv K X ((SymmetricAlgebra K K))
           (h ≫ (algSpec (.of K)).map (CommAlgCat.ofHom
             (vectorGroupProjectionBialgHom K V b j :
-              additiveGroupCoordinateRing K →ₐ[K] vectorGroupCoordinateRing K V)).op))) =
+              (SymmetricAlgebra K K) →ₐ[K] vectorGroupCoordinateRing K V)).op))) =
       (SymmetricAlgebra.lift.symm
         (affineSpecHomOverEquiv K X (vectorGroupCoordinateRing K V) h)) (b.coord j)
   erw [affineSpecHomOverEquiv_comp]
@@ -243,16 +255,16 @@ theorem vectorGroupProjection_globalCoordinate {i : Type u}
   rw [AffineHomOver.symmetricAlgebra_lift_symm_ι K K,
     AffineHomOver.symmetricAlgebra_lift_symm_ι K (Module.Dual K V)]
   change (affineSpecHomOverEquiv K X (vectorGroupCoordinateRing K V) h)
-      (vectorGroupProjectionBialgHom K V b j (additiveGroupCoordinate K)) = _
+      (vectorGroupProjectionBialgHom K V b j ((SymmetricAlgebra.ι K K 1))) = _
   rw [vectorGroupProjectionBialgHom_coordinate]
 
 /-- The cone of genuine group morphisms onto the chosen basis coordinates. -/
 @[expose] def vectorGroupBasisFan {i : Type u} (b : Module.Basis i K V) :
-    Limits.Fan (fun _ : i ↦ additiveGroupScheme K) :=
+    Limits.Fan (fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) :=
   Limits.Fan.mk (vectorGroupScheme K V) (vectorGroupProjection K V b)
 
 /-- The underlying cone is universal even for nonaffine schemes over the base. -/
-@[expose] def vectorGroupBasisFan_forget_isLimit {i : Type u} [Finite i]
+@[expose] def vectorGroupBasisFanForgetIsLimit {i : Type u} [Finite i]
     (b : Module.Basis i K V) :
     Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
       (vectorGroupBasisFan K V b)) := by
@@ -289,10 +301,10 @@ theorem vectorGroupProjection_globalCoordinate {i : Type u}
 
 /-- Group objects inherit the finite-product universal property of the
 underlying schemes. -/
-def vectorGroupBasisFan_isLimit {i : Type u} [Finite i]
+def vectorGroupBasisFanIsLimit {i : Type u} [Finite i]
     (b : Module.Basis i K V) : Limits.IsLimit (vectorGroupBasisFan K V b) :=
   Limits.isLimitOfReflects (Grp.forget (Over (Spec (.of K))))
-    (vectorGroupBasisFan_forget_isLimit K V b)
+    (vectorGroupBasisFanForgetIsLimit K V b)
 
 /-- A chosen finite basis identifies the vector group with the literal product
 of its one-dimensional additive group factors. Milne, *Algebraic Groups*
@@ -301,26 +313,26 @@ basis of size `n`; here the categorical product also includes the empty
 index type. -/
 def vectorGroupSchemeProductIso {i : Type u} [Finite i]
     (b : Module.Basis i K V) :
-    vectorGroupScheme K V ≅ (∏ᶜ fun _ : i ↦ additiveGroupScheme K) :=
-  (vectorGroupBasisFan_isLimit K V b).conePointUniqueUpToIso
-    (Limits.productIsProduct fun _ : i ↦ additiveGroupScheme K)
+    vectorGroupScheme K V ≅ (∏ᶜ fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) :=
+  (vectorGroupBasisFanIsLimit K V b).conePointUniqueUpToIso
+    (Limits.productIsProduct fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K)
 
 @[simp]
 theorem vectorGroupSchemeProductIso_hom_π {i : Type u} [Finite i]
     (b : Module.Basis i K V) (j : i) :
     (vectorGroupSchemeProductIso K V b).hom ≫
-      Limits.Pi.π (fun _ : i ↦ additiveGroupScheme K) j =
+      Limits.Pi.π (fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) j =
         vectorGroupProjection K V b j :=
-  (vectorGroupBasisFan_isLimit K V b).conePointUniqueUpToIso_hom_comp
-    (Limits.productIsProduct fun _ : i ↦ additiveGroupScheme K) ⟨j⟩
+  (vectorGroupBasisFanIsLimit K V b).conePointUniqueUpToIso_hom_comp
+    (Limits.productIsProduct fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) ⟨j⟩
 
 @[simp]
 theorem vectorGroupSchemeProductIso_inv_projection {i : Type u} [Finite i]
     (b : Module.Basis i K V) (j : i) :
     (vectorGroupSchemeProductIso K V b).inv ≫ vectorGroupProjection K V b j =
-      Limits.Pi.π (fun _ : i ↦ additiveGroupScheme K) j :=
-  (vectorGroupBasisFan_isLimit K V b).conePointUniqueUpToIso_inv_comp
-    (Limits.productIsProduct fun _ : i ↦ additiveGroupScheme K) ⟨j⟩
+      Limits.Pi.π (fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) j :=
+  (vectorGroupBasisFanIsLimit K V b).conePointUniqueUpToIso_inv_comp
+    (Limits.productIsProduct fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) ⟨j⟩
 
 /-- Every zero vector space is terminal as a group scheme, including when
 the ambient field and test algebras have arbitrary cardinality. -/
@@ -329,7 +341,7 @@ def vectorGroupSchemeZeroIsTerminal [Subsingleton V] :
   (Limits.isLimitEquivIsTerminalOfIsEmpty (Grp (Over (Spec (.of K))))
     (vectorGroupBasisFan K V (Module.Basis.empty V :
       Module.Basis PEmpty.{u+1} K V)))
-    (vectorGroupBasisFan_isLimit K V (Module.Basis.empty V :
+    (vectorGroupBasisFanIsLimit K V (Module.Basis.empty V :
       Module.Basis PEmpty.{u+1} K V))
 
 /-- The zero vector group is the terminal group object over `Spec K`. -/
@@ -344,7 +356,7 @@ def vectorGroupUnderlyingZeroIso [Subsingleton V] :
     ((Grp.forget (Over (Spec (.of K)))).mapCone
       (vectorGroupBasisFan K V (Module.Basis.empty V :
         Module.Basis PEmpty.{u+1} K V))))
-    (vectorGroupBasisFan_forget_isLimit K V (Module.Basis.empty V :
+    (vectorGroupBasisFanForgetIsLimit K V (Module.Basis.empty V :
       Module.Basis PEmpty.{u+1} K V))).uniqueUpToIso Over.mkIdTerminal
 
 /-- The pullback of a target basis coordinate is the formal polynomial linear
@@ -369,9 +381,9 @@ theorem vectorGroupSchemeMap_projection_coordinate {i j : Type u} [Fintype i]
     (b : Module.Basis i K V) (c : Module.Basis j K W)
     (f : V →ₗ[K] W) (k : j) :
     ((vectorGroupCoordinateBialgHom K V W f).comp
-      (vectorGroupProjectionBialgHom K W c k)) (additiveGroupCoordinate K) =
+      (vectorGroupProjectionBialgHom K W c k)) ((SymmetricAlgebra.ι K K 1)) =
       ∑ s : i, (c.coord k (f (b s))) •
-        (vectorGroupProjectionBialgHom K V b s) (additiveGroupCoordinate K) := by
+        (vectorGroupProjectionBialgHom K V b s) ((SymmetricAlgebra.ι K K 1)) := by
   rw [BialgHom.comp_apply, vectorGroupProjectionBialgHom_coordinate]
   simp only [vectorGroupCoordinateBialgHom_ι,
     vectorGroupProjectionBialgHom_coordinate]
@@ -443,8 +455,8 @@ theorem vectorGroupBasis_coordinate_tmul [FiniteDimensional K V]
 literal-product isomorphisms. The vector-scheme map itself is basis-independent. -/
 def vectorGroupBasisMap {i j : Type u} [Finite i] [Finite j]
     (b : Module.Basis i K V) (c : Module.Basis j K W) (f : V →ₗ[K] W) :
-    (∏ᶜ fun _ : i ↦ additiveGroupScheme K) ⟶
-      (∏ᶜ fun _ : j ↦ additiveGroupScheme K) :=
+    (∏ᶜ fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) ⟶
+      (∏ᶜ fun _ : j ↦ TauCeti.AdditiveGroup.groupScheme K) :=
   (vectorGroupSchemeProductIso K V b).inv ≫
     vectorGroupSchemeMap K V W f ≫ (vectorGroupSchemeProductIso K W c).hom
 
@@ -460,7 +472,7 @@ theorem vectorGroupBasisMap_projection {i j : Type u} [Finite i] [Finite j]
     (b : Module.Basis i K V) (c : Module.Basis j K W)
     (f : V →ₗ[K] W) (k : j) :
     vectorGroupBasisMap K V W b c f ≫
-        Limits.Pi.π (fun _ : j ↦ additiveGroupScheme K) k =
+        Limits.Pi.π (fun _ : j ↦ TauCeti.AdditiveGroup.groupScheme K) k =
       (vectorGroupSchemeProductIso K V b).inv ≫
         vectorGroupSchemeMap K V W f ≫ vectorGroupProjection K W c k := by
   simp [vectorGroupBasisMap, Category.assoc]
@@ -469,7 +481,7 @@ theorem vectorGroupBasisMap_projection {i j : Type u} [Finite i] [Finite j]
 theorem vectorGroupBasisMap_id {i : Type u} [Finite i]
     (b : Module.Basis i K V) :
     vectorGroupBasisMap K V V b b LinearMap.id =
-      𝟙 (∏ᶜ fun _ : i ↦ additiveGroupScheme K) := by
+      𝟙 (∏ᶜ fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) := by
   simp [vectorGroupBasisMap]
 
 theorem vectorGroupBasisMap_comp {i j l : Type u} [Finite i] [Finite j] [Finite l]
@@ -490,21 +502,7 @@ theorem vectorGroupBasisMap_changeBasis_comp
         vectorGroupBasisMap K V V b d LinearMap.id := by
   simpa using (vectorGroupBasisMap_comp K V V b c V d LinearMap.id LinearMap.id).symm
 
-/-- Limit data for the underlying cone of the finite basis-coordinate product. -/
-@[expose] abbrev vectorGroupBasisFanForgetIsLimit {i : Type u} [Finite i]
-    (b : Module.Basis i K V) :
-    Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
-      (vectorGroupBasisFan K V b)) :=
-  vectorGroupBasisFan_forget_isLimit K V b
-
-/-- Limit data for a vector group's finite basis-coordinate product. -/
-abbrev vectorGroupBasisFanIsLimit {i : Type u} [Finite i]
-    (b : Module.Basis i K V) : Limits.IsLimit (vectorGroupBasisFan K V b) :=
-  vectorGroupBasisFan_isLimit K V b
-
-attribute [deprecated vectorGroupBasisFanForgetIsLimit (since := "2026-10-26")]
-  vectorGroupBasisFan_forget_isLimit
-attribute [deprecated vectorGroupBasisFanIsLimit (since := "2026-10-26")]
-  vectorGroupBasisFan_isLimit
+/- Limit data for the underlying cone and the vector group's finite basis-coordinate
+product are given by the definitions above. -/
 
 end AlgebraicGeometry

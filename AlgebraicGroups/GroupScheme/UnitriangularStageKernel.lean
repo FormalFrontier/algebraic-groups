@@ -73,7 +73,7 @@ uniqueness uses the closed immersion. -/
 theorem unitriangularStageSuccessor_existsUnique_of_coordinates
     {X : Scheme}
     (f : X ⟶ Spec (.of (CoordinateRing K n r)))
-    (hcoord : ∀ ij : Matrix.UnitriangularGroup.superdiagonalIndex n r,
+    (hcoord : ∀ ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r,
       ij.1.1 < ij.1.2 →
       (((Scheme.ΓSpecIso (.of (CoordinateRing K n r))).inv ≫ f.appTop).hom)
         (coordinate K n r ij) = 0) :
@@ -109,7 +109,7 @@ theorem unitriangularStageSuccessor_existsUnique_of_coordinates
       (unitriangularStageInclusion K n (r + 1)).hom.hom.left := by
     simpa only [Grp.comp_hom_hom, Over.comp_left] using
       congrArg (fun arrow : unitriangularStageScheme K n (r + 1) ⟶
-        unitriangularGroupScheme K (Fin n) => arrow.hom.hom.left)
+        (TauCeti.UpperUnitriangular.groupScheme K (Fin n)) => arrow.hom.hom.left)
         (unitriangularStageSuccessor_inclusion K n r)
   have hclosedAmbient : IsClosedImmersion
       (unitriangularStageInclusion K n r).hom.hom.left :=
@@ -135,20 +135,8 @@ theorem unitriangularStageSuccessor_existsUnique_of_coordinates
   exact (cancel_mono (unitriangularStageSuccessor K n r).hom.hom.left).mp
     (hg.trans hlift.symm)
 
-/-- Positive-stage specialization of the scheme factorization theorem with
-vanishing of every superdiagonal coordinate. -/
-@[deprecated unitriangularStageSuccessor_existsUnique_of_coordinates
-  (since := "2026-10-13")]
-theorem unitriangularStageSuccessor_existsUnique_scheme
-    (_hr : 1 ≤ r) {X : Scheme}
-    (f : X ⟶ Spec (.of (CoordinateRing K n r)))
-    (hcoord : ∀ ij : Matrix.UnitriangularGroup.superdiagonalIndex n r,
-      (((Scheme.ΓSpecIso (.of (CoordinateRing K n r))).inv ≫ f.appTop).hom)
-        (coordinate K n r ij) = 0) :
-    ∃! g : X ⟶ Spec (.of (CoordinateRing K n (r + 1))),
-      g ≫ (unitriangularStageSuccessor K n r).hom.hom.left = f :=
-  unitriangularStageSuccessor_existsUnique_of_coordinates K n r f
-    (fun ij _ => hcoord ij)
+/- Positive stages are covered by the factorization theorem above, with vanishing
+of every superdiagonal coordinate. -/
 
 /-- The successor stage is the fiber over the unit of the superdiagonal
 coordinate product in `Over (Spec K)`, including nonaffine test schemes.
@@ -158,11 +146,11 @@ theorem unitriangularStageCoordinateMap_isPullback (hr : 1 ≤ r) :
     IsPullback (unitriangularStageSuccessor K n r).hom.hom
       (toUnit (unitriangularStageScheme K n (r + 1)).toMon.X)
       (unitriangularStageCoordinateMap K n r hr).hom.hom
-      η[((∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-        additiveGroupScheme K).toMon.X)] := by
+      η[((∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+        TauCeti.AdditiveGroup.groupScheme K).toMon.X)] := by
   let coordinateProduct :=
-    (∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-      additiveGroupScheme K)
+    (∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+      TauCeti.AdditiveGroup.groupScheme K)
   have hcomm :
       (unitriangularStageSuccessor K n r).hom.hom ≫
         (unitriangularStageCoordinateMap K n r hr).hom.hom =
@@ -184,25 +172,25 @@ theorem unitriangularStageCoordinateMap_isPullback (hr : 1 ≤ r) :
     exact (cancel_mono (unitriangularStageSuccessor K n r).hom.hom.left).mp
       (congrArg Over.Hom.left hfirst)
   · intro T stagePoint basePoint hcompatible
-    have hcoord (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    have hcoord (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
         (((Scheme.ΓSpecIso (.of (CoordinateRing K n r))).inv ≫
           stagePoint.left.appTop).hom) (coordinate K n r ij) = 0 := by
       let projection := Limits.Pi.π
-        (fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-          additiveGroupScheme K) ij
+        (fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+          TauCeti.AdditiveGroup.groupScheme K) ij
       have hprojection :
           (unitriangularStageCoordinateMap K n r hr).hom.hom ≫
             projection.hom.hom =
           (unitriangularStageCoordinateProjection K n r hr ij).hom.hom := by
         exact congrArg (fun arrow : unitriangularStageScheme K n r ⟶
-          additiveGroupScheme K => arrow.hom.hom)
+          TauCeti.AdditiveGroup.groupScheme K => arrow.hom.hom)
           (unitriangularStageCoordinateMap_π K n r hr ij)
       have hunit : η[coordinateProduct.toMon.X] ≫ projection.hom.hom =
-          η[(additiveGroupScheme K).toMon.X] := by
+          η[(TauCeti.AdditiveGroup.groupScheme K).toMon.X] := by
         exact IsMonHom.one_hom projection.hom.hom
       have hcomponent : stagePoint ≫
           (unitriangularStageCoordinateProjection K n r hr ij).hom.hom =
-          basePoint ≫ η[(additiveGroupScheme K).toMon.X] := by
+          basePoint ≫ η[(TauCeti.AdditiveGroup.groupScheme K).toMon.X] := by
         calc
           _ = stagePoint ≫
                 ((unitriangularStageCoordinateMap K n r hr).hom.hom ≫
@@ -214,40 +202,47 @@ theorem unitriangularStageCoordinateMap_isPullback (hr : 1 ≤ r) :
                   projection.hom.hom := by rw [hcompatible]
           _ = _ := by rw [Category.assoc, hunit]
       let coordinateArrow : Spec (.of (CoordinateRing K n r)) ⟶
-          Spec (.of (additiveGroupCoordinateRing K)) :=
+          Spec (.of ((SymmetricAlgebra K K))) :=
         (unitriangularStageCoordinateProjection K n r hr ij).hom.hom.left
       let zeroArrow : Spec (.of K) ⟶
-          Spec (.of (additiveGroupCoordinateRing K)) :=
-        η[(additiveGroupScheme K).toMon.X].left
+          Spec (.of ((SymmetricAlgebra K K))) :=
+        η[(TauCeti.AdditiveGroup.groupScheme K).toMon.X].left
       have hscheme : stagePoint.left ≫ coordinateArrow =
           basePoint.left ≫ zeroArrow :=
         congrArg Over.Hom.left hcomponent
       have hcoordinate : (Spec.preimage coordinateArrow).hom
-          (additiveGroupCoordinate K) = coordinate K n r ij := by
+          ((SymmetricAlgebra.ι K K 1)) = coordinate K n r ij := by
         dsimp only [coordinateArrow]
         rw [unitriangularStageCoordinateProjection_left, Spec.preimage_map]
         change (coordinateBialgHom K n r hr ij :
-          additiveGroupCoordinateRing K →ₐ[K] CoordinateRing K n r)
-            (additiveGroupCoordinate K) = _
+          (SymmetricAlgebra K K) →ₐ[K] CoordinateRing K n r)
+            ((SymmetricAlgebra.ι K K 1)) = _
         rw [coordinateBialgHom_toAlgHom, coordinateAlgHom_coordinate]
       have hzero : (Spec.preimage zeroArrow).hom
-          (additiveGroupCoordinate K) = 0 := by
+          ((SymmetricAlgebra.ι K K 1)) = 0 := by
         dsimp only [zeroArrow]
-        rw [one_spec_asOver_spec_left, Spec.preimage_map]
-        exact additiveGroupCoordinate_counit K
+        have hzeroMap : η[(TauCeti.AdditiveGroup.groupScheme K).X].left =
+            Spec.map (CommRingCat.ofHom
+              (Bialgebra.counitAlgHom K (SymmetricAlgebra K K)).toRingHom) := by
+          change η[((hopfSpec (.of K)).obj
+            (.op (TauCeti.AdditiveGroup.coordinateHopfAlgebra K))).X].left = _
+          rw [TauCeti.hopfSpec_obj_one_left]
+          rfl
+        rw [hzeroMap, Spec.preimage_map]
+        exact SymmetricAlgebra.counit_ι K K 1
       have hscheme' : stagePoint.left ≫ Spec.map (Spec.preimage coordinateArrow) =
           basePoint.left ≫ Spec.map (Spec.preimage zeroArrow) := by
         simpa only [Spec.map_preimage] using hscheme
       have heval' := congrArg
-        (fun arrow : T.left ⟶ Spec (.of (additiveGroupCoordinateRing K)) =>
-          (((Scheme.ΓSpecIso (.of (additiveGroupCoordinateRing K))).inv ≫
-            arrow.appTop).hom) (additiveGroupCoordinate K)) hscheme'
+        (fun arrow : T.left ⟶ Spec (.of ((SymmetricAlgebra K K))) =>
+          (((Scheme.ΓSpecIso (.of ((SymmetricAlgebra K K)))).inv ≫
+            arrow.appTop).hom) ((SymmetricAlgebra.ι K K 1))) hscheme'
       have hcoordinateValue :
           (((Scheme.ΓSpecIso (.of (CoordinateRing K n r))).inv ≫
             stagePoint.left.appTop).hom) ((Spec.preimage coordinateArrow).hom
-              (additiveGroupCoordinate K)) =
+              ((SymmetricAlgebra.ι K K 1))) =
           (((Scheme.ΓSpecIso (.of K)).inv ≫ basePoint.left.appTop).hom)
-            ((Spec.preimage zeroArrow).hom (additiveGroupCoordinate K)) := by
+            ((Spec.preimage zeroArrow).hom ((SymmetricAlgebra.ι K K 1))) := by
         simpa only [preimage_spec_comp, CommRingCat.hom_comp,
           RingHom.comp_apply] using heval'
       simpa only [hcoordinate, hzero, map_zero] using hcoordinateValue

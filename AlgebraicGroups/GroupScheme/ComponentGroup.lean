@@ -82,13 +82,14 @@ lemma groupSchemePointComponent_eq_mk (f : G ⟶ Spec (.of K))
 private lemma groupSchemePointComponent_mulLeft
     (f : G ⟶ Spec (.of K)) [GrpObj (Over.mk f)] (a x : groupSchemePoints f) :
     groupSchemePointComponent f (a * x) =
-      (CategoryTheory.GrpObj.mulLeft a).hom.left.continuous.connectedComponentsMap
+      (TauCeti.leftTranslation a).hom.left.continuous.connectedComponentsMap
         (groupSchemePointComponent f x) := by
   rw [groupSchemePointComponent, groupSchemePointComponent,
     Continuous.connectedComponentsMap_mk]
   apply congrArg ConnectedComponents.mk
   exact (congrArg (groupSchemePointValue f)
-    (CategoryTheory.GrpObj.comp_mulLeft_hom a x)).symm
+    (by simpa only [toUnit_unit, Category.id_comp] using
+      TauCeti.comp_leftTranslation_hom x a)).symm
 
 section ClosedPoints
 
@@ -99,7 +100,7 @@ algebraically closed field contains a rational point. This is the rational
 representative underlying Milne, *Algebraic Groups*, Proposition 2.37(d),
 obtained here from the Jacobson closed-point argument. -/
 theorem groupSchemePointComponent_surjective
-    (f : G ⟶ Spec (.of K)) [GrpObj (Over.mk f)] [LocallyOfFiniteType f] :
+    (f : G ⟶ Spec (.of K)) [LocallyOfFiniteType f] :
     Function.Surjective (groupSchemePointComponent f) := by
   intro c
   obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe c
@@ -186,13 +187,13 @@ theorem groupSchemePointComponent_eq_iff (x y : groupSchemePoints f) :
   constructor
   · intro h
     have h' := congrArg
-      (CategoryTheory.GrpObj.mulLeft x⁻¹).hom.left.continuous.connectedComponentsMap h
+      (TauCeti.leftTranslation x⁻¹).hom.left.continuous.connectedComponentsMap h
     rw [← groupSchemePointComponent_mulLeft f,
       ← groupSchemePointComponent_mulLeft f] at h'
     simpa using h'
   · intro h
     have h' := congrArg
-      (CategoryTheory.GrpObj.mulLeft x).hom.left.continuous.connectedComponentsMap h
+      (TauCeti.leftTranslation x).hom.left.continuous.connectedComponentsMap h
     rw [← groupSchemePointComponent_mulLeft f,
       ← groupSchemePointComponent_mulLeft f] at h'
     simpa using h'

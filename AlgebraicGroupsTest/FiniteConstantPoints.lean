@@ -31,22 +31,23 @@ variable [CommRing K] [CommRing R] [Algebra K R] [Fintype Γ] [Group Γ]
 
 -- The unrestricted theorem has no nontriviality hypothesis and therefore also
 -- applies when the target algebra is the zero ring.
-private noncomputable def persistentTestFiniteConstantPoints001 [Subsingleton R] :
+private noncomputable def persistentTestFiniteConstantPoints001 :
     LocallyConstant (PrimeSpectrum R) Γ ≃*
       ((Spec (.of R)).asOver (Spec (.of K)) ⟶
-        (finiteConstantGroupScheme K Γ).X) :=
+        (TauCeti.ConstantGroup.groupScheme K Γ).X) :=
   finiteConstantLocallyConstantMulEquivPoints K Γ R
 
 private noncomputable def persistentTestFiniteConstantPoints002 [Nontrivial R]
     (h : ∀ e : R, IsIdempotentElem e → e = 0 ∨ e = 1) :
     Γ ≃* ((Spec (.of R)).asOver (Spec (.of K)) ⟶
-      (finiteConstantGroupScheme K Γ).X) :=
+      (TauCeti.ConstantGroup.groupScheme K Γ).X) :=
   finiteConstantMulEquivPointsOfTrivialIdempotents K Γ R h
 
 private theorem persistentTestFiniteConstantPoints003 (g : Γ) :
     (finiteConstantLocallyConstantMulEquivPoints K Γ K
       (LocallyConstant.const (PrimeSpectrum K) g)).left =
-        (finiteConstantGroupSchemePoint K Γ g).left :=
+        (TauCeti.ConstantGroup.groupSchemePointMulEquiv K Γ K
+          (TauCeti.ConstantGroup.toPoints K Γ g)).left :=
   finiteConstantLocallyConstantMulEquivPoints_const K Γ g
 
 /-- Pulling back a locally constant function agrees with changing coefficients of its point. -/
@@ -62,8 +63,8 @@ public theorem finiteConstantGroup_points_naturality {S : Type u} [CommRing S] [
   finiteConstantLocallyConstantMulEquivPoints_naturality K Γ R a f
 
 private noncomputable def persistentTestFiniteConstantPoints005 [Unique Γ] :
-    FiniteGroupFunctions K Γ ≃ₐ[K] K :=
-  FiniteGroupFunctions.uniqueAlgEquiv K Γ
+    TauCeti.ConstantGroup.coordinateRing K Γ ≃ₐ[K] K :=
+  TauCeti.ConstantGroup.uniqueAlgEquiv K Γ
 
 end AlgebraicGeometry
 
@@ -72,53 +73,53 @@ namespace FiniteFunctionModels
 universe u v
 
 open AlgebraicGeometry
-open AlgebraicGeometry.FiniteGroupFunctions
+
 
 private noncomputable def weightedCoordinates (K : Type u) (Γ : Type v)
     [CommRing K] [Finite Γ] (w : Γ → K) :
-    FiniteGroupFunctions K Γ →ₗ[K] K :=
-  (basis K Γ).constr K w
+    (Γ → K) →ₗ[K] K :=
+  (Pi.basisFun K Γ).constr K w
 
 private theorem weightedCoordinates_basis (K : Type u) (Γ : Type v)
     [CommRing K] [Finite Γ] (w : Γ → K) (g : Γ) :
-    weightedCoordinates K Γ w (basis K Γ g) = w g := by
-  exact (basis K Γ).constr_basis K w g
+    weightedCoordinates K Γ w (Pi.basisFun K Γ g) = w g := by
+  exact (Pi.basisFun K Γ).constr_basis K w g
 
 private theorem weightedCoordinates_apply (K : Type u) (Γ : Type v)
-    [CommRing K] [Finite Γ] (w : Γ → K) (f : FiniteGroupFunctions K Γ) :
+    [CommRing K] [Finite Γ] (w : Γ → K) (f : (Γ → K)) :
     weightedCoordinates K Γ w f =
-      ((basis K Γ).repr f).sum (fun g c => c * w g) := by
-  simpa only [weightedCoordinates, smul_eq_mul] using (basis K Γ).constr_apply K w f
+      ((Pi.basisFun K Γ).repr f).sum (fun g c => c * w g) := by
+  simpa only [weightedCoordinates, smul_eq_mul] using (Pi.basisFun K Γ).constr_apply K w f
 
 private theorem reconstruct (K : Type u) (Γ : Type v)
-    [CommRing K] [Finite Γ] (f : FiniteGroupFunctions K Γ) :
-    Finsupp.linearCombination K (basis K Γ) ((basis K Γ).repr f) = f := by
-  exact (basis K Γ).linearCombination_repr f
+    [CommRing K] [Finite Γ] (f : (Γ → K)) :
+    Finsupp.linearCombination K (Pi.basisFun K Γ) ((Pi.basisFun K Γ).repr f) = f := by
+  exact (Pi.basisFun K Γ).linearCombination_repr f
 
 private theorem finite_module (K : Type u) (Γ : Type v)
-    [CommRing K] [Finite Γ] : Module.Finite K (FiniteGroupFunctions K Γ) := by
+    [CommRing K] [Finite Γ] : Module.Finite K ((Γ → K)) := by
   infer_instance
 
-private def sample : FiniteGroupFunctions ℤ (Fin 2) :=
+private def sample : (Fin 2 → ℤ) :=
   fun i => if i = 0 then 3 else -2
 
 private def weights : Fin 2 → ℤ := fun i => if i = 0 then 2 else 5
 
-private theorem delta_diagonal : basis ℤ (Fin 2) 0 0 = 1 := by
-  simp [basis_apply]
+private theorem delta_diagonal : Pi.basisFun ℤ (Fin 2) 0 0 = 1 := by
+  simp [Pi.basisFun_apply]
 
-private theorem delta_offDiagonal : basis ℤ (Fin 2) 0 1 = 0 := by
-  simp [basis_apply]
+private theorem delta_offDiagonal : Pi.basisFun ℤ (Fin 2) 0 1 = 0 := by
+  simp [Pi.basisFun_apply]
 
-private theorem sample_repr_zero : (basis ℤ (Fin 2)).repr sample 0 = 3 := by
+private theorem sample_repr_zero : (Pi.basisFun ℤ (Fin 2)).repr sample 0 = 3 := by
   simp [sample]
 
-private theorem sample_repr_one : (basis ℤ (Fin 2)).repr sample 1 = -2 := by
+private theorem sample_repr_one : (Pi.basisFun ℤ (Fin 2)).repr sample 1 = -2 := by
   simp [sample]
 
 private theorem sample_linearCombination :
-    sample = (3 : ℤ) • basis ℤ (Fin 2) 0 + (-2 : ℤ) • basis ℤ (Fin 2) 1 := by
-  apply (basis ℤ (Fin 2)).repr.injective
+    sample = (3 : ℤ) • Pi.basisFun ℤ (Fin 2) 0 + (-2 : ℤ) • Pi.basisFun ℤ (Fin 2) 1 := by
+  apply (Pi.basisFun ℤ (Fin 2)).repr.injective
   rw [map_add, map_smul, map_smul, Module.Basis.repr_self, Module.Basis.repr_self]
   ext i
   refine Fin.cases ?_ (fun j ↦ ?_) i
@@ -133,13 +134,13 @@ private theorem weightedCoordinates_sample :
     weightedCoordinates_basis, weightedCoordinates_basis]
   decide
 
-private def emptySample : FiniteGroupFunctions ℤ (Fin 0) := fun i => Fin.elim0 i
+private def emptySample : (Fin 0 → ℤ) := fun i => Fin.elim0 i
 
 private theorem emptySample_zero : emptySample = 0 := by
   funext i
   exact Fin.elim0 i
 
-private theorem emptySample_repr : (basis ℤ (Fin 0)).repr emptySample = 0 := by
+private theorem emptySample_repr : (Pi.basisFun ℤ (Fin 0)).repr emptySample = 0 := by
   rw [emptySample_zero, map_zero]
 
 private theorem weightedCoordinates_empty (w : Fin 0 → ℤ) :

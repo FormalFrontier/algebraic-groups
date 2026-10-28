@@ -6,7 +6,7 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finsupp
 public import AlgebraicGroups.Algebra.Coalgebra.Equiv
-public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
+public import TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike
 public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
@@ -49,6 +49,9 @@ restriction and inclusion are those of `Subcoalgebra` and `Subcoalgebra.subtype`
 
 @[expose] public section
 
+open TauCeti
+
+
 noncomputable section
 
 universe u v
@@ -68,12 +71,10 @@ private lemma isGroupLikeElem_single_one {ι : Type v} (i : ι) :
 private abbrev diagonalSubcoalgebra : Subcoalgebra K (ℕ →₀ K) :=
   Finsupp.supportedSubcoalgebra K ({0, 1} : Set ℕ)
 
-@[simp]
 private lemma diagonalSubcoalgebra_toSubmodule :
     (diagonalSubcoalgebra K).toSubmodule = Finsupp.supported K K ({0, 1} : Set ℕ) :=
   Finsupp.supportedSubcoalgebra_toSubmodule K ({0, 1} : Set ℕ)
 
-@[simp]
 private lemma mem_diagonalSubcoalgebra (x : ℕ →₀ K) :
     x ∈ diagonalSubcoalgebra K ↔ x ∈ Finsupp.supported K K ({0, 1} : Set ℕ) := by
   exact (Finsupp.mem_supportedSubcoalgebra K ({0, 1} : Set ℕ) x).trans
@@ -92,7 +93,7 @@ private lemma single_mem_diagonalSubcoalgebra (i : ℕ) (hi : i ∈ ({0, 1} : Se
 
 private lemma diagonalSubcoalgebra_ne_bot : (diagonalSubcoalgebra K).toSubmodule ≠ ⊥ := by
   intro h
-  have hx := (Subcoalgebra.mem_iff (diagonalSubcoalgebra K)).mp
+  have hx := (Subcoalgebra.mem_toSubmodule (D := diagonalSubcoalgebra K)).mpr
     (single_mem_diagonalSubcoalgebra K 0 (by simp))
   rw [h, Submodule.mem_bot] at hx
   exact (one_ne_zero : (1 : K) ≠ 0)
@@ -109,14 +110,14 @@ private lemma single_two_not_mem_diagonalSubcoalgebra :
 private lemma diagonalSubcoalgebra_ne_top : (diagonalSubcoalgebra K).toSubmodule ≠ ⊤ := by
   intro h
   apply single_two_not_mem_diagonalSubcoalgebra K
-  apply (Subcoalgebra.mem_iff (diagonalSubcoalgebra K)).mpr
+  apply (Subcoalgebra.mem_toSubmodule (D := diagonalSubcoalgebra K)).mp
   rw [h]
   exact Submodule.mem_top
 
 private lemma diagonalSubcoalgebra_fg : (diagonalSubcoalgebra K).toSubmodule.FG :=
   Finsupp.supportedSubcoalgebra_fg K ({0, 1} : Set ℕ) (by simp)
 
-private lemma diagonalSubcoalgebra_finite : Module.Finite K (diagonalSubcoalgebra K) :=
+private lemma diagonalSubcoalgebra_finite : Module.Finite K (diagonalSubcoalgebra K).toSubmodule :=
   Finsupp.supportedSubcoalgebra_finite K ({0, 1} : Set ℕ) (by simp)
 
 private lemma not_finite_finsupp_nat : ¬ Module.Finite K (ℕ →₀ K) :=
@@ -124,11 +125,11 @@ private lemma not_finite_finsupp_nat : ¬ Module.Finite K (ℕ →₀ K) :=
 
 /-- Coordinates on the supported subcoalgebra, with values in a two-index Finsupp module. -/
 private abbrev diagonalEquiv :
-    diagonalSubcoalgebra K ≃ₗ[K] (({0, 1} : Set ℕ) →₀ K) :=
+    (diagonalSubcoalgebra K).toSubmodule ≃ₗ[K] (({0, 1} : Set ℕ) →₀ K) :=
   Finsupp.supportedEquivFinsupp (M := K) (R := K) ({0, 1} : Set ℕ)
 
 /-- A coordinate vector in the supported subcoalgebra. -/
-private abbrev diagonalBasisVector (i : ({0, 1} : Set ℕ)) : diagonalSubcoalgebra K :=
+private abbrev diagonalBasisVector (i : ({0, 1} : Set ℕ)) : (diagonalSubcoalgebra K).toSubmodule :=
   (diagonalEquiv K).symm (Finsupp.single i 1)
 
 @[simp]
@@ -144,30 +145,31 @@ private lemma subtype_diagonalBasisVector (i : ({0, 1} : Set ℕ)) :
 private lemma isGroupLikeElem_diagonalBasisVector (i : ({0, 1} : Set ℕ)) :
     IsGroupLikeElem K (diagonalBasisVector K i) where
   counit_eq_one := by
-    rw [Subcoalgebra.coalgebra_counit_apply, coe_diagonalBasisVector]
+    rw [Subcoalgebra.counit_apply, coe_diagonalBasisVector]
     exact (isGroupLikeElem_single_one K (i : ℕ)).counit_eq_one
   comul_eq_tmul_self := by
     let : Module.Free K (diagonalSubcoalgebra K).toSubmodule :=
       Module.Free.of_divisionRing K (diagonalSubcoalgebra K).toSubmodule
     apply Module.Flat.tensorProduct_mapIncl_injective_of_right
       (diagonalSubcoalgebra K).toSubmodule (diagonalSubcoalgebra K).toSubmodule
-    rw [Subcoalgebra.mapIncl_coalgebra_comul, coe_diagonalBasisVector,
+    rw [TensorProduct.mapIncl, Subcoalgebra.comul_apply,
+      Subcoalgebra.map_subtype_comulLinearMap, coe_diagonalBasisVector,
       (isGroupLikeElem_single_one K (i : ℕ)).comul_eq_tmul_self]
-    simp only [TensorProduct.mapIncl, TensorProduct.map_tmul, Submodule.subtype_apply,
-      coe_diagonalBasisVector]
+    simp only [TensorProduct.map_tmul, Submodule.subtype_apply, coe_diagonalBasisVector]
 
 /-- Transport of the finite Finsupp coalgebra to the supported subtype, kept as explicit data. -/
 @[instance_reducible]
-private def diagonalCoalgebra : Coalgebra K (diagonalSubcoalgebra K) :=
+private def diagonalCoalgebra : Coalgebra K ((diagonalSubcoalgebra K).toSubmodule) :=
   (diagonalEquiv K).coalgebra K
 
 private abbrev diagonalComul :
-    diagonalSubcoalgebra K →ₗ[K] diagonalSubcoalgebra K ⊗[K] diagonalSubcoalgebra K :=
-  @CoalgebraStruct.comul K (diagonalSubcoalgebra K) _ _ _
+    (diagonalSubcoalgebra K).toSubmodule →ₗ[K] (diagonalSubcoalgebra K).toSubmodule ⊗[K]
+        (diagonalSubcoalgebra K).toSubmodule :=
+  @CoalgebraStruct.comul K ((diagonalSubcoalgebra K).toSubmodule) _ _ _
     (diagonalCoalgebra K).toCoalgebraStruct
 
-private abbrev diagonalCounit : diagonalSubcoalgebra K →ₗ[K] K :=
-  @CoalgebraStruct.counit K (diagonalSubcoalgebra K) _ _ _
+private abbrev diagonalCounit : (diagonalSubcoalgebra K).toSubmodule →ₗ[K] K :=
+  @CoalgebraStruct.counit K ((diagonalSubcoalgebra K).toSubmodule) _ _ _
     (diagonalCoalgebra K).toCoalgebraStruct
 
 private lemma diagonalComul_basisVector (i : ({0, 1} : Set ℕ)) :
@@ -194,7 +196,7 @@ theorem exists_finite_proper_subcoalgebra_finsupp_nat :
     ∃ D : Subcoalgebra K (ℕ →₀ K),
       D.toSubmodule = Finsupp.supported K K ({0, 1} : Set ℕ) ∧
       D.toSubmodule ≠ ⊥ ∧ D.toSubmodule ≠ ⊤ ∧ D.toSubmodule.FG ∧
-      Module.Finite K D ∧ ¬ Module.Finite K (ℕ →₀ K) ∧
+      Module.Finite K D.toSubmodule ∧ ¬ Module.Finite K (ℕ →₀ K) ∧
       Finsupp.single 0 (1 : K) ∈ D ∧ Finsupp.single 1 (1 : K) ∈ D := by
   exact ⟨diagonalSubcoalgebra K, diagonalSubcoalgebra_toSubmodule K,
     diagonalSubcoalgebra_ne_bot K, diagonalSubcoalgebra_ne_top K, diagonalSubcoalgebra_fg K,
@@ -225,8 +227,8 @@ example (i : ({0, 1} : Set ℕ)) :
 
 -- Agreement on a basis gives agreement of both structure maps on every member.
 example :
-    diagonalComul K = comul (R := K) (A := diagonalSubcoalgebra K) ∧
-      diagonalCounit K = counit (R := K) (A := diagonalSubcoalgebra K) := by
+    diagonalComul K = comul (R := K) (A := (diagonalSubcoalgebra K).toSubmodule) ∧
+      diagonalCounit K = counit (R := K) (A := (diagonalSubcoalgebra K).toSubmodule) := by
   constructor
   · apply (Module.Basis.ofRepr (diagonalEquiv K)).ext
     intro i

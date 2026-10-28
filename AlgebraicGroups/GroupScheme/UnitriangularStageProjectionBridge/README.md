@@ -5,7 +5,7 @@
 
 Import `AlgebraicGroups.GroupScheme.UnitriangularStageProjectionBridge`.
 For `[CommRing K]`, a matrix rank `n` and a stage `r` with `hr : 1 ≤ r`,
-write `D = Matrix.UnitriangularGroup.superdiagonalIndex n r` for the
+write `D = TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r` for the
 current-superdiagonal positions and `S =
 UnitriangularStageCoordinateRing.SurvivingPair n r` for all positions
 remaining in the stage quotient. The injection

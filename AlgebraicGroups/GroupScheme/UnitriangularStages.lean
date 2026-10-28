@@ -32,7 +32,7 @@ and singleton ranks.
 
 noncomputable section
 
-open CategoryTheory GeneralLinearCoordinateRing UnitriangularCoordinateRing
+open CategoryTheory TauCeti.GeneralLinear
 open scoped CategoryTheory MonObj TensorProduct
 
 namespace AlgebraicGeometry
@@ -55,7 +55,7 @@ abbrev unitriangularStageScheme : Grp (Over (Spec (.of K))) :=
 Milne, *Algebraic Groups* (2017), §6.49 gives finer closed field-case
 subgroups whose superdiagonal block endpoints give these stages. -/
 def unitriangularStageInclusion :
-    unitriangularStageScheme K n r ⟶ unitriangularGroupScheme K (Fin n) :=
+    unitriangularStageScheme K n r ⟶ (TauCeti.UpperUnitriangular.groupScheme K (Fin n)) :=
   (hopfSpec (.of K)).map
     (Opposite.op (CommHopfAlgCat.ofHom (quotientBialgHom K n r)))
 
@@ -133,28 +133,32 @@ variable (R : Type) [CommRing R] [Algebra K R]
 
 /-- Descend evaluation of a filtered unitriangular matrix to the stage quotient. -/
 def unitriangularStageFromGL
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r) :
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r) :
     CoordinateRing K n r →ₐ[K] R :=
   Ideal.Quotient.liftₐ (ideal K n r)
-    (unitriangularFromGL K (Fin n) R s.1) (by
+    ((TauCeti.UpperUnitriangular.upperUnitriangularToPoint K (Fin n) (A := R) s.1).ofConv) (by
       intro x hx
-      have hs : unitriangularToGL K (Fin n) R
-          (unitriangularFromGL K (Fin n) R s.1) ∈
-          Matrix.UnitriangularGroup.superdiagonalSubgroup n R r := by
-        simpa only [unitriangularToGL_fromGL] using s.2
+      have hs : (TauCeti.UpperUnitriangular.pointToUpperUnitriangular K (Fin n) (A := R)
+        (WithConv.toConv ((TauCeti.UpperUnitriangular.upperUnitriangularToPoint K (Fin n) (A
+        := R) s.1).ofConv))) ∈
+          TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r := by
+        simpa only [WithConv.toConv_ofConv,
+          TauCeti.UpperUnitriangular.pointToUpperUnitriangular_upperUnitriangularToPoint] using s.2
       exact RingHom.mem_ker.mp
-        ((mem_stage_iff K n r (unitriangularFromGL K (Fin n) R s.1)).mpr hs hx))
+        ((mem_stage_iff K n r ((TauCeti.UpperUnitriangular.upperUnitriangularToPoint K (Fin n)
+          (A := R) s.1).ofConv)).mpr hs hx))
 
 theorem unitriangularStageFromGL_comp_quotient
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r) :
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r) :
     (unitriangularStageFromGL K n r R s).comp (quotient K n r) =
-      unitriangularFromGL K (Fin n) R s.1 :=
+      (TauCeti.UpperUnitriangular.upperUnitriangularToPoint K (Fin n) (A := R) s.1).ofConv :=
   Ideal.Quotient.liftₐ_comp _ _ _
 
 /-- Evaluating a quotient point gives a matrix in the existing stage subgroup. -/
 def unitriangularStageToGL (f : CoordinateRing K n r →ₐ[K] R) :
-    Matrix.UnitriangularGroup.superdiagonalSubgroup n R r :=
-  ⟨unitriangularToGL K (Fin n) R (f.comp (quotient K n r)),
+    TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r :=
+  ⟨(TauCeti.UpperUnitriangular.pointToUpperUnitriangular K (Fin n) (A := R) (WithConv.toConv
+    (f.comp (quotient K n r)))),
     (mem_stage_iff K n r _).mp (by
       intro x hx
       apply RingHom.mem_ker.mpr
@@ -164,13 +168,14 @@ def unitriangularStageToGL (f : CoordinateRing K n r →ₐ[K] R) :
       rw [hzero, map_zero])⟩
 
 @[simp] theorem unitriangularStageToGL_fromGL
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r) :
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r) :
     unitriangularStageToGL K n r R (unitriangularStageFromGL K n r R s) = s := by
   apply Subtype.ext
-  change unitriangularToGL K (Fin n) R
-    ((unitriangularStageFromGL K n r R s).comp (quotient K n r)) = s.1
+  change (TauCeti.UpperUnitriangular.pointToUpperUnitriangular K (Fin n) (A := R)
+    (WithConv.toConv ((unitriangularStageFromGL K n r R s).comp (quotient K n r)))) = s.1
   rw [unitriangularStageFromGL_comp_quotient]
-  exact unitriangularToGL_fromGL K (Fin n) R s.1
+  simpa only [WithConv.toConv_ofConv] using
+    TauCeti.UpperUnitriangular.pointToUpperUnitriangular_upperUnitriangularToPoint K (Fin n) s.1
 
 @[simp] theorem unitriangularStageFromGL_toGL (f : CoordinateRing K n r →ₐ[K] R) :
     unitriangularStageFromGL K n r R (unitriangularStageToGL K n r R f) = f := by
@@ -178,16 +183,18 @@ def unitriangularStageToGL (f : CoordinateRing K n r →ₐ[K] R) :
   change (unitriangularStageFromGL K n r R (unitriangularStageToGL K n r R f)).comp
       (quotient K n r) = f.comp (quotient K n r)
   rw [unitriangularStageFromGL_comp_quotient]
-  change unitriangularFromGL K (Fin n) R
-    (unitriangularToGL K (Fin n) R (f.comp (quotient K n r))) =
+  change (TauCeti.UpperUnitriangular.upperUnitriangularToPoint K (Fin n) (A := R)
+    ((TauCeti.UpperUnitriangular.pointToUpperUnitriangular K (Fin n) (A := R) (WithConv.toConv
+    (f.comp (quotient K n r)))))).ofConv =
       f.comp (quotient K n r)
-  exact unitriangularFromGL_toGL K (Fin n) R _
+  exact congrArg WithConv.ofConv
+    (TauCeti.UpperUnitriangular.upperUnitriangularToPoint_pointToUpperUnitriangular K (Fin n) _)
 
 /-- The stage Hopf quotient represents the point subgroup multiplicatively.
 Milne, *Algebraic Groups* (2017), item 2.9 represents the full unitriangular
 field-case group; §6.49 gives finer subgroups with these block endpoints. -/
 def unitriangularStageMulEquivAlgHom :
-    Matrix.UnitriangularGroup.superdiagonalSubgroup n R r ≃*
+    TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r ≃*
       WithConv (CoordinateRing K n r →ₐ[K] R) where
   toFun s := WithConv.toConv (unitriangularStageFromGL K n r R s)
   invFun φ := unitriangularStageToGL K n r R φ.ofConv
@@ -204,43 +211,46 @@ def unitriangularStageMulEquivAlgHom :
           (quotientBialgHom K n r).toAlgHom
     rw [AlgHom.convMul_comp_bialgHom_distrib]
     rw [unitriangularStageFromGL_comp_quotient]
-    change (unitriangularFromGL K (Fin n) R (s.1 * t.1)) =
+    change ((TauCeti.UpperUnitriangular.upperUnitriangularToPoint K (Fin n) (A := R) (s.1 *
+      t.1)).ofConv) =
       (WithConv.toConv ((unitriangularStageFromGL K n r R s).comp (quotient K n r)) *
         WithConv.toConv ((unitriangularStageFromGL K n r R t).comp (quotient K n r))).ofConv
     rw [unitriangularStageFromGL_comp_quotient,
       unitriangularStageFromGL_comp_quotient]
-    exact congrArg WithConv.ofConv
-      ((unitriangularGroupMulEquivAlgHom K (Fin n) R).map_mul s.1 t.1)
+    simpa only [TauCeti.UpperUnitriangular.pointsMulEquiv_symm_apply,
+      WithConv.toConv_ofConv] using congrArg WithConv.ofConv
+        (((TauCeti.UpperUnitriangular.pointsMulEquiv K (Fin n) (A := R)).symm).map_mul s.1 t.1)
 
 /-- Multiplicative identification with the points of the stage group scheme.
 Milne, *Algebraic Groups* (2017), item 2.9 and §6.49 supply the
 full-group and finer field-case subgroup antecedents. -/
 def unitriangularStagePointMulEquiv :
-    Matrix.UnitriangularGroup.superdiagonalSubgroup n R r ≃*
+    TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r ≃*
       ((Spec (.of R)).asOver (Spec (.of K)) ⟶ unitriangularStageUnderlyingScheme K n r) :=
   (unitriangularStageMulEquivAlgHom K n r R).trans
     (Spec.mapMulEquiv (R := K) (S := CoordinateRing K n r) (T := R))
 
 theorem unitriangularStagePointMulEquiv_apply_left
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r) :
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r) :
     (unitriangularStagePointMulEquiv K n r R s).left =
       Spec.map (CommRingCat.ofHom (unitriangularStageFromGL K n r R s).toRingHom) := rfl
 
 /-- Coefficient change preserves each stage and its group law. -/
 def unitriangularStageMap {S : Type} [CommRing S] (f : R →+* S) :
-    Matrix.UnitriangularGroup.superdiagonalSubgroup n R r →*
-      Matrix.UnitriangularGroup.superdiagonalSubgroup n S r where
-  toFun s := ⟨Matrix.UnitriangularGroup.map f s.1,
-    Matrix.UnitriangularGroup.map_mem_superdiagonalSubgroup n R f s.2⟩
+    TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r →*
+      TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := S) r where
+  toFun s := ⟨TauCeti.UpperUnitriangularGroup.map f s.1,
+    TauCeti.UpperUnitriangularGroup.map_mem_superdiagonalSubgroup n R f s.2⟩
   map_one' := by
     apply Subtype.ext
-    exact (Matrix.UnitriangularGroup.map f).map_one
+    exact (TauCeti.UpperUnitriangularGroup.map f).map_one
   map_mul' s t := by
     apply Subtype.ext
-    exact (Matrix.UnitriangularGroup.map f).map_mul s.1 t.1
+    exact (TauCeti.UpperUnitriangularGroup.map f).map_mul s.1 t.1
 
 theorem unitriangularStageFromGL_natural {S : Type} [CommRing S] [Algebra K S]
-    (v : R →ₐ[K] S) (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r) :
+    (v : R →ₐ[K] S) (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R :=
+      R) r) :
     unitriangularStageFromGL K n r S (unitriangularStageMap n r R v.toRingHom s) =
       v.comp (unitriangularStageFromGL K n r R s) := by
   apply Ideal.Quotient.algHom_ext K
@@ -249,17 +259,23 @@ theorem unitriangularStageFromGL_natural {S : Type} [CommRing S] [Algebra K S]
         (v.comp (unitriangularStageFromGL K n r R s)).comp (quotient K n r)
   rw [AlgHom.comp_assoc, unitriangularStageFromGL_comp_quotient,
     unitriangularStageFromGL_comp_quotient]
-  exact unitriangularFromGL_natural K (Fin n) R v s.1
+  change (TauCeti.UpperUnitriangular.upperUnitriangularToPoint K (Fin n)
+    (TauCeti.UpperUnitriangularGroup.map v.toRingHom s.1)).ofConv = _
+  simpa only [TauCeti.UpperUnitriangular.pointsMulEquiv_symm_apply,
+    AlgHom.mapValue_apply, WithConv.ofConv_toConv] using
+      (congrArg WithConv.ofConv
+        (TauCeti.UpperUnitriangular.mapValue_pointsMulEquiv_symm_apply K (Fin n) v s.1)).symm
 
 /-- Underlying successor inclusion on the matrix groups. -/
 def unitriangularStagePointSuccessor
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R (r + 1)) :
-    Matrix.UnitriangularGroup.superdiagonalSubgroup n R r :=
-  ⟨s.1, (Matrix.UnitriangularGroup.superdiagonalSubgroup_succ_le n R r) s.2⟩
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) (r + 1)) :
+    TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r :=
+  ⟨s.1, (TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup_antitone
+    (n := n) (R := R) (Nat.le_succ r)) s.2⟩
 
 /-- The successor quotient map represents the usual inclusion at every algebra. -/
 theorem unitriangularStageFromGL_successor
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R (r + 1)) :
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) (r + 1)) :
     (unitriangularStageFromGL K n (r + 1) R s).comp (successor K n r) =
       unitriangularStageFromGL K n r R (unitriangularStagePointSuccessor n r R s) := by
   apply Ideal.Quotient.algHom_ext K
@@ -276,7 +292,7 @@ theorem unitriangularStageFromGL_successor
 
 /-- Successor agreement on scheme-valued points, for all coefficient algebras. -/
 theorem unitriangularStageSuccessor_point
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R (r + 1)) :
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) (r + 1)) :
     unitriangularStagePointMulEquiv K n (r + 1) R s ≫
         (unitriangularStageSuccessor K n r).hom.hom =
       unitriangularStagePointMulEquiv K n r R (unitriangularStagePointSuccessor n r R s) := by
@@ -294,22 +310,28 @@ theorem unitriangularStageSuccessor_point
 
 /-- The closed stage inclusion agrees with the underlying matrix embedding. -/
 theorem unitriangularStageInclusion_point
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r) :
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r) :
     unitriangularStagePointMulEquiv K n r R s ≫
         (unitriangularStageInclusion K n r).hom.hom =
-      unitriangularGroupMulEquivPoints K (Fin n) R s.1 := by
+      (TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm s.1 := by
   apply Over.OverMorphism.ext
   change ((unitriangularStagePointMulEquiv K n r R s).left ≫
     (unitriangularStageInclusion K n r).hom.hom.left) =
-      (unitriangularGroupMulEquivPoints K (Fin n) R s.1).left
+      ((TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm s.1).left
   rw [unitriangularStagePointMulEquiv_apply_left,
-    unitriangularStageInclusion_left, unitriangularGroupMulEquivPoints_apply_left,
-    ← Spec.map_comp]
+    unitriangularStageInclusion_left]
+  rw [TauCeti.UpperUnitriangular.schemePointsMulEquiv_symm_apply,
+    TauCeti.UpperUnitriangular.groupSchemePointMulEquiv_apply_left,
+    TauCeti.UpperUnitriangular.pointsMulEquiv_symm_apply]
+  change _ = Spec.map (CommRingCat.ofHom
+    (TauCeti.UpperUnitriangular.upperUnitriangularToPoint K (Fin n) s.1).ofConv.toRingHom)
+  rw [← Spec.map_comp]
+  rw [← unitriangularStageFromGL_comp_quotient K n r R s]
   congr 1
 
 /-- The filtration of matrix groups as a functor on all `K`-algebras. -/
 def unitriangularStageFunctor : CommAlgCat K ⥤ GrpCat where
-  obj R := GrpCat.of (Matrix.UnitriangularGroup.superdiagonalSubgroup n R r)
+  obj R := GrpCat.of (TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r)
   map f := GrpCat.ofHom (unitriangularStageMap n r _ f.hom.toRingHom)
   map_id R := by
     apply GrpCat.hom_ext
@@ -319,7 +341,8 @@ def unitriangularStageFunctor : CommAlgCat K ⥤ GrpCat where
     apply Subtype.ext
     apply Matrix.GeneralLinearGroup.ext
     intro i j
-    rfl
+    change ((TauCeti.UpperUnitriangularGroup.map (RingHom.id R) s.1).1) i j = _
+    exact TauCeti.UpperUnitriangularGroup.map_apply _ _ _ _
   map_comp f g := by
     apply GrpCat.hom_ext
     apply MonoidHom.ext
@@ -328,6 +351,10 @@ def unitriangularStageFunctor : CommAlgCat K ⥤ GrpCat where
     apply Subtype.ext
     apply Matrix.GeneralLinearGroup.ext
     intro i j
+    change ((TauCeti.UpperUnitriangularGroup.map (g.hom.comp f.hom).toRingHom s.1).1) i j =
+      ((TauCeti.UpperUnitriangularGroup.map g.hom.toRingHom
+        (TauCeti.UpperUnitriangularGroup.map f.hom.toRingHom s.1)).1) i j
+    simp only [TauCeti.UpperUnitriangularGroup.map_apply]
     rfl
 
 /-- Represented group-valued point functor of a Hopf quotient. -/

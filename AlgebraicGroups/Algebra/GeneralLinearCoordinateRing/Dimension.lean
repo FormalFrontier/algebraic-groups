@@ -39,40 +39,57 @@ universe u v
 
 namespace GeneralLinearCoordinateRing
 
-variable (K : Type u) [Field K] (n : Type v) [Fintype n] [DecidableEq n]
+variable (K : Type u) [Field K] (n : Type v) [Fintype n]
 
 /-- The powers of any entry of the universal matrix are linearly independent
 over the base field, by injection of the polynomial monomial basis into the
 determinant localization. -/
 theorem linearIndependent_matrix_entry_powers (i j : n) :
-    LinearIndependent K (fun k : ℕ ↦ matrix K n i j ^ k) := by
-  have hdet : determinant K n ≠ 0 := Matrix.det_mvPolynomialX_ne_zero n K
+    LinearIndependent K (fun k : ℕ ↦
+      TauCeti.GeneralLinear.reindexedGenericMatrix K n i j ^ k) := by
+  let m := Fintype.card n
+  have hdet : (Matrix.mvPolynomialX (Fin m) (Fin m) K).det ≠ 0 :=
+    Matrix.det_mvPolynomialX_ne_zero (Fin m) K
   have hinj : Function.Injective
-      (algebraMap (PolynomialRing K n) (CoordinateRing K n)) :=
-    IsLocalization.injective (CoordinateRing K n)
+      (algebraMap (TauCeti.MatrixMonoid.CoordinateRing K m)
+        (TauCeti.GeneralLinear.CoordinateRing K m)) :=
+    IsLocalization.injective (TauCeti.GeneralLinear.CoordinateRing K m)
       (powers_le_nonZeroDivisors_of_noZeroDivisors hdet)
   have hpolynomial : LinearIndependent K
-      (fun k : ℕ ↦ (MvPolynomial.X (i, j) : PolynomialRing K n) ^ k) := by
+      (fun k : ℕ ↦ (MvPolynomial.X (Fintype.equivFin n i, Fintype.equivFin n j) :
+        TauCeti.MatrixMonoid.CoordinateRing K m) ^ k) := by
     simpa only [Function.comp_def, MvPolynomial.coe_basisMonomials,
       ← MvPolynomial.X_pow_eq_monomial] using
-      (MvPolynomial.basisMonomials (n × n) K).linearIndependent.comp
-        (Finsupp.single (i, j)) (Finsupp.single_injective _)
-  let f : PolynomialRing K n →ₐ[K] CoordinateRing K n :=
-    IsScalarTower.toAlgHom K (PolynomialRing K n) (CoordinateRing K n)
-  have hf : LinearMap.ker f.toLinearMap = ⊥ := LinearMap.ker_eq_bot.mpr hinj
+      (MvPolynomial.basisMonomials (Fin m × Fin m) K).linearIndependent.comp
+        (Finsupp.single (Fintype.equivFin n i, Fintype.equivFin n j))
+        (Finsupp.single_injective _)
+  let f : TauCeti.MatrixMonoid.CoordinateRing K m →ₐ[K]
+      TauCeti.GeneralLinear.coordinateHopfAlgebra K m :=
+    (TauCeti.GeneralLinear.coordinateHopfAlgebraAlgEquiv K m).toAlgHom.comp
+      (TauCeti.GeneralLinear.coordinateRingMap K m)
+  have hmap : Function.Injective (TauCeti.GeneralLinear.coordinateRingMap K m) := by
+    intro a b h
+    apply hinj
+    simpa only [TauCeti.GeneralLinear.coordinateRingMap_apply] using h
+  have hf : Function.Injective f :=
+    (TauCeti.GeneralLinear.coordinateHopfAlgebraAlgEquiv K m).injective.comp hmap
   simpa only [f, Function.comp_def, AlgHom.toLinearMap_apply,
-    IsScalarTower.toAlgHom_apply, map_pow, matrix_apply] using
-    hpolynomial.map' f.toLinearMap hf
+    AlgHom.comp_apply, AlgEquiv.coe_toAlgHom, map_pow,
+    TauCeti.GeneralLinear.reindexedGenericMatrix, Matrix.reindex_apply,
+    Matrix.submatrix_apply, Equiv.symm_symm,
+    TauCeti.GeneralLinear.genericMatrix_apply] using
+    hpolynomial.map' f.toLinearMap (LinearMap.ker_eq_bot.mpr hf)
 
 /-- For a nonempty finite index type, the general linear coordinate algebra of
 Milne's determinant localization in item 2.8 is infinite-dimensional over its
 base field. -/
-theorem not_finite [Nonempty n] : ¬ Module.Finite K (CoordinateRing K n) := by
+theorem not_finite [Nonempty n] : ¬ Module.Finite K ((TauCeti.GeneralLinear.coordinateHopfAlgebra
+  K (Fintype.card n))) := by
   intro h
-  let : Module.Finite K (CoordinateRing K n) := h
+  let : Module.Finite K ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) := h
   obtain ⟨i⟩ := ‹Nonempty n›
   exact (Module.Finite.not_linearIndependent_of_infinite
-    (R := K) (fun k : ℕ ↦ matrix K n i i ^ k))
+    (R := K) (fun k : ℕ ↦ TauCeti.GeneralLinear.reindexedGenericMatrix K n i i ^ k))
     (linearIndependent_matrix_entry_powers K n i i)
 
 end GeneralLinearCoordinateRing

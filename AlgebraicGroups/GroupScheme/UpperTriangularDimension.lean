@@ -5,8 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
-public import AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension
-public import AlgebraicGroups.GroupScheme.UpperTriangular
+public import TauCeti.RingTheory.KrullDimension.FiniteType
+public import TauCeti.Algebra.AlgebraicGroup.GeneralLinear.UpperTriangular.Basic
 public import AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices
 
 /-!
@@ -31,9 +31,9 @@ a field, using identity evaluation and a separate count of retained indices.
   `AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension` (dimension
   with a supplied nonvanishing point), and
   `AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices` (index count);
-  `AlgebraicGroups.Algebra.GeneralLinearCoordinateRing`,
-  `AlgebraicGroups.Algebra.UpperTriangularCoordinateRing` and
-  `AlgebraicGroups.GroupScheme.UpperTriangular` supply the defining quotient.
+  `TauCeti.Algebra.AlgebraicGroup.GeneralLinear.Coordinate.HopfAlgebra` and
+  `TauCeti.Algebra.AlgebraicGroup.GeneralLinear.UpperTriangular.Basic` supply
+  the canonical defining quotient.
 * Mathlib, `Mathlib.RingTheory.KrullDimension.Polynomial` and
   `Mathlib.RingTheory.Spectrum.Prime.Topology` (ring and spectrum dimension).
 -/
@@ -44,88 +44,16 @@ set_option warningAsError true
 
 noncomputable section
 
-universe u
+universe u v
 
-namespace UpperTriangularCoordinateRing
-
-variable (K : Type u) [CommRing K] (ι : Type u) [Fintype ι] [LinearOrder ι]
+namespace TauCeti.GeneralLinear.UpperTriangular
 
 /-- Matrix indices retained after eliminating the entries below the diagonal. -/
-def retainedIndices : Set (ι × ι) := {index | ¬ index.2 < index.1}
+def retainedIndices (ι : Type v) [LT ι] : Set (ι × ι) := {index | ¬ index.2 < index.1}
 
-/-- The upper-triangular GL quotient ideal equals the ideal of erased entries.
-Milne, *Algebraic Groups* (2017), items 2.9 and 2.40, give field-case
-triangular equations; the equality here proves both inclusions over `CommRing K`. -/
-theorem ideal_eq_localizedCoordinateIdeal :
-    ideal K ι = MvPolynomial.localizedCoordinateIdeal K (retainedIndices ι)
-      (GeneralLinearCoordinateRing.determinant K ι) := by
-  apply le_antisymm
-  · apply Ideal.span_le.mpr
-    rintro _ ⟨⟨i, j⟩, rfl⟩
-    by_cases hji : j < i
-    · simp only [relation, hji, ite_true]
-      change GeneralLinearCoordinateRing.matrix K ι i j ∈
-        MvPolynomial.localizedCoordinateIdeal K (retainedIndices ι)
-          (GeneralLinearCoordinateRing.determinant K ι)
-      rw [GeneralLinearCoordinateRing.matrix_apply]
-      exact Ideal.subset_span ⟨⟨(i, j), by simpa [retainedIndices] using hji⟩, rfl⟩
-    · simp [relation, hji]
-  · apply Ideal.span_le.mpr
-    rintro _ ⟨⟨⟨i, j⟩, hij⟩, rfl⟩
-    have hji : j < i := by simpa [retainedIndices] using hij
-    change GeneralLinearCoordinateRing.matrix K ι i j ∈ ideal K ι
-    exact Ideal.subset_span ⟨(i, j), by simp [relation, hji]⟩
+section GenericEvaluation
 
-/-- The upper-triangular coordinate algebra is a localization of the polynomial
-ring on retained coordinates, including over the zero ring. This specializes
-`MvPolynomial.localizedCoordinateQuotientEquiv` to the preceding ideal equality;
-compare Milne, *Algebraic Groups* (2017), item 2.40, over a field. -/
-def localizedPolynomialEquiv :
-    CoordinateRing K ι ≃ₐ[K]
-      Localization.Away (MvPolynomial.eraseCoordinates K (retainedIndices ι)
-        (GeneralLinearCoordinateRing.determinant K ι)) :=
-  (Ideal.quotientEquivAlgOfEq K (ideal_eq_localizedCoordinateIdeal K ι)).trans
-    (MvPolynomial.localizedCoordinateQuotientEquiv K (retainedIndices ι)
-      (GeneralLinearCoordinateRing.determinant K ι))
-
-/-- A retained GL matrix entry maps to its localized polynomial variable. -/
-theorem localizedPolynomialEquiv_entry (i j : ι) (hji : ¬ j < i) :
-    localizedPolynomialEquiv K ι
-      (quotient K ι (GeneralLinearCoordinateRing.matrix K ι i j)) =
-    algebraMap (MvPolynomial (retainedIndices ι) K)
-      (Localization.Away (MvPolynomial.eraseCoordinates K (retainedIndices ι)
-        (GeneralLinearCoordinateRing.determinant K ι)))
-      (MvPolynomial.X ⟨(i, j), by simpa [retainedIndices] using hji⟩) := by
-  simp only [localizedPolynomialEquiv, AlgEquiv.trans_apply, quotient,
-    GeneralLinearCoordinateRing.matrix_apply]
-  exact MvPolynomial.localizedCoordinateQuotientEquiv_coordinate K (retainedIndices ι)
-    (GeneralLinearCoordinateRing.determinant K ι) (i, j)
-    (by simpa [retainedIndices] using hji)
-
-/-- A retained polynomial generator maps to its localized polynomial variable. -/
-@[simp] theorem localizedPolynomialEquiv_quotient_algebraMap_X (i j : ι) (hji : ¬ j < i) :
-    localizedPolynomialEquiv K ι
-      (quotient K ι
-        (algebraMap (GeneralLinearCoordinateRing.PolynomialRing K ι)
-          (GeneralLinearCoordinateRing.CoordinateRing K ι) (MvPolynomial.X (i, j)))) =
-    algebraMap (MvPolynomial (retainedIndices ι) K)
-      (Localization.Away (MvPolynomial.eraseCoordinates K (retainedIndices ι)
-        (GeneralLinearCoordinateRing.determinant K ι)))
-      (MvPolynomial.X ⟨(i, j), by simpa [retainedIndices] using hji⟩) := by
-  simpa only [GeneralLinearCoordinateRing.matrix_apply] using
-    localizedPolynomialEquiv_entry K ι i j hji
-
-/-- Conversely, a localized retained variable maps to the corresponding quotient matrix entry. -/
-@[simp] theorem localizedPolynomialEquiv_symm_entry (i j : ι) (hji : ¬ j < i) :
-    (localizedPolynomialEquiv K ι).symm
-      (algebraMap (MvPolynomial (retainedIndices ι) K)
-        (Localization.Away (MvPolynomial.eraseCoordinates K (retainedIndices ι)
-          (GeneralLinearCoordinateRing.determinant K ι)))
-        (MvPolynomial.X ⟨(i, j), by simpa [retainedIndices] using hji⟩)) =
-      quotient K ι (GeneralLinearCoordinateRing.matrix K ι i j) := by
-  apply (localizedPolynomialEquiv K ι).injective
-  rw [AlgEquiv.apply_symm_apply]
-  exact (localizedPolynomialEquiv_entry K ι i j hji).symm
+variable (K : Type u) [CommRing K] (ι : Type v) [Fintype ι] [LinearOrder ι]
 
 /-- The erased determinant evaluates to one at the identity matrix, with
 retained diagonal entries one and strictly upper entries zero. -/
@@ -133,7 +61,7 @@ theorem erasedDeterminant_eval_one :
     MvPolynomial.eval
       (fun index : retainedIndices ι => if index.1.1 = index.1.2 then (1 : K) else 0)
       (MvPolynomial.eraseCoordinates K (retainedIndices ι)
-        (GeneralLinearCoordinateRing.determinant K ι)) = 1 := by
+        ((Matrix.mvPolynomialX ι ι K).det)) = 1 := by
   let evaluation : MvPolynomial (ι × ι) K →+* K :=
     (MvPolynomial.eval
       (fun index : retainedIndices ι => if index.1.1 = index.1.2 then (1 : K) else 0)).comp
@@ -166,52 +94,122 @@ theorem erasedDeterminant_eval_one :
   change ((Matrix.mvPolynomialX ι ι K).map evaluation).det = 1
   rw [hmatrix, Matrix.det_one]
 
-end UpperTriangularCoordinateRing
+end GenericEvaluation
+
+variable (K : Type u) [CommRing K] (n : ℕ)
+
+/-- The defining ideal is the image of the erased-coordinate ideal in the determinant
+localization under the canonical general-linear coordinate equivalence. -/
+theorem definingHopfIdeal_eq_map_localizedCoordinateIdeal :
+    (definingHopfIdeal K n).toIdeal =
+      Ideal.map (GeneralLinear.coordinateHopfAlgebraAlgEquiv K n).toRingHom
+        (MvPolynomial.localizedCoordinateIdeal K (retainedIndices (Fin n))
+          (Matrix.mvPolynomialX (Fin n) (Fin n) K).det) := by
+  rw [definingHopfIdeal_toIdeal, MvPolynomial.localizedCoordinateIdeal, Ideal.map_span]
+  congr 1
+  ext x
+  rw [mem_definingRelationSet_iff]
+  constructor
+  · rintro ⟨i, j, hji, rfl⟩
+    refine ⟨algebraMap (MvPolynomial (Fin n × Fin n) K)
+      (GeneralLinear.CoordinateRing K n) (MvPolynomial.X (i, j)), ?_, ?_⟩
+    · exact ⟨⟨(i, j), by simpa [retainedIndices] using hji⟩, rfl⟩
+    · simp only [GeneralLinear.coordinateRingMap_apply]
+      rfl
+  · rintro ⟨y, ⟨⟨⟨i, j⟩, hji⟩, rfl⟩, rfl⟩
+    refine ⟨i, j, by simpa [retainedIndices] using hji, ?_⟩
+    simp only [GeneralLinear.coordinateRingMap_apply]
+    rfl
+
+/-- The canonical upper-triangular coordinate algebra is a determinant localization
+of its retained polynomial coordinates, over every commutative base. -/
+def localizedPolynomialEquiv :
+    coordinateHopfAlgebra K n ≃ₐ[K]
+      Localization.Away (MvPolynomial.eraseCoordinates K (retainedIndices (Fin n))
+        (Matrix.mvPolynomialX (Fin n) (Fin n) K).det) := by
+  let e := GeneralLinear.coordinateHopfAlgebraAlgEquiv K n
+  let I := MvPolynomial.localizedCoordinateIdeal K (retainedIndices (Fin n))
+    (Matrix.mvPolynomialX (Fin n) (Fin n) K).det
+  have hI : I = Ideal.map e.symm.toRingHom (definingHopfIdeal K n).toIdeal := by
+    rw [definingHopfIdeal_eq_map_localizedCoordinateIdeal, Ideal.map_map]
+    have he : e.symm.toRingHom.comp e.toRingHom = RingHom.id _ := by
+      ext x
+      exact e.symm_apply_apply x
+    rw [he, Ideal.map_id]
+  exact (Ideal.quotientEquivAlg _ _ e.symm hI).trans
+    (MvPolynomial.localizedCoordinateQuotientEquiv K (retainedIndices (Fin n))
+      (Matrix.mvPolynomialX (Fin n) (Fin n) K).det)
+
+/-- A retained generic matrix entry maps to its localized polynomial variable. -/
+theorem localizedPolynomialEquiv_entry (i j : Fin n) (hji : ¬ j < i) :
+    localizedPolynomialEquiv K n ((coordinateMap K n).hom
+      (GeneralLinear.genericMatrix K n i j)) =
+      algebraMap (MvPolynomial (retainedIndices (Fin n)) K)
+        (Localization.Away (MvPolynomial.eraseCoordinates K (retainedIndices (Fin n))
+          (Matrix.mvPolynomialX (Fin n) (Fin n) K).det))
+        (MvPolynomial.X ⟨(i, j), hji⟩) := by
+  rw [GeneralLinear.genericMatrix_apply, coordinateMap_apply]
+  dsimp only [localizedPolynomialEquiv, id_eq, AlgEquiv.trans_apply]
+  change (MvPolynomial.localizedCoordinateQuotientEquiv K (retainedIndices (Fin n))
+      (Matrix.mvPolynomialX (Fin n) (Fin n) K).det)
+    (Ideal.Quotient.mk _ ((GeneralLinear.coordinateHopfAlgebraAlgEquiv K n).symm
+      ((GeneralLinear.coordinateHopfAlgebraAlgEquiv K n)
+        (GeneralLinear.coordinateRingMap K n (MvPolynomial.X (i, j)))))) = _
+  rw [AlgEquiv.symm_apply_apply]
+  simp only [GeneralLinear.coordinateRingMap_apply]
+  exact MvPolynomial.localizedCoordinateQuotientEquiv_coordinate K (retainedIndices (Fin n))
+    (Matrix.mvPolynomialX (Fin n) (Fin n) K).det (i, j) hji
+
+/-- Conversely, a localized retained variable maps to the corresponding quotient entry. -/
+@[simp] theorem localizedPolynomialEquiv_symm_entry (i j : Fin n) (hji : ¬ j < i) :
+    (localizedPolynomialEquiv K n).symm
+      (algebraMap (MvPolynomial (retainedIndices (Fin n)) K)
+        (Localization.Away (MvPolynomial.eraseCoordinates K (retainedIndices (Fin n))
+          (Matrix.mvPolynomialX (Fin n) (Fin n) K).det))
+        (MvPolynomial.X ⟨(i, j), hji⟩)) =
+      (coordinateMap K n).hom (GeneralLinear.genericMatrix K n i j) := by
+  apply (localizedPolynomialEquiv K n).injective
+  rw [AlgEquiv.apply_symm_apply]
+  exact (localizedPolynomialEquiv_entry K n i j hji).symm
+
+end TauCeti.GeneralLinear.UpperTriangular
 
 namespace AlgebraicGeometry
 
-variable (K : Type u) [Field K] (ι : Type u) [Fintype ι] [LinearOrder ι]
+open TauCeti.GeneralLinear.UpperTriangular
 
-/-- Over every field, the upper-triangular coordinate ring has dimension equal
-to the number of retained polynomial variables. Starting from the triangular
-coordinates of Milne, *Algebraic Groups* (2017), item 2.40, the proof uses an
-explicit nonvanishing evaluation and `Matrix.card_upperTriangularRetainedIndices`;
-the source passage is not itself cited as a dimension theorem. -/
+variable (K : Type u) [Field K] (n : ℕ)
+
+/-- Over every field, the canonical upper-triangular coordinate algebra has dimension
+n plus n choose two. Identity evaluation witnesses nonvanishing of its localization. -/
 theorem upperTriangularCoordinateRing_ringKrullDim :
-    ringKrullDim (UpperTriangularCoordinateRing.CoordinateRing K ι) =
-      ((Fintype.card ι + (Fintype.card ι).choose 2 : ℕ) : WithBot ℕ∞) := by
+    ringKrullDim (coordinateHopfAlgebra K n) = ((n + n.choose 2 : ℕ) : WithBot ℕ∞) := by
   classical
-  calc
-    ringKrullDim (UpperTriangularCoordinateRing.CoordinateRing K ι) =
-        ringKrullDim (Localization.Away
-          (MvPolynomial.eraseCoordinates K (UpperTriangularCoordinateRing.retainedIndices ι)
-            (GeneralLinearCoordinateRing.determinant K ι))) :=
-      ringKrullDim_eq_of_ringEquiv
-        (UpperTriangularCoordinateRing.localizedPolynomialEquiv K ι).toRingEquiv
-    _ = ((Fintype.card (UpperTriangularCoordinateRing.retainedIndices ι) : ℕ) :
-        WithBot ℕ∞) :=
-      MvPolynomial.ringKrullDim_localizationAway_of_eval_ne_zero K
-        (UpperTriangularCoordinateRing.retainedIndices ι)
-        (MvPolynomial.eraseCoordinates K (UpperTriangularCoordinateRing.retainedIndices ι)
-          (GeneralLinearCoordinateRing.determinant K ι))
-        (fun index => if index.1.1 = index.1.2 then 1 else 0)
-        (by rw [UpperTriangularCoordinateRing.erasedDeterminant_eval_one]; exact one_ne_zero)
-    _ = _ := by
-      have hcard : Fintype.card (UpperTriangularCoordinateRing.retainedIndices ι) =
-          Fintype.card {p : ι × ι // ¬ p.2 < p.1} :=
-        Fintype.card_congr (Equiv.subtypeEquivRight (fun _ => Iff.rfl))
-      rw [hcard, Matrix.card_upperTriangularRetainedIndices]
+  rw [ringKrullDim_eq_of_ringEquiv (localizedPolynomialEquiv K n).toRingEquiv]
+  have hne : MvPolynomial.eraseCoordinates K (retainedIndices (Fin n))
+      (Matrix.mvPolynomialX (Fin n) (Fin n) K).det ≠ 0 := by
+    intro hzero
+    have heval := congrArg (MvPolynomial.eval
+      (fun index => if index.1.1 = index.1.2 then 1 else 0)) hzero
+    rw [erasedDeterminant_eval_one, map_zero] at heval
+    exact one_ne_zero heval
+  rw [TauCeti.ringKrullDim_localization_away K hne,
+    MvPolynomial.ringKrullDim_of_isNoetherianRing_of_finite,
+    ringKrullDim_eq_zero_of_field]
+  simp only [zero_add, Nat.card_eq_fintype_card]
+  have hcard : Fintype.card (retainedIndices (Fin n)) = n + n.choose 2 := by
+    let e : retainedIndices (Fin n) ≃ {p : Fin n × Fin n // ¬ p.2 < p.1} :=
+      { toFun := fun p => ⟨p.1, p.2⟩
+        invFun := fun p => ⟨p.1, p.2⟩ }
+    rw [Fintype.card_congr e]
+    simpa only [Fintype.card_fin] using Matrix.card_upperTriangularRetainedIndices (Fin n)
+  rw [hcard]
 
-/-- The upper-triangular group's underlying affine scheme has the field
-dimension computed for its coordinate ring. Milne, *Algebraic Groups* (2017),
-item 2.40, supplies the triangular-coordinate antecedent; Mathlib's
-`PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim` transfers the ring result. -/
+/-- The canonical group's underlying affine scheme has the coordinate-ring dimension. -/
 theorem upperTriangularGroupUnderlyingScheme_topologicalKrullDim :
-    topologicalKrullDim (upperTriangularGroupUnderlyingScheme K ι).left =
-      ((Fintype.card ι + (Fintype.card ι).choose 2 : ℕ) : WithBot ℕ∞) := by
-  change topologicalKrullDim
-    (PrimeSpectrum (UpperTriangularCoordinateRing.CoordinateRing K ι)) = _
+    topologicalKrullDim (groupScheme K n).X.left = ((n + n.choose 2 : ℕ) : WithBot ℕ∞) := by
+  change topologicalKrullDim (PrimeSpectrum (coordinateHopfAlgebra K n)) = _
   rw [PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim]
-  exact upperTriangularCoordinateRing_ringKrullDim K ι
+  exact upperTriangularCoordinateRing_ringKrullDim K n
 
 end AlgebraicGeometry

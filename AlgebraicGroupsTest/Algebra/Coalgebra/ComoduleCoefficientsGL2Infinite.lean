@@ -30,12 +30,13 @@ namespace GeneralLinearCoordinateRing
 /-- The powers of the upper-left coordinate in the determinant localization of
 `GL₂` over `ℚ` are linearly independent. -/
 theorem linearIndependent_matrix_zero_zero_powers :
-    LinearIndependent ℚ (fun k : ℕ ↦ matrix ℚ (Fin 2) 0 0 ^ k) :=
+    LinearIndependent ℚ (fun k : ℕ ↦
+      TauCeti.GeneralLinear.reindexedGenericMatrix ℚ (Fin 2) 0 0 ^ k) :=
   linearIndependent_matrix_entry_powers ℚ (Fin 2) 0 0
 
 /-- The coordinate coalgebra of `GL₂` over `ℚ` is infinite-dimensional as a
 `ℚ`-vector space, not merely infinite as a set. -/
-theorem not_finite_fin_two : ¬ Module.Finite ℚ (CoordinateRing ℚ (Fin 2)) :=
+theorem not_finite_fin_two : ¬ Module.Finite ℚ (TauCeti.GeneralLinear.coordinateHopfAlgebra ℚ 2) :=
   not_finite ℚ (Fin 2)
 
 end GeneralLinearCoordinateRing

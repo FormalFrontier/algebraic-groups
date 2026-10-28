@@ -64,11 +64,11 @@ noncomputable def quotKerEquivOfSurjective (f : F) (hf : Function.Surjective f) 
       (quotKerCoalgebraStruct f hf) cD := by
   letI : (f : C →ₗ[R] D).ker.IsCoideal := ker_isCoideal_of_surjective f hf
   exact CoalgEquiv.ofBijective
-    (f := (f : C →ₗ[R] D).ker.liftQCoalgHom (CoalgHomClass.toCoalgHom f) le_rfl)
+    (f := (f : C →ₗ[R] D).ker.liftQCoalgHom (CoalgHom.ofClass f) le_rfl)
     (by
       have h :
           ⇑((f : C →ₗ[R] D).ker.liftQCoalgHom
-            (CoalgHomClass.toCoalgHom f) le_rfl) =
+            (CoalgHom.ofClass f) le_rfl) =
             ⇑((f : C →ₗ[R] D).quotKerEquivOfSurjective hf) := by
         funext x
         obtain ⟨y, rfl⟩ := (f : C →ₗ[R] D).ker.mkQ_surjective x
@@ -138,7 +138,7 @@ theorem quotKerEquivOfSurjective_toCoalgHom (f : F) (hf : Function.Surjective f)
     [hker : (f : C →ₗ[R] D).ker.IsCoideal] :
     (quotKerEquivOfSurjective f hf).toCoalgHom =
       @Submodule.liftQCoalgHom R rR C aC mC cC D aD mD cD
-        (f : C →ₗ[R] D).ker hker (CoalgHomClass.toCoalgHom f) le_rfl :=
+        (f : C →ₗ[R] D).ker hker (CoalgHom.ofClass f) le_rfl :=
   rfl
 
 end CoalgHomClass

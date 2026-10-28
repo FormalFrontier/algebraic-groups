@@ -174,15 +174,13 @@ private theorem testPolynomialHopfAlgebra_original :
         (infinitesimalAdditiveCoordinateRing (Polynomial (ZMod 2)) 2 2)) := by
   rfl
 
-/- Keep the original subsingleton-context regressions: these general equivalences
-do not need `[Subsingleton R]`, but removing it would change the tested statements.
--/
-private def testSubsingletonAlgHomEquiv [Subsingleton R] :
+/- The general equivalences include the original subsingleton-context regressions. -/
+private def testSubsingletonAlgHomEquiv :
     Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
       WithConv (infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R) :=
   infinitesimalAdditiveMulEquivAlgHom K p m R
 
-private def testSubsingletonPointsEquiv [Subsingleton R] :
+private def testSubsingletonPointsEquiv :
     Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
       ((Spec (.of R)).asOver (Spec (.of K)) ⟶
         (infinitesimalAdditiveGroupScheme K p m).X) :=
@@ -245,10 +243,10 @@ end AlgebraicGeometry
 #print axioms Ideal.Quotient.eq_zero_iff_mem
 #print axioms Ideal.Quotient.liftₐ
 #print axioms Ideal.Quotient.algHom_ext
-#print axioms AlgebraicGeometry.additiveGroupMulEquivAlgHom
-#print axioms AlgebraicGeometry.additiveGroupMulEquivAlgHom_coordinate
-#print axioms AlgebraicGeometry.additiveGroupMulEquivAlgHom_naturality
-#print axioms AlgebraicGeometry.additiveGroupCoordinate_comul
-#print axioms AlgebraicGeometry.additiveGroupCoordinate_counit
-#print axioms AlgebraicGeometry.additiveGroupCoordinate_antipode
+#print axioms TauCeti.AdditiveGroup.gaPointsMulEquiv
+#print axioms TauCeti.AdditiveGroup.gaPointsMulEquiv_symm_apply_ι
+#print axioms TauCeti.AdditiveGroup.mapValue_gaPointsMulEquiv_symm_apply
+#print axioms SymmetricAlgebra.comul_ι
+#print axioms SymmetricAlgebra.counit_ι
+#print axioms TauCeti.SymmetricAlgebra.antipode_ι
 #print axioms AlgebraicGeometry.Spec.mapMulEquiv

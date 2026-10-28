@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups
+public import AlgebraicGroups.GroupScheme.GeneralLinearModule
 public import Mathlib.Data.ZMod.Basic
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 
@@ -20,7 +20,7 @@ set_option warningAsError true
 
 noncomputable section
 
-open CategoryTheory TensorProduct GeneralLinearCoordinateRing
+open CategoryTheory TensorProduct
 open scoped CategoryTheory.MonObj TensorProduct Matrix
 
 universe u
@@ -96,18 +96,20 @@ private theorem chosenBasisVectorAction
 private theorem chosenBasisCoordinateEntry
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R))
     (row col : indexType) :
-    (Spec.preimage (generalLinearGroupMulEquivPoints K indexType R
+    (Spec.preimage (((TauCeti.GeneralLinear.reindexedPointsMulEquiv K indexType R).symm.trans
+        (TauCeti.GeneralLinear.groupSchemePointMulEquiv (R := K) (Fintype.card indexType) R))
       (generalLinearModuleMatrixEquiv K V indexType basis R f)).left).hom
-        (matrix K indexType row col) =
+        (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType row col) =
       (generalLinearScalarBasis K V indexType basis R).repr
         (f.val ((generalLinearScalarBasis K V indexType basis R) col)) row :=
   generalLinearModulePoint_preimage_entry K V indexType basis R f row col
 
 private theorem chosenBasisCoordinateDetInverse
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
-    (Spec.preimage (generalLinearGroupMulEquivPoints K indexType R
+    (Spec.preimage (((TauCeti.GeneralLinear.reindexedPointsMulEquiv K indexType R).symm.trans
+        (TauCeti.GeneralLinear.groupSchemePointMulEquiv (R := K) (Fintype.card indexType) R))
       (generalLinearModuleMatrixEquiv K V indexType basis R f)).left).hom
-        (detInverse K indexType) =
+        ((Ring.inverse (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType).det)) =
       ↑(Matrix.GeneralLinearGroup.det
         (generalLinearModuleMatrixEquiv K V indexType basis R f))⁻¹ :=
   generalLinearModulePoint_preimage_detInverse K V indexType basis R f
@@ -132,7 +134,7 @@ private theorem twoBasesComposition (thirdBasis : Module.Basis indexType K V) :
 private theorem twoBasesPointAgreement (R : CommAlgCat K)
     (f : LinearMap.GeneralLinearGroup R (SourceOrderTensor K V R)) :
     (generalLinearModulePointsIso K V indexType otherBasis).hom.app R f =
-      (generalLinearGroupPointsIso K indexType).hom.app R
+      (generalLinearIndexedPointsIso K indexType).hom.app R
         (generalLinearModuleChangeBasis K V indexType basis otherBasis R
           (generalLinearModuleMatrixEquiv K V indexType basis R f)) :=
   generalLinearModulePointsIso_changeBasis K V indexType basis otherBasis R f
@@ -230,7 +232,7 @@ public theorem _root_.AlgebraicGeometry.generalLinearModule_detInverse_zmod_two_
       (SourceOrderTensor (ZMod 2) (Fin 2 → ZMod 2) (ZMod 2))) :
     generalLinearModuleCoordinateEval (ZMod 2) (Fin 2 → ZMod 2) (Fin 2)
         (Pi.basisFun (ZMod 2) (Fin 2)) (ZMod 2)
-        f (detInverse (ZMod 2) (Fin 2)) =
+        f (Ring.inverse (TauCeti.GeneralLinear.reindexedGenericMatrix (ZMod 2) (Fin 2)).det) =
       ↑(Matrix.GeneralLinearGroup.det
         (generalLinearModuleMatrixEquiv (ZMod 2) (Fin 2 → ZMod 2) (Fin 2)
           (Pi.basisFun (ZMod 2) (Fin 2)) (ZMod 2) f))⁻¹ :=

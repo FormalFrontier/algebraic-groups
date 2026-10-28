@@ -4,8 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.GroupTheory.Diagonal
-public import AlgebraicGroups.GroupScheme.Unitriangular
+public import TauCeti.LinearAlgebra.Matrix.GeneralLinearGroup.UpperTriangular.Basic
+public import TauCeti.Algebra.AlgebraicGroup.UpperUnitriangular.Scheme
+public import TauCeti.Algebra.AlgebraicGroup.CommHopfAlgCat.SchemePoints
 public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
@@ -33,464 +34,290 @@ about groups of points, not a scheme base-change theorem.
   normalizer, `Mathlib/Algebra/Group/End.lean` for `MulAut.congr`, and
   `Mathlib/GroupTheory/SemidirectProduct.lean` for `lift` and Thomas
   Browning's `map` construction.
-* `AlgebraicGroups/GroupTheory/Diagonal.lean` and
-  `AlgebraicGroups/GroupScheme/Unitriangular.lean` supply the existing
-  diagonal and unitriangular groups rather than replacement types.
+* `TauCeti/LinearAlgebra/Matrix/GeneralLinearGroup/UpperTriangular/Basic.lean`
+  and `TauCeti/Algebra/AlgebraicGroup/UpperUnitriangular/Scheme.lean` supply
+  the canonical diagonal and unitriangular groups.
 -/
 
 @[expose] public section
 
 noncomputable section
 
-universe u
+universe u v
 
-namespace Matrix
+namespace TauCeti.UpperTriangularGroup
 
-variable (ι : Type u) [Fintype ι] [LinearOrder ι] (R : Type u) [CommRing R]
+open Matrix
 
-/-- The subgroup of native invertible matrices corresponding to Milne's
-upper-triangular `T_n` (item 2.9), over any commutative ring. Inversion uses
-Mathlib's triangular-inverse theorem, not nonvanishing of the determinant. -/
-def upperTriangularSubgroup : Subgroup (GeneralLinearGroup ι R) where
-  carrier := {g | (g : Matrix ι ι R).IsUpperTriangular}
-  one_mem' := by
-    exact Matrix.blockTriangular_one
-  mul_mem' := by
-    intro left right upperLeft upperRight
-    exact upperLeft.mul upperRight
-  inv_mem' := by
-    intro matrix upper
-    have : Invertible (matrix : Matrix ι ι R) := Units.invertible matrix
-    change ((matrix⁻¹ : GeneralLinearGroup ι R) : Matrix ι ι R).IsUpperTriangular
-    rw [GeneralLinearGroup.coe_inv]
-    exact Matrix.blockTriangular_inv_of_blockTriangular upper
+variable {ι : Type v} [Fintype ι] [LinearOrder ι]
+variable {R S : Type u} [CommRing R] [CommRing S]
 
-/-- Invertible upper-triangular matrices, including empty indices and zero rings. -/
-abbrev UpperTriangularGroup := upperTriangularSubgroup ι R
-
-namespace UpperTriangularGroup
-
-variable {ι : Type u} [Fintype ι] [LinearOrder ι]
-variable {R S Q : Type u} [CommRing R] [CommRing S] [CommRing Q]
-
-/-- Inclusion into the native matrix general linear group. -/
-def inclusion : UpperTriangularGroup ι R →* GeneralLinearGroup ι R :=
-  (upperTriangularSubgroup ι R).subtype
-
-@[ext] theorem ext {left right : UpperTriangularGroup ι R}
-    (entries : ∀ row col, left.1 row col = right.1 row col) : left = right := by
+/-- Coefficient change commutes with the subgroup inclusion. -/
+theorem inclusion_map (f : R →+* S) (g : upperUnitriangularGroup ι R) :
+    map f (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup g) =
+      Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup
+        (UpperUnitriangularGroup.map f g) := by
   apply Subtype.ext
-  exact GeneralLinearGroup.ext entries
+  simp only [coe_map, Subgroup.coe_inclusion, UpperUnitriangularGroup.coe_map]
 
-/-- Apply a ring homomorphism to each matrix entry. -/
-def map (ringHom : R →+* S) : UpperTriangularGroup ι R →* UpperTriangularGroup ι S where
-  toFun matrix := ⟨GeneralLinearGroup.map ringHom matrix.1, matrix.2.map ringHom⟩
-  map_one' := by
-    apply Subtype.ext
-    exact (GeneralLinearGroup.map ringHom).map_one
-  map_mul' left right := by
-    apply Subtype.ext
-    exact (GeneralLinearGroup.map ringHom).map_mul left.1 right.1
-
-@[simp] theorem map_apply (ringHom : R →+* S) (matrix : UpperTriangularGroup ι R)
-    (row col : ι) : (map ringHom matrix).1 row col = ringHom (matrix.1 row col) :=
-  GeneralLinearGroup.map_apply ringHom row col matrix.1
-
-@[simp] theorem map_id (matrix : UpperTriangularGroup ι R) :
-    map (RingHom.id R) matrix = matrix := by
-  ext row col
-  simp
-
-theorem map_comp (ringHom : R →+* S) (nextHom : S →+* Q)
-    (matrix : UpperTriangularGroup ι R) :
-    map nextHom (map ringHom matrix) = map (nextHom.comp ringHom) matrix := by
-  ext row col
-  simp
-
-theorem inclusion_map (ringHom : R →+* S) (matrix : UpperTriangularGroup ι R) :
-    inclusion (map ringHom matrix) = GeneralLinearGroup.map ringHom (inclusion matrix) := rfl
-
-/-- Every diagonal entry is a scalar unit, without assumptions on the ring. -/
-theorem isUnit_entry (matrix : UpperTriangularGroup ι R) (row : ι) :
-    IsUnit (matrix.1 row row) := by
-  have determinant : IsUnit (∏ index, matrix.1 index index) := by
-    rw [← Matrix.det_of_isUpperTriangular matrix.2]
-    exact isUnits_det_units matrix.1
-  exact (IsUnit.prod_univ_iff.mp determinant) row
-
-/-- Project an upper-triangular matrix to its invertible diagonal. -/
-def diagonal : UpperTriangularGroup ι R →* DiagonalGroup ι R where
-  toFun matrix := (DiagonalGroup.unitsEquiv (R := R)).symm
-    (fun row => (isUnit_entry matrix row).unit)
-  map_one' := by
-    apply DiagonalGroup.ext
-    intro row
-    change ((DiagonalGroup.unitsEquiv (R := R)).symm
-      (fun index : ι => (isUnit_entry (1 : UpperTriangularGroup ι R) index).unit)).1 row row =
-      (1 : DiagonalGroup ι R).1 row row
-    simp [DiagonalGroup.unitsEquiv_symm_apply]
-  map_mul' left right := by
-    apply DiagonalGroup.ext
-    intro row
-    change ((DiagonalGroup.unitsEquiv (R := R)).symm
-      (fun index : ι => (isUnit_entry (left * right) index).unit)).1 row row =
-      ((DiagonalGroup.unitsEquiv (R := R)).symm
-        (fun index : ι => (isUnit_entry left index).unit) *
-        (DiagonalGroup.unitsEquiv (R := R)).symm
-        (fun index : ι => (isUnit_entry right index).unit)).1 row row
-    rw [← map_mul (DiagonalGroup.unitsEquiv (R := R)).symm]
-    simp only [DiagonalGroup.unitsEquiv_symm_apply, IsUnit.unit_spec]
-    exact UnitriangularCoordinateRing.upper_mul_diag left.2 right.2 row
-
-@[simp] theorem diagonal_apply_diag (matrix : UpperTriangularGroup ι R) (row : ι) :
-    (diagonal matrix).1 row row = matrix.1 row row := by
-  simp [diagonal, DiagonalGroup.unitsEquiv_symm_apply]
-
-theorem diagonal_apply (matrix : UpperTriangularGroup ι R) (row col : ι) :
-    (diagonal matrix).1 row col = if row = col then matrix.1 row row else 0 := by
-  split_ifs with equal
-  · subst col
-    exact diagonal_apply_diag matrix row
-  · exact (diagonal matrix).2 row col equal
-
-/-- Include a native diagonal group element as an upper-triangular element. -/
-def diagonalSection : DiagonalGroup ι R →* UpperTriangularGroup ι R where
-  toFun matrix := ⟨matrix.1, by
-    change (matrix.1 : Matrix ι ι R).IsUpperTriangular
-    intro row col below
-    exact matrix.2 row col (ne_of_gt below)⟩
-  map_one' := Subtype.ext (by rfl)
-  map_mul' _ _ := Subtype.ext (by rfl)
-
-@[simp] theorem diagonal_section (matrix : DiagonalGroup ι R) :
-    diagonal (diagonalSection matrix) = matrix := by
-  apply DiagonalGroup.ext
-  intro row
-  exact diagonal_apply_diag _ row
-
-theorem diagonal_surjective : Function.Surjective (diagonal (ι := ι) (R := R)) :=
-  fun matrix => ⟨diagonalSection matrix, diagonal_section matrix⟩
-
-theorem diagonal_map (ringHom : R →+* S) (matrix : UpperTriangularGroup ι R) :
-    diagonal (map ringHom matrix) = DiagonalGroup.map ringHom (diagonal matrix) := by
-  apply DiagonalGroup.ext
-  intro row
-  simp
-
-theorem diagonalSection_map (ringHom : R →+* S) (matrix : DiagonalGroup ι R) :
-    map ringHom (diagonalSection matrix) = diagonalSection (DiagonalGroup.map ringHom matrix) :=
+/-- The diagonal projection commutes with entrywise coefficient change. -/
+theorem diag_map (f : R →+* S) (g : upperTriangularGroup ι R) :
+    diag (map f g) = fun i ↦ Units.map f.toMonoidHom (diag g i) := by
+  funext i
+  apply Units.ext
+  simp only [diag_apply_val, map_apply, Units.coe_map]
   rfl
 
-end UpperTriangularGroup
+/-- The diagonal section commutes with entrywise coefficient change. -/
+theorem diagonalHom_map (f : R →+* S) (d : ι → Rˣ) :
+    map f (diagonalHom d) = diagonalHom (fun i ↦ Units.map f.toMonoidHom (d i)) := by
+  apply Subtype.ext
+  apply Units.ext
+  ext i j
+  simp only [coe_map, coe_diagonalHom, Matrix.GeneralLinearGroup.map_apply,
+    TauCeti.diagGL_apply, Units.coe_map]
+  split_ifs <;> simp_all
 
-namespace UnitriangularGroup
-
-variable {ι : Type u} [Fintype ι] [LinearOrder ι]
-variable {R S : Type u} [CommRing R] [CommRing S]
-
-/-- Inclusion of the published unitriangular group into upper-triangular units. -/
-def inUpperTriangular : UnitriangularGroup ι R →* UpperTriangularGroup ι R where
-  toFun unit := ⟨unit.1, unit.2.1⟩
-  map_one' := rfl
-  map_mul' _ _ := rfl
-
-theorem inUpperTriangular_injective :
-    Function.Injective (inUpperTriangular (ι := ι) (R := R)) := by
-  intro left right equal
-  exact Subtype.ext (congrArg (fun matrix : UpperTriangularGroup ι R => matrix.1) equal)
-
-theorem inUpperTriangular_map (ringHom : R →+* S) (unit : UnitriangularGroup ι R) :
-    UpperTriangularGroup.map ringHom (inUpperTriangular unit) =
-      inUpperTriangular (map ringHom unit) := rfl
-
-end UnitriangularGroup
-
-namespace UpperTriangularGroup
-
-variable {ι : Type u} [Fintype ι] [LinearOrder ι]
-variable {R S : Type u} [CommRing R] [CommRing S]
-
-/-- The diagonal kernel is precisely the image of the existing unitriangular
-group as a subgroup of `UpperTriangularGroup`, not a subgroup of all GL. -/
-theorem range_unitriangular :
-    (UnitriangularGroup.inUpperTriangular (ι := ι) (R := R)).range =
-      (diagonal (ι := ι) (R := R)).ker := by
-  apply Subgroup.ext
-  intro matrix
-  constructor
-  · rintro ⟨unit, rfl⟩
-    apply MonoidHom.mem_ker.mpr
-    apply DiagonalGroup.ext
-    intro row
-    rw [diagonal_apply_diag]
-    change (unit.1 : Matrix ι ι R) row row = (1 : GeneralLinearGroup ι R) row row
-    simpa using unit.2.2 row
-  · intro kernel
-    refine ⟨⟨matrix.1, ⟨matrix.2, ?_⟩⟩, rfl⟩
-    intro row
-    have equality : diagonal matrix = 1 := MonoidHom.mem_ker.mp kernel
-    have entry := congrArg (fun diag : DiagonalGroup ι R => diag.1 row row) equality
-    simpa [diagonal_apply_diag] using entry
-
-/-- The published unitriangular group is the actual projection kernel. -/
-def kernelEquiv : UnitriangularGroup ι R ≃* (diagonal (ι := ι) (R := R)).ker where
-  toFun unit := ⟨UnitriangularGroup.inUpperTriangular unit, by
-    rw [← range_unitriangular]
-    exact ⟨unit, rfl⟩⟩
-  invFun kernel := ⟨kernel.1.1, ⟨kernel.1.2, by
-    intro row
-    have entry := congrArg (fun diag : DiagonalGroup ι R => diag.1 row row)
-      (MonoidHom.mem_ker.mp kernel.2)
-    simpa [diagonal_apply_diag] using entry⟩⟩
+/-- The upper-unitriangular group is the kernel of the diagonal projection. -/
+def kernelEquiv : upperUnitriangularGroup ι R ≃* (diag (m := ι) (R := R)).ker where
+  toFun g := ⟨Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup g,
+    diag_eq_one_iff.mpr g.2⟩
+  invFun g := ⟨g.1.1, diag_eq_one_iff.mp g.2⟩
   left_inv _ := rfl
   right_inv _ := rfl
   map_mul' _ _ := rfl
 
-@[simp] theorem kernelEquiv_val (unit : UnitriangularGroup ι R) :
-    (kernelEquiv unit).1 = UnitriangularGroup.inUpperTriangular unit := rfl
+@[simp]
+theorem diag_inclusion (g : upperUnitriangularGroup ι R) :
+    diag (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup g) = 1 :=
+  diag_eq_one_iff.mpr g.2
 
 /-- Diagonal conjugation on the existing unitriangular group, transported
 through Mathlib's normalizer action and `MulAut.congr`. The entrywise weight
 is `dᵢ * uᵢⱼ * dⱼ⁻¹`; normality in all of GL is not claimed. -/
-def diagonalAction : DiagonalGroup ι R →* MulAut (UnitriangularGroup ι R) :=
+def diagonalAction : (ι → Rˣ) →* MulAut (upperUnitriangularGroup ι R) :=
   (MulAut.congr (kernelEquiv (ι := ι) (R := R)).symm).toMonoidHom.comp
-    (((diagonal (ι := ι) (R := R)).ker.normalizerMonoidHom).comp
-      ((diagonalSection (ι := ι) (R := R)).codRestrict _
+    (((diag (m := ι) (R := R)).ker.normalizerMonoidHom).comp
+      ((diagonalHom (m := ι) (R := R)).codRestrict _
         (fun _ => by simp only [Subgroup.normalizer_eq_top, Subgroup.mem_top])))
 
 /-- The action is conjugation inside the actual upper-triangular matrix group. -/
-theorem inUpperTriangular_diagonalAction (diag : DiagonalGroup ι R)
-    (unit : UnitriangularGroup ι R) :
-    UnitriangularGroup.inUpperTriangular (diagonalAction diag unit) =
-      diagonalSection diag * UnitriangularGroup.inUpperTriangular unit *
-        (diagonalSection diag)⁻¹ := by
+theorem inUpperTriangular_diagonalAction (d : (ι → Rˣ))
+    (unit : upperUnitriangularGroup ι R) :
+    (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup) (diagonalAction d unit) =
+      diagonalHom d * (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup) unit *
+        (diagonalHom d)⁻¹ := by
   rfl
 
-@[simp] theorem diagonal_inUpperTriangular (unit : UnitriangularGroup ι R) :
-    diagonal (UnitriangularGroup.inUpperTriangular unit) = 1 := by
-  apply MonoidHom.mem_ker.mp
-  rw [← range_unitriangular]
-  exact ⟨unit, rfl⟩
-
 /-- Recover the unitriangular factor by column normalization. -/
-def unipotentPart (matrix : UpperTriangularGroup ι R) : UnitriangularGroup ι R :=
+def unipotentPart (matrix : upperTriangularGroup ι R) : upperUnitriangularGroup ι R :=
   (kernelEquiv (ι := ι) (R := R)).symm
-    ⟨matrix * diagonalSection (diagonal matrix)⁻¹, by
+    ⟨matrix * (diagonalHom (diag matrix))⁻¹, by
       apply MonoidHom.mem_ker.mpr
       simp⟩
 
-theorem inUpperTriangular_unipotentPart (matrix : UpperTriangularGroup ι R) :
-    UnitriangularGroup.inUpperTriangular (unipotentPart matrix) =
-      matrix * diagonalSection (diagonal matrix)⁻¹ := by
+theorem inUpperTriangular_unipotentPart (matrix : upperTriangularGroup ι R) :
+    (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup) (unipotentPart matrix) =
+      matrix * (diagonalHom (diag matrix))⁻¹ := by
   rfl
 
-@[simp] theorem unipotentPart_factor (matrix : UpperTriangularGroup ι R) :
-    UnitriangularGroup.inUpperTriangular (unipotentPart matrix) *
-      diagonalSection (diagonal matrix) = matrix := by
+@[simp] theorem unipotentPart_factor (matrix : upperTriangularGroup ι R) :
+    (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup) (unipotentPart matrix) *
+      diagonalHom (diag matrix) = matrix := by
   rw [inUpperTriangular_unipotentPart]
   exact mul_inv_cancel_right matrix _
 
-/-- The U-first product map, whose multiplication uses diagonal conjugation. -/
+/-- The U-first product map, whose multiplication uses diag conjugation. -/
 def semidirHom :
-    (UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)] DiagonalGroup ι R) →*
-      UpperTriangularGroup ι R :=
-  SemidirectProduct.lift UnitriangularGroup.inUpperTriangular diagonalSection (by
-    intro diag
+    (upperUnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)] (ι → Rˣ)) →*
+      upperTriangularGroup ι R :=
+  SemidirectProduct.lift (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
+    diagonalHom (by
+    intro d
     apply MonoidHom.ext
     intro unit
-    exact inUpperTriangular_diagonalAction diag unit)
+    exact inUpperTriangular_diagonalAction d unit)
 
 @[simp] theorem semidirHom_apply
-    (coords : UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)]
-      DiagonalGroup ι R) :
-    semidirHom coords = UnitriangularGroup.inUpperTriangular coords.left *
-      diagonalSection coords.right := rfl
+    (coords : upperUnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)]
+      (ι → Rˣ)) :
+    semidirHom coords = (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
+      coords.left *
+      diagonalHom coords.right := rfl
 
 theorem diagonal_semidirHom
-    (coords : UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)]
-      DiagonalGroup ι R) : diagonal (semidirHom coords) = coords.right := by
-  rw [semidirHom_apply, map_mul, diagonal_inUpperTriangular, diagonal_section, one_mul]
+    (coords : upperUnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)]
+      (ι → Rˣ)) : diag (semidirHom coords) = coords.right := by
+  rw [semidirHom_apply, map_mul, diag_inclusion, diag_diagonalHom, one_mul]
 
 /-- Every upper-triangular matrix factors uniquely as a unitriangular matrix
-times its diagonal. Mathlib's `SemidirectProduct.lift` encodes the U-first
-product with diagonal conjugation; the inverse is column normalization.
+times its diag. Mathlib's `SemidirectProduct.lift` encodes the U-first
+product with diag conjugation; the inverse is column normalization.
 Milne, *Algebraic Groups* (2017), item 2.9 describes the subgroup functors,
 not this arbitrary-ring splitting of their point groups. -/
 def semidirEquiv :
-    (UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)] DiagonalGroup ι R) ≃*
-      UpperTriangularGroup ι R :=
+    (upperUnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)] (ι → Rˣ)) ≃*
+      upperTriangularGroup ι R :=
   MulEquiv.ofBijective semidirHom (by
     constructor
     · intro left right equal
       have diagEqual : left.right = right.right := by
-        have mapped := congrArg diagonal equal
+        have mapped := congrArg diag equal
         simpa using mapped
       have unitEqual : left.left = right.left := by
-        apply UnitriangularGroup.inUpperTriangular_injective
+        apply Subgroup.inclusion_injective upperUnitriangularGroup_le_upperTriangularGroup
         have canceled := congrArg
-          (fun matrix : UpperTriangularGroup ι R => matrix *
-            (diagonalSection left.right)⁻¹) equal
+          (fun matrix : upperTriangularGroup ι R => matrix *
+            (diagonalHom left.right)⁻¹) equal
         simpa [semidirHom_apply, diagEqual, mul_assoc] using canceled
       exact SemidirectProduct.ext unitEqual diagEqual
     · intro matrix
-      refine ⟨⟨unipotentPart matrix, diagonal matrix⟩, ?_⟩
+      refine ⟨⟨unipotentPart matrix, diag matrix⟩, ?_⟩
       exact unipotentPart_factor matrix)
 
 @[simp] theorem semidirEquiv_apply
-    (coords : UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)]
-      DiagonalGroup ι R) :
-    semidirEquiv coords = UnitriangularGroup.inUpperTriangular coords.left *
-      diagonalSection coords.right := rfl
+    (coords : upperUnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)]
+      (ι → Rˣ)) :
+    semidirEquiv coords = (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
+      coords.left *
+      diagonalHom coords.right := rfl
 
-@[simp] theorem semidirEquiv_symm_left (matrix : UpperTriangularGroup ι R) :
+@[simp] theorem semidirEquiv_symm_left (matrix : upperTriangularGroup ι R) :
     (semidirEquiv.symm matrix).left = unipotentPart matrix := by
-  apply UnitriangularGroup.inUpperTriangular_injective
-  have factor := congrArg (fun value : UpperTriangularGroup ι R =>
-      value * (diagonalSection (diagonal matrix))⁻¹)
+  apply Subgroup.inclusion_injective upperUnitriangularGroup_le_upperTriangularGroup
+  have factor := congrArg (fun value : upperTriangularGroup ι R =>
+      value * (diagonalHom (diag matrix))⁻¹)
     (semidirEquiv.apply_symm_apply matrix)
-  have diagEq : (semidirEquiv.symm matrix).right = diagonal matrix := by
-    have mapped := congrArg diagonal (semidirEquiv.apply_symm_apply matrix)
-    simpa only [semidirEquiv_apply, map_mul, diagonal_inUpperTriangular,
-      diagonal_section, one_mul] using mapped
+  have diagEq : (semidirEquiv.symm matrix).right = diag matrix := by
+    have mapped := congrArg diag (semidirEquiv.apply_symm_apply matrix)
+    simpa only [semidirEquiv_apply, map_mul, diag_inclusion,
+      diag_diagonalHom, one_mul] using mapped
   rw [semidirEquiv_apply, diagEq, mul_inv_cancel_right] at factor
   exact factor.trans (inUpperTriangular_unipotentPart matrix).symm
 
-@[simp] theorem semidirEquiv_symm_right (matrix : UpperTriangularGroup ι R) :
-    (semidirEquiv.symm matrix).right = diagonal matrix := by
-  have mapped := congrArg diagonal (semidirEquiv.apply_symm_apply matrix)
-  simpa only [semidirEquiv_apply, map_mul, diagonal_inUpperTriangular,
-    diagonal_section, one_mul] using mapped
+@[simp] theorem semidirEquiv_symm_right (matrix : upperTriangularGroup ι R) :
+    (semidirEquiv.symm matrix).right = diag matrix := by
+  have mapped := congrArg diag (semidirEquiv.apply_symm_apply matrix)
+  simpa only [semidirEquiv_apply, map_mul, diag_inclusion,
+    diag_diagonalHom, one_mul] using mapped
 
 /-- Column normalization uses the unit in the *column* of the input matrix. -/
-theorem unipotentPart_apply (matrix : UpperTriangularGroup ι R) (row col : ι) :
+theorem unipotentPart_apply (matrix : upperTriangularGroup ι R) (row col : ι) :
     (unipotentPart matrix).1 row col = matrix.1 row col *
-      (((DiagonalGroup.unitsEquiv (diagonal matrix) col)⁻¹ : Rˣ) : R) := by
-  have entry := congrArg (fun value : UpperTriangularGroup ι R => value.1 row col)
+      (((diag matrix col)⁻¹ : Rˣ) : R) := by
+  have entry := congrArg (fun value : upperTriangularGroup ι R => value.1 row col)
     (inUpperTriangular_unipotentPart matrix)
-  change (unipotentPart matrix).1 row col = ((matrix.1 : Matrix ι ι R) *
-    (((diagonalSection (diagonal matrix))⁻¹).1 : Matrix ι ι R)) row col at entry
-  rw [← map_inv diagonalSection] at entry
-  have diagMatrix (diag : DiagonalGroup ι R) :
-      (diag.1 : Matrix ι ι R) = Matrix.diagonal (fun index => diag.1 index index) := by
-    ext index other
-    by_cases equal : index = other
-    · subst other
-      simp
-    · simp [diag.2 index other equal, Matrix.diagonal_apply_ne _ equal]
-  change (unipotentPart matrix).1 row col = ((matrix.1 : Matrix ι ι R) *
-    (((diagonal matrix)⁻¹).1 : Matrix ι ι R)) row col at entry
-  rw [diagMatrix ((diagonal matrix)⁻¹), Matrix.mul_diagonal] at entry
-  rw [← DiagonalGroup.unitsEquiv_apply_val ((diagonal matrix)⁻¹) col,
-    map_inv (DiagonalGroup.unitsEquiv (R := R)) (diagonal matrix)] at entry
-  exact entry
+  simp only [Subgroup.coe_inclusion, Subgroup.coe_mul, Subgroup.coe_inv,
+    coe_diagonalHom] at entry
+  rw [← map_inv (TauCeti.diagGL (ι := ι) (k := R))] at entry
+  simpa only [Units.val_mul, TauCeti.diagGL_coe, Matrix.mul_diagonal,
+    Pi.inv_apply] using entry
 
 /-- The conjugation action has the expected two-sided scalar weight. -/
-theorem diagonalAction_apply (diag : DiagonalGroup ι R)
-    (unit : UnitriangularGroup ι R) (row col : ι) :
-    (diagonalAction diag unit).1 row col =
-      (DiagonalGroup.unitsEquiv diag row : Rˣ) * unit.1 row col *
-        (((DiagonalGroup.unitsEquiv diag col)⁻¹ : Rˣ) : R) := by
-  have diagMatrix (value : DiagonalGroup ι R) :
-      (value.1 : Matrix ι ι R) = Matrix.diagonal (fun index => value.1 index index) := by
-    ext index other
-    by_cases equal : index = other
-    · subst other
-      simp
-    · simp [value.2 index other equal, Matrix.diagonal_apply_ne _ equal]
-  have acted := congrArg (fun matrix : UpperTriangularGroup ι R => matrix.1 row col)
-    (inUpperTriangular_diagonalAction diag unit)
-  change (diagonalAction diag unit).1 row col =
-    (((diag.1 : Matrix ι ι R) * (unit.1 : Matrix ι ι R) *
-      ((diag⁻¹).1 : Matrix ι ι R)) row col) at acted
-  rw [diagMatrix diag, diagMatrix (diag⁻¹), Matrix.mul_diagonal,
-    Matrix.diagonal_mul] at acted
-  rw [← DiagonalGroup.unitsEquiv_apply_val diag row,
-    ← DiagonalGroup.unitsEquiv_apply_val (diag⁻¹) col,
-    map_inv (DiagonalGroup.unitsEquiv (R := R)) diag] at acted
-  exact acted
+theorem diagonalAction_apply (d : (ι → Rˣ))
+    (unit : upperUnitriangularGroup ι R) (row col : ι) :
+    (diagonalAction d unit).1 row col =
+      (d row : Rˣ) * unit.1 row col *
+        (((d col)⁻¹ : Rˣ) : R) := by
+  have acted := congrArg (fun value : upperTriangularGroup ι R => value.1 row col)
+    (inUpperTriangular_diagonalAction d unit)
+  simp only [Subgroup.coe_inclusion, Subgroup.coe_mul, Subgroup.coe_inv,
+    coe_diagonalHom] at acted
+  rw [← map_inv (TauCeti.diagGL (ι := ι) (k := R))] at acted
+  simpa only [Units.val_mul, TauCeti.diagGL_coe, Matrix.mul_diagonal,
+    Matrix.diagonal_mul, Pi.inv_apply] using acted
 
 /-- Entrywise maps commute with column normalization, without assuming injectivity. -/
-theorem unipotentPart_map (ringHom : R →+* S) (matrix : UpperTriangularGroup ι R) :
-    UnitriangularGroup.map ringHom (unipotentPart matrix) =
+theorem unipotentPart_map (ringHom : R →+* S) (matrix : upperTriangularGroup ι R) :
+    UpperUnitriangularGroup.map ringHom (unipotentPart matrix) =
       unipotentPart (map ringHom matrix) := by
-  apply UnitriangularGroup.inUpperTriangular_injective
+  apply Subgroup.inclusion_injective upperUnitriangularGroup_le_upperTriangularGroup
   calc
-    UnitriangularGroup.inUpperTriangular (UnitriangularGroup.map ringHom
+    (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
+      (UpperUnitriangularGroup.map ringHom
         (unipotentPart matrix)) =
-        map ringHom (UnitriangularGroup.inUpperTriangular (unipotentPart matrix)) :=
-      (UnitriangularGroup.inUpperTriangular_map ringHom _).symm
+        map ringHom ((Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
+          (unipotentPart matrix)) :=
+      (inclusion_map ringHom _).symm
     _ = map ringHom matrix *
-        (diagonalSection (diagonal (map ringHom matrix)))⁻¹ := by
+        (diagonalHom (diag (map ringHom matrix)))⁻¹ := by
       rw [inUpperTriangular_unipotentPart, map_mul]
-      simp [map_inv, diagonalSection_map, diagonal_map]
-    _ = UnitriangularGroup.inUpperTriangular (unipotentPart (map ringHom matrix)) :=
+      simp [map_inv, diagonalHom_map, diag_map]
+    _ = (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup) (unipotentPart (map
+      ringHom matrix)) :=
       (inUpperTriangular_unipotentPart _).symm
 
-/-- Native diagonal conjugation commutes with every ring homomorphism. -/
-theorem diagonalAction_map (ringHom : R →+* S) (diag : DiagonalGroup ι R)
-    (unit : UnitriangularGroup ι R) :
-    UnitriangularGroup.map ringHom (diagonalAction diag unit) =
-      diagonalAction (DiagonalGroup.map ringHom diag) (UnitriangularGroup.map ringHom unit) := by
-  apply UnitriangularGroup.inUpperTriangular_injective
+/-- Native diag conjugation commutes with every ring homomorphism. -/
+theorem diagonalAction_map (ringHom : R →+* S) (d : (ι → Rˣ))
+    (unit : upperUnitriangularGroup ι R) :
+    UpperUnitriangularGroup.map ringHom (diagonalAction d unit) =
+      diagonalAction ((fun i ↦ Units.map ringHom.toMonoidHom (d i))) (UpperUnitriangularGroup.map
+        ringHom unit) := by
+  apply Subgroup.inclusion_injective upperUnitriangularGroup_le_upperTriangularGroup
   calc
-    UnitriangularGroup.inUpperTriangular (UnitriangularGroup.map ringHom
-        (diagonalAction diag unit)) =
-        map ringHom (UnitriangularGroup.inUpperTriangular (diagonalAction diag unit)) :=
-      (UnitriangularGroup.inUpperTriangular_map ringHom _).symm
-    _ = diagonalSection (DiagonalGroup.map ringHom diag) *
-        UnitriangularGroup.inUpperTriangular (UnitriangularGroup.map ringHom unit) *
-          (diagonalSection (DiagonalGroup.map ringHom diag))⁻¹ := by
+    (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
+      (UpperUnitriangularGroup.map ringHom
+        (diagonalAction d unit)) =
+        map ringHom ((Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
+          (diagonalAction d unit)) :=
+      (inclusion_map ringHom _).symm
+    _ = diagonalHom ((fun i ↦ Units.map ringHom.toMonoidHom (d i))) *
+        (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
+          (UpperUnitriangularGroup.map ringHom unit) *
+          (diagonalHom ((fun i ↦ Units.map ringHom.toMonoidHom (d i))))⁻¹ := by
       rw [inUpperTriangular_diagonalAction, map_mul, map_mul, map_inv,
-        diagonalSection_map, UnitriangularGroup.inUpperTriangular_map]
-    _ = UnitriangularGroup.inUpperTriangular
-        (diagonalAction (DiagonalGroup.map ringHom diag)
-          (UnitriangularGroup.map ringHom unit)) :=
+        diagonalHom_map, inclusion_map]
+    _ = (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
+        (diagonalAction ((fun i ↦ Units.map ringHom.toMonoidHom (d i)))
+          (UpperUnitriangularGroup.map ringHom unit)) :=
       (inUpperTriangular_diagonalAction _ _).symm
 
 /-- The natural coefficient-change map of U-first semidirect products. -/
 def semidirMap (ringHom : R →+* S) :
-    (UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)] DiagonalGroup ι R) →*
-      (UnitriangularGroup ι S ⋊[diagonalAction (ι := ι) (R := S)] DiagonalGroup ι S) :=
-  SemidirectProduct.map (UnitriangularGroup.map ringHom) (DiagonalGroup.map ringHom) (by
-    intro diag
+    (upperUnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)] (ι → Rˣ)) →*
+      (upperUnitriangularGroup ι S ⋊[diagonalAction (ι := ι) (R := S)] (ι → Sˣ)) :=
+  SemidirectProduct.map (UpperUnitriangularGroup.map ringHom) (MonoidHom.pi fun i ↦ (Units.map
+    ringHom.toMonoidHom).comp (Pi.evalMonoidHom _ i)) (by
+    intro d
     apply MonoidHom.ext
     intro unit
-    exact diagonalAction_map ringHom diag unit)
+    exact diagonalAction_map ringHom d unit)
 
 theorem semidirEquiv_map (ringHom : R →+* S)
-    (coords : UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)]
-      DiagonalGroup ι R) :
+    (coords : upperUnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)]
+      (ι → Rˣ)) :
     map ringHom (semidirEquiv coords) = semidirEquiv (semidirMap ringHom coords) := by
-  simp [semidirEquiv_apply, semidirMap, map_mul, diagonalSection_map,
-    UnitriangularGroup.inUpperTriangular_map]
+  simp [semidirEquiv_apply, semidirMap, map_mul, diagonalHom_map,
+    inclusion_map]
+  rfl
 
 theorem semidirEquiv_symm_map (ringHom : R →+* S)
-    (matrix : UpperTriangularGroup ι R) :
+    (matrix : upperTriangularGroup ι R) :
     semidirMap ringHom (semidirEquiv.symm matrix) =
       semidirEquiv.symm (map ringHom matrix) := by
   apply (semidirEquiv (ι := ι) (R := S)).injective
   rw [semidirEquiv.apply_symm_apply, ← semidirEquiv_map,
     semidirEquiv.apply_symm_apply]
 
-theorem semidirEquiv_inl (unit : UnitriangularGroup ι R) :
+theorem semidirEquiv_inl (unit : upperUnitriangularGroup ι R) :
     semidirEquiv (SemidirectProduct.inl unit) =
-      UnitriangularGroup.inUpperTriangular unit := by
+      (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup) unit := by
   simp [semidirEquiv_apply]
 
-theorem semidirEquiv_inr (diag : DiagonalGroup ι R) :
-    semidirEquiv (SemidirectProduct.inr diag) = diagonalSection diag := by
+theorem semidirEquiv_inr (d : (ι → Rˣ)) :
+    semidirEquiv (SemidirectProduct.inr d) = diagonalHom d := by
   simp [semidirEquiv_apply]
 
 theorem semidirEquiv_mul_formula (first second :
-    UnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)] DiagonalGroup ι R) :
-    UnitriangularGroup.inUpperTriangular first.left * diagonalSection first.right *
-      (UnitriangularGroup.inUpperTriangular second.left * diagonalSection second.right) =
-    UnitriangularGroup.inUpperTriangular
+    upperUnitriangularGroup ι R ⋊[diagonalAction (ι := ι) (R := R)] (ι → Rˣ)) :
+    (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup) first.left * diagonalHom
+      first.right *
+      ((Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup) second.left *
+        diagonalHom second.right) =
+    (Subgroup.inclusion upperUnitriangularGroup_le_upperTriangularGroup)
         (first.left * diagonalAction first.right second.left) *
-      diagonalSection (first.right * second.right) := by
+      diagonalHom (first.right * second.right) := by
   simpa only [← semidirEquiv_apply, ← SemidirectProduct.mul_left,
     ← SemidirectProduct.mul_right] using (semidirEquiv.map_mul first second).symm
 
-end UpperTriangularGroup
-
-end Matrix
+end TauCeti.UpperTriangularGroup

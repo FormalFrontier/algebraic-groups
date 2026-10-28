@@ -8,6 +8,7 @@ public import AlgebraicGroups.GroupScheme.AdditivePowerQuotient
 public import AlgebraicGroups.GroupScheme.InfinitesimalAdditive
 public import AlgebraicGroups.GroupScheme.RootsOfUnity
 public import Mathlib.Algebra.CharP.Lemmas
+import TauCeti.RingTheory.AdjoinRoot.Basic
 
 public section
 
@@ -75,24 +76,23 @@ private theorem translation_sub_pow (R : Type u) [CommRing R] [Algebra K R]
   ring
 
 private def translationToPowerAlgHom :
-    AdjoinRoot (rootsOfUnityPolynomial K (p ^ m)) →ₐ[K]
+    AdjoinRoot (((Polynomial.X : Polynomial K) ^ (p ^ m) - 1)) →ₐ[K]
       AdjoinRoot ((Polynomial.X : Polynomial K) ^ (p ^ m)) :=
-  AdjoinRoot.liftAlgHom (rootsOfUnityPolynomial K (p ^ m)) (Algebra.ofId K _)
+  AdjoinRoot.liftAlgHom (((Polynomial.X : Polynomial K) ^ (p ^ m) - 1)) (Algebra.ofId K _)
     (1 + AdjoinRoot.root ((Polynomial.X : Polynomial K) ^ (p ^ m))) (by
       have hroot : AdjoinRoot.root ((Polynomial.X : Polynomial K) ^ (p ^ m)) ^
           (p ^ m) = 0 := by
         simpa using AdjoinRoot.eval₂_root ((Polynomial.X : Polynomial K) ^ (p ^ m))
-      simp [rootsOfUnityPolynomial, translation_add_pow K p m, hroot])
+      simp [translation_add_pow K p m, hroot])
 
 private def translationFromPowerAlgHom :
     AdjoinRoot ((Polynomial.X : Polynomial K) ^ (p ^ m)) →ₐ[K]
-      AdjoinRoot (rootsOfUnityPolynomial K (p ^ m)) :=
+      AdjoinRoot (((Polynomial.X : Polynomial K) ^ (p ^ m) - 1)) :=
   AdjoinRoot.liftAlgHom ((Polynomial.X : Polynomial K) ^ (p ^ m)) (Algebra.ofId K _)
-    (AdjoinRoot.root (rootsOfUnityPolynomial K (p ^ m)) - 1) (by
-      have hroot : AdjoinRoot.root (rootsOfUnityPolynomial K (p ^ m)) ^
+    (AdjoinRoot.root (((Polynomial.X : Polynomial K) ^ (p ^ m) - 1)) - 1) (by
+      have hroot : AdjoinRoot.root (((Polynomial.X : Polynomial K) ^ (p ^ m) - 1)) ^
           (p ^ m) - 1 = 0 := by
-        simpa [rootsOfUnityPolynomial] using
-          AdjoinRoot.eval₂_root (rootsOfUnityPolynomial K (p ^ m))
+        exact sub_eq_zero.mpr (AdjoinRoot.root_X_pow_sub_one_pow (p ^ m))
       simp [translation_sub_pow K p m, sub_eq_zero.mp hroot])
 
 private theorem translationToPower_comp_translationFromPower :
@@ -103,12 +103,12 @@ private theorem translationToPower_comp_translationFromPower :
 
 private theorem translationFromPower_comp_translationToPower :
     (translationFromPowerAlgHom K p m).comp (translationToPowerAlgHom K p m) =
-      AlgHom.id K (AdjoinRoot (rootsOfUnityPolynomial K (p ^ m))) := by
+      AlgHom.id K (AdjoinRoot (((Polynomial.X : Polynomial K) ^ (p ^ m) - 1))) := by
   apply AdjoinRoot.algHom_ext
   simp [translationToPowerAlgHom, translationFromPowerAlgHom]
 
 private def translationPowerAlgEquiv :
-    AdjoinRoot (rootsOfUnityPolynomial K (p ^ m)) ≃ₐ[K]
+    AdjoinRoot (((Polynomial.X : Polynomial K) ^ (p ^ m) - 1)) ≃ₐ[K]
       AdjoinRoot ((Polynomial.X : Polynomial K) ^ (p ^ m)) :=
   AlgEquiv.ofAlgHom (translationToPowerAlgHom K p m)
     (translationFromPowerAlgHom K p m)
@@ -122,18 +122,23 @@ private instance translation_power_neZero : NeZero (p ^ m) :=
 *Algebraic Groups*, item 2.5, valid also for `m = 0`. This is an algebra
 equivalence, not an equivalence of Hopf algebras for positive `m`. -/
 def infinitesimalAdditiveTranslationAlgEquiv :
-    rootsOfUnityCoordinateRing K (p ^ m) ≃ₐ[K]
+    (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))) ≃ₐ[K]
       infinitesimalAdditiveCoordinateRing K p m :=
-  ((rootsOfUnityCoordinateAlgEquiv K (p ^ m)).trans
+  (((MonoidAlgebra.domCongr K K MulEquiv.ulift).trans
+    (TauCeti.RootsOfUnityGroup.adjoinRootEquiv (R := K) (p ^ m)).symm).trans
     (translationPowerAlgEquiv K p m)).trans
       (additivePowerCoordinateAlgEquiv K (p ^ m)).symm
 
 @[simp]
 theorem infinitesimalAdditiveTranslationAlgEquiv_generator :
     infinitesimalAdditiveTranslationAlgEquiv K p m
-      (rootsOfUnityCoordinateGenerator K (p ^ m)) =
+      ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) (1 : K) :
+        (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))))) =
         1 + infinitesimalAdditiveCoordinate K p m := by
-  simp [infinitesimalAdditiveTranslationAlgEquiv, translationPowerAlgEquiv,
+  have hulift : (MulEquiv.ulift : ULift.{u} (Multiplicative (ZMod (p ^ m))) ≃*
+      Multiplicative (ZMod (p ^ m))) (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) =
+        TauCeti.RootsOfUnityGroup.generator (p ^ m) := rfl
+  simp [infinitesimalAdditiveTranslationAlgEquiv, translationPowerAlgEquiv, hulift,
     translationToPowerAlgHom, infinitesimalAdditiveCoordinate,
     additivePowerCoordinate, infinitesimalAdditiveIdeal, additivePowerIdeal]
 
@@ -141,8 +146,12 @@ theorem infinitesimalAdditiveTranslationAlgEquiv_generator :
 theorem infinitesimalAdditiveTranslationAlgEquiv_symm_coordinate :
     (infinitesimalAdditiveTranslationAlgEquiv K p m).symm
       (infinitesimalAdditiveCoordinate K p m) =
-        rootsOfUnityCoordinateGenerator K (p ^ m) - 1 := by
-  simp [infinitesimalAdditiveTranslationAlgEquiv, translationPowerAlgEquiv,
+        (MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) (1 : K) :
+          (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m)))) - 1 := by
+  have hulift : (MulEquiv.ulift : ULift.{u} (Multiplicative (ZMod (p ^ m))) ≃*
+      Multiplicative (ZMod (p ^ m))).symm (TauCeti.RootsOfUnityGroup.generator (p ^ m)) =
+        ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m)) := rfl
+  simp [infinitesimalAdditiveTranslationAlgEquiv, translationPowerAlgEquiv, hulift,
     translationFromPowerAlgHom, infinitesimalAdditiveCoordinate,
     infinitesimalAdditiveIdeal]
 
@@ -151,7 +160,7 @@ translation in Milne's *Algebraic Groups*, item 2.5; no group-law
 compatibility is asserted for positive `m`. -/
 def infinitesimalAdditiveTranslationIso :
     infinitesimalAdditiveUnderlyingScheme K p m ≅
-      rootsOfUnityScheme K (p ^ m) :=
+      (TauCeti.RootsOfUnityGroup.groupScheme K (p ^ m)).X :=
   (algSpec (.of K)).mapIso
     (CommAlgCat.isoMk (infinitesimalAdditiveTranslationAlgEquiv K p m)).op
 
@@ -177,7 +186,8 @@ theorem infinitesimalAdditiveTranslation_point_generator
     (R : Type u) [CommRing R] [Algebra K R]
     (sigma : infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R) :
     (sigma.comp (infinitesimalAdditiveTranslationAlgEquiv K p m).toAlgHom)
-      (rootsOfUnityCoordinateGenerator K (p ^ m)) =
+      ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) (1 : K) :
+        (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))))) =
         1 + sigma (infinitesimalAdditiveCoordinate K p m) := by
   simp
 
@@ -185,10 +195,11 @@ theorem infinitesimalAdditiveTranslation_point_generator
 @[simp]
 theorem infinitesimalAdditiveTranslation_point_coordinate
     (R : Type u) [CommRing R] [Algebra K R]
-    (rho : rootsOfUnityCoordinateRing K (p ^ m) →ₐ[K] R) :
+    (rho : (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))) →ₐ[K] R) :
     (rho.comp (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom)
       (infinitesimalAdditiveCoordinate K p m) =
-        rho (rootsOfUnityCoordinateGenerator K (p ^ m)) - 1 := by
+        rho ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) (1 :
+          K) : (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))))) - 1 := by
   simp
 
 /-- Translation of a point commutes with extension of its test algebra. -/
@@ -203,7 +214,7 @@ theorem infinitesimalAdditiveTranslation_point_naturality
 /-- The inverse translation of a point is natural in the test algebra. -/
 theorem infinitesimalAdditiveTranslation_point_symm_naturality
     (R S : Type u) [CommRing R] [Algebra K R] [CommRing S] [Algebra K S]
-    (rho : rootsOfUnityCoordinateRing K (p ^ m) →ₐ[K] R)
+    (rho : (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))) →ₐ[K] R)
     (f : R →ₐ[K] S) :
     f.comp (rho.comp (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom) =
       (f.comp rho).comp (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom := by

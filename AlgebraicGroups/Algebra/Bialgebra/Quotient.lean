@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import Mathlib.RingTheory.Bialgebra.Quotient
+public import TauCeti.Algebra.Bialgebra.Quotient
 
 /-!
 # Counit and comultiplication compatibility of algebra quotient lifts
@@ -128,21 +128,6 @@ end Bialgebra.Quotient
 
 namespace Bialgebra.Quotient
 
-/-- The bialgebra morphism induced by a full bialgebra morphism vanishing on a
-scalar-restricted coideal that is a two-sided ideal. The quotient has its
-canonical bialgebra structure, and the underlying algebra map is the ordinary
-ideal quotient lift. -/
-noncomputable def liftBialgHom
-    {R : Type uR} {A : Type uA} {B : Type uB}
-    [CommRing R] [Ring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
-    (I : Ideal A) [I.IsTwoSided] [(I.restrictScalars R).IsCoideal]
-    (f : A →ₐc[R] B) (hf : I ≤ RingHom.ker f.toAlgHom.toRingHom) :
-    (A ⧸ I) →ₐc[R] B :=
-  BialgHom.ofAlgHom
-    (Ideal.Quotient.liftₐ I f.toAlgHom (fun _a ha => RingHom.mem_ker.mp (hf ha)))
-    (Bialgebra.Quotient.counitAlgHom_comp_liftₐ I f hf)
-    (Bialgebra.Quotient.map_liftₐ_comp_comulAlgHom I f hf)
-
 /-- The underlying algebra morphism of the induced bialgebra morphism is the
 ordinary algebra quotient lift. -/
 @[simp]
@@ -154,43 +139,12 @@ theorem liftBialgHom_toAlgHom :
     (liftBialgHom I f hf).toAlgHom =
       Ideal.Quotient.liftₐ I f.toAlgHom (fun _a ha => RingHom.mem_ker.mp (hf ha)) := by
   intro R A B _ _ _ _ _ I _ _ f hf
-  apply AlgHom.ext
-  intro x
-  simp only [BialgHom.coe_toAlgHom, liftBialgHom, BialgHom.ofAlgHom_apply]
-
-/-- The induced bialgebra morphism sends the class of each representative to
-its image under the original morphism. -/
-@[simp]
-theorem liftBialgHom_mk :
-    ∀ {R : Type uR} {A : Type uA} {B : Type uB}
-      [CommRing R] [Ring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
-      (I : Ideal A) [I.IsTwoSided] [(I.restrictScalars R).IsCoideal]
-      (f : A →ₐc[R] B) (hf : I ≤ RingHom.ker f.toAlgHom.toRingHom) (a : A),
-    liftBialgHom I f hf (Ideal.Quotient.mk I a) = f a := by
-  intro R A B _ _ _ _ _ I _ _ f hf a
-  have h := congrArg
-    (fun g : (A ⧸ I) →ₐ[R] B => g.comp (Ideal.Quotient.mkₐ R I))
-    (liftBialgHom_toAlgHom I f hf)
-  have hcomp := h.trans
-    (Ideal.Quotient.liftₐ_comp (R₁ := R) I f.toAlgHom
-      (fun a ha => RingHom.mem_ker.mp (hf ha)))
-  simpa only [AlgHom.comp_apply, Ideal.Quotient.mkₐ_eq_mk,
-    BialgHom.coe_toAlgHom] using AlgHom.congr_fun hcomp a
-
-/-- The induced bialgebra morphism factors the original morphism through the
-canonical quotient projection. -/
-@[simp]
-theorem liftBialgHom_comp_mkBialgHom :
-    ∀ {R : Type uR} {A : Type uA} {B : Type uB}
-      [CommRing R] [Ring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
-      (I : Ideal A) [I.IsTwoSided] [(I.restrictScalars R).IsCoideal]
-      (f : A →ₐc[R] B) (hf : I ≤ RingHom.ker f.toAlgHom.toRingHom),
-    (liftBialgHom I f hf).comp (mkBialgHom (R := R) I) = f := by
-  intro R A B _ _ _ _ _ I _ _ f hf
-  apply BialgHom.ext
-  intro a
-  simpa only [BialgHom.coe_comp, Function.comp_apply, mkBialgHom_apply] using
-    liftBialgHom_mk I f hf a
+  apply Ideal.Quotient.algHom_ext R
+  ext a
+  simp only [AlgHom.comp_apply, BialgHom.coe_toAlgHom, Ideal.Quotient.mkₐ_eq_mk,
+    liftBialgHom_mk, Ideal.Quotient.liftₐ_apply]
+  exact (Ideal.Quotient.lift_mk I (a := a) f.toAlgHom.toRingHom
+    (fun x hx => RingHom.mem_ker.mp (hf hx))).symm
 
 /-- Bialgebra morphisms from the canonical quotient agree if their composites
 with the quotient projection agree. -/
@@ -211,19 +165,6 @@ theorem hom_ext :
   apply Ideal.Quotient.algHom_ext R
   simpa only [BialgHom.comp_toAlgHom, hmk] using
     congrArg BialgHom.toAlgHom hcomp
-
-/-- Every factor through the canonical quotient projection equals the induced
-bialgebra morphism. -/
-theorem liftBialgHom_unique :
-    ∀ {R : Type uR} {A : Type uA} {B : Type uB}
-      [CommRing R] [Ring A] [Semiring B] [Bialgebra R A] [Bialgebra R B]
-      (I : Ideal A) [I.IsTwoSided] [(I.restrictScalars R).IsCoideal]
-      (f : A →ₐc[R] B) (hf : I ≤ RingHom.ker f.toAlgHom.toRingHom)
-      (g : (A ⧸ I) →ₐc[R] B),
-    g.comp (mkBialgHom (R := R) I) = f → g = liftBialgHom I f hf := by
-  intro R A B _ _ _ _ _ I _ _ f hf g hg
-  apply hom_ext I
-  exact hg.trans (liftBialgHom_comp_mkBialgHom I f hf).symm
 
 /-- A full bialgebra morphism vanishing on the ideal factors uniquely through
 the fixed canonical quotient bialgebra and its projection. This asserts

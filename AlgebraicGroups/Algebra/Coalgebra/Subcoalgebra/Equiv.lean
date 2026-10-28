@@ -34,9 +34,12 @@ inclusion and `CoalgHom.codRestrict` with its unique-factorization property.
 
 @[expose] public section
 
+open TauCeti
+
+
 universe u v w w₁
 
-namespace Subcoalgebra
+namespace TauCeti.Subcoalgebra
 
 variable {K : Type u} {C : Type v} {C' : Type w}
 variable [Field K] [AddCommGroup C] [Module K C] [Coalgebra K C]
@@ -45,10 +48,10 @@ variable [AddCommGroup C'] [Module K C'] [Coalgebra K C']
 /-- A coalgebra homomorphism injective on a subcoalgebra gives a coalgebra equivalence
 from that subcoalgebra to its image. Ambient injectivity is not required. -/
 noncomputable def equivMapOfInjOn (f : C →ₗc[K] C') (D : Subcoalgebra K C)
-    (hf : Set.InjOn f (D : Set C)) : D ≃ₗc[K] map f D := by
-  let g : D →ₗc[K] map f D :=
+    (hf : Set.InjOn f (D : Set C)) : D.toSubmodule ≃ₗc[K] (map f D).toSubmodule := by
+  let g : D.toSubmodule →ₗc[K] (map f D).toSubmodule :=
     (f.comp D.subtype).codRestrict (map f D)
-      (fun x ↦ mem_map.mpr ⟨(x : C), x.property, rfl⟩)
+      (fun x ↦ mem_map.mpr ⟨(x : C), (mem_toSubmodule.mp x.property), rfl⟩)
   refine CoalgEquiv.ofBijective (f := g) ⟨?_, ?_⟩
   · exact LinearMap.submoduleMap_injective_of_injOn
       (f := f.toLinearMap) (p := D.toSubmodule) hf
@@ -57,9 +60,8 @@ noncomputable def equivMapOfInjOn (f : C →ₗc[K] C') (D : Subcoalgebra K C)
     exact ⟨⟨x, hx⟩, Subtype.ext hxy⟩
 
 /-- The image equivalence sends a member to its ambient image. -/
-@[simp]
 theorem coe_equivMapOfInjOn_apply (f : C →ₗc[K] C') (D : Subcoalgebra K C)
-    (hf : Set.InjOn f (D : Set C)) (x : D) :
+    (hf : Set.InjOn f (D : Set C)) (x : D.toSubmodule) :
     (equivMapOfInjOn f D hf x : C') = f (x : C) := by
   rfl
 
@@ -69,7 +71,7 @@ theorem equivMapOfInjOn_toCoalgHom (f : C →ₗc[K] C') (D : Subcoalgebra K C)
     (hf : Set.InjOn f (D : Set C)) :
     (equivMapOfInjOn f D hf).toCoalgHom =
       (f.comp D.subtype).codRestrict (map f D)
-        (fun x ↦ mem_map.mpr ⟨(x : C), x.property, rfl⟩) := by
+        (fun x ↦ mem_map.mpr ⟨(x : C), (mem_toSubmodule.mp x.property), rfl⟩) := by
   rfl
 
 /-- Inclusion after the image equivalence recovers the ambient homomorphism restricted
@@ -78,31 +80,31 @@ theorem subtype_comp_equivMapOfInjOn (f : C →ₗc[K] C') (D : Subcoalgebra K C
     (hf : Set.InjOn f (D : Set C)) :
     (map f D).subtype.comp (equivMapOfInjOn f D hf).toCoalgHom =
       f.comp D.subtype := by
-  rw [equivMapOfInjOn_toCoalgHom, CoalgHom.subtype_comp_codRestrict]
+  ext x
+  rfl
 
 /-- Inclusion after the canonically coerced image equivalence is the ambient
 homomorphism restricted to the source subcoalgebra. -/
 @[simp]
 theorem subtype_comp_coe_equivMapOfInjOn (f : C →ₗc[K] C') (D : Subcoalgebra K C)
     (hf : Set.InjOn f (D : Set C)) :
-    (map f D).subtype.comp (equivMapOfInjOn f D hf : D →ₗc[K] map f D) =
+    (map f D).subtype.comp (equivMapOfInjOn f D hf : D.toSubmodule →ₗc[K] (map f D).toSubmodule) =
       f.comp D.subtype := by
-  simpa only [CoalgEquiv.toCoalgHom_eq_coe] using
+  simpa only [CoalgEquiv.toCoalgHom_eq_ofClass] using
     subtype_comp_equivMapOfInjOn f D hf
 
 /-- Applying the ambient homomorphism to the inverse image recovers the image member. -/
-@[simp]
 theorem map_equivMapOfInjOn_symm_apply (f : C →ₗc[K] C') (D : Subcoalgebra K C)
-    (hf : Set.InjOn f (D : Set C)) (y : map f D) :
+    (hf : Set.InjOn f (D : Set C)) (y : (map f D).toSubmodule) :
     f ((equivMapOfInjOn f D hf).symm y : C) = (y : C') := by
   simpa only [coe_equivMapOfInjOn_apply] using
-    congrArg (fun z : map f D ↦ (z : C'))
+    congrArg (fun z : (map f D).toSubmodule ↦ (z : C'))
       ((equivMapOfInjOn f D hf).apply_symm_apply y)
 
 /-- Every specified source member mapping to an image member is the member selected
 by the inverse image equivalence. -/
 theorem equivMapOfInjOn_symm_apply_eq (f : C →ₗc[K] C') (D : Subcoalgebra K C)
-    (hf : Set.InjOn f (D : Set C)) (y : map f D) (x : D)
+    (hf : Set.InjOn f (D : Set C)) (y : (map f D).toSubmodule) (x : D.toSubmodule)
     (hxy : f (x : C) = (y : C')) :
     (equivMapOfInjOn f D hf).symm y = x := by
   apply Subtype.ext
@@ -134,7 +136,7 @@ theorem fg_map_iff_of_injOn (f : C →ₗc[K] C') (D : Subcoalgebra K C)
 equivalent to module-finiteness of the source subtype. -/
 theorem finite_map_iff_of_injOn (f : C →ₗc[K] C') (D : Subcoalgebra K C)
     (hf : Set.InjOn f (D : Set C)) :
-    Module.Finite K (map f D) ↔ Module.Finite K D := by
+    Module.Finite K (map f D).toSubmodule ↔ Module.Finite K D.toSubmodule := by
   exact (Module.Finite.equiv_iff (equivMapOfInjOn f D hf).toLinearEquiv).symm
 
 /-- Taking images under an injective ambient homomorphism is injective on subcoalgebras. -/
@@ -152,7 +154,7 @@ theorem map_inj (f : C →ₗc[K] C') (hf : Function.Injective f)
     {D E : Subcoalgebra K C} : map f D = map f E ↔ D = E := by
   exact (map_injective f hf).eq_iff
 
-end Subcoalgebra
+end TauCeti.Subcoalgebra
 
 namespace CoalgEquiv
 
@@ -170,12 +172,12 @@ noncomputable def subcoalgebraCongr (e : C ≃ₗc[K] C') :
       left_inv := ?_
       right_inv := ?_ }
   · intro D
-    rw [← Subcoalgebra.map_comp]
+    rw [Subcoalgebra.map_map]
     have h : e.symm.toCoalgHom.comp e.toCoalgHom = CoalgHom.id K C :=
       CoalgHom.ext fun x => e.symm_apply_apply x
     rw [h, Subcoalgebra.map_id]
   · intro D
-    rw [← Subcoalgebra.map_comp]
+    rw [Subcoalgebra.map_map]
     have h : e.toCoalgHom.comp e.symm.toCoalgHom = CoalgHom.id K C' :=
       CoalgHom.ext fun x => e.apply_symm_apply x
     rw [h, Subcoalgebra.map_id]
@@ -204,7 +206,7 @@ theorem mem_subcoalgebraCongr (e : C ≃ₗc[K] C') (D : Subcoalgebra K C) (y : 
   rw [subcoalgebraCongr_apply, Subcoalgebra.mem_map]
   constructor
   · rintro ⟨x, hx, rfl⟩
-    simpa only [toCoalgHom_eq_coe, coe_toCoalgHom, symm_apply_apply] using hx
+    simpa only [toCoalgHom_eq_ofClass, coe_coalgHomOfClass, symm_apply_apply] using hx
   · intro hy
     exact ⟨e.symm y, hy, e.apply_symm_apply y⟩
 
@@ -224,15 +226,13 @@ theorem subcoalgebraCongr_trans (e : C ≃ₗc[K] C') (e' : C' ≃ₗc[K] C'') :
     (e.trans e').subcoalgebraCongr = e.subcoalgebraCongr.trans e'.subcoalgebraCongr := by
   apply Equiv.ext
   intro D
-  simpa only [Equiv.trans_apply, subcoalgebraCongr_apply, toCoalgHom_eq_coe,
+  simpa only [Equiv.trans_apply, subcoalgebraCongr_apply, toCoalgHom_eq_ofClass,
     trans_toCoalgHom] using
-    (Subcoalgebra.map_comp e.toCoalgHom e'.toCoalgHom D)
+    (Subcoalgebra.map_map D e.toCoalgHom e'.toCoalgHom).symm
 
 /-- Ambient equivalences preserve and reflect module-finiteness of subcoalgebras. -/
 theorem finite_subcoalgebraCongr_iff (e : C ≃ₗc[K] C') (D : Subcoalgebra K C) :
-    Module.Finite K (e.subcoalgebraCongr D) ↔ Module.Finite K D := by
-  change Module.Finite K (e.subcoalgebraCongr D).toSubmodule ↔
-    Module.Finite K D.toSubmodule
+    Module.Finite K (e.subcoalgebraCongr D).toSubmodule ↔ Module.Finite K D.toSubmodule := by
   rw [Module.Finite.iff_fg, Module.Finite.iff_fg]
   constructor
   · intro h

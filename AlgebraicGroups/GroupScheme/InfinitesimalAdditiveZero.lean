@@ -85,10 +85,11 @@ order-one roots-of-unity group scheme as a group object over `Spec K`. This
 `m = 0` case corrects the unrestricted non-isomorphism assertion in Milne's
 *Algebraic Groups*, item 2.5. -/
 @[expose] def infinitesimalAdditiveGroupSchemeZeroIsoRootsOfUnityOne :
-    infinitesimalAdditiveGroupScheme K p 0 ≅ rootsOfUnityGroupScheme K 1 :=
+    infinitesimalAdditiveGroupScheme K p 0 ≅ (TauCeti.RootsOfUnityGroup.groupScheme K 1) :=
   (hopfSpec (.of K)).mapIso
     (CommHopfAlgCat.isoMk ((infinitesimalAdditiveZeroBialgEquiv K p).trans
-      (AddMonoidAlgebra.bialgEquivOfSubsingleton (R := K) (M := ZMod 1)).symm)).symm.op
+      (MonoidAlgebra.bialgEquivOfSubsingleton (R := K)
+        (M := TauCeti.RootsOfUnityGroup.characterGroup.{u} 1)).symm)).symm.op
 
 /-- The forward scheme map is induced contravariantly by the inverse of the
 coordinate bialgebra equivalence. -/
@@ -97,16 +98,19 @@ theorem infinitesimalAdditiveGroupSchemeZeroIsoRootsOfUnityOne_hom_left :
       Spec.map (CommRingCat.ofHom
         (((infinitesimalAdditiveZeroBialgEquiv K p).symm :
             K →ₐ[K] infinitesimalAdditiveCoordinateRing K p 0).comp
-          (AddMonoidAlgebra.bialgEquivOfSubsingleton (R := K) (M := ZMod 1) :
-            rootsOfUnityCoordinateRing K 1 →ₐ[K] K)).toRingHom) := rfl
+          (MonoidAlgebra.bialgEquivOfSubsingleton (R := K)
+        (M := TauCeti.RootsOfUnityGroup.characterGroup.{u} 1) :
+            (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} 1)) →ₐ[K]
+              K)).toRingHom) := rfl
 
 /-- The inverse scheme map uses the native counit followed by the inverse of
 the order-one group algebra's counit. -/
 theorem infinitesimalAdditiveGroupSchemeZeroIsoRootsOfUnityOne_inv_left :
     (infinitesimalAdditiveGroupSchemeZeroIsoRootsOfUnityOne K p).inv.hom.hom.left =
       Spec.map (CommRingCat.ofHom
-        (((AddMonoidAlgebra.bialgEquivOfSubsingleton (R := K) (M := ZMod 1)).symm :
-            K →ₐ[K] rootsOfUnityCoordinateRing K 1).comp
+        (((MonoidAlgebra.bialgEquivOfSubsingleton (R := K)
+        (M := TauCeti.RootsOfUnityGroup.characterGroup.{u} 1)).symm :
+            K →ₐ[K] (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} 1))).comp
           (infinitesimalAdditiveZeroBialgEquiv K p :
             infinitesimalAdditiveCoordinateRing K p 0 →ₐ[K] K)).toRingHom) := rfl
 

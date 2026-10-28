@@ -7,7 +7,7 @@ Import `AlgebraicGroups.GroupScheme.AdditiveProductAffineSpace`. Given
 `K : Type u` with `[CommRing K]` and `D : Type u` with `[Fintype D]`,
 `additiveGroupProductUnderlyingSpecIso K D` identifies the **underlying
 over-scheme** of the actual categorical group-scheme product
-`∏ᶜ fun _ : D => additiveGroupScheme K` with the spectrum of
+`∏ᶜ fun _ : D => TauCeti.AdditiveGroup.groupScheme K` with the spectrum of
 `MvPolynomial D K` over `Spec K`. Composing with
 `additiveGroupAffineProductSpecToSpaceIso` gives
 `additiveGroupProductUnderlyingAffineSpaceIso`, the underlying affine

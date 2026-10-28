@@ -5,15 +5,17 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
+public import TauCeti.Algebra.Coalgebra.Comodule.MatrixCoefficient.Adjoin
+public import TauCeti.Algebra.Coalgebra.Comodule.MatrixCoefficient.Finite
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Coefficient coalgebras of right comodules
 
-For a specified right coaction `X` of a coalgebra `C` on a module `M`, a
+For a specified right coact `X` of a coalgebra `C` on a module `M`, a
 coefficient is obtained by evaluating a linear functional on the first tensor
-factor of `X.coaction m`. The coefficient span uses all linear functionals on
+factor of `X.coact m`. The coefficient span uses all linear functionals on
 `M` and all elements of `M`; no basis or finite-generation hypothesis is part
 of its definition. Coefficients and their span are defined over a commutative
 semiring. Under a right-comodule morphism, coefficients pull back along the
@@ -25,11 +27,11 @@ underlying submodules of coefficient subcoalgebras.
 Over a field, `coefficientSubcoalgebra` has exactly this coefficient span as its
 underlying submodule. Corestriction of the coacting coalgebra uses the tensor
 inclusion `M ⊗ D → M ⊗ C`, rather than a comodule morphism with a fixed coacting
-coalgebra. The inclusion equation characterizes the corestricted coaction.
+coalgebra. The inclusion equation characterizes the corestricted coact.
 Changing this corestricted coacting coalgebra back along its inclusion recovers
 the original specified comodule.
 The coefficient span is contained in the underlying submodule of `D` exactly
-when the coaction factors through this tensor inclusion.
+when the coact factors through this tensor inclusion.
 
 The field constructions use the ambient coalgebra's given additive-group
 structure, matching the `Subcoalgebra` interface. Additive inverses in a module
@@ -46,97 +48,41 @@ only its additive commutative monoid and module structures.
 
 @[expose] public section
 
+open TauCeti
+open Coalgebra
+
+
 universe u v w
 
 open scoped TensorProduct
 
-namespace Coalgebra.RightComodule
-
-section CommSemiring
-
-variable {K : Type u} {C : Type v} {M : Type w}
-variable [CommSemiring K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
-variable [AddCommMonoid M] [Module K M]
-
-/-- A coefficient of a right coaction, obtained by evaluating its first tensor factor. -/
-def coefficient (X : RightComodule K C M) (ell : M →ₗ[K] K) (m : M) : C :=
-  TensorProduct.lid K C (ell.rTensor C (X.coaction m))
-
-/-- The defining all-dual evaluation formula for a coefficient. -/
-theorem coefficient_eq (X : RightComodule K C M) (ell : M →ₗ[K] K) (m : M) :
-    X.coefficient ell m = TensorProduct.lid K C (ell.rTensor C (X.coaction m)) :=
-  rfl
-
-/-- The submodule spanned by all coefficients of a specified right coaction. -/
-def coefficientSpan (X : RightComodule K C M) : Submodule K C :=
-  Submodule.span K (Set.range (Function.uncurry X.coefficient))
-
-/-- The coefficient span is the span of the exact range of all-dual evaluation. -/
-theorem coefficientSpan_eq_span (X : RightComodule K C M) :
-    X.coefficientSpan = Submodule.span K (Set.range (Function.uncurry X.coefficient)) :=
-  rfl
-
-/-- Every coefficient belongs to the coefficient span. -/
-theorem coefficient_mem_coefficientSpan (X : RightComodule K C M)
-    (ell : M →ₗ[K] K) (m : M) : X.coefficient ell m ∈ X.coefficientSpan :=
-  Submodule.subset_span ⟨(ell, m), rfl⟩
-
-/-- Containment of the coefficient span is equivalent to containment of all coefficients. -/
-theorem coefficientSpan_le_iff (X : RightComodule K C M) (S : Submodule K C) :
-    X.coefficientSpan ≤ S ↔ ∀ (ell : M →ₗ[K] K) (m : M), X.coefficient ell m ∈ S := by
-  constructor
-  · intro h ell m
-    exact h (X.coefficient_mem_coefficientSpan ell m)
-  · intro h
-    apply Submodule.span_le.mpr
-    rintro c ⟨⟨ell, m⟩, rfl⟩
-    exact h ell m
-
-end CommSemiring
-
-end Coalgebra.RightComodule
-
-namespace Coalgebra.RightComoduleHom
+namespace TauCeti.Comodule.Hom
 
 section CommSemiring
 
 variable {K : Type u} {C : Type v} {M : Type w} {N : Type*}
 variable [CommSemiring K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
 variable [AddCommMonoid M] [Module K M] [AddCommMonoid N] [Module K N]
-variable {X : RightComodule K C M} {Y : RightComodule K C N}
-
-/-- Coefficients pull back along the underlying linear map of a comodule morphism. -/
-theorem coefficient_apply (f : RightComoduleHom X Y) (ell : N →ₗ[K] K) (m : M) :
-    Y.coefficient ell (f m) = X.coefficient (ell.comp f.toLinearMap) m := by
-  simp only [RightComodule.coefficient_eq, f.colinear_apply,
-    LinearMap.rTensor_comp, LinearMap.comp_apply]
-
-/-- A surjective comodule morphism decreases the coefficient span: surjectivity
-allows every target vector to be lifted to a source vector. -/
-theorem coefficientSpan_le_of_surjective (f : RightComoduleHom X Y)
-    (hf : Function.Surjective f) : Y.coefficientSpan ≤ X.coefficientSpan := by
-  apply (Y.coefficientSpan_le_iff _).mpr
-  intro ell n
-  obtain ⟨m, rfl⟩ := hf n
-  rw [f.coefficient_apply]
-  exact X.coefficient_mem_coefficientSpan (ell.comp f.toLinearMap) m
+variable {X : Comodule K C M} {Y : Comodule K C N}
 
 /-- A bijective comodule morphism preserves the coefficient span; its inverse
 linear map pulls every source functional back to the target. -/
-theorem coefficientSpan_eq_of_bijective (f : RightComoduleHom X Y)
-    (hf : Function.Bijective f) : X.coefficientSpan = Y.coefficientSpan := by
+theorem coefficientSpan_eq_of_bijective (f : (@Hom K C M N _ _ _ _ _ _ X _ _ Y))
+    (hf : Function.Bijective f) : (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X) =
+      (@matrixCoefficientSubmodule K C N _ _ _ _ _ _ Y) := by
   classical
   let e : M ≃ₗ[K] N := LinearEquiv.ofBijective f.toLinearMap hf
   apply le_antisymm
-  · apply (X.coefficientSpan_le_iff _).mpr
+  · apply (@matrixCoefficientSubmodule_le_iff K C M _ _ _ _ _ _ X _).mpr
     intro ell m
     have hcomp : (ell.comp e.symm.toLinearMap).comp f.toLinearMap = ell := by
       ext x
       exact congrArg ell (e.symm_apply_apply x)
-    have h := Y.coefficient_mem_coefficientSpan (ell.comp e.symm.toLinearMap) (f m)
-    rw [f.coefficient_apply, hcomp] at h
+    have h := (@matrixCoefficient_mem_submodule K C N _ _ _ _ _ _ Y) (ell.comp
+      e.symm.toLinearMap) (f m)
+    rw [matrixCoefficient_map f, hcomp] at h
     exact h
-  · exact f.coefficientSpan_le_of_surjective hf.surjective
+  · exact matrixCoefficientSubmodule_le_of_surjective f hf.surjective
 
 end CommSemiring
 
@@ -145,74 +91,31 @@ section FieldCore
 variable {K : Type u} {C : Type v} {M : Type w} {N : Type*}
 variable [Field K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
 variable [AddCommMonoid M] [Module K M] [AddCommMonoid N] [Module K N]
-variable {X : RightComodule K C M} {Y : RightComodule K C N}
+variable {X : Comodule K C M} {Y : Comodule K C N}
 
 /-- An injective comodule morphism over a field increases the coefficient span.
 Injectivity lets each source functional extend to the target; coefficients on
 vectors in a kernel need not survive a noninjective map. -/
-theorem coefficientSpan_le_of_injective (f : RightComoduleHom X Y)
-    (hf : Function.Injective f) : X.coefficientSpan ≤ Y.coefficientSpan := by
+theorem coefficientSpan_le_of_injective (f : (@Hom K C M N _ _ _ _ _ _ X _ _ Y))
+    (hf : Function.Injective f) : (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X) ≤
+      (@matrixCoefficientSubmodule K C N _ _ _ _ _ _ Y) := by
   let : AddCommGroup M := Module.addCommMonoidToAddCommGroup K
   let : AddCommGroup N := Module.addCommMonoidToAddCommGroup K
-  apply (X.coefficientSpan_le_iff _).mpr
+  apply (@matrixCoefficientSubmodule_le_iff K C M _ _ _ _ _ _ X _).mpr
   intro ell m
   obtain ⟨eta, heta⟩ :=
     LinearMap.dualMap_surjective_of_injective (f := f.toLinearMap) hf ell
   have hcomp : eta.comp f.toLinearMap = ell := by
     simpa only [LinearMap.dualMap_apply'] using heta
-  have h := Y.coefficient_mem_coefficientSpan eta (f m)
-  rw [f.coefficient_apply, hcomp] at h
+  have h := (@matrixCoefficient_mem_submodule K C N _ _ _ _ _ _ Y) eta (f m)
+  rw [matrixCoefficient_map f, hcomp] at h
   exact h
 
 end FieldCore
 
-end Coalgebra.RightComoduleHom
+end TauCeti.Comodule.Hom
 
-namespace Coalgebra.RightComodule
-
-section CommSemiring
-
-variable {K : Type u} {C : Type v} {M : Type w}
-variable [CommSemiring K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
-variable [AddCommMonoid M] [Module K M]
-
-private theorem coefficient_eq_sum_basis {ι : Type*} [Fintype ι]
-    (X : RightComodule K C M) (b : Module.Basis ι K M)
-    (ell : M →ₗ[K] K) (m : M) :
-    X.coefficient ell m = ∑ j, b.equivFun m j • X.coefficient ell (b j) := by
-  let f : M →ₗ[K] C :=
-    (TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C ∘ₗ X.coaction
-  have h := b.constr_apply_fintype K (fun j ↦ f (b j)) m
-  rw [b.constr_self K f] at h
-  simpa only [f, LinearMap.comp_apply, coefficient_eq, LinearEquiv.coe_coe] using h
-
-private theorem coefficientSpan_eq_span_basis {ι : Type*} [Finite ι]
-    (X : RightComodule K C M) (b : Module.Basis ι K M) :
-    X.coefficientSpan = Submodule.span K
-      (Set.range (Function.uncurry (fun i j : ι ↦ X.coefficient (b.coord i) (b j)))) := by
-  classical
-  let : Fintype ι := Fintype.ofFinite ι
-  apply le_antisymm
-  · apply (X.coefficientSpan_le_iff _).mpr
-    intro ell m
-    have hrepr := (TensorProduct.equivFinsuppOfBasisLeft b).symm_apply_apply (X.coaction m)
-    rw [TensorProduct.equivFinsuppOfBasisLeft_symm_apply,
-      Finsupp.sum_fintype _ _ (fun _ ↦ by simp)] at hrepr
-    have hcoaction :
-        X.coaction m = ∑ i, b i ⊗ₜ[K] X.coefficient (b.coord i) m := by
-      simpa only [TensorProduct.equivFinsuppOfBasisLeft_apply, coefficient_eq]
-        using hrepr.symm
-    rw [coefficient_eq, hcoaction]
-    simp only [map_sum, LinearMap.rTensor_tmul, TensorProduct.lid_tmul]
-    refine Submodule.sum_mem _ fun i _ ↦ Submodule.smul_mem _ _ ?_
-    rw [coefficient_eq_sum_basis X b (b.coord i) m]
-    exact Submodule.sum_mem _ fun j _ ↦ Submodule.smul_mem _ _
-      (Submodule.subset_span ⟨(i, j), rfl⟩)
-  · apply Submodule.span_le.mpr
-    rintro c ⟨⟨i, j⟩, rfl⟩
-    exact X.coefficient_mem_coefficientSpan (b.coord i) (b j)
-
-end CommSemiring
+namespace TauCeti.Comodule
 
 /-- All first-factor dual evaluations detect a tensor's membership in the
 range of a second-factor submodule inclusion. -/
@@ -249,16 +152,6 @@ private theorem tensor_mem_range_lTensor_iff {K : Type u} {N : Type v} {M : Type
     refine ⟨b i ⊗ₜ[K] (⟨c i, hc i⟩ : S), ?_⟩
     simp only [LinearMap.lTensor_tmul, Submodule.subtype_apply]
 
-private theorem coefficientSpan_fg
-    {K : Type u} {C : Type v} {M : Type w}
-    [Field K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
-    [AddCommMonoid M] [Module K M] [Module.Finite K M] (X : RightComodule K C M) :
-    X.coefficientSpan.FG := by
-  classical
-  let : AddCommGroup M := Module.addCommMonoidToAddCommGroup K (M := M)
-  let b := Module.finBasis K M
-  rw [coefficientSpan_eq_span_basis X b]
-  exact Coalgebra.fg_span_coefficients (fun i j ↦ X.coefficient (b.coord i) (b j))
 
 section Field
 
@@ -266,14 +159,14 @@ variable {K : Type u} {C : Type v} {M : Type w}
 variable [Field K] [AddCommGroup C] [Module K C] [Coalgebra K C]
 variable [AddCommMonoid M] [Module K M]
 
--- Contract the first factor of right-coaction coassociativity. The two
+-- Contract the first factor of right-coact coassociativity. The two
 -- comparison maps are checked on pure tensors, keeping the coalgebra factors
 -- in their original order.
-private theorem comul_coefficient_eq_rTensor (X : RightComodule K C M)
+private theorem comul_coefficient_eq_rTensor (X : Comodule K C M)
     (ell : M →ₗ[K] K) (m : M) :
-    comul (R := K) (X.coefficient ell m) =
+    comul (R := K) ((@matrixCoefficient K C M _ _ _ _ _ _ X) ell m) =
       (((TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C) ∘ₗ
-        X.coaction).rTensor C (X.coaction m) := by
+        X.coact).rTensor C (X.coact m) := by
   let q : M ⊗[K] C →ₗ[K] C :=
     (TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C
   let q₂ : M ⊗[K] (C ⊗[K] C) →ₗ[K] C ⊗[K] C :=
@@ -286,147 +179,156 @@ private theorem comul_coefficient_eq_rTensor (X : RightComodule K C M)
     ext x c d
     simp [q, q₂, TensorProduct.smul_tmul']
   calc
-    comul (R := K) (X.coefficient ell m) =
-        q₂ ((comul (R := K)).lTensor M (X.coaction m)) :=
-      LinearMap.congr_fun hΔ (X.coaction m)
-    _ = q₂ (TensorProduct.assoc K M C C (X.coaction.rTensor C (X.coaction m))) := by
-      rw [X.coassoc_apply]
-    _ = q.rTensor C (X.coaction.rTensor C (X.coaction m)) :=
+    comul (R := K) ((@matrixCoefficient K C M _ _ _ _ _ _ X) ell m) =
+        q₂ ((comul (R := K)).lTensor M (X.coact m)) :=
+      LinearMap.congr_fun hΔ (X.coact m)
+    _ = q₂ (TensorProduct.assoc K M C C (X.coact.rTensor C (X.coact m))) := by
+      rw [(@Comodule.coassoc_apply K C M _ _ _ _ _ _ X)]
+    _ = q.rTensor C (X.coact.rTensor C (X.coact m)) :=
       LinearMap.congr_fun ha _
-    _ = (q ∘ₗ X.coaction).rTensor C (X.coaction m) :=
-      (LinearMap.rTensor_comp_apply (M := C) (g := q) (f := X.coaction)
-        (X.coaction m)).symm
+    _ = (q ∘ₗ X.coact).rTensor C (X.coact m) :=
+      (LinearMap.rTensor_comp_apply (M := C) (g := q) (f := X.coact)
+        (X.coact m)).symm
 
-private theorem coefficientSpan_comul_mem (X : RightComodule K C M)
-    {c : C} (hc : c ∈ X.coefficientSpan) :
+private theorem coefficientSpan_comul_mem (X : Comodule K C M)
+    {c : C} (hc : c ∈ (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X)) :
     comul (R := K) c ∈ LinearMap.range
-      (TensorProduct.mapIncl X.coefficientSpan X.coefficientSpan) := by
+      (TensorProduct.mapIncl (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X)
+        (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X)) := by
   classical
   let : AddCommGroup M := Module.addCommMonoidToAddCommGroup K (M := M)
-  have hS : X.coefficientSpan ≤
-      (LinearMap.range (TensorProduct.mapIncl X.coefficientSpan X.coefficientSpan)).comap
+  have hS : (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X) ≤
+      (LinearMap.range (TensorProduct.mapIncl (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X)
+        (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X))).comap
         (comul (R := K)) := by
-    apply (X.coefficientSpan_le_iff _).mpr
+    apply (@matrixCoefficientSubmodule_le_iff K C M _ _ _ _ _ _ X _).mpr
     intro ell m
-    change comul (R := K) (X.coefficient ell m) ∈ LinearMap.range
-      (TensorProduct.mapIncl X.coefficientSpan X.coefficientSpan)
+    change comul (R := K) ((@matrixCoefficient K C M _ _ _ _ _ _ X) ell m) ∈ LinearMap.range
+      (TensorProduct.mapIncl (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X)
+        (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X))
     let b := Module.Basis.ofVectorSpace K M
-    let f := TensorProduct.equivFinsuppOfBasisLeft b (X.coaction m)
+    let f := TensorProduct.equivFinsuppOfBasisLeft b (X.coact m)
     have hf (i : Module.Basis.ofVectorSpaceIndex K M) :
-        f i = X.coefficient (b.coord i) m :=
-      TensorProduct.equivFinsuppOfBasisLeft_apply b (X.coaction m) i
-    have hρ : f.sum (fun i c => b i ⊗ₜ[K] c) = X.coaction m := by
+        f i = (@matrixCoefficient K C M _ _ _ _ _ _ X) (b.coord i) m :=
+      TensorProduct.equivFinsuppOfBasisLeft_apply b (X.coact m) i
+    have hρ : f.sum (fun i c => b i ⊗ₜ[K] c) = X.coact m := by
       simpa only [TensorProduct.equivFinsuppOfBasisLeft_symm_apply] using
-        (TensorProduct.equivFinsuppOfBasisLeft b).symm_apply_apply (X.coaction m)
+        (TensorProduct.equivFinsuppOfBasisLeft b).symm_apply_apply (X.coact m)
     let T := (((TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C) ∘ₗ
-      X.coaction).rTensor C
-    have hΔ : comul (R := K) (X.coefficient ell m) =
-        ∑ i ∈ f.support, X.coefficient ell (b i) ⊗ₜ[K] f i := by
+      X.coact).rTensor C
+    have hΔ : comul (R := K) ((@matrixCoefficient K C M _ _ _ _ _ _ X) ell m) =
+        ∑ i ∈ f.support, (@matrixCoefficient K C M _ _ _ _ _ _ X) ell (b i) ⊗ₜ[K] f i := by
       calc
-        comul (R := K) (X.coefficient ell m) = T (X.coaction m) :=
+        comul (R := K) ((@matrixCoefficient K C M _ _ _ _ _ _ X) ell m) = T (X.coact m) :=
           comul_coefficient_eq_rTensor X ell m
         _ = T (f.sum (fun i c => b i ⊗ₜ[K] c)) := congrArg T hρ.symm
-        _ = ∑ i ∈ f.support, X.coefficient ell (b i) ⊗ₜ[K] f i := by
-          simp [T, Finsupp.sum, map_sum, coefficient_eq]
+        _ = ∑ i ∈ f.support, (@matrixCoefficient K C M _ _ _ _ _ _ X) ell (b i) ⊗ₜ[K] f i := by
+          simp [T, Finsupp.sum, map_sum, matrixCoefficient_def, LinearMap.rTensor_def]
     rw [hΔ]
     apply Submodule.sum_mem
     intro i hi
-    exact ⟨(⟨X.coefficient ell (b i), X.coefficient_mem_coefficientSpan ell (b i)⟩ :
-        X.coefficientSpan) ⊗ₜ[K]
-      (⟨f i, by rw [hf i]; exact X.coefficient_mem_coefficientSpan (b.coord i) m⟩ :
-        X.coefficientSpan), rfl⟩
+    exact ⟨(⟨(@matrixCoefficient K C M _ _ _ _ _ _ X) ell (b i),
+      (@matrixCoefficient_mem_submodule K C M _ _ _ _ _ _ X) ell (b i)⟩ :
+        (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X)) ⊗ₜ[K]
+      (⟨f i, by
+        rw [hf i]
+        exact (@matrixCoefficient_mem_submodule K C M _ _ _ _ _ _ X) (b.coord i) m⟩ :
+        (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X)), rfl⟩
   exact hS hc
 
 /-- The coefficient subcoalgebra, with underlying submodule the all-dual coefficient span. -/
-def coefficientSubcoalgebra (X : RightComodule K C M) : _root_.Subcoalgebra K C :=
-  _root_.Subcoalgebra.mk' X.coefficientSpan (by
+def coefficientSubcoalgebra (X : Comodule K C M) : TauCeti.Subcoalgebra K C :=
+  TauCeti.Subcoalgebra.ofSubmodule (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X) (by
     intro c hc
     exact coefficientSpan_comul_mem X hc)
 
 /-- The carrier of the coefficient subcoalgebra is exactly the coefficient span. -/
-@[simp] theorem coefficientSubcoalgebra_toSubmodule (X : RightComodule K C M) :
-    X.coefficientSubcoalgebra.toSubmodule = X.coefficientSpan :=
+@[simp] theorem coefficientSubcoalgebra_toSubmodule (X : Comodule K C M) :
+    X.coefficientSubcoalgebra.toSubmodule = (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X) :=
   rfl
 
 /-- The underlying submodule is the span of the exact range of coefficient evaluation. -/
-theorem coefficientSubcoalgebra_toSubmodule_eq_span_range (X : RightComodule K C M) :
+theorem coefficientSubcoalgebra_toSubmodule_eq_span_range (X : Comodule K C M) :
     X.coefficientSubcoalgebra.toSubmodule =
-      Submodule.span K (Set.range (Function.uncurry X.coefficient)) :=
+      Submodule.span K (Set.range (Function.uncurry (@matrixCoefficient K C M _ _ _ _ _ _ X))) :=
   rfl
 
 /-- Membership in the coefficient subcoalgebra is membership in the coefficient span. -/
-@[simp] theorem mem_coefficientSubcoalgebra (X : RightComodule K C M) (c : C) :
-    c ∈ X.coefficientSubcoalgebra ↔ c ∈ X.coefficientSpan :=
+@[simp] theorem mem_coefficientSubcoalgebra (X : Comodule K C M) (c : C) :
+    c ∈ X.coefficientSubcoalgebra ↔ c ∈ (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X) :=
   Iff.rfl
 
 /-- Every coefficient belongs to the coefficient subcoalgebra. -/
-theorem coefficient_mem_coefficientSubcoalgebra (X : RightComodule K C M)
-    (ell : M →ₗ[K] K) (m : M) : X.coefficient ell m ∈ X.coefficientSubcoalgebra :=
-  X.coefficient_mem_coefficientSpan ell m
+theorem coefficient_mem_coefficientSubcoalgebra (X : Comodule K C M)
+    (ell : M →ₗ[K] K) (m : M) : (@matrixCoefficient K C M _ _ _ _ _ _ X) ell m ∈
+      X.coefficientSubcoalgebra :=
+  (@matrixCoefficient_mem_submodule K C M _ _ _ _ _ _ X) ell m
 
-/-- A coaction takes values in `M ⊗ D` exactly when its coefficient span is
+/-- A coact takes values in `M ⊗ D` exactly when its coefficient span is
 contained in the underlying submodule of `D`. -/
-theorem coaction_mem_range_iff_coefficientSpan_le (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C) :
-    (∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) ↔
-      X.coefficientSpan ≤ D.toSubmodule := by
+theorem coact_mem_range_iff_coefficientSpan_le (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C) :
+    (∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) ↔
+      (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X) ≤ D.toSubmodule := by
   constructor
   · intro h
-    apply (X.coefficientSpan_le_iff D.toSubmodule).mpr
+    apply (@matrixCoefficientSubmodule_le_iff K C M _ _ _ _ _ _ X D.toSubmodule).mpr
     intro ell m
-    exact (tensor_mem_range_lTensor_iff D.toSubmodule (X.coaction m)).mp (h m) ell
+    exact (tensor_mem_range_lTensor_iff D.toSubmodule (X.coact m)).mp (h m) ell
   · intro h m
-    apply (tensor_mem_range_lTensor_iff D.toSubmodule (X.coaction m)).mpr
+    apply (tensor_mem_range_lTensor_iff D.toSubmodule (X.coact m)).mpr
     intro ell
-    exact (X.coefficientSpan_le_iff D.toSubmodule).mp h ell m
+    exact (@matrixCoefficientSubmodule_le_iff K C M _ _ _ _ _ _ X D.toSubmodule).mp h ell m
 
-/-- The linear corestriction of a coaction through the tensor inclusion of a subcoalgebra. -/
-noncomputable def coactionCodRestrict (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C)
-    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    M →ₗ[K] M ⊗[K] D :=
-  X.coaction.codLift (D.subtype.toLinearMap.lTensor M)
+/-- The linear corestriction of a coact through the tensor inclusion of a subcoalgebra. -/
+noncomputable def coactCodRestrict (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C)
+    (h : ∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
+    M →ₗ[K] M ⊗[K] D.toSubmodule :=
+  X.coact.codLift (D.subtype.toLinearMap.lTensor M)
     (by
       let : AddCommGroup M := Module.addCommMonoidToAddCommGroup K (M := M)
       exact Module.Flat.lTensor_preserves_injective_linearMap
         (R := K) (M := M) D.subtype.toLinearMap D.subtype_injective) h
 
-/-- Tensor inclusion after linear corestriction recovers the original coaction. -/
-theorem subtype_lTensor_comp_coactionCodRestrict (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C)
-    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    D.subtype.toLinearMap.lTensor M ∘ₗ X.coactionCodRestrict D h = X.coaction :=
+/-- Tensor inclusion after linear corestriction recovers the original coact. -/
+theorem subtype_lTensor_comp_coactCodRestrict (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C)
+    (h : ∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
+    D.subtype.toLinearMap.lTensor M ∘ₗ X.coactCodRestrict D h = X.coact :=
   LinearMap.comp_codLift _ _ _ _
 
-/-- The corestricted linear coaction satisfies the inclusion equation at each element. -/
-@[simp] theorem subtype_lTensor_coactionCodRestrict (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C)
-    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M))
+/-- The corestricted linear coact satisfies the inclusion equation at each element. -/
+@[simp] theorem subtype_lTensor_coactCodRestrict (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C)
+    (h : ∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M))
     (m : M) :
-    DFunLike.coe (F := M ⊗[K] D →ₗ[K] M ⊗[K] C)
-      (α := M ⊗[K] D) (β := fun _ => M ⊗[K] C)
-      (D.toSubmodule.subtype.lTensor (N := D) M) (X.coactionCodRestrict D h m) = X.coaction m :=
-  LinearMap.congr_fun (X.subtype_lTensor_comp_coactionCodRestrict D h) m
+    DFunLike.coe (F := M ⊗[K] D.toSubmodule →ₗ[K] M ⊗[K] C)
+      (α := M ⊗[K] D.toSubmodule) (β := fun _ => M ⊗[K] C)
+      (D.toSubmodule.subtype.lTensor (N := D.toSubmodule) M) (X.coactCodRestrict D h m) = X.coact
+        m :=
+  LinearMap.congr_fun (X.subtype_lTensor_comp_coactCodRestrict D h) m
 
-private theorem coactionCodRestrict_coassoc (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C)
-    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    TensorProduct.assoc K M D D ∘ₗ (X.coactionCodRestrict D h).rTensor D ∘ₗ
-        X.coactionCodRestrict D h =
-      (comul (R := K) (A := D)).lTensor M ∘ₗ X.coactionCodRestrict D h := by
-  let ρ : M →ₗ[K] M ⊗[K] D := X.coactionCodRestrict D h
-  have hρ : D.subtype.toLinearMap.lTensor M ∘ₗ ρ = X.coaction :=
-    X.subtype_lTensor_comp_coactionCodRestrict D h
-  have hρ_apply (m : M) : D.subtype.toLinearMap.lTensor M (ρ m) = X.coaction m :=
+private theorem coactCodRestrict_coassoc (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C)
+    (h : ∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
+    TensorProduct.assoc K M D.toSubmodule D.toSubmodule ∘ₗ (X.coactCodRestrict D h).rTensor
+      D.toSubmodule ∘ₗ
+        X.coactCodRestrict D h =
+      (comul (R := K) (A := D.toSubmodule)).lTensor M ∘ₗ X.coactCodRestrict D h := by
+  let ρ : M →ₗ[K] M ⊗[K] D.toSubmodule := X.coactCodRestrict D h
+  have hρ : D.subtype.toLinearMap.lTensor M ∘ₗ ρ = X.coact :=
+    X.subtype_lTensor_comp_coactCodRestrict D h
+  have hρ_apply (m : M) : D.subtype.toLinearMap.lTensor M (ρ m) = X.coact m :=
     LinearMap.congr_fun hρ m
   have hρ_tensor :
       TensorProduct.map (D.subtype.toLinearMap.lTensor M) D.subtype.toLinearMap ∘ₗ
-          ρ.rTensor D =
-        X.coaction.rTensor C ∘ₗ D.subtype.toLinearMap.lTensor M := by
+          ρ.rTensor D.toSubmodule =
+        X.coact.rTensor C ∘ₗ D.subtype.toLinearMap.lTensor M := by
     rw [LinearMap.map_comp_rTensor, hρ, LinearMap.rTensor_comp_lTensor]
   have hcomul :
       (TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M ∘ₗ
-          (comul (R := K) (A := D)).lTensor M =
+          (comul (R := K) (A := D.toSubmodule)).lTensor M =
         (comul (R := K) (A := C)).lTensor M ∘ₗ D.subtype.toLinearMap.lTensor M := by
     rw [← LinearMap.lTensor_comp, D.subtype.map_comp_comul, LinearMap.lTensor_comp]
   -- Only the cancellation step needs the field's canonical additive inverses on M.
@@ -442,74 +344,75 @@ private theorem coactionCodRestrict_coassoc (X : RightComodule K C M)
   simp only [LinearMap.comp_apply, LinearEquiv.coe_coe]
   calc
     (TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M
-        (TensorProduct.assoc K M D D (ρ.rTensor D (ρ m))) =
+        (TensorProduct.assoc K M D.toSubmodule D.toSubmodule (ρ.rTensor D.toSubmodule (ρ m))) =
         TensorProduct.assoc K M C C
           (TensorProduct.map (D.subtype.toLinearMap.lTensor M) D.subtype.toLinearMap
-            (ρ.rTensor D (ρ m))) :=
+            (ρ.rTensor D.toSubmodule (ρ m))) :=
       TensorProduct.map_map_assoc (LinearMap.id : M →ₗ[K] M)
         D.subtype.toLinearMap D.subtype.toLinearMap _
     _ = TensorProduct.assoc K M C C
-        (X.coaction.rTensor C (D.subtype.toLinearMap.lTensor M (ρ m))) :=
+        (X.coact.rTensor C (D.subtype.toLinearMap.lTensor M (ρ m))) :=
       congrArg (TensorProduct.assoc K M C C) (LinearMap.congr_fun hρ_tensor (ρ m))
-    _ = TensorProduct.assoc K M C C (X.coaction.rTensor C (X.coaction m)) := by
+    _ = TensorProduct.assoc K M C C (X.coact.rTensor C (X.coact m)) := by
       rw [hρ_apply]
-    _ = (comul (R := K) (A := C)).lTensor M (X.coaction m) := X.coassoc_apply m
+    _ = (comul (R := K) (A := C)).lTensor M (X.coact m) := (@Comodule.coassoc_apply K C M _ _ _ _
+      _ _ X) m
     _ = (comul (R := K) (A := C)).lTensor M
         (D.subtype.toLinearMap.lTensor M (ρ m)) := by rw [hρ_apply]
     _ = (TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M
-        ((comul (R := K) (A := D)).lTensor M (ρ m)) :=
+        ((comul (R := K) (A := D.toSubmodule)).lTensor M (ρ m)) :=
       (LinearMap.congr_fun hcomul (ρ m)).symm
 
-private theorem coactionCodRestrict_counit_comp (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C)
-    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    (counit (R := K) (A := D)).lTensor M ∘ₗ X.coactionCodRestrict D h =
+private theorem coactCodRestrict_counit_comp (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C)
+    (h : ∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
+    (counit (R := K) (A := D.toSubmodule)).lTensor M ∘ₗ X.coactCodRestrict D h =
       (TensorProduct.rid K M).symm.toLinearMap := by
   rw [← D.subtype.counit_comp, LinearMap.lTensor_comp, LinearMap.comp_assoc,
-    X.subtype_lTensor_comp_coactionCodRestrict D h]
-  exact X.counit_comp
+    X.subtype_lTensor_comp_coactCodRestrict D h]
+  exact X.lTensor_counit_comp_coact
 
 /-- The right comodule on the same module with coacting coalgebra corestricted to `D`. -/
-noncomputable def restrictCoalgebra (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C)
-    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    RightComodule K D M where
-  coaction := X.coactionCodRestrict D h
-  coassoc := by exact coactionCodRestrict_coassoc X D h
-  counit_comp := by exact coactionCodRestrict_counit_comp X D h
+@[instance_reducible] noncomputable def restrictCoalgebra (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C)
+    (h : ∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
+    Comodule K D.toSubmodule M where
+  coact := X.coactCodRestrict D h
+  coassoc := by exact coactCodRestrict_coassoc X D h
+  lTensor_counit_comp_coact := by exact coactCodRestrict_counit_comp X D h
 
-/-- The coaction of the corestricted comodule is the specified linear lift. -/
-@[simp] theorem restrictCoalgebra_coaction (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C)
-    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    (X.restrictCoalgebra D h).coaction = X.coactionCodRestrict D h :=
+/-- The coact of the corestricted comodule is the specified linear lift. -/
+@[simp] theorem restrictCoalgebra_coact (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C)
+    (h : ∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
+    (X.restrictCoalgebra D h).coact = X.coactCodRestrict D h :=
   rfl
 
-/-- The coaction of the corestricted comodule maps to the original coaction under inclusion. -/
-theorem subtype_lTensor_comp_restrictCoalgebra_coaction (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C)
-    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    D.subtype.toLinearMap.lTensor M ∘ₗ (X.restrictCoalgebra D h).coaction = X.coaction :=
-  X.subtype_lTensor_comp_coactionCodRestrict D h
+/-- The coact of the corestricted comodule maps to the original coact under inclusion. -/
+theorem subtype_lTensor_comp_restrictCoalgebra_coact (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C)
+    (h : ∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
+    D.subtype.toLinearMap.lTensor M ∘ₗ (X.restrictCoalgebra D h).coact = X.coact :=
+  X.subtype_lTensor_comp_coactCodRestrict D h
 
 /-- The coacting coalgebra has a unique corestriction to `D` precisely when the
 coefficient span is contained in its underlying submodule, as in the classical
 coefficient-coalgebra construction from Sweedler's *Hopf Algebras*. -/
-theorem existsUnique_restrictCoalgebra_iff (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C) :
-    (∃! Y : RightComodule K D M, D.subtype.toLinearMap.lTensor M ∘ₗ Y.coaction =
-      X.coaction) ↔ X.coefficientSpan ≤ D.toSubmodule := by
+theorem existsUnique_restrictCoalgebra_iff (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C) :
+    (∃! Y : Comodule K D.toSubmodule M, D.subtype.toLinearMap.lTensor M ∘ₗ Y.coact =
+      X.coact) ↔ (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X) ≤ D.toSubmodule := by
   constructor
   · rintro ⟨Y, hY, _⟩
-    apply (X.coaction_mem_range_iff_coefficientSpan_le D).mp
+    apply (X.coact_mem_range_iff_coefficientSpan_le D).mp
     intro m
-    exact ⟨Y.coaction m, LinearMap.congr_fun hY m⟩
+    exact ⟨Y.coact m, LinearMap.congr_fun hY m⟩
   · intro h
-    have hρ := (X.coaction_mem_range_iff_coefficientSpan_le D).mpr h
+    have hρ := (X.coact_mem_range_iff_coefficientSpan_le D).mpr h
     refine ⟨X.restrictCoalgebra D hρ,
-      X.subtype_lTensor_comp_restrictCoalgebra_coaction D hρ, ?_⟩
+      X.subtype_lTensor_comp_restrictCoalgebra_coact D hρ, ?_⟩
     intro Y hY
-    apply Coalgebra.RightComodule.ext
+    apply TauCeti.Comodule.ext
     apply LinearMap.ext
     intro m
     have hinj : Function.Injective (D.subtype.toLinearMap.lTensor M) := by
@@ -518,87 +421,91 @@ theorem existsUnique_restrictCoalgebra_iff (X : RightComodule K C M)
         (R := K) (M := M) D.subtype.toLinearMap D.subtype_injective
     apply hinj
     exact (LinearMap.congr_fun hY m).trans
-      (X.subtype_lTensor_coactionCodRestrict D hρ m).symm
+      (X.subtype_lTensor_coactCodRestrict D hρ m).symm
 
 /-- The original module as a right comodule over its coefficient subcoalgebra. -/
-noncomputable def coefficientComodule (X : RightComodule K C M) :
-    RightComodule K X.coefficientSubcoalgebra M :=
+@[instance_reducible] noncomputable def coefficientComodule (X : Comodule K C M) :
+    Comodule K X.coefficientSubcoalgebra.toSubmodule M :=
   X.restrictCoalgebra X.coefficientSubcoalgebra
-    ((X.coaction_mem_range_iff_coefficientSpan_le X.coefficientSubcoalgebra).mpr le_rfl)
+    ((X.coact_mem_range_iff_coefficientSpan_le X.coefficientSubcoalgebra).mpr le_rfl)
 
-/-- Inclusion of the coefficient subcoalgebra intertwines the two coactions. -/
-theorem subtype_lTensor_comp_coefficientComodule_coaction (X : RightComodule K C M) :
+/-- Inclusion of the coefficient subcoalgebra intertwines the two coacts. -/
+theorem subtype_lTensor_comp_coefficientComodule_coact (X : Comodule K C M) :
     X.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M ∘ₗ
-        X.coefficientComodule.coaction = X.coaction :=
-  X.subtype_lTensor_comp_restrictCoalgebra_coaction X.coefficientSubcoalgebra _
+        X.coefficientComodule.coact = X.coact :=
+  X.subtype_lTensor_comp_restrictCoalgebra_coact X.coefficientSubcoalgebra _
 
 /-- The coefficient-comodule inclusion equation evaluated at an element. -/
-@[simp] theorem subtype_lTensor_coefficientComodule_coaction
-    (X : RightComodule K C M) (m : M) :
-    DFunLike.coe (F := M ⊗[K] X.coefficientSpan →ₗ[K] M ⊗[K] C)
-      (α := M ⊗[K] X.coefficientSpan) (β := fun _ => M ⊗[K] C)
-      (X.coefficientSpan.subtype.lTensor (N := X.coefficientSpan) M)
-      (X.coefficientComodule.coaction m) = X.coaction m :=
-  LinearMap.congr_fun X.subtype_lTensor_comp_coefficientComodule_coaction m
+theorem subtype_lTensor_coefficientComodule_coact
+    (X : Comodule K C M) (m : M) :
+    DFunLike.coe (F := M ⊗[K] (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X) →ₗ[K] M ⊗[K] C)
+      (α := M ⊗[K] (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X)) (β := fun _ => M ⊗[K] C)
+      ((@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X).subtype.lTensor (N :=
+        (@matrixCoefficientSubmodule K C M _ _ _ _ _ _ X)) M)
+      (X.coefficientComodule.coact m) = X.coact m :=
+  LinearMap.congr_fun X.subtype_lTensor_comp_coefficientComodule_coact m
 
 /-- A module-finite right comodule has a finitely generated coefficient subcoalgebra.
 This is the finite-comodule coefficient theorem from Sweedler's *Hopf Algebras*. -/
-theorem coefficientSubcoalgebra_fg [Module.Finite K M] (X : RightComodule K C M) :
+theorem coefficientSubcoalgebra_fg [Module.Finite K M] (X : Comodule K C M) :
     X.coefficientSubcoalgebra.toSubmodule.FG := by
-  simpa only [coefficientSubcoalgebra_toSubmodule] using coefficientSpan_fg X
+  let : AddCommGroup M := Module.addCommMonoidToAddCommGroup K (M := M)
+  let := X
+  rw [coefficientSubcoalgebra_toSubmodule]
+  exact Module.Finite.iff_fg.mp inferInstance
 
-example (X : RightComodule K C M) :
-    ∃ Y : RightComodule K X.coefficientSubcoalgebra M,
-      X.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M ∘ₗ Y.coaction = X.coaction :=
-  ⟨X.coefficientComodule, X.subtype_lTensor_comp_coefficientComodule_coaction⟩
+example (X : Comodule K C M) :
+    ∃ Y : Comodule K X.coefficientSubcoalgebra.toSubmodule M,
+      X.coefficientSubcoalgebra.subtype.toLinearMap.lTensor M ∘ₗ Y.coact = X.coact :=
+  ⟨X.coefficientComodule, X.subtype_lTensor_comp_coefficientComodule_coact⟩
 
 /-- Changing the corestricted coacting coalgebra along its inclusion recovers the original
 comodule. -/
-@[simp] theorem mapCoalgebra_restrictCoalgebra (X : RightComodule K C M)
-    (D : _root_.Subcoalgebra K C)
-    (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    (X.restrictCoalgebra D h).mapCoalgebra D.subtype = X := by
-  apply Coalgebra.RightComodule.ext
-  rw [mapCoalgebra_coaction]
-  exact X.subtype_lTensor_comp_restrictCoalgebra_coaction D h
+@[simp] theorem mapCoalgebra_restrictCoalgebra (X : Comodule K C M)
+    (D : TauCeti.Subcoalgebra K C)
+    (h : ∀ m : M, X.coact m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
+    (letI := X.restrictCoalgebra D h; Corestrict (M := M) D.subtype) = X := by
+  apply TauCeti.Comodule.ext
+  change D.subtype.toLinearMap.lTensor M ∘ₗ (X.restrictCoalgebra D h).coact = X.coact
+  exact X.subtype_lTensor_comp_restrictCoalgebra_coact D h
 
 end Field
 
-end Coalgebra.RightComodule
+end TauCeti.Comodule
 
-namespace Coalgebra.RightComoduleHom
+namespace TauCeti.Comodule.Hom
 
 section FieldCarrier
 
 variable {K : Type u} {C : Type v} {M : Type w} {N : Type*}
 variable [Field K] [AddCommGroup C] [Module K C] [Coalgebra K C]
 variable [AddCommMonoid M] [Module K M] [AddCommMonoid N] [Module K N]
-variable {X : RightComodule K C M} {Y : RightComodule K C N}
+variable {X : Comodule K C M} {Y : Comodule K C N}
 
 /-- A surjective comodule morphism decreases the underlying submodule of the
 coefficient subcoalgebra, since every target vector has a source lift. -/
 theorem coefficientSubcoalgebra_toSubmodule_le_of_surjective
-    (f : RightComoduleHom X Y) (hf : Function.Surjective f) :
+    (f : (@Hom K C M N _ _ _ _ _ _ X _ _ Y)) (hf : Function.Surjective f) :
     Y.coefficientSubcoalgebra.toSubmodule ≤ X.coefficientSubcoalgebra.toSubmodule := by
-  simpa only [RightComodule.coefficientSubcoalgebra_toSubmodule] using
-    f.coefficientSpan_le_of_surjective hf
+  simpa only [Comodule.coefficientSubcoalgebra_toSubmodule] using
+    matrixCoefficientSubmodule_le_of_surjective f hf
 
 /-- A bijective comodule morphism preserves the coefficient subcoalgebra. -/
 theorem coefficientSubcoalgebra_eq_of_bijective
-    (f : RightComoduleHom X Y) (hf : Function.Bijective f) :
+    (f : (@Hom K C M N _ _ _ _ _ _ X _ _ Y)) (hf : Function.Bijective f) :
     X.coefficientSubcoalgebra = Y.coefficientSubcoalgebra := by
-  apply _root_.Subcoalgebra.toSubmodule_injective
-  simpa only [RightComodule.coefficientSubcoalgebra_toSubmodule] using
+  apply TauCeti.Subcoalgebra.toSubmodule_injective
+  simpa only [Comodule.coefficientSubcoalgebra_toSubmodule] using
     f.coefficientSpan_eq_of_bijective hf
 
 /-- An injective comodule morphism over a field increases the underlying
 submodule of the coefficient subcoalgebra, by extension of linear functionals. -/
 theorem coefficientSubcoalgebra_toSubmodule_le_of_injective
-    (f : RightComoduleHom X Y) (hf : Function.Injective f) :
+    (f : (@Hom K C M N _ _ _ _ _ _ X _ _ Y)) (hf : Function.Injective f) :
     X.coefficientSubcoalgebra.toSubmodule ≤ Y.coefficientSubcoalgebra.toSubmodule := by
-  simpa only [RightComodule.coefficientSubcoalgebra_toSubmodule] using
+  simpa only [Comodule.coefficientSubcoalgebra_toSubmodule] using
     f.coefficientSpan_le_of_injective hf
 
 end FieldCarrier
 
-end Coalgebra.RightComoduleHom
+end TauCeti.Comodule.Hom

@@ -7,6 +7,8 @@ module
 import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 import Mathlib.Algebra.Field.Rat
 
+open TauCeti
+
 /-!
 # Greatest subcoalgebras and the scalar coalgebra
 
@@ -52,13 +54,13 @@ local notation "T" => (⊤ : Subcoalgebra ℚ ℚ)
 its restricted structure maps agree with the scalar coalgebra at that lift. -/
 private theorem scalar_top_nonzero :
     (T).toSubmodule ≠ (⊥ : Submodule ℚ ℚ) ∧
-      ∃ u : T, (u : ℚ) = 1 ∧ u ≠ 0 ∧
-        Coalgebra.counit (R := ℚ) (A := T) u = 1 ∧
+      ∃ u : (T).toSubmodule, (u : ℚ) = 1 ∧ u ≠ 0 ∧
+        Coalgebra.counit (R := ℚ) (A := (T).toSubmodule) u = 1 ∧
         TensorProduct.mapIncl (T).toSubmodule (T).toSubmodule
-            (Coalgebra.comul (R := ℚ) (A := T) u) =
+            (Coalgebra.comul (R := ℚ) (A := (T).toSubmodule) u) =
           (1 : ℚ) ⊗ₜ[ℚ] (1 : ℚ) := by
-  have h1 : (1 : ℚ) ∈ T := Subcoalgebra.mem_top
-  let u : T := ⟨1, h1⟩
+  have h1 : (1 : ℚ) ∈ T := Subcoalgebra.mem_top _
+  let u : (T).toSubmodule := ⟨1, h1⟩
   refine ⟨?_, u, rfl, ?_, ?_, ?_⟩
   · intro hbot
     have hmem : (1 : ℚ) ∈ (T).toSubmodule := h1
@@ -66,26 +68,28 @@ private theorem scalar_top_nonzero :
     exact (one_ne_zero : (1 : ℚ) ≠ 0) hmem
   · intro hzero
     exact (one_ne_zero : (1 : ℚ) ≠ 0)
-      (congrArg (fun x : T => (x : ℚ)) hzero)
-  · simpa only [CommSemiring.counit_apply] using Subcoalgebra.coalgebra_counit_apply T u
-  · simpa only [CommSemiring.comul_apply] using Subcoalgebra.mapIncl_coalgebra_comul T u
+      (congrArg (fun x : (T).toSubmodule => (x : ℚ)) hzero)
+  · simpa only [CommSemiring.counit_apply] using Subcoalgebra.counit_apply T u
+  · rw [TensorProduct.mapIncl, Subcoalgebra.comul_apply,
+      Subcoalgebra.map_subtype_comulLinearMap]
+    exact CommSemiring.comul_apply ℚ 1
 
 /-- Containing ambient `1` forces a rational subcoalgebra to be the greatest one. -/
 private theorem scalar_eq_top_of_one_mem :
     ∀ D : Subcoalgebra ℚ ℚ, (1 : ℚ) ∈ D → D = T := by
   intro D h1
-  apply Subcoalgebra.eq_top_iff.mpr
-  intro q
-  simpa only [smul_eq_mul, mul_one] using D.smul_mem q h1
+  apply top_unique
+  intro q _
+  change q ∈ D.toSubmodule
+  simpa only [smul_eq_mul, mul_one] using D.toSubmodule.smul_mem q h1
 
 /-- Restricting the identity to the greatest subcoalgebra preserves the identity
 factorization and recovers ambient `1` under inclusion. -/
 private theorem scalar_top_identity_factorization :
-    let j := (CoalgHom.id ℚ ℚ).codRestrict T (fun _ => Subcoalgebra.mem_top)
+    let j := (CoalgHom.id ℚ ℚ).codRestrict T (fun _ => Subcoalgebra.mem_top _)
     (T).subtype.comp j = CoalgHom.id ℚ ℚ ∧ (T).subtype (j 1) = 1 := by
   constructor
   · exact CoalgHom.subtype_comp_codRestrict _ _ _
-  · rw [Subcoalgebra.subtype_apply, CoalgHom.coe_codRestrict]
-    rfl
+  · rfl
 
 end CoalgebraTest

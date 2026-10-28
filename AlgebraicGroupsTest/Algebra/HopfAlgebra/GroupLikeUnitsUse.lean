@@ -16,7 +16,7 @@ Mathlib's universal evaluation `MonoidAlgebra.liftGroupLikeBialgHom` maps
 structure, since Mathlib's group-like carrier is a group.
 
 The fixed basis point indexed by `ProductIdempotents.mixedGroupLike` evaluates
-to that two-support point. Transport by `BialgHom.groupLikeMap` identifies the
+to that two-support point. Transport by `(TauCeti.GroupLike.map BialgHom)` identifies the
 bundled image, and naturality of `GroupLike.toUnits` computes the image of its
 unit, its inverse, and its square under `Units.map`. In particular, a monomial
 source unit evaluates to a nonmonomial target unit, with a distinct inverse.
@@ -52,9 +52,10 @@ local notation "G₂" => Multiplicative ℤ
 local notation "A₂" => MonoidAlgebra R₂ G₂
 local notation "B₂" => MonoidAlgebra R₂ (GroupLike R₂ A₂)
 
--- Specialize the standard group-algebra Hopf structure to the group-like indexing group.
-local instance : HopfAlgebra R₂ B₂ :=
+/-- The standard group-algebra Hopf structure for the fixture's group-like indexing group. -/
+local instance groupLikeIndexHopfAlgebra : HopfAlgebra R₂ B₂ :=
   MonoidAlgebra.instHopfAlgebra (R := R₂) (A := R₂) (G := GroupLike R₂ A₂)
+
 local notation "q" => ProductIdempotents.mixedGroupLike
 local notation "E₂" => MonoidAlgebra.liftGroupLikeBialgHom (R := R₂) (A := A₂)
 local notation "e₀" => ((1, 0) : R₂)
@@ -81,37 +82,37 @@ def mixedBasisPoint : GroupLike R₂ B₂ where
     ((GroupLike.toUnits R₂ mixedBasisPoint : B₂ˣ) : B₂) = single q 1 := rfl
 
 /-- The inverse source unit has value equal to the inverse-indexed basis term. -/
-@[simp] theorem mixedBasisPoint_toUnits_inv_val :
+theorem mixedBasisPoint_toUnits_inv_val :
     (((GroupLike.toUnits R₂ mixedBasisPoint)⁻¹ : B₂ˣ) : B₂) = single q⁻¹ 1 := by
   rw [← map_inv]
   exact mixedBasisPoint_inv_val
 
 /-- Universal evaluation sends the fixed basis point to the two-support combination. -/
-@[simp] theorem evaluation_mixedBasisPoint_val :
+theorem evaluation_mixedBasisPoint_val :
     E₂ (mixedBasisPoint : B₂) = ProductIdempotents.mixed := by
   rw [mixedBasisPoint_val]
   simp [MonoidAlgebra.liftGroupLikeBialgHom]
 
 /-- The induced group-like map identifies the evaluated point with its indexing point. -/
-@[simp] theorem evaluation_mixedBasisPoint : (E₂).groupLikeMap mixedBasisPoint = q := by
+@[simp] theorem evaluation_mixedBasisPoint : (TauCeti.GroupLike.map (E₂)) mixedBasisPoint = q := by
   apply GroupLike.ext
-  simpa only [BialgHom.groupLikeMap_val, ProductIdempotents.mixedGroupLike_val]
+  simpa only [TauCeti.GroupLike.val_map, ProductIdempotents.mixedGroupLike_val]
     using evaluation_mixedBasisPoint_val
 
 /-- Naturality identifies the evaluated source unit with the unit of the mixed point. -/
-@[simp] theorem unitsMap_mixedBasisPoint :
+theorem unitsMap_mixedBasisPoint :
     Units.map (E₂).toAlgHom.toMonoidHom (GroupLike.toUnits R₂ mixedBasisPoint) =
       GroupLike.toUnits R₂ q := by
   rw [← GroupLike.toUnits_groupLikeMap, evaluation_mixedBasisPoint]
 
 /-- The evaluated source unit has the explicit two-support target value. -/
-@[simp] theorem unitsMap_mixedBasisPoint_val :
+theorem unitsMap_mixedBasisPoint_val :
     ((Units.map (E₂).toAlgHom.toMonoidHom
       (GroupLike.toUnits R₂ mixedBasisPoint) : A₂ˣ) : A₂) = ProductIdempotents.mixed := by
   rw [unitsMap_mixedBasisPoint, ProductIdempotents.mixedGroupLike_toUnits_val]
 
 /-- Evaluating the inverse source unit gives the computed two-support inverse. -/
-@[simp] theorem unitsMap_mixedBasisPoint_inv_val :
+theorem unitsMap_mixedBasisPoint_inv_val :
     ((Units.map (E₂).toAlgHom.toMonoidHom
       ((GroupLike.toUnits R₂ mixedBasisPoint)⁻¹) : A₂ˣ) : A₂) =
       ProductIdempotents.mixedInverse := by

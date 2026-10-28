@@ -66,7 +66,7 @@ local instance : Limits.PreservesFiniteLimits (lftPoints K) :=
 
 /-- The Cartesian monoidal structure on schemes locally of finite type over `K`,
 built from their finite products. -/
-local instance : CartesianMonoidalCategory
+local instance locallyFiniteTypeCartesianMonoidalCategory : CartesianMonoidalCategory
     (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))) :=
   .ofHasFiniteProducts
 

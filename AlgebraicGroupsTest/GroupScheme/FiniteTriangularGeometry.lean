@@ -17,61 +17,66 @@ zero ring, a reducible base, and empty, singleton, and nontrivial finite orders.
 
 set_option warningAsError true
 
-open AlgebraicGeometry
+open AlgebraicGeometry TauCeti.GeneralLinear.UpperTriangular
 
 universe u
 
 namespace AlgebraicGroupsTest.GroupScheme.FiniteTriangularGeometry
 
-variable (K : Type u) [CommRing K] (index : Type u) [Fintype index]
-  [DecidableEq index]
+variable (K : Type u) [CommRing K] (index : Type u) [Finite index]
 
-example : Smooth (multiplicativeGroupUnderlyingScheme K).hom := inferInstance
-example : GeometricallyIntegral (multiplicativeGroupUnderlyingScheme K).hom := inferInstance
-example : Smooth (diagonalGroupUnderlyingScheme K index).hom := inferInstance
-example : GeometricallyIntegral (diagonalGroupUnderlyingScheme K index).hom := inferInstance
+example : Smooth ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom := inferInstance
+example : GeometricallyIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme
+  K).X).hom := inferInstance
+example : Smooth ((TauCeti.SplitTorus.groupScheme K index).X).hom := inferInstance
+example : GeometricallyIntegral ((TauCeti.SplitTorus.groupScheme K index).X).hom := inferInstance
 
-variable (order : Type u) [Fintype order] [LinearOrder order]
+variable (rank : ℕ)
 
-example : Smooth (upperTriangularGroupUnderlyingScheme K order).hom := inferInstance
-example : GeometricallyIntegral (upperTriangularGroupUnderlyingScheme K order).hom :=
-  inferInstance
-
-example : Smooth (multiplicativeGroupUnderlyingScheme (ZMod 1)).hom := inferInstance
-example : GeometricallyIntegral (multiplicativeGroupUnderlyingScheme (ZMod 1)).hom :=
-  inferInstance
-example : Smooth (diagonalGroupUnderlyingScheme (ZMod 1) (Fin 0)).hom := inferInstance
-example : GeometricallyIntegral (diagonalGroupUnderlyingScheme (ZMod 1) (Fin 0)).hom :=
-  inferInstance
-example : Smooth (upperTriangularGroupUnderlyingScheme (ZMod 1) (Fin 1)).hom :=
-  inferInstance
-example : GeometricallyIntegral (upperTriangularGroupUnderlyingScheme (ZMod 1) (Fin 1)).hom :=
+example : Smooth ((groupScheme K rank).X).hom := inferInstance
+example : GeometricallyIntegral ((groupScheme K rank).X).hom :=
   inferInstance
 
-example : Smooth (multiplicativeGroupUnderlyingScheme (ℤ × ℤ)).hom := inferInstance
-example : GeometricallyIntegral (multiplicativeGroupUnderlyingScheme (ℤ × ℤ)).hom :=
+example : Smooth ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme (ZMod 1)).X).hom :=
   inferInstance
-example : Smooth (diagonalGroupUnderlyingScheme (ℤ × ℤ) (Fin 3)).hom := inferInstance
-example : GeometricallyIntegral (diagonalGroupUnderlyingScheme (ℤ × ℤ) (Fin 3)).hom :=
+example : GeometricallyIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme (ZMod
+  1)).X).hom :=
   inferInstance
-example : Smooth (upperTriangularGroupUnderlyingScheme (ℤ × ℤ) (Fin 3)).hom :=
+example : Smooth ((TauCeti.SplitTorus.groupScheme (ZMod 1) (Fin 0)).X).hom := inferInstance
+example : GeometricallyIntegral ((TauCeti.SplitTorus.groupScheme (ZMod 1) (Fin 0)).X).hom :=
   inferInstance
-example : GeometricallyIntegral (upperTriangularGroupUnderlyingScheme (ℤ × ℤ) (Fin 3)).hom :=
+example : Smooth ((groupScheme (ZMod 1) 1).X).hom :=
   inferInstance
-
-example : Smooth (diagonalGroupUnderlyingScheme ℤ (Fin 1)).hom := inferInstance
-example : GeometricallyIntegral (diagonalGroupUnderlyingScheme ℤ (Fin 1)).hom :=
-  inferInstance
-example : Smooth (upperTriangularGroupUnderlyingScheme ℤ (Fin 0)).hom := inferInstance
-example : GeometricallyIntegral (upperTriangularGroupUnderlyingScheme ℤ (Fin 0)).hom :=
+example : GeometricallyIntegral ((groupScheme (ZMod 1) 1).X).hom :=
   inferInstance
 
-example : IsIntegral (multiplicativeGroupUnderlyingScheme ℤ).left := inferInstance
-example : IsIntegral (diagonalGroupUnderlyingScheme ℤ (Fin 0)).left := inferInstance
-example : IsIntegral (diagonalGroupUnderlyingScheme ℤ (Fin 1)).left := inferInstance
-example : IsIntegral (diagonalGroupUnderlyingScheme ℤ (Fin 3)).left := inferInstance
-example : IsIntegral (upperTriangularGroupUnderlyingScheme ℤ (Fin 0)).left := inferInstance
-example : IsIntegral (upperTriangularGroupUnderlyingScheme ℤ (Fin 1)).left := inferInstance
-example : IsIntegral (upperTriangularGroupUnderlyingScheme ℤ (Fin 3)).left := inferInstance
+example : Smooth ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme (ℤ × ℤ)).X).hom :=
+  inferInstance
+example : GeometricallyIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme (ℤ ×
+  ℤ)).X).hom :=
+  inferInstance
+example : Smooth ((TauCeti.SplitTorus.groupScheme (ℤ × ℤ) (Fin 3)).X).hom := inferInstance
+example : GeometricallyIntegral ((TauCeti.SplitTorus.groupScheme (ℤ × ℤ) (Fin 3)).X).hom :=
+  inferInstance
+example : Smooth ((groupScheme (ℤ × ℤ) 3).X).hom :=
+  inferInstance
+example : GeometricallyIntegral ((groupScheme (ℤ × ℤ) 3).X).hom :=
+  inferInstance
+
+example : Smooth ((TauCeti.SplitTorus.groupScheme ℤ (Fin 1)).X).hom := inferInstance
+example : GeometricallyIntegral ((TauCeti.SplitTorus.groupScheme ℤ (Fin 1)).X).hom :=
+  inferInstance
+example : Smooth ((groupScheme ℤ 0).X).hom := inferInstance
+example : GeometricallyIntegral ((groupScheme ℤ 0).X).hom :=
+  inferInstance
+
+example : IsIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).X).left :=
+  inferInstance
+example : IsIntegral ((TauCeti.SplitTorus.groupScheme ℤ (Fin 0)).X).left := inferInstance
+example : IsIntegral ((TauCeti.SplitTorus.groupScheme ℤ (Fin 1)).X).left := inferInstance
+example : IsIntegral ((TauCeti.SplitTorus.groupScheme ℤ (Fin 3)).X).left := inferInstance
+example : IsIntegral ((groupScheme ℤ 0).X).left := inferInstance
+example : IsIntegral ((groupScheme ℤ 1).X).left := inferInstance
+example : IsIntegral ((groupScheme ℤ 3).X).left := inferInstance
 
 end AlgebraicGroupsTest.GroupScheme.FiniteTriangularGeometry

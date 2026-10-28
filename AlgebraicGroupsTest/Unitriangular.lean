@@ -4,7 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.GroupScheme.Unitriangular
+public import TauCeti.Algebra.AlgebraicGroup.UpperUnitriangular.Scheme
+public import TauCeti.Algebra.AlgebraicGroup.CommHopfAlgCat.SchemePoints
 
 /-!
 # Upper-unitriangular group-scheme clients
@@ -16,9 +17,12 @@ and zero-ring cases without imposing a field or positive-rank assumption.
 
 @[expose] public section
 
+open TauCeti.UpperUnitriangularGroup
+
+
 noncomputable section
 
-open CategoryTheory AlgebraicGeometry UnitriangularCoordinateRing
+open CategoryTheory AlgebraicGeometry
 open scoped CategoryTheory.MonObj
 
 universe u
@@ -26,59 +30,74 @@ universe u
 variable (K : Type) [CommRing K]
 
 example (R : Type) [CommRing R] [Algebra K R]
-    (s t : Matrix.UnitriangularGroup (Fin 2) R) :
-    (unitriangularGroupMulEquivAlgHom K (Fin 2) R (s * t)).ofConv
-      (quotient K (Fin 2) (GeneralLinearCoordinateRing.matrix K (Fin 2) 0 1)) =
+    (s t : TauCeti.upperUnitriangularGroup (Fin 2) R) :
+    ((TauCeti.UpperUnitriangular.pointsMulEquiv K (Fin 2) (A := R)).symm (s * t)).ofConv
+      ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin 2)
+        (TauCeti.UpperUnitriangular.genericMatrix K (Fin 2) 0 1))) =
       s.1 0 1 + t.1 0 1 := by
-  rw [unitriangularGroupMulEquivAlgHom_entry]
+  rw [TauCeti.UpperUnitriangular.pointsMulEquiv_symm_apply,
+    TauCeti.UpperUnitriangular.genericMatrix_apply_of_lt K _ (by decide),
+    TauCeti.UpperUnitriangular.upperUnitriangularToPoint_apply]
   change ((s.1 : Matrix (Fin 2) (Fin 2) R) * (t.1 : Matrix (Fin 2) (Fin 2) R)) 0 1 = _
   rw [Matrix.mul_apply, Fin.sum_univ_two]
-  simp [s.2.2 0, t.2.2 1, add_comm]
+  simp [add_comm]
 
 example (R : Type) [CommRing R] [Algebra K R]
-    (s t : Matrix.UnitriangularGroup (Fin 3) R) :
-    (unitriangularGroupMulEquivAlgHom K (Fin 3) R (s * t)).ofConv
-      (quotient K (Fin 3) (GeneralLinearCoordinateRing.matrix K (Fin 3) 0 2)) =
+    (s t : TauCeti.upperUnitriangularGroup (Fin 3) R) :
+    ((TauCeti.UpperUnitriangular.pointsMulEquiv K (Fin 3) (A := R)).symm (s * t)).ofConv
+      ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin 3)
+        (TauCeti.UpperUnitriangular.genericMatrix K (Fin 3) 0 2))) =
       s.1 0 2 + t.1 0 2 + s.1 0 1 * t.1 1 2 := by
-  rw [unitriangularGroupMulEquivAlgHom_entry]
+  rw [TauCeti.UpperUnitriangular.pointsMulEquiv_symm_apply,
+    TauCeti.UpperUnitriangular.genericMatrix_apply_of_lt K _ (by decide),
+    TauCeti.UpperUnitriangular.upperUnitriangularToPoint_apply]
   change ((s.1 : Matrix (Fin 3) (Fin 3) R) * (t.1 : Matrix (Fin 3) (Fin 3) R)) 0 2 = _
   rw [Matrix.mul_apply, Fin.sum_univ_three]
-  simp [s.2.2 0, t.2.2 2]
+  simp
   ring
 
 example (R S : Type) [CommRing R] [CommRing S] [Algebra K R] [Algebra K S]
-    (v : R →ₐ[K] S) (s : Matrix.UnitriangularGroup (Fin 2) R) :
-    (Matrix.UnitriangularGroup.map v.toRingHom s).1 0 1 = v (s.1 0 1) := by
-  exact Matrix.UnitriangularGroup.map_apply v.toRingHom s 0 1
+    (v : R →ₐ[K] S) (s : TauCeti.upperUnitriangularGroup (Fin 2) R) :
+    (map v.toRingHom s).1 0 1 = v (s.1 0 1) := by
+  exact map_apply v.toRingHom s 0 1
 
 example (n : Type) [Fintype n] [LinearOrder n]
     (R S : Type) [CommRing R] [CommRing S] [Algebra K R] [Algebra K S]
-    (v : R →ₐ[K] S) (s : Matrix.UnitriangularGroup n R) :
-    unitriangularFromGL K n S (Matrix.UnitriangularGroup.map v.toRingHom s) =
-      v.comp (unitriangularFromGL K n R s) :=
-  unitriangularFromGL_natural K n R v s
+    (v : R →ₐ[K] S) (s : TauCeti.upperUnitriangularGroup n R) :
+    (TauCeti.UpperUnitriangular.upperUnitriangularToPoint K n (A := S) (map v.toRingHom s)).ofConv =
+      v.comp ((TauCeti.UpperUnitriangular.upperUnitriangularToPoint K n (A := R) s).ofConv) :=
+by
+  simpa only [TauCeti.UpperUnitriangular.pointsMulEquiv_symm_apply,
+    AlgHom.mapValue_apply, WithConv.ofConv_toConv] using
+      (congrArg WithConv.ofConv
+        (TauCeti.UpperUnitriangular.mapValue_pointsMulEquiv_symm_apply K n v s)).symm
 
 example (n : Type) [Fintype n] [LinearOrder n]
     (R S : Type) [CommRing R] [CommRing S] [Algebra K R] [Algebra K S]
-    (v : R →ₐ[K] S) (f : UnitriangularCoordinateRing.CoordinateRing K n →ₐ[K] R) :
-    unitriangularToGL K n S (v.comp f) =
-      Matrix.UnitriangularGroup.map v.toRingHom (unitriangularToGL K n R f) :=
-  unitriangularToGL_natural K n R v f
+    (v : R →ₐ[K] S) (f : (TauCeti.UpperUnitriangular.coordinateHopfAlgebra K n) →ₐ[K] R) :
+    (TauCeti.UpperUnitriangular.pointToUpperUnitriangular K n (A := S) (WithConv.toConv
+      (v.comp f))) =
+      map v.toRingHom ((TauCeti.UpperUnitriangular.pointToUpperUnitriangular K n (A := R)
+        (WithConv.toConv f))) :=
+by
+  simpa only [AlgHom.mapValue_apply, WithConv.ofConv_toConv] using
+    TauCeti.UpperUnitriangular.pointToUpperUnitriangular_mapValue K n v (WithConv.toConv f)
 
-example (n : Type) [Fintype n] [LinearOrder n]
-    (R : Type) [CommRing R] [Algebra K R]
-    (s : Matrix.UnitriangularGroup n R) :
-    unitriangularGroupMulEquivPoints K n R s ≫ (unitriangularInclusion K n).hom.hom =
-      generalLinearGroupMulEquivPoints K n R s.1 :=
-  unitriangularInclusion_point K n R s
+example (n : ℕ) (R : Type) [CommRing R] [Algebra K R]
+    (s : TauCeti.upperUnitriangularGroup (Fin n) R) :
+    TauCeti.GeneralLinear.schemePointsMulEquiv n R
+      ((TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm s ≫
+        (TauCeti.UpperUnitriangular.inclusion K n).hom.hom) = s.1 := by
+  rw [TauCeti.UpperUnitriangular.schemePointsMulEquiv_comp_inclusion,
+    MulEquiv.apply_symm_apply]
 
-example (R : Type) [CommRing R] (s : Matrix.UnitriangularGroup (Fin 0) R) : s = 1 := by
+example (R : Type) [CommRing R] (s : TauCeti.upperUnitriangularGroup (Fin 0) R) : s = 1 := by
   apply Subtype.ext
   apply Matrix.GeneralLinearGroup.ext
   intro i j
   exact Fin.elim0 i
 
-example (R : Type) [CommRing R] (s : Matrix.UnitriangularGroup (Fin 1) R) : s = 1 := by
+example (R : Type) [CommRing R] (s : TauCeti.upperUnitriangularGroup (Fin 1) R) : s = 1 := by
   apply Subtype.ext
   apply Matrix.GeneralLinearGroup.ext
   intro i j
@@ -86,11 +105,12 @@ example (R : Type) [CommRing R] (s : Matrix.UnitriangularGroup (Fin 1) R) : s = 
   have hj : j = 0 := Subsingleton.elim _ _
   subst i
   subst j
-  simpa using s.2.2 0
+  simp
 
-example : quotient (ZMod 1) (Fin 0)
-    (GeneralLinearCoordinateRing.detInverse (ZMod 1) (Fin 0)) = 1 :=
-  quotient_detInverse (ZMod 1) (Fin 0)
+example : TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv (ZMod 1) (Fin 0)
+    (Ring.inverse (TauCeti.UpperUnitriangular.genericMatrix (ZMod 1) (Fin 0)).det) = 1 := by
+  rw [(TauCeti.UpperUnitriangular.isUpperUnitriangular_genericMatrix (ZMod 1) (Fin 0)).det_eq_one,
+    Ring.inverse_one, map_one]
 
 example : Algebra.FiniteType (ZMod 1)
-    (UnitriangularCoordinateRing.CoordinateRing (ZMod 1) (Fin 1)) := inferInstance
+    ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra (ZMod 1) (Fin 1))) := inferInstance

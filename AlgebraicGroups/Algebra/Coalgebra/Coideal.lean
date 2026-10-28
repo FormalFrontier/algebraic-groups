@@ -31,6 +31,8 @@ and this library's `Subcoalgebra`. The order-theoretic interface uses Mathlib's
 
 @[expose] public section
 
+
+
 universe u v z
 
 /-- A submodule on which the counit vanishes and comultiplication descends to the
@@ -57,7 +59,7 @@ instance : SetLike (Coideal R C) C where
     congr
     exact SetLike.coe_injective h
 
-instance : PartialOrder (Coideal R C) := .ofSetLike (Coideal R C) C
+instance : PartialOrder (Coideal R C) := .ofSetLike (Coideal R C)
 
 instance : CoeOut (Coideal R C) (Submodule R C) := ⟨toSubmodule⟩
 

@@ -5,7 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.GroupScheme.Additive
-import AlgebraicGroups.Algebra.PolynomialRationalPointHeight
+import TauCeti.RingTheory.KrullDimension.FiniteType
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.RingTheory.Ideal.Height
 public import Mathlib.Topology.KrullDimension
@@ -124,81 +124,79 @@ private theorem polynomial_eval_zero_height :
     _ = (RingHom.ker (MvPolynomial.eval (fun _ : Unit ↦ (0 : K)))).height := by
       rw [← hker]
     _ = 1 := by
-      simpa using MvPolynomial.height_ker_eval K Unit (fun _ ↦ (0 : K))
+      let _ : (RingHom.ker (MvPolynomial.eval (fun _ : Unit ↦ (0 : K)))).IsMaximal :=
+        RingHom.ker_isMaximal_of_surjective _ (fun y ↦ ⟨MvPolynomial.C y, MvPolynomial.eval_C _⟩)
+      simpa using MvPolynomial.height_eq_natCard_of_isMaximal
+        (k := K) (M := RingHom.ker (MvPolynomial.eval (fun _ : Unit ↦ (0 : K))))
 
-private theorem additiveGroup_counit_apply (a : additiveGroupCoordinateRing K) :
-    Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K) a =
+private theorem additiveGroup_counit_apply (a : (SymmetricAlgebra K K)) :
+    Bialgebra.counitAlgHom K ((SymmetricAlgebra K K)) a =
       Polynomial.eval (0 : K) (additiveGroupCoordinateAlgEquiv K a) := by
   let e := additiveGroupCoordinateAlgEquiv K
-  have hx : e.symm Polynomial.X = additiveGroupCoordinate K := by
+  have hx : e.symm Polynomial.X = (SymmetricAlgebra.ι K K 1) := by
     apply e.injective
     simp [e]
-  have h : (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)).comp
+  have h : (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K))).comp
       e.symm.toAlgHom = Polynomial.aeval (R := K) (0 : K) := by
     apply Polynomial.algHom_ext
-    change Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)
+    change Bialgebra.counitAlgHom K ((SymmetricAlgebra K K))
       (e.symm Polynomial.X) = (Polynomial.aeval (R := K) (0 : K)) Polynomial.X
     rw [hx, Polynomial.aeval_X]
-    exact additiveGroupCoordinate_counit K
+    exact SymmetricAlgebra.algebraMapInv_ι 1
   have ha := AlgHom.congr_fun h (e a)
   simpa using ha
 
 private theorem additiveGroup_counit_kernel :
-    RingHom.ker (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)) =
+    RingHom.ker (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K))) =
       (RingHom.ker (Polynomial.evalRingHom (0 : K))).comap
         (additiveGroupCoordinateAlgEquiv K).toRingHom := by
   ext a
-  change (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K) a = 0) ↔
+  change (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K)) a = 0) ↔
     Polynomial.eval (0 : K) (additiveGroupCoordinateAlgEquiv K a) = 0
   rw [additiveGroup_counit_apply K]
 
 private theorem additiveGroup_counit_kernel_height :
-    (RingHom.ker (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K))).height = 1 := by
+    (RingHom.ker (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K)))).height = 1 := by
   rw [additiveGroup_counit_kernel K]
   exact (RingEquiv.height_comap (additiveGroupCoordinateAlgEquiv K).toRingEquiv _).trans
     (polynomial_eval_zero_height K)
 
--- Use precisely the group structure stored in the existing additive group scheme.
-local instance additiveGroupUnderlyingScheme_overMk_grpObj :
-    GrpObj (Over.mk (additiveGroupUnderlyingScheme K).hom) :=
-  (additiveGroupScheme K).grp
-
 /-- The canonical unit prime is the counit kernel, hence evaluation at zero
 in the polynomial coordinate presentation. -/
 private theorem additiveGroup_unit_asIdeal :
-    (η[Over.mk (additiveGroupUnderlyingScheme K).hom].left
+    (η[(Spec (.of (SymmetricAlgebra K K))).asOver (Spec (.of K))].left
       (IsLocalRing.closedPoint K)).asIdeal =
-      RingHom.ker (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)) := by
-  change (η[(Spec (.of (additiveGroupCoordinateRing K))).asOver (Spec (.of K))].left
-    (IsLocalRing.closedPoint K)).asIdeal = _
+      RingHom.ker (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K))) := by
   calc
     _ = (IsLocalRing.closedPoint K).asIdeal.comap
-        (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)).toRingHom :=
+        (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K))).toRingHom :=
       (congrArg PrimeSpectrum.asIdeal
-        (one_spec_asOver_spec_apply (R := .of K) (A := .of (additiveGroupCoordinateRing K))
+        (one_spec_asOver_spec_apply (R := .of K) (A := .of ((SymmetricAlgebra K K)))
           (IsLocalRing.closedPoint K))).trans (PrimeSpectrum.comap_asIdeal _ _)
     _ = _ := by
       change (IsLocalRing.maximalIdeal K).comap
-        (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)).toRingHom = _
+        (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K))).toRingHom = _
       rw [IsLocalRing.maximalIdeal_eq_bot]
       rfl
 
 /-- The local ring at the canonical unit of the additive line has dimension one. -/
 private theorem additiveGroup_unit_stalk_ringKrullDim :
-    ringKrullDim ((additiveGroupUnderlyingScheme K).left.presheaf.stalk
-      (η[Over.mk (additiveGroupUnderlyingScheme K).hom].left
+    ringKrullDim (((TauCeti.AdditiveGroup.groupScheme K).X).left.presheaf.stalk
+      ((TauCeti.AdditiveGroup.groupScheme K).grp.one.left
         (IsLocalRing.closedPoint K))) = 1 := by
-  let p : PrimeSpectrum (additiveGroupCoordinateRing K) :=
-    η[Over.mk (additiveGroupUnderlyingScheme K).hom].left (IsLocalRing.closedPoint K)
+  rw [TauCeti.AdditiveGroup.groupScheme_def, TauCeti.hopfSpec_obj_eq_asOver]
+  let p : PrimeSpectrum ((SymmetricAlgebra K K)) :=
+    η[(Spec (.of (SymmetricAlgebra K K))).asOver (Spec (.of K))].left
+      (IsLocalRing.closedPoint K)
   calc
     _ = ringKrullDim (Localization.AtPrime p.asIdeal) :=
       ringKrullDim_eq_of_ringEquiv
-        (Spec.stalkIso (.of (additiveGroupCoordinateRing K)) p).commRingCatIsoToRingEquiv
+        (Spec.stalkIso (.of ((SymmetricAlgebra K K))) p).commRingCatIsoToRingEquiv
     _ = (p.asIdeal.height : WithBot ℕ∞) :=
       IsLocalization.AtPrime.ringKrullDim_eq_height _ _
     _ = 1 := by
       have hp : p.asIdeal =
-          RingHom.ker (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)) :=
+          RingHom.ker (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K))) :=
         additiveGroup_unit_asIdeal K
       rw [hp, additiveGroup_counit_kernel_height K]
       exact WithBot.coe_one
@@ -210,8 +208,9 @@ This is a corollary of Mathlib's `PrimeSpectrum.topologicalKrullDim_eq_ringKrull
 transported through `additiveGroupCoordinateAlgEquiv`.
 -/
 public theorem additiveGroup_topologicalKrullDim :
-    topologicalKrullDim (additiveGroupUnderlyingScheme K).left = 1 := by
-  change topologicalKrullDim (PrimeSpectrum (additiveGroupCoordinateRing K)) = 1
+    topologicalKrullDim ((TauCeti.AdditiveGroup.groupScheme K).X).left = 1 := by
+  rw [TauCeti.AdditiveGroup.groupScheme_X_left]
+  change topologicalKrullDim (PrimeSpectrum ((SymmetricAlgebra K K))) = 1
   rw [PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim,
     ringKrullDim_eq_of_ringEquiv (additiveGroupCoordinateAlgEquiv K).toRingEquiv,
     Polynomial.ringKrullDim_of_isNoetherianRing, ringKrullDim_eq_zero_of_field]
@@ -219,10 +218,10 @@ public theorem additiveGroup_topologicalKrullDim :
 
 /-- The additive line's local dimension at the unit equals its topological dimension. -/
 private theorem additiveGroup_unit_stalk_eq_topologicalKrullDim :
-    ringKrullDim ((additiveGroupUnderlyingScheme K).left.presheaf.stalk
-      (η[Over.mk (additiveGroupUnderlyingScheme K).hom].left
+    ringKrullDim (((TauCeti.AdditiveGroup.groupScheme K).X).left.presheaf.stalk
+      ((TauCeti.AdditiveGroup.groupScheme K).grp.one.left
         (IsLocalRing.closedPoint K))) =
-      topologicalKrullDim (additiveGroupUnderlyingScheme K).left := by
+      topologicalKrullDim ((TauCeti.AdditiveGroup.groupScheme K).X).left := by
   rw [additiveGroup_unit_stalk_ringKrullDim K, additiveGroup_topologicalKrullDim K]
 
 end AlgebraicGeometry

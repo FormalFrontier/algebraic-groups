@@ -1,49 +1,21 @@
-# Upper-triangular diagonal split kernel
+# The canonical upper-triangular split kernel
 
-Import `AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel` (also publicly
-imported by `AlgebraicGroups`). For a commutative base ring `K` and finite
-linearly ordered index `n`, this module uses the existing closed
-upper-triangular group scheme `T`, diagonal group scheme `D`, unitriangular
-group scheme `U` and ambient general-linear scheme. There is no field,
-nonzero-ring, nonempty-index, reducedness, flatness or injectivity assumption.
-The [producer](../UpperTriangularSplitKernel.lean) and
-[ordinary-import client](../../../AlgebraicGroupsTest/GroupScheme/UpperTriangularSplitKernel.lean)
-are available via ordinary imports.
+Import `AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel`. The diagonal projection from
+`TauCeti.GeneralLinear.UpperTriangular.groupScheme K N` targets the canonical split torus, with
+canonical diagonal section. The retained pullback identifies its actual scheme-theoretic
+identity fiber with the canonical unitriangular group scheme. Point formulas work over every
+commutative coefficient algebra, including zero and nonreduced rings; numerical rank includes
+zero. These are genuine scheme/group-scheme identities rather than geometric-point tests.
 
-## Mathematical API
+See the [migration guide](../../../docs/TAUCETIFY.md) for canonical foundations and the [build
+guide](../../../docs/BUILDING.md) for the pinned environment.
 
-* `AlgebraicGeometry.upperTriangularDiagonalProjection K n : T ⟶ D` and
-  `AlgebraicGeometry.upperTriangularDiagonalSection K n : D ⟶ T` split in the
-  order section followed by projection equals `𝟙 D`, by
-  `upperTriangularDiagonal_section`. This does not assert that projection
-  followed by section is the identity of `T`.
-* `AlgebraicGeometry.unitriangularToUpperTriangular K n : U ⟶ T` is a closed
-  immersion on underlying schemes. Its compatibility with the inclusion
-  `T ⟶ GL` and that of the diagonal section are given by the separate
-  `unitriangularToUpperTriangular_inclusion` and
-  `upperTriangularDiagonalSection_inclusion` equalities.
-* `upperTriangularDiagonalSquare_isPushout` proves a genuine coordinate
-  `CommRingCat` pushout using arbitrary compatible ring maps, the entire
-  existing U Hopf ideal and quotient surjectivity. The contravariant `Spec`
-  square and connected-limit preservation/creation then give actual
-  `upperTriangularDiagonalSquare_isPullback` (schemes),
-  `upperTriangularDiagonalSquare_isPullback_over` (schemes over `Spec K`) and
-  `upperTriangularDiagonalSquare_isPullback_group` (group schemes). Thus `U`
-  is the identity-fiber kernel of `T ⟶ D`, not merely a field-point kernel.
-* The three coordinate maps and `*_point` formulas identify the represented
-  arrows with native matrix `diagonal`, `diagonalSection` and
-  `inUpperTriangular` on every commutative `K`-algebra `R`. Existing native
-  fixed-base naturality also covers noninjective coefficient maps.
+## Historical methods and credits
 
-The client checks typed maps and pullbacks, splitting, closedness, both GL
-comparisons, all-algebra point formulas and fixed-base naturality. Its
-examples include `Fin 0`, `Fin 1`, an independent-diagonal-units `Fin 2` shear,
-`ZMod 1`, a nonzero square-zero dual-number shear and noninjective reduction.
-The native U-first point-group semidirect decomposition is a different result:
-no group-scheme semidirect or direct-product theorem, normality in GL,
-arbitrary-base-change theorem or smoothness/dimension claim follows here.
-
-## References
+The original method and source-credit paragraphs below describe the
+pre-refactor implementation; their old API names are historical. The
+[complete original guide](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel/README.md) preserves the full context.
+Current APIs are described above.
 
 * J. S. Milne, *Algebraic Groups* (2017), §2.9 describes `T_n`, `D_n` and
   `U_n` over a field and commutative coefficient algebras. Milne,
@@ -61,6 +33,4 @@ arbitrary-base-change theorem or smoothness/dimension claim follows here.
   `AlgebraicGroups/GroupScheme/Diagonal.lean` and
   `AlgebraicGroups/GroupScheme/Unitriangular.lean` are the represented inputs.
 
-For the pinned toolchain, matching mathlib cache and default-target commands,
-see the [build guide](../../../docs/BUILDING.md). Contributor and third-party
-credit appears in [CREDITS](../../../CREDITS.md).
+Contributor and third-party credit appears in [CREDITS](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/CREDITS.md).

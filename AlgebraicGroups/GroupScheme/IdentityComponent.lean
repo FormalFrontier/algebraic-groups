@@ -56,12 +56,13 @@ universe u
 
 variable {S : Scheme.{u}}
 
-/-- The connected component containing the identity of a group scheme over a
-nonempty one-point base, regarded as an open subset. Compare Milne,
+/-- The connected component containing the identity over a chosen point of a nonempty
+base, regarded as an open subset. Over a one-point base this is the identity component
+of the group scheme. Compare Milne,
 *Algebraic Groups*, Proposition 1.34; the openness here uses local
 connectedness of the underlying scheme. -/
 @[expose] noncomputable def Scheme.identityComponent (G : Over S) [GrpObj G]
-    [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] : G.left.Opens :=
+    [LocallyConnectedSpace G.left] [Nonempty S] : G.left.Opens :=
   ⟨connectedComponent (η[G].left (Classical.choice (inferInstance : Nonempty S))),
     isOpen_connectedComponent⟩
 
@@ -78,18 +79,18 @@ lemma Scheme.mem_identityComponent_iff (G : Over S) [GrpObj G]
 /-- The identity component, equipped with its composite structure morphism to
 the base. -/
 noncomputable abbrev Scheme.identityComponentOver (G : Over S) [GrpObj G]
-    [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] : Over S :=
+    [LocallyConnectedSpace G.left] [Nonempty S] : Over S :=
   Over.mk ((Scheme.identityComponent G).ι ≫ G.hom)
 
 /-- The canonical inclusion of the identity component into the group scheme. -/
 noncomputable abbrev Scheme.identityComponentι (G : Over S) [GrpObj G]
-    [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] :
+    [LocallyConnectedSpace G.left] [Nonempty S] :
     Scheme.identityComponentOver G ⟶ G :=
   Over.homMk (Scheme.identityComponent G).ι
 
 /-- The identity-component inclusion is a monomorphism. -/
 instance Scheme.identityComponentι_mono (G : Over S) [GrpObj G]
-    [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] :
+    [LocallyConnectedSpace G.left] [Nonempty S] :
     Mono (Scheme.identityComponentι G) := by
   let _ : Mono (Scheme.identityComponent G).ι := by infer_instance
   exact Over.mono_of_mono_left _
@@ -97,7 +98,7 @@ instance Scheme.identityComponentι_mono (G : Over S) [GrpObj G]
 /-- The underlying morphism of the identity-component inclusion is an open
 immersion. -/
 instance Scheme.identityComponentι_isOpenImmersion (G : Over S) [GrpObj G]
-    [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] :
+    [LocallyConnectedSpace G.left] [Nonempty S] :
     IsOpenImmersion (Scheme.identityComponentι G).left := by
   change IsOpenImmersion (Scheme.identityComponent G).ι
   infer_instance
@@ -105,7 +106,7 @@ instance Scheme.identityComponentι_isOpenImmersion (G : Over S) [GrpObj G]
 /-- The underlying morphism of the identity-component inclusion is also a
 closed immersion. -/
 instance Scheme.identityComponentι_isClosedImmersion (G : Over S) [GrpObj G]
-    [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] :
+    [LocallyConnectedSpace G.left] [Nonempty S] :
     IsClosedImmersion (Scheme.identityComponentι G).left := by
   apply IsClosedImmersion.of_isPreimmersion
   rw [show (Scheme.identityComponentι G).left =
@@ -114,14 +115,14 @@ instance Scheme.identityComponentι_isClosedImmersion (G : Over S) [GrpObj G]
 
 /-- The identity component is connected. -/
 instance Scheme.identityComponent_connectedSpace (G : Over S) [GrpObj G]
-    [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] :
+    [LocallyConnectedSpace G.left] [Nonempty S] :
     ConnectedSpace (Scheme.identityComponentOver G).left := by
   change ConnectedSpace (Scheme.identityComponent G : Set G.left)
   exact isConnected_iff_connectedSpace.mp isConnected_connectedComponent
 
 /-- An identity component of a reduced group scheme is reduced. -/
 instance Scheme.identityComponent_isReduced (G : Over S) [GrpObj G]
-    [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] [IsReduced G.left] :
+    [LocallyConnectedSpace G.left] [Nonempty S] [IsReduced G.left] :
     IsReduced (Scheme.identityComponentOver G).left := by
   change IsReduced (Scheme.identityComponent G).toScheme
   infer_instance
@@ -264,7 +265,7 @@ lemma Scheme.identityComponentInv_comp_ι (G : Over S) [GrpObj G]
 /-- The identity component is a group scheme when its Cartesian square is
 connected. This follows the restriction argument in Milne, *Algebraic Groups*,
 Proposition 1.34, with connectedness of the square assumed explicitly. -/
-noncomputable instance Scheme.identityComponent_grpObj (G : Over S) [GrpObj G]
+noncomputable instance Scheme.identityComponentGrpObj (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
     [ConnectedSpace ((Scheme.identityComponentOver G ⊗
       Scheme.identityComponentOver G).left)] :
@@ -341,8 +342,6 @@ instance Scheme.identityComponentι_isMonHom (G : Over S) [GrpObj G]
 
 private lemma Scheme.range_conj_subset_identityComponent (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
-    [ConnectedSpace ((Scheme.identityComponentOver G ⊗
-      Scheme.identityComponentOver G).left)]
     [GeometricallyConnected (Scheme.identityComponentOver G).hom] :
     Set.range ((G ◁ Scheme.identityComponentι G ≫ GrpObj.conj G).left) ⊆
       Set.range (Scheme.identityComponent G).ι := by
@@ -386,8 +385,6 @@ private lemma Scheme.range_conj_subset_identityComponent (G : Over S) [GrpObj G]
 geometrically connected over the base. -/
 noncomputable def Scheme.identityComponentConj (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
-    [ConnectedSpace ((Scheme.identityComponentOver G ⊗
-      Scheme.identityComponentOver G).left)]
     [GeometricallyConnected (Scheme.identityComponentOver G).hom] :
     G ⊗ Scheme.identityComponentOver G ⟶ Scheme.identityComponentOver G :=
   Over.homMk (IsOpenImmersion.lift (Scheme.identityComponent G).ι
@@ -403,8 +400,6 @@ recovers ambient conjugation on the component. -/
 @[reassoc]
 lemma Scheme.identityComponentConj_comp_ι (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
-    [ConnectedSpace ((Scheme.identityComponentOver G ⊗
-      Scheme.identityComponentOver G).left)]
     [GeometricallyConnected (Scheme.identityComponentOver G).hom] :
     Scheme.identityComponentConj G ≫ Scheme.identityComponentι G =
       G ◁ Scheme.identityComponentι G ≫ GrpObj.conj G := by

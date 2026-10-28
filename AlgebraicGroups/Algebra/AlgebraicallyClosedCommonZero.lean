@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.PolynomialRationalPointHeight
+public import TauCeti.RingTheory.KrullDimension.FiniteType
 public import Mathlib.RingTheory.Nullstellensatz
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
@@ -83,7 +83,10 @@ theorem card_le_card_of_unique_common_zero (f : ι → MvPolynomial σ K) (a : �
   have hheight : (vanishingIdeal K {a}).height ≤ (Finset.univ.image f).card := by
     apply Ideal.height_le_card_of_mem_minimalPrimes_span_finset
     simpa only [Finset.coe_image, Finset.coe_univ, Set.image_univ] using hmin
-  rw [hker, height_ker_eval K σ a] at hheight
+  let : (RingHom.ker (eval a)).IsMaximal :=
+    RingHom.ker_isMaximal_of_surjective _ (fun k => ⟨C k, eval_C k⟩)
+  rw [hker, height_eq_natCard_of_isMaximal (k := K)] at hheight
+  simp only [Nat.card_eq_fintype_card] at hheight
   exact ENat.natCast_le_natCast.mp
     (hheight.trans (by exact_mod_cast Finset.card_image_le (s := Finset.univ) (f := f)))
 

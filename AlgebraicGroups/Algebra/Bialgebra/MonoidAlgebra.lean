@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.Bialgebra.GroupLike
+public import TauCeti.Algebra.Bialgebra.GroupLike.Map
 public import AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 
@@ -206,13 +206,13 @@ bialgebra morphism of its target. -/
 theorem liftGroupLikeBialgHom_mapDomain_groupLikeMap [Semiring B] [Bialgebra R B]
     (f : M →* GroupLike R A) (h : A →ₐc[R] B) :
     (liftGroupLikeBialgHom (R := R) (A := B)).comp
-        (mapDomainBialgHom R (h.groupLikeMap.comp f)) =
+        (mapDomainBialgHom R ((TauCeti.GroupLike.map h).comp f)) =
       h.comp ((liftGroupLikeBialgHom (R := R) (A := A)).comp (mapDomainBialgHom R f)) := by
-  apply (liftGroupLikeBialgHom_mapDomain_eq_iff (h.groupLikeMap.comp f) _).2
+  apply (liftGroupLikeBialgHom_mapDomain_eq_iff ((TauCeti.GroupLike.map h).comp f) _).2
   intro m
   change h (((liftGroupLikeBialgHom (R := R) (A := A)).comp
-    (mapDomainBialgHom R f)) (single m 1)) = (h.groupLikeMap (f m)).val
-  rw [liftGroupLikeBialgHom_mapDomain_single, one_smul, BialgHom.groupLikeMap_val]
+    (mapDomainBialgHom R f)) (single m 1)) = ((TauCeti.GroupLike.map h) (f m)).val
+  rw [liftGroupLikeBialgHom_mapDomain_single, one_smul, TauCeti.GroupLike.val_map]
 
 end Bialgebra
 

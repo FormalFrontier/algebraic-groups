@@ -33,14 +33,15 @@ nontrivial commutative rings or its `Fin 0` boundary.
 
 open scoped commutatorElement
 
-namespace Matrix.UnitriangularGroup
+namespace TauCeti.UpperUnitriangularGroup
 
 variable (n : ℕ) (R : Type) [CommRing R]
 
 /-- The elementary unit at a strictly upper-triangular position, in the unitriangular subgroup. -/
 def elementary (i j : Fin n) (hij : i < j) (a : R) :
-    Matrix.UnitriangularGroup (Fin n) R := by
+    TauCeti.upperUnitriangularGroup (Fin n) R := by
   refine ⟨Matrix.GeneralLinearGroup.elementaryUnit i j (ne_of_lt hij) a, ?_⟩
+  rw [mem_iff, Matrix.isUpperUnitriangular_def]
   refine ⟨?_, ?_⟩
   · change (1 + Matrix.single i j a : Matrix (Fin n) (Fin n) R).IsUpperTriangular
     exact Matrix.blockTriangular_one.add (Matrix.blockTriangular_single hij.le a)
@@ -76,7 +77,7 @@ theorem elementary_commutator (i j k : Fin n)
 private theorem elementary_mem_lowerCentralSeries (k : ℕ)
     (hk : 1 ≤ k) (hkn : k < n) :
     elementary n R ⟨0, by omega⟩ ⟨k, hkn⟩ (by simp only [Fin.lt_def]; omega) 1 ∈
-      (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries (k - 1) := by
+      (⊤ : Subgroup (TauCeti.upperUnitriangularGroup (Fin n) R)).lowerCentralSeries (k - 1) := by
   induction k with
   | zero => omega
   | succ k ih =>
@@ -103,7 +104,7 @@ private theorem elementary_ne_one [Nontrivial R] (k : ℕ)
     (hk : 1 ≤ k) (hkn : k < n) :
     elementary n R ⟨0, by omega⟩ ⟨k, hkn⟩ (by simp only [Fin.lt_def]; omega) (1 : R) ≠ 1 := by
   intro heq
-  have hentry := congrArg (fun g : Matrix.UnitriangularGroup (Fin n) R =>
+  have hentry := congrArg (fun g : TauCeti.upperUnitriangularGroup (Fin n) R =>
     ((g.1 : Matrix (Fin n) (Fin n) R) ⟨0, by omega⟩ ⟨k, hkn⟩)) heq
   have hzero : (⟨0, by omega⟩ : Fin n) ≠ ⟨k, hkn⟩ := by
     simp only [ne_eq, Fin.mk_eq_mk]; omega
@@ -116,8 +117,9 @@ class criterion. Milne, *Algebraic Groups* (2017), Example 6.36 and §6.49,
 give field-based point-group nilpotence through the algebraic-group central
 series, not this exact `n-1` point-group class. -/
 theorem nilpotencyClass_eq_of_nontrivial [Nontrivial R] :
-    Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin n) R) = n - 1 := by
-  have hupper := nilpotencyClass_le n R
+    Group.nilpotencyClass (TauCeti.upperUnitriangularGroup (Fin n) R) = n - 1 := by
+  have hupper : Group.nilpotencyClass (TauCeti.upperUnitriangularGroup (Fin n) R) ≤ n - 1 := by
+    simpa using nilpotencyClass_le (m := Fin n) (R := R)
   by_cases hsmall : n ≤ 1
   · exact le_antisymm hupper (by omega)
   · have hn : 2 ≤ n := by omega
@@ -126,16 +128,16 @@ theorem nilpotencyClass_eq_of_nontrivial [Nontrivial R] :
     have hmem := elementary_mem_lowerCentralSeries n R (n - 1) hk hkn
     have hne := elementary_ne_one n R (n - 1) hk hkn
     have hnotbot :
-        (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries
+        (⊤ : Subgroup (TauCeti.upperUnitriangularGroup (Fin n) R)).lowerCentralSeries
           (n - 2) ≠ ⊥ := by
       intro hbot
       have hmem' : elementary n R ⟨0, by omega⟩ ⟨n - 1, hkn⟩
           (by simp only [Fin.lt_def]; omega) (1 : R) ∈
-          (⊥ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)) := by
+          (⊥ : Subgroup (TauCeti.upperUnitriangularGroup (Fin n) R)) := by
         rw [← hbot]
         simpa only [show n - 1 - 1 = n - 2 by omega] using hmem
       exact hne (Subgroup.mem_bot.mp hmem')
-    have hnot : ¬ Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin n) R) ≤
+    have hnot : ¬ Group.nilpotencyClass (TauCeti.upperUnitriangularGroup (Fin n) R) ≤
         n - 2 := by
       intro hle
       exact hnotbot (Subgroup.lowerCentralSeries_eq_bot_iff_nilpotencyClass_le.mpr hle)
@@ -144,8 +146,8 @@ theorem nilpotencyClass_eq_of_nontrivial [Nontrivial R] :
 /-- Every unitriangular group over a subsingleton ring has nilpotency class
 zero, using Mathlib's `Group.nilpotencyClass_zero_iff_subsingleton`. -/
 theorem nilpotencyClass_eq_zero_of_subsingleton [Subsingleton R] :
-    Group.nilpotencyClass (Matrix.UnitriangularGroup (Fin n) R) = 0 := by
-  have hsub : Subsingleton (Matrix.UnitriangularGroup (Fin n) R) :=
+    Group.nilpotencyClass (TauCeti.upperUnitriangularGroup (Fin n) R) = 0 := by
+  have hsub : Subsingleton (TauCeti.upperUnitriangularGroup (Fin n) R) :=
     ⟨fun g h => by
       apply Subtype.ext
       apply Units.ext
@@ -153,4 +155,4 @@ theorem nilpotencyClass_eq_zero_of_subsingleton [Subsingleton R] :
       exact Subsingleton.elim _ _⟩
   exact Group.nilpotencyClass_zero_iff_subsingleton.mpr hsub
 
-end Matrix.UnitriangularGroup
+end TauCeti.UpperUnitriangularGroup

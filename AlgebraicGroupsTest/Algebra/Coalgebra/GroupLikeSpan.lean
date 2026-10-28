@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
+import TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 import Mathlib.RingTheory.Finiteness.Basic
 
@@ -21,6 +21,26 @@ The natural-number scalar example also applies where additive inverses are unava
 open Coalgebra
 
 universe u
+
+-- The assertions below compare the canonical subcoalgebra with specified raw spans.
+private lemma span_comul_mem {R C : Type*} [CommSemiring R] [AddCommMonoid C]
+    [Module R C] [Coalgebra R C] {s : Set C}
+    (hs : ∀ x ∈ s, IsGroupLikeElem R x) {x : C} (hx : x ∈ Submodule.span R s) :
+    comul (R := R) x ∈ LinearMap.range
+      (TensorProduct.mapIncl (Submodule.span R s) (Submodule.span R s)) := by
+  let D := TauCeti.Subcoalgebra.groupLikeSetSpan {g : GroupLike R C | g.val ∈ s}
+  have hD : D.toSubmodule = Submodule.span R s := by
+    rw [TauCeti.Subcoalgebra.groupLikeSetSpan_toSubmodule]
+    congr 1
+    ext y
+    constructor
+    · rintro ⟨g, hg, rfl⟩
+      exact hg
+    · intro hy
+      exact ⟨⟨y, hs y hy⟩, hy, rfl⟩
+  have h := D.comul_mem ((TauCeti.Subcoalgebra.mem_toSubmodule).mp (hD.symm ▸ hx))
+  change comul (R := R) x ∈ LinearMap.range (TensorProduct.mapIncl D.toSubmodule D.toSubmodule) at h
+  rwa [hD] at h
 
 section CommSemiring
 
@@ -40,7 +60,7 @@ public theorem span_pair_single_one_fg_comul_mem_range_mapIncl :
   refine ⟨Submodule.subset_span (by simp), Submodule.subset_span (by simp),
     Submodule.fg_span ((Set.finite_singleton _).insert _), ?_⟩
   intro x hx
-  apply comul_mem_range_mapIncl_span_of_isGroupLikeElem ?_ hx
+  apply span_comul_mem ?_ hx
   intro y hy
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hy
   rcases hy with rfl | rfl <;> exact AddMonoidAlgebra.isGroupLikeElem_single_one _
@@ -52,7 +72,7 @@ private theorem span_singleton_single_one_fg_comul_mem_range_mapIncl (g : ℤ) :
   dsimp only
   refine ⟨Submodule.fg_span_singleton _, ?_⟩
   intro x hx
-  apply comul_mem_range_mapIncl_span_of_isGroupLikeElem ?_ hx
+  apply span_comul_mem ?_ hx
   intro y hy
   rw [Set.mem_singleton_iff] at hy
   subst y
@@ -65,7 +85,7 @@ private theorem span_empty_fg_comul_mem_range_mapIncl :
   dsimp only
   refine ⟨Submodule.fg_span Set.finite_empty, ?_⟩
   intro x hx
-  exact comul_mem_range_mapIncl_span_of_isGroupLikeElem (by simp) hx
+  exact span_comul_mem (by simp) hx
 
 end CommSemiring
 
@@ -79,7 +99,7 @@ private theorem comul_nat_linear_combination_mem_range_mapIncl_span_pair_single_
           5 • AddMonoidAlgebra.single (7 : ℤ) (1 : ℕ)) ∈
       LinearMap.range (TensorProduct.mapIncl D D) := by
   dsimp only
-  apply comul_mem_range_mapIncl_span_of_isGroupLikeElem
+  apply span_comul_mem
   · intro y hy
     simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hy
     rcases hy with rfl | rfl <;> exact AddMonoidAlgebra.isGroupLikeElem_single_one _

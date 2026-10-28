@@ -1,42 +1,34 @@
-# Base change for unitriangular coordinate algebras
+# Base change for canonical unitriangular coordinates
 
-Import `AlgebraicGroups.Algebra.UnitriangularBaseChange` to extend scalars in
-the **actual determinant-localized GL quotient** defining the unitriangular
-coordinate algebra. For commutative rings `R`, `S` with `[Algebra R S]` and a
-finite linearly ordered index type `ι`, all in the same universe, the comparison
-is an `S`-algebra equivalence:
+Import `AlgebraicGroups.Algebra.UnitriangularBaseChange`. For arbitrary same-universe
+commutative rings `R → S` and finite linearly ordered `ι`,
+`UnitriangularCoordinateRing.baseChange` identifies `S ⊗[R]
+TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι` with
+`TauCeti.UpperUnitriangular.coordinateHopfAlgebra S ι` as `S`-algebras. The canonical coordinate
+algebra is already polynomial on strict upper pairs; there is no duplicate GL quotient or
+comparison to an old coordinate model. Coefficient, presentation and all-entry formulas include
+empty indices and zero rings. Hopf and scheme comparisons and their identity/tower laws are
+separate modules.
 
-```lean
-UnitriangularCoordinateRing.baseChange R S ι :
-  S ⊗[R] UnitriangularCoordinateRing.CoordinateRing R ι ≃ₐ[S]
-    UnitriangularCoordinateRing.CoordinateRing S ι
-```
+See the [migration guide](../../../docs/TAUCETIFY.md) for canonical foundations and the [build
+guide](../../../docs/BUILDING.md) for the pinned environment.
+
+## Historical methods and credits
+
+The original method and source-credit paragraphs below describe the
+pre-refactor implementation; their old API names are historical. The
+[complete original guide](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/UnitriangularBaseChange/README.md) preserves the full context.
+Current APIs are described above.
 
 The equivalence transports mathlib's `MvPolynomial.algebraTensorAlgEquiv`
 through the strict-upper polynomial presentation of this quotient; it does not
 replace the quotient with a new definition. `baseChange_presentation` describes
 the presentation square, and `baseChange_tmul_freeEquiv` gives the formula on
 polynomial representatives. `baseChange_tmul_one` and
-`baseChange_symm_algebraMap` describe coefficients. `baseChange_tmul_entry` and
+the general `AlgEquiv.commutes` law describe coefficients in both directions. `baseChange_tmul_entry` and
 `baseChange_symm_entry` cover every quotient matrix entry, including diagonal
 and lower entries. No flatness, injectivity, nontriviality or nonempty-index
 assumption is needed.
-
-This module alone proves an algebra comparison, not Hopf or scheme base change,
-geometry or a dimension statement. Identity and scalar-tower coherence for this
-comparison are in the separate [coherence module](../UnitriangularBaseChangeCoherence/README.md).
-The [producer](../UnitriangularBaseChange.lean)
-and [ordinary-import client](../../../AlgebraicGroupsTest/Algebra/UnitriangularBaseChange.lean)
-include `Fin 0`, `Fin 1`, lower entries and `ZMod 1` cases.
-
-From this repository's root, install the pinned toolchain and fetch the matching
-mathlib cache successfully before building:
-
-```sh
-elan toolchain install leanprover/lean4:v4.34.0-rc2
-lake exe cache get
-lake build AlgebraicGroups AlgebraicGroupsTest
-```
 
 Formal Frontier Agents and Lattice contributed the comparison; the existing
 coordinate presentation retains its own authorship. The reused mathlib
@@ -44,8 +36,6 @@ coordinate presentation retains its own authorship. The reused mathlib
 current implementation uses Yaël Dillies's `AddMonoidAlgebra.scalarTensorEquiv`.
 Antoine Chambert-Loir contributed the related earlier
 `MvPolynomial.scalarRTensorAlgEquiv`.
-
-## References
 
 - James S. Milne, *Algebraic Groups* (2017), item 2.9: the polynomial
   presentation of `U_n` over a field is the coordinate antecedent, not a

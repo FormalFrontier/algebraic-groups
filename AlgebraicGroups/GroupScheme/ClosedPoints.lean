@@ -28,9 +28,9 @@ product topology on the closed-point spaces.
   base-preserving rational points and closed points of a locally-finite-type
   scheme over an algebraically closed field.
 - Mathlib, `schemeIsoToHomeo`: the underlying homeomorphism of a scheme
-  isomorphism. Left translation uses `CategoryTheory.GrpObj.mulLeft` from
+  isomorphism. Left translation uses `TauCeti.leftTranslation` from
   `AlgebraicGroups.GroupObject.Translation`, built from Mathlib's
-  `CategoryTheory.GrpObj.mulRight`.
+  `TauCeti.rightTranslation`.
 -/
 
 public section
@@ -133,7 +133,7 @@ def groupSchemeMulLeftClosedPointsHomeomorph (f : G ⟶ Spec (.of K))
     (a : 𝟙_ (Over (Spec (.of K))) ⟶ Over.mk f) :
     closedPoints G ≃ₜ closedPoints G :=
   closedPointsHomeomorphOfIso
-    ((Over.forget _).mapIso (CategoryTheory.GrpObj.mulLeft a))
+    ((Over.forget _).mapIso (TauCeti.leftTranslation a))
 
 /-- On closed points represented by rational points, the inversion
 homeomorphism acts by the rational-point group inverse. -/
@@ -159,13 +159,13 @@ lemma groupSchemeMulLeftClosedPointsHomeomorph_apply_point
         (groupSchemePointEquivClosedPoint f x) =
       groupSchemePointEquivClosedPoint f (a * x) := by
   apply Subtype.ext
-  change (CategoryTheory.GrpObj.mulLeft a).hom.left
+  change (TauCeti.leftTranslation a).hom.left
       (x.left (IsLocalRing.closedPoint K)) =
     (a * x).left (IsLocalRing.closedPoint K)
   exact congrArg
     (fun z : 𝟙_ (Over (Spec (.of K))) ⟶ Over.mk f =>
       z.left (IsLocalRing.closedPoint K))
-    (CategoryTheory.GrpObj.comp_mulLeft_hom a x)
+    (TauCeti.comp_leftTranslation_hom x a)
 
 /-- Any two closed points of a group scheme locally of finite type over an
 algebraically closed field are related by an automorphism over the base, using
@@ -176,7 +176,7 @@ theorem exists_groupSchemeIso_map_closedPoint (f : G ⟶ Spec (.of K))
     ∃ e : Over.mk f ≅ Over.mk f, e.hom.left x.1 = y.1 := by
   let E := groupSchemePointEquivClosedPoint f
   let a := E.symm y * (E.symm x)⁻¹
-  refine ⟨CategoryTheory.GrpObj.mulLeft a, ?_⟩
+  refine ⟨TauCeti.leftTranslation a, ?_⟩
   have h := groupSchemeMulLeftClosedPointsHomeomorph_apply_point f a (E.symm x)
   have h' : groupSchemeMulLeftClosedPointsHomeomorph f a x = y := by
     simpa [E, a] using h

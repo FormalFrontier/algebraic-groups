@@ -7,7 +7,8 @@ module
 public import AlgebraicGroups.GroupScheme.Multiplicative
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
 public import AlgebraicGroups.GroupScheme.DiagonalProduct
-public import AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel
+public import AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct
+public import TauCeti.Algebra.AlgebraicGroup.GeneralLinear.UpperTriangular.SmoothConnected
 public import AlgebraicGroups.GroupObject.SplitKernelProduct
 public import AlgebraicGroups.Scheme.Smooth
 public import Mathlib.AlgebraicGeometry.Geometrically.Integral
@@ -22,7 +23,7 @@ public import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-! # Geometry of finite diagonal and upper-triangular group schemes
 
-The native multiplicative, finite diagonal, and finite upper-triangular group schemes
+The canonical multiplicative, finite diagonal, and finite upper-triangular group schemes
 are smooth with geometrically integral fibers over every commutative base.
 
 Milne's field-case triangular groups and integrality discussion motivate the
@@ -68,10 +69,12 @@ universe u
 
 namespace AlgebraicGeometry
 
+open TauCeti.GeneralLinear.UpperTriangular
+
 variable (K : Type u) [CommRing K]
 
 private instance multiplicativeGroupCoordinateRing_standardSmooth :
-    Algebra.IsStandardSmooth K (multiplicativeGroupCoordinateRing K) := by
+    Algebra.IsStandardSmooth K (LaurentPolynomial K) := by
   let : Algebra.IsStandardSmooth K K[X] :=
     Algebra.IsStandardSmooth.of_algEquiv (MvPolynomial.uniqueAlgEquiv K PUnit.{1})
   let : Algebra.IsStandardSmooth K[X] (LaurentPolynomial K) :=
@@ -85,40 +88,50 @@ private instance multiplicativeGroupCoordinateRing_standardSmooth :
 Mathlib's polynomial and localization standard-smoothness instances give the
 ring certificate, then `HasRingHomProperty.Spec_iff` gives scheme smoothness. -/
 instance multiplicativeGroupUnderlyingScheme_smooth :
-    Smooth (multiplicativeGroupUnderlyingScheme K).hom := by
+    Smooth ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom := by
+  let e : MonoidAlgebra K (ULift.{u} (Multiplicative ℤ)) ≃ₐ[K] LaurentPolynomial K :=
+    (MonoidAlgebra.domCongr K K MulEquiv.ulift).trans
+      (AddMonoidAlgebra.toMultiplicativeAlgEquiv K K ℤ).symm
+  let : Algebra.IsStandardSmooth K (MonoidAlgebra K (ULift.{u} (Multiplicative ℤ))) :=
+    Algebra.IsStandardSmooth.of_algEquiv e.symm
   change Smooth (Spec.map (CommRingCat.ofHom
-    (algebraMap K (multiplicativeGroupCoordinateRing K))))
+    (algebraMap K (MonoidAlgebra K (ULift.{u} (Multiplicative ℤ))))))
   rw [HasRingHomProperty.Spec_iff (P := @Smooth)]
-  change (algebraMap K (multiplicativeGroupCoordinateRing K)).Smooth
+  change (algebraMap K (MonoidAlgebra K (ULift.{u} (Multiplicative ℤ)))).Smooth
   exact RingHom.smooth_algebraMap.mpr inferInstance
 
 private theorem multiplicativeGroupTensor_isDomain
     (F : Type u) [Field F] [Algebra K F] :
-    IsDomain (F ⊗[K] multiplicativeGroupCoordinateRing K) := by
-  change IsDomain (F ⊗[K] AddMonoidAlgebra K ℤ)
-  exact (AddMonoidAlgebra.scalarTensorEquiv (M := ℤ) K F).injective.isDomain
-    (AddMonoidAlgebra.scalarTensorEquiv (M := ℤ) K F).toRingHom
+    IsDomain (F ⊗[K] MonoidAlgebra K (ULift.{u} (Multiplicative ℤ))) := by
+  let e : MonoidAlgebra F (ULift.{u} (Multiplicative ℤ)) ≃ₐ[F] LaurentPolynomial F :=
+    (MonoidAlgebra.domCongr F F MulEquiv.ulift).trans
+      (AddMonoidAlgebra.toMultiplicativeAlgEquiv F F ℤ).symm
+  let : IsDomain (MonoidAlgebra F (ULift.{u} (Multiplicative ℤ))) :=
+    e.injective.isDomain e.toRingHom
+  exact (MonoidAlgebra.scalarTensorEquiv (M := ULift.{u} (Multiplicative ℤ)) K F).injective.isDomain
+    (MonoidAlgebra.scalarTensorEquiv (M := ULift.{u} (Multiplicative ℤ)) K F).toRingHom
 
 /-- Every geometric fiber of the multiplicative group is integral. The proof
 identifies the scalar extension of its Laurent coordinate algebra with a
 group algebra over a field using Mathlib's `AddMonoidAlgebra.scalarTensorEquiv`. -/
 instance multiplicativeGroupUnderlyingScheme_geometricallyIntegral :
-    GeometricallyIntegral (multiplicativeGroupUnderlyingScheme K).hom := by
+    GeometricallyIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom := by
   let : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
     ⟨fun iso integral ↦ by let := integral; exact IsIntegral.of_isIso iso.hom⟩
   refine ⟨(geometrically_iff_of_commRing_of_isClosedUnderIsomorphisms
     (P := IsIntegral)).2 ?_⟩
   intro F _ _
   change IsIntegral (pullback
-    (Spec.map (CommRingCat.ofHom (algebraMap K (multiplicativeGroupCoordinateRing K))))
+    (Spec.map (CommRingCat.ofHom (algebraMap K ((MonoidAlgebra K (ULift.{u} (Multiplicative ℤ)))))))
     (Spec.map (CommRingCat.ofHom (algebraMap K F))))
-  have : IsDomain (F ⊗[K] multiplicativeGroupCoordinateRing K) :=
+  have : IsDomain (F ⊗[K] MonoidAlgebra K (ULift.{u} (Multiplicative ℤ))) :=
     multiplicativeGroupTensor_isDomain K F
-  have : IsDomain (multiplicativeGroupCoordinateRing K ⊗[K] F) :=
-    (Algebra.TensorProduct.comm K (multiplicativeGroupCoordinateRing K) F).injective.isDomain
-      (Algebra.TensorProduct.comm K (multiplicativeGroupCoordinateRing K) F).toRingHom
+  have : IsDomain ((MonoidAlgebra K (ULift.{u} (Multiplicative ℤ))) ⊗[K] F) :=
+    (Algebra.TensorProduct.comm K ((MonoidAlgebra K (ULift.{u} (Multiplicative ℤ))))
+      F).injective.isDomain
+      (Algebra.TensorProduct.comm K ((MonoidAlgebra K (ULift.{u} (Multiplicative ℤ)))) F).toRingHom
   exact IsIntegral.of_isIso
-    (pullbackSpecIso K (multiplicativeGroupCoordinateRing K) F).inv
+    (pullbackSpecIso K ((MonoidAlgebra K (ULift.{u} (Multiplicative ℤ)))) F).inv
 
 private theorem product_smooth {S : Scheme.{u}} (X Y : Over S)
     [Smooth X.hom] [Smooth Y.hom] : Smooth (X ⊗ Y).hom := by
@@ -185,8 +198,9 @@ private def optionProductFan_isLimit {S : Scheme.{u}} {index : Type u} [Fintype 
       intro i
       have hi := factor (some i)
       change morphism ≫ (snd _ _ ≫ Pi.π _ i) = cone.proj (some i) at hi
-      simpa only [lift_snd, Pi.lift_π] using
-        (Category.assoc morphism (snd _ _) (Pi.π _ i)).trans hi
+      simpa only [lift_snd] using
+        ((Category.assoc morphism (snd _ _) (Pi.π _ i)).trans hi).trans
+          (Pi.lift_comp_π (fun i => cone.proj (some i)) i).symm
 
 private def optionProductIso {S : Scheme.{u}} {index : Type u} [Fintype index]
     (family : Option index → Over S) :
@@ -207,32 +221,38 @@ private theorem identity_geometricallyIntegral :
       (Spec.map (CommRingCat.ofHom (algebraMap K F)))))
 
 private theorem finiteMultiplicativeProductGeometry (index : Type u) [Finite index] :
-    Smooth (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom ∧
+    Smooth (∏ᶜ fun _ : index => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom ∧
       GeometricallyIntegral
-        (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom := by
+        (∏ᶜ fun _ : index => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom := by
   classical
   let : Fintype index := Fintype.ofFinite index
   refine Fintype.induction_empty_option
     (P := fun (index : Type u) [Fintype index] =>
-      Smooth (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom ∧
+      Smooth (∏ᶜ fun _ : index => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom ∧
       GeometricallyIntegral
-        (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom)
+        (∏ᶜ fun _ : index => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom)
     ?_ ?_ ?_ index
   · intro source target _ equivalence ih
     let : Fintype source := Fintype.ofEquiv target equivalence.symm
-    let iso : (∏ᶜ fun _ : source => multiplicativeGroupUnderlyingScheme K) ≅
-        (∏ᶜ fun _ : target => multiplicativeGroupUnderlyingScheme K) :=
-      Pi.reindex equivalence (fun _ : target => multiplicativeGroupUnderlyingScheme K)
-    let : Smooth (∏ᶜ fun _ : source => multiplicativeGroupUnderlyingScheme K).hom := ih.1
+    let iso : (∏ᶜ fun _ : source => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) ≅
+        (∏ᶜ fun _ : target => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) :=
+      Pi.reindex equivalence (fun _ : target =>
+        (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X)
+    let : Smooth (∏ᶜ fun _ : source => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme
+      K).X).hom := ih.1
     let : GeometricallyIntegral
-        (∏ᶜ fun _ : source => multiplicativeGroupUnderlyingScheme K).hom := ih.2
+        (∏ᶜ fun _ : source => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom
+          := ih.2
     exact ⟨smooth_of_iso iso.symm, geometricallyIntegral_of_iso iso.symm⟩
   · let terminal : IsTerminal (∏ᶜ fun _ : PEmpty.{u+1} =>
-        multiplicativeGroupUnderlyingScheme K) :=
+        (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) :=
       (isLimitEquivIsTerminalOfIsEmpty (Over (Spec (.of K)))
-        (Fan.mk (∏ᶜ fun _ : PEmpty.{u+1} => multiplicativeGroupUnderlyingScheme K)
-          (Pi.π fun _ : PEmpty.{u+1} => multiplicativeGroupUnderlyingScheme K)))
-        (productIsProduct fun _ : PEmpty.{u+1} => multiplicativeGroupUnderlyingScheme K)
+        (Fan.mk (∏ᶜ fun _ : PEmpty.{u+1} =>
+          (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X)
+          (Pi.π fun _ : PEmpty.{u+1} => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme
+            K).X)))
+        (productIsProduct fun _ : PEmpty.{u+1} =>
+          (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X)
     let baseTerminal : IsTerminal (Over.mk (𝟙 (Spec (.of K)))) :=
       IsTerminal.ofUniqueHom (fun Y => Over.homMk Y.hom)
         (fun Y morphism => Over.OverMorphism.ext (by simpa using morphism.w))
@@ -245,31 +265,35 @@ private theorem finiteMultiplicativeProductGeometry (index : Type u) [Finite ind
     exact ⟨smooth_of_iso iso, geometricallyIntegral_of_iso iso⟩
   · intro smaller _ ih
     let iso := optionProductIso
-      (fun _ : Option smaller => multiplicativeGroupUnderlyingScheme K)
-    have : Smooth (∏ᶜ fun _ : smaller => multiplicativeGroupUnderlyingScheme K).hom := ih.1
+      (fun _ : Option smaller => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X)
+    have : Smooth (∏ᶜ fun _ : smaller =>
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom := ih.1
     have : GeometricallyIntegral
-        (∏ᶜ fun _ : smaller => multiplicativeGroupUnderlyingScheme K).hom := ih.2
-    have : Smooth (multiplicativeGroupUnderlyingScheme K ⊗
-        (∏ᶜ fun _ : smaller => multiplicativeGroupUnderlyingScheme K)).hom :=
+        (∏ᶜ fun _ : smaller => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme
+          K).X).hom := ih.2
+    have : Smooth ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X ⊗
+        (∏ᶜ fun _ : smaller => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X)).hom :=
       product_smooth _ _
-    have : GeometricallyIntegral (multiplicativeGroupUnderlyingScheme K ⊗
-        (∏ᶜ fun _ : smaller => multiplicativeGroupUnderlyingScheme K)).hom :=
+    have : GeometricallyIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X ⊗
+        (∏ᶜ fun _ : smaller => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X)).hom :=
       product_geometricallyIntegral _ _
     exact ⟨smooth_of_iso iso, geometricallyIntegral_of_iso iso⟩
 
-private def diagonalUnderlyingProductIso (index : Type u) [Fintype index]
-    [DecidableEq index] :
-    diagonalGroupUnderlyingScheme K index ≅
-      (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K) :=
+private def diagonalUnderlyingProductIso (index : Type u) [Fintype index] :
+    (TauCeti.SplitTorus.groupScheme K index).X ≅
+      (∏ᶜ fun _ : index => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) :=
   (diagonalGroupProductFanForgetIsLimit K index).conePointUniqueUpToIso
-    (productIsProduct fun _ : index => multiplicativeGroupUnderlyingScheme K)
+    (productIsProduct fun _ : index => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X)
 
 /-- The finite diagonal structure morphism is smooth over any commutative base,
 transported through the existing finite-product fan from multiplicative groups;
 compare Milne, *Algebraic Groups* (2017), item 2.9, over a field. -/
-instance diagonalGroupUnderlyingScheme_smooth (index : Type u) [Fintype index]
-    [DecidableEq index] : Smooth (diagonalGroupUnderlyingScheme K index).hom := by
-  have : Smooth (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom :=
+instance diagonalGroupUnderlyingScheme_smooth (index : Type u) [Finite index] : Smooth
+  ((TauCeti.SplitTorus.groupScheme K index).X).hom := by
+  classical
+  let := Fintype.ofFinite index
+  have : Smooth (∏ᶜ fun _ : index => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme
+    K).X).hom :=
     (finiteMultiplicativeProductGeometry K index).1
   exact smooth_of_iso (diagonalUnderlyingProductIso K index)
 
@@ -278,47 +302,39 @@ finite-product argument combines smoothness (hence universal openness and
 geometric reduction) with geometric irreducibility; Milne, *Algebraic Groups*
 (2017), item 2.40, gives the field-case integral group. -/
 instance diagonalGroupUnderlyingScheme_geometricallyIntegral (index : Type u)
-    [Fintype index] [DecidableEq index] :
-    GeometricallyIntegral (diagonalGroupUnderlyingScheme K index).hom := by
+    [Finite index] :
+    GeometricallyIntegral ((TauCeti.SplitTorus.groupScheme K index).X).hom := by
+  classical
+  let := Fintype.ofFinite index
   have : GeometricallyIntegral
-      (∏ᶜ fun _ : index => multiplicativeGroupUnderlyingScheme K).hom :=
+      (∏ᶜ fun _ : index => (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom :=
     (finiteMultiplicativeProductGeometry K index).2
   exact geometricallyIntegral_of_iso (diagonalUnderlyingProductIso K index)
 
-private def upperTriangularSplitIso
-    (n : Type u) [Fintype n] [LinearOrder n] :
-    unitriangularGroupUnderlyingScheme K n ⊗ diagonalGroupUnderlyingScheme K n ≅
-      upperTriangularGroupUnderlyingScheme K n := by
-  classical
-  apply CategoryTheory.splitKernelProductIso
-    (unitriangularToUpperTriangular K n).hom.hom
-    (upperTriangularDiagonalProjection K n).hom.hom
-    (upperTriangularDiagonalSection K n).hom.hom
-    (upperTriangularDiagonalSquare_isPullback_over K n)
-  exact congrArg (fun morphism => morphism.hom.hom)
-    (upperTriangularDiagonal_section K n)
-
 /-- The upper-triangular structure morphism is smooth over any commutative
-base via the section-first split-kernel over-scheme isomorphism. Milne's
+base, by the canonical Tau Ceti smoothness theorem. Milne's
 preliminary *Algebraic Groups* (2015), Definition 2.20 and Proposition 2.21,
 give the field-case splitting; no direct-product group law is claimed. -/
-instance upperTriangularGroupUnderlyingScheme_smooth
-    (n : Type u) [Fintype n] [LinearOrder n] :
-    Smooth (upperTriangularGroupUnderlyingScheme K n).hom := by
-  have : Smooth (unitriangularGroupUnderlyingScheme K n ⊗
-      diagonalGroupUnderlyingScheme K n).hom := product_smooth _ _
-  exact smooth_of_iso (upperTriangularSplitIso K n).symm
+instance upperTriangularGroupUnderlyingScheme_smooth (n : ℕ) :
+    Smooth (groupScheme K n).X.hom := by
+  let : Algebra.Smooth K (coordinateHopfAlgebra K n) :=
+    (TauCeti.smoothCommHopfAlgProperty_iff _).mp
+      (smoothCommHopfAlgProperty_coordinateHopfAlgebra n K)
+  change Smooth (Spec.map (CommRingCat.ofHom (algebraMap K (coordinateHopfAlgebra K n))))
+  rw [HasRingHomProperty.Spec_iff (P := @Smooth)]
+  exact RingHom.smooth_algebraMap.mpr inferInstance
 
 /-- Every geometric fiber of the upper-triangular group is integral, by
 combining the two factors' relative geometry with the underlying split-kernel
 isomorphism. Milne, *Algebraic Groups* (2017), item 2.40, gives the field-case
 integrality; the arbitrary-base fiber argument uses Mathlib's geometric APIs. -/
 instance upperTriangularGroupUnderlyingScheme_geometricallyIntegral
-    (n : Type u) [Fintype n] [LinearOrder n] :
-    GeometricallyIntegral (upperTriangularGroupUnderlyingScheme K n).hom := by
-  have : GeometricallyIntegral (unitriangularGroupUnderlyingScheme K n ⊗
-      diagonalGroupUnderlyingScheme K n).hom := product_geometricallyIntegral _ _
-  exact geometricallyIntegral_of_iso (upperTriangularSplitIso K n).symm
+    (n : ℕ) :
+    GeometricallyIntegral ((groupScheme K n).X).hom := by
+  have : GeometricallyIntegral ((TauCeti.UpperUnitriangular.groupScheme K (Fin n)).X ⊗
+      (TauCeti.SplitTorus.groupScheme K (ULift.{u} (Fin n))).X).hom :=
+        product_geometricallyIntegral _ _
+  exact geometricallyIntegral_of_iso (upperTriangularUFirstIso K n).symm
 
 private theorem integral_of_relative [IsDomain K] (X : Over (Spec (.of K)))
     [Smooth X.hom] [GeometricallyIntegral X.hom] : IsIntegral X.left := by
@@ -329,21 +345,21 @@ private theorem integral_of_relative [IsDomain K] (X : Over (Spec (.of K)))
 
 /-- The native multiplicative group is integral over an integral domain. -/
 instance multiplicativeGroupUnderlyingScheme_isIntegral [IsDomain K] :
-    IsIntegral (multiplicativeGroupUnderlyingScheme K).left :=
+    IsIntegral ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).left :=
   integral_of_relative K _
 
 /-- The finite diagonal group is integral over an integral domain. -/
 instance diagonalGroupUnderlyingScheme_isIntegral [IsDomain K]
-    (index : Type u) [Fintype index] [DecidableEq index] :
-    IsIntegral (diagonalGroupUnderlyingScheme K index).left :=
+    (index : Type u) [Finite index] :
+    IsIntegral ((TauCeti.SplitTorus.groupScheme K index).X).left :=
   integral_of_relative K _
 
 /-- The finite upper-triangular group is integral over a domain. This uses
 `AlgebraicGeometry.Smooth.isReduced_of_isDomain` and the open-map/geometric-irreducibility
 descent, not integrality of a product over an arbitrary base. -/
 instance upperTriangularGroupUnderlyingScheme_isIntegral [IsDomain K]
-    (index : Type u) [Fintype index] [LinearOrder index] :
-    IsIntegral (upperTriangularGroupUnderlyingScheme K index).left :=
+    (n : ℕ) :
+    IsIntegral ((groupScheme K n).X).left :=
   integral_of_relative K _
 
 end AlgebraicGeometry

@@ -47,7 +47,8 @@ theorem nat_augmentation_antipode {G : Type u} [Group G] (x : MonoidAlgebra ℕ 
     Coalgebra.counit (R := ℕ) (HopfAlgebra.antipode ℕ x) =
       Coalgebra.counit (R := ℕ) x := by
   simpa only [Bialgebra.counitBialgHom_apply, CommSemiring.antipode_eq_id,
-    LinearMap.id_apply] using (Bialgebra.counitBialgHom ℕ (MonoidAlgebra ℕ G)).map_antipode x
+    LinearMap.id_apply] using BialgHomClass.map_antipode (Bialgebra.counitBialgHom ℕ
+        (MonoidAlgebra ℕ G)) x
 
 /-- The direct product of the symmetric group on three letters with the infinite cyclic group. -/
 abbrev PermutationLattice := Equiv.Perm (Fin 3) × Multiplicative ℤ
@@ -75,7 +76,7 @@ theorem collapse_eq_augmentation (x : MonoidAlgebra ℕ PermutationLattice) :
 theorem collapse_antipode (x : MonoidAlgebra ℕ PermutationLattice) :
     collapse (HopfAlgebra.antipode ℕ x) =
       MonoidAlgebra.single 1 (Coalgebra.counit (R := ℕ) x) := by
-  rw [collapse.map_antipode, collapse_eq_augmentation]
+  rw [BialgHomClass.map_antipode collapse, collapse_eq_augmentation]
   simp
 
 /-- Collapse is noninjective: a transposition basis term and the unit basis term

@@ -111,12 +111,12 @@ private theorem comul_single_scalar (k : G₂) (r : R₂) :
   rw [single_eq_smul k r, TensorProduct.tmul_smul]
 
 /-- The sum of the two coefficients is the counit normalization `1`. -/
-@[simp] theorem mixed_counit : Coalgebra.counit (R := R₂) mixed = 1 := by
+theorem mixed_counit : Coalgebra.counit (R := R₂) mixed = 1 := by
   simp only [mixed, map_add, MonoidAlgebra.counit_single, CommSemiring.counit_apply]
   exact left_add_right
 
 /-- Tensor balancing over the product ring makes both cross terms vanish. -/
-@[simp] theorem mixed_comul : Coalgebra.comul (R := R₂) mixed = mixed ⊗ₜ[R₂] mixed := by
+theorem mixed_comul : Coalgebra.comul (R := R₂) mixed = mixed ⊗ₜ[R₂] mixed := by
   calc
     Coalgebra.comul (R := R₂) mixed =
         e₀ • ((single g 1 : A₂) ⊗ₜ[R₂] single g 1) +
@@ -200,7 +200,7 @@ def mixedGroupLike : GroupLike R₂ A₂ where
 @[simp] theorem mixedGroupLike_val : (mixedGroupLike : A₂) = mixed := rfl
 
 /-- Inversion of the bundled point has the computed antipode value. -/
-@[simp] theorem mixedGroupLike_inv_val :
+theorem mixedGroupLike_inv_val :
     ((mixedGroupLike⁻¹ : GroupLike R₂ A₂) : A₂) = mixedInverse := by
   rw [GroupLike.val_inv, mixedGroupLike_val, mixed_antipode]
 
@@ -209,13 +209,13 @@ def mixedGroupLike : GroupLike R₂ A₂ where
     ((GroupLike.toUnits R₂ mixedGroupLike : A₂ˣ) : A₂) = mixed := rfl
 
 /-- The inverse unit has the distinct, explicitly computed antipode value. -/
-@[simp] theorem mixedGroupLike_toUnits_inv_val :
+theorem mixedGroupLike_toUnits_inv_val :
     (((GroupLike.toUnits R₂ mixedGroupLike)⁻¹ : A₂ˣ) : A₂) = mixedInverse := by
   change HopfAlgebra.antipode R₂ mixed = mixedInverse
   exact mixed_antipode
 
 /-- Mapping the inverse group-like point to units also gives `mixedInverse`. -/
-@[simp] theorem mixedGroupLike_inv_toUnits_val :
+theorem mixedGroupLike_inv_toUnits_val :
     ((GroupLike.toUnits R₂ (mixedGroupLike⁻¹) : A₂ˣ) : A₂) = mixedInverse := by
   change ((mixedGroupLike⁻¹ : GroupLike R₂ A₂) : A₂) = mixedInverse
   exact mixedGroupLike_inv_val
@@ -266,7 +266,7 @@ def scalarFive : A₆ := single 1 (5 : R₆)
   simp only [scalarFive, single_mul_single, one_mul, five_mul_five, ← one_def]
 
 /-- The counit retains the scalar coefficient, rather than normalizing it. -/
-@[simp] theorem scalarFive_counit : Coalgebra.counit (R := R₆) scalarFive = 5 := by
+theorem scalarFive_counit : Coalgebra.counit (R := R₆) scalarFive = 5 := by
   simp [scalarFive]
 
 /-- The scalar unit fails the counit normalization for group-like elements. -/

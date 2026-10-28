@@ -52,7 +52,7 @@ theorem Ideal.IsHopfIdeal.comap_of_isCoideal
       antipode_mem := ?_ }
   intro x hx
   change f (HopfAlgebra.antipode R x) ∈ J
-  rw [f.map_antipode]
+  rw [BialgHomClass.map_antipode f]
   exact hJ.antipode_mem (Ideal.mem_comap.mp hx)
 
 /-- The ordinary ring kernel of a bialgebra homomorphism between full Hopf
@@ -71,7 +71,7 @@ theorem BialgHom.ker_isHopfIdeal_of_isCoideal
   intro x hx
   have hfx : f x = 0 := RingHom.mem_ker.mp hx
   change f (HopfAlgebra.antipode R x) = 0
-  rw [f.map_antipode, hfx, map_zero]
+  rw [BialgHomClass.map_antipode f, hfx, map_zero]
 
 /-- Over a field, inverse images along bialgebra homomorphisms between full
 Hopf algebras preserve the Hopf-ideal property. No coideality, surjectivity or

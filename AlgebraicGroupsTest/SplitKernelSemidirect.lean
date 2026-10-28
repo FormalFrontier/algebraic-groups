@@ -188,21 +188,22 @@ private def kernelFibrePoint : 𝟙_ (Type) ⟶ DoubleH :=
   ↾fun _ ↦ (firstSwap, secondSwap)
 
 private theorem kernelFibre_mulRight_value (n : H) :
-    (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom) n =
+    (kernelIncl ≫ (TauCeti.rightTranslation kernelFibrePoint).hom) n =
       (n * firstSwap, secondSwap) := by
+  rw [TauCeti.comp_rightTranslation_hom]
   change (n * firstSwap, (1 : H) * secondSwap) = _
   exact Prod.ext rfl (_root_.one_mul secondSwap)
 
 private theorem kernelFibre_mulRight_square :
-    IsPullback (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom)
+    IsPullback (kernelIncl ≫ (TauCeti.rightTranslation kernelFibrePoint).hom)
       (toUnit H) quotient (kernelFibrePoint ≫ quotient) := by
   apply (Limits.Types.isPullback_iff
-    (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom)
+    (kernelIncl ≫ (TauCeti.rightTranslation kernelFibrePoint).hom)
     quotient (toUnit H) (kernelFibrePoint ≫ quotient)).2
   refine ⟨?_, ?_, ?_⟩
   · apply ConcreteCategory.hom_ext
     intro n
-    change ((kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom) n).2 = secondSwap
+    change ((kernelIncl ≫ (TauCeti.rightTranslation kernelFibrePoint).hom) n).2 = secondSwap
     exact congrArg Prod.snd (kernelFibre_mulRight_value n)
   · intro first second h
     have hfirst := congrArg Prod.fst h.1
@@ -216,7 +217,7 @@ private theorem kernelFibre_mulRight_square :
     · rfl
 
 private theorem kernelFibre_mulRight_order :
-    ((kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom) secondSwap).1
+    ((kernelIncl ≫ (TauCeti.rightTranslation kernelFibrePoint).hom) secondSwap).1
         (0 : Fin 3) = 2 ∧
       (kernelFibrePoint PUnit.unit * kernelIncl secondSwap).1 (0 : Fin 3) = 1 := by
   rw [kernelFibre_mulRight_value]
@@ -238,12 +239,12 @@ private theorem kernelFibrePoint_properties :
     exact hb (congrArg Prod.snd hunit)
 
 example :
-    IsPullback (i ≫ (GrpObj.mulRight η[G]).hom) (toUnit N) q (η[G] ≫ q) := by
-  simpa only [GrpObj.mulRight_one, Iso.refl_hom, Category.comp_id,
+    IsPullback (i ≫ (TauCeti.rightTranslation η[G]).hom) (toUnit N) q (η[G] ≫ q) := by
+  simpa only [TauCeti.rightTranslation_one, Iso.refl_hom, Category.comp_id,
     IsMonHom.one_hom] using hN
 
 private theorem kernelFibre_isPullback :
-    IsPullback (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom)
+    IsPullback (kernelIncl ≫ (TauCeti.rightTranslation kernelFibrePoint).hom)
       (toUnit H) quotient (kernelFibrePoint ≫ quotient) :=
   GrpObj.isPullback_kernel_mulRight kernelIncl quotient kernelSquare kernelFibrePoint
 
@@ -309,7 +310,7 @@ private theorem constant_transformation_not_isUnit :
   exact (by decide : (0 : Fin 3) ≠ 1) h
 
 private theorem transformationFibre_isPullback :
-    IsPullback (kernelIncl ≫ (GrpObj.mulRight kernelFibrePoint).hom)
+    IsPullback (kernelIncl ≫ (TauCeti.rightTranslation kernelFibrePoint).hom)
       (toUnit H) transformationQuotient (kernelFibrePoint ≫ transformationQuotient) :=
   GrpObj.isPullback_kernel_mulRight kernelIncl transformationQuotient
     transformationKernelSquare kernelFibrePoint
@@ -319,13 +320,13 @@ private def shiftedFirst : DoubleH ⟶ H := ↾fun p ↦ p.1 * secondSwap
 private def leftSwapPoint : 𝟙_ (Type) ⟶ H := ↾fun _ ↦ firstSwap
 
 private theorem shiftedFirst_leftTranslate (g h : H) :
-    (shiftedFirst ≫ (GrpObj.mulLeft leftSwapPoint).hom) (g, h) =
+    (shiftedFirst ≫ (TauCeti.leftTranslation leftSwapPoint).hom) (g, h) =
       firstSwap * (g * secondSwap) := by
-  rw [GrpObj.comp_mulLeft_hom_eq_mul]
+  rw [TauCeti.comp_leftTranslation_hom]
   rfl
 
 private theorem shiftedFirst_left_not_right :
-    (shiftedFirst ≫ (GrpObj.mulLeft leftSwapPoint).hom) (1, 1) (0 : Fin 3) = 1 ∧
+    (shiftedFirst ≫ (TauCeti.leftTranslation leftSwapPoint).hom) (1, 1) (0 : Fin 3) = 1 ∧
       (shiftedFirst * (toUnit DoubleH ≫ leftSwapPoint)) (1, 1) (0 : Fin 3) = 2 := by
   rw [shiftedFirst_leftTranslate]
   decide
@@ -338,8 +339,8 @@ private theorem shiftedFirst_not_isMonHom : ¬ IsMonHom shiftedFirst := by
   exact (by decide : secondSwap ≠ (1 : H)) hu
 
 private theorem leftSwap_naked_hom (g : H) :
-    (GrpObj.mulLeft leftSwapPoint).hom g = firstSwap * g := by
-  rw [GrpObj.mulLeft_hom]
+    (TauCeti.leftTranslation leftSwapPoint).hom g = firstSwap * g := by
+  rw [TauCeti.leftTranslation_hom]
   rfl
 
 private noncomputable instance : AddGrpObj ℤ where
@@ -360,8 +361,8 @@ private def shiftedInteger : ℤ × ℤ ⟶ ℤ := ↾fun p ↦ p.1 + 1
 private def integerOnePoint : 𝟙_ (Type) ⟶ ℤ := ↾fun _ ↦ 1
 
 private theorem shiftedInteger_addLeft (m n : ℤ) :
-    (shiftedInteger ≫ (AddGrpObj.addLeft integerOnePoint).hom) (m, n) = m + 2 := by
-  rw [AddGrpObj.comp_addLeft_hom_eq_add]
+    (shiftedInteger ≫ (TauCeti.leftAddTranslation integerOnePoint).hom) (m, n) = m + 2 := by
+  rw [TauCeti.comp_leftAddTranslation_hom]
   change (1 : ℤ) + (m + 1) = m + (1 + 1)
   exact Int.add_left_comm 1 m 1
 

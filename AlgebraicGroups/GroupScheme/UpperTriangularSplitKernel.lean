@@ -4,778 +4,517 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.GroupScheme.UpperTriangular
-public import AlgebraicGroups.GroupScheme.Diagonal
-public import AlgebraicGroups.GroupScheme.Unitriangular
+public import TauCeti.Algebra.AlgebraicGroup.GeneralLinear.UpperTriangular.DiagonalTorus
+public import TauCeti.Algebra.AlgebraicGroup.GeneralLinear.Dynamic.Weight.Levi.DiagonalTorus
+public import TauCeti.Algebra.AlgebraicGroup.GeneralLinear.Dynamic.Weight.Levi.Kernel
+public import TauCeti.Algebra.AlgebraicGroup.UpperUnitriangular.Scheme
 public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 
 /-!
-# The diagonal split quotient and unitriangular kernel of upper-triangular groups
+# The split diagonal quotient of the canonical upper-triangular group
 
-The diagonal projection and its section are represented by maps of Hopf
-coordinate rings. The unitriangular inclusion is the fiber over the identity
-as a pullback of group schemes, proved from a pushout of coordinate rings for
-arbitrary compatible maps of commutative rings. The base and test algebras
-need not be fields, reduced, or nonzero.
+The injective-weight Levi and unipotent presentations are identified with the canonical
+split torus and polynomial upper-unitriangular group. The represented weight-parabolic
+kernel theorem then supplies the scheme-theoretic kernel over every commutative base,
+including rank zero and the zero ring.
+
+The arbitrary-ring coordinate pushout and the arbitrary-source scheme and group-object
+pullbacks below retain the universal properties of the original construction.
 
 ## References
 
-* J. S. Milne, *Algebraic Groups* (2017), §2.9: the field-base triangular,
-  diagonal and unitriangular subgroups and their points over commutative
-  algebras. His *Algebraic Groups* (course notes, version 2.00), §§2.20–2.21
-  gives the field-base triangular semidirect-product antecedent; the cited
-  passages do not supply the arbitrary-base categorical kernel proof here.
-* Mathlib, `Mathlib.AlgebraicGeometry.Pullbacks`:
-  `isPullback_SpecMap_of_isPushout`; `Mathlib.CategoryTheory.Limits.Constructions.Over.Connected`
-  and `Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits`: connected-limit
-  creation for over objects and limit creation for group objects.
-* `AlgebraicGroups.GroupTheory.UpperTriangular` and the group-scheme modules
-  `UpperTriangular`, `Diagonal`, and `Unitriangular`: the native diagonal,
-  section and inclusions and their represented Hopf quotients.
+* J. S. Milne, *Algebraic Groups* (2017), §2.9.
+* Mathlib, `Mathlib.AlgebraicGeometry.Pullbacks`.
 -/
 
 @[expose] public section
 
+open AlgebraicGeometry CategoryTheory CategoryTheory.Limits WithConv
+open scoped CategoryTheory.MonObj
 noncomputable section
-
-open CategoryTheory CategoryTheory.Limits CartesianMonoidalCategory
-open scoped CategoryTheory.MonObj TensorProduct
-
 universe u
+namespace TauCeti.GeneralLinear.UpperTriangular
+variable (K : Type u) [CommRing K] (n : ℕ)
 
-namespace AlgebraicGeometry
+private theorem mem_unipotent_iff {A : Type u} [CommRing A] [Algebra K A]
+    (g : WithConv (GeneralLinear.coordinateHopfAlgebra K n →ₐ[K] A)) :
+    g ∈ CommHopfAlgCat.quotientPointsSubgroup (GeneralLinear.coordinateHopfAlgebra K n)
+        (weightUnipotentDefiningHopfIdeal K (weights n)) (CommAlgCat.of K A) ↔
+      GeneralLinear.pointsMulEquiv n g ∈ upperUnitriangularGroup (Fin n) A := by
+  rw [GeneralLinear.mem_weightUnipotentDefiningPointsSubgroup_iff,
+    UpperUnitriangularGroup.mem_iff, Matrix.isUpperUnitriangular_def]
+  constructor
+  · intro h
+    refine ⟨?_, ?_⟩
+    · intro i j hji
+      have hne : i ≠ j := fun h ↦ hji.ne h.symm
+      simpa [Matrix.one_apply, hne] using
+        h i j ((weights_lt_weights_iff n i j).mpr hji).le
+    · intro i
+      simpa using h i i le_rfl
+  · rintro ⟨htri, hdiag⟩ i j hij
+    rcases hij.eq_or_lt with hij | hij
+    · have : i = j := weights_injective n hij
+      subst j
+      simpa using hdiag i
+    · have hji : j < i := (weights_lt_weights_iff n i j).mp hij
+      simpa [Matrix.one_apply, hji.ne'] using htri hji
 
-variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [LinearOrder n]
+/-- The polynomial unitriangular presentation cuts out the canonical weight-unipotent ideal. -/
+theorem ker_unitriangularCoordinateMap :
+    HopfIdeal.kerOfSurjective (UpperUnitriangular.coordinateMap K n).hom
+        (UpperUnitriangular.coordinateMap_surjective K n) =
+      weightUnipotentDefiningHopfIdeal K (weights n) := by
+  apply le_antisymm
+  · intro x hx
+    let I := weightUnipotentDefiningHopfIdeal K (weights n)
+    let Q := CommHopfAlgCat.quotient (GeneralLinear.coordinateHopfAlgebra K n) I
+    let g := CommHopfAlgCat.quotientPointsHom (GeneralLinear.coordinateHopfAlgebra K n) I
+      (CommAlgCat.of K Q) (toConv (AlgHom.id K Q))
+    have hg : GeneralLinear.pointsMulEquiv n g ∈ upperUnitriangularGroup (Fin n) Q :=
+      (mem_unipotent_iff K n g).mp
+        (CommHopfAlgCat.quotientPointsHom_mem_quotientPointsSubgroup _ _ _ _)
+    let f := (UpperUnitriangular.pointsMulEquiv K (Fin n) (A := Q)).symm
+      ⟨GeneralLinear.pointsMulEquiv n g, hg⟩
+    have hfg : UpperUnitriangular.inclusionPoints (R := K) n f = g := by
+      apply (GeneralLinear.pointsMulEquiv (R := K) (A := Q) n).injective
+      simp only [GeneralLinear.pointsMulEquiv_apply,
+        UpperUnitriangular.pointToGeneralLinear_inclusionPoints]
+      exact (congrArg Subtype.val
+        ((UpperUnitriangular.pointsMulEquiv K (Fin n) (A := Q)).apply_symm_apply _)).trans
+          (GeneralLinear.pointsMulEquiv_apply n g)
+    have hx0 := (HopfIdeal.mem_kerOfSurjective _ _).mp hx
+    have heval : g.ofConv x = 0 := by
+      rw [← hfg, ← UpperUnitriangular.mapPointsFunctor_coordinateMap_app K n
+        (CommAlgCat.of K Q) f]
+      change f.ofConv ((UpperUnitriangular.coordinateMap K n).hom x) = 0
+      rw [hx0, map_zero]
+    change x ∈ I
+    apply HopfIdeal.mem_toIdeal.mp
+    apply Ideal.Quotient.eq_zero_iff_mem.mp
+    have he := CommHopfAlgCat.quotientPointsHom_apply_apply
+      (GeneralLinear.coordinateHopfAlgebra K n) I (CommAlgCat.of K Q)
+      (toConv (AlgHom.id K Q)) x
+    exact he.symm.trans heval
+  · intro x hx
+    apply (HopfIdeal.mem_kerOfSurjective _ _).mpr
+    let U := UpperUnitriangular.coordinateHopfAlgebra K (Fin n)
+    let f : WithConv (U →ₐ[K] U) := toConv (AlgHom.id K U)
+    have hg : UpperUnitriangular.inclusionPoints (R := K) n f ∈
+        CommHopfAlgCat.quotientPointsSubgroup (GeneralLinear.coordinateHopfAlgebra K n)
+          (weightUnipotentDefiningHopfIdeal K (weights n)) (CommAlgCat.of K U) := by
+      apply (mem_unipotent_iff K n _).mpr
+      rw [GeneralLinear.pointsMulEquiv_apply,
+        UpperUnitriangular.pointToGeneralLinear_inclusionPoints]
+      exact (UpperUnitriangular.pointsMulEquiv K (Fin n) f).property
+    have h := (CommHopfAlgCat.mem_quotientPointsSubgroup_iff _ _ _ _).mp hg x hx
+    rw [← UpperUnitriangular.mapPointsFunctor_coordinateMap_app K n
+      (CommAlgCat.of K U) f] at h
+    exact h
 
-/-- The diagonal of the universal upper-triangular matrix induces the coordinate
-map of the diagonal projection. -/
-def upperTriangularDiagonalCoordinateMap :
-    DiagonalCoordinateRing.CoordinateRing K n →ₐ[K]
-      UpperTriangularCoordinateRing.CoordinateRing K n :=
-  diagonalFromGL K n _
-    (Matrix.UpperTriangularGroup.diagonal (UpperTriangularCoordinateRing.universal K n))
+/-- The two canonical unitriangular coordinate presentations agree, compatibly with GL. -/
+noncomputable def weightUnipotentCoordinateIso :
+    weightUnipotentCoordinateHopfAlgebra K (weights n) ≅
+      UpperUnitriangular.coordinateHopfAlgebra K (Fin n) :=
+  (UpperUnitriangular.coordinateMap K n).quotientIsoOfKerOfSurjectiveEq
+    (UpperUnitriangular.coordinateMap_surjective K n) (ker_unitriangularCoordinateMap K n)
 
-/-- The native diagonal section, evaluated at the universal diagonal matrix. -/
-def upperTriangularDiagonalSectionCoordinateMap :
-    UpperTriangularCoordinateRing.CoordinateRing K n →ₐ[K]
-      DiagonalCoordinateRing.CoordinateRing K n :=
-  upperTriangularFromGL K n _
-    (Matrix.UpperTriangularGroup.diagonalSection (DiagonalCoordinateRing.universal K n))
 
-/-- The unitriangular universal matrix gives a quotient of the upper-triangular
-coordinate ring. -/
-def upperTriangularUnitriangularCoordinateMap :
-    UpperTriangularCoordinateRing.CoordinateRing K n →ₐ[K]
-      UnitriangularCoordinateRing.CoordinateRing K n :=
-  upperTriangularFromGL K n _
-    (Matrix.UnitriangularGroup.inUpperTriangular
-      (unitriangularToGL K n _ (AlgHom.id K _)))
+@[reassoc (attr := simp)]
+theorem coordinateMap_comp_weightUnipotentCoordinateIso :
+    CommHopfAlgCat.mkQuotient (GeneralLinear.coordinateHopfAlgebra K n)
+        (weightUnipotentDefiningHopfIdeal K (weights n)) ≫
+      (weightUnipotentCoordinateIso K n).hom = UpperUnitriangular.coordinateMap K n :=
+  _root_.CommHopfAlgCat.Hom.mkQuotient_comp_quotientIsoOfKerOfSurjectiveEq_hom _ _ _
 
-theorem upperTriangularDiagonalSectionCoordinateMap_comp_quotient :
-    (upperTriangularDiagonalSectionCoordinateMap K n).comp
-      (UpperTriangularCoordinateRing.quotient K n) =
-        DiagonalCoordinateRing.quotient K n := by
-  rw [upperTriangularDiagonalSectionCoordinateMap,
-    upperTriangularFromGL_comp_quotient]
-  apply GeneralLinearCoordinateRing.hom_ext
-  intro i j
-  rw [GeneralLinearCoordinateRing.evaluate_matrix]
+/-- Restriction from the upper-triangular coordinate algebra to its polynomial unipotent part. -/
+def unitriangularCoordinateMap : coordinateHopfAlgebra K n ⟶
+    UpperUnitriangular.coordinateHopfAlgebra K (Fin n) :=
+  CommHopfAlgCat.quotientMapOfLe (GeneralLinear.coordinateHopfAlgebra K n)
+      (Dynamic.weightParabolicDefiningHopfIdeal_le_weightUnipotent K (weights n)) ≫
+    (weightUnipotentCoordinateIso K n).hom
+
+@[reassoc (attr := simp)]
+theorem coordinateMap_comp_unitriangularCoordinateMap :
+    coordinateMap K n ≫ unitriangularCoordinateMap K n =
+      UpperUnitriangular.coordinateMap K n := by
+  rw [unitriangularCoordinateMap, ← Category.assoc, coordinateMap_def,
+    CommHopfAlgCat.mkQuotient_comp_quotientMapOfLe,
+    coordinateMap_comp_weightUnipotentCoordinateIso]
+
+/-- The diagonal projection's coordinate morphism, using the existing injective-weight Levi. -/
+def diagonalProjectionCoordinateMap :
+    _root_.CommHopfAlgCat.of K
+        (MonoidAlgebra K (Multiplicative (ULift.{u} (Fin n) →₀ ℤ))) ⟶
+      coordinateHopfAlgebra K n :=
+  (weightLeviDiagonalCoordinateIso K (weights n) (weights_injective n)).inv ≫
+    Dynamic.weightParabolicLimitCoordinateMap K (weights n)
+
+private theorem diagonalTorusCoordinateMap_eq :
+    diagonalTorusCoordinateMap K n =
+      Dynamic.weightLeviToParabolicCoordinateMap K (weights n) ≫
+        (weightLeviDiagonalCoordinateIso K (weights n) (weights_injective n)).hom := by
+  apply _root_.CommHopfAlgCat.mkQuotient_hom_ext
+  rw [← coordinateMap_def, coordinateMap_comp_diagonalTorusCoordinateMap,
+    ← Category.assoc, coordinateMap_def, Dynamic.weightLeviToParabolicCoordinateMap_def,
+    CommHopfAlgCat.mkQuotient_comp_quotientMapOfLe,
+    weightLeviCoordinateMap_comp_weightLeviDiagonalCoordinateIso_hom]
+
+/-- The diagonal section splits the projection over every commutative base ring. -/
+@[reassoc (attr := simp)]
+theorem diagonalProjectionCoordinateMap_comp_diagonalTorusCoordinateMap :
+    diagonalProjectionCoordinateMap K n ≫ diagonalTorusCoordinateMap K n = 𝟙 _ := by
+  rw [diagonalProjectionCoordinateMap, diagonalTorusCoordinateMap_eq]
+  rw [Category.assoc, ← Category.assoc
+    (Dynamic.weightParabolicLimitCoordinateMap K (weights n)),
+    Dynamic.weightParabolicLimitCoordinateMap_comp_weightLeviToParabolicCoordinateMap,
+    Category.id_comp, Iso.inv_hom_id]
+
+/-- Projection to the canonical split torus. -/
+def diagonalProjection : groupScheme K n ⟶ SplitTorus.groupScheme K (ULift.{u} (Fin n)) :=
+  (hopfSpec (CommRingCat.of K)).map (diagonalProjectionCoordinateMap K n).op
+
+/-- The canonical polynomial unitriangular closed subgroup inside the upper-triangular group. -/
+def unitriangularInclusion : UpperUnitriangular.groupScheme K (Fin n) ⟶ groupScheme K n :=
+  eqToHom (UpperUnitriangular.groupScheme_def K (Fin n)) ≫
+    (hopfSpec (CommRingCat.of K)).map (unitriangularCoordinateMap K n).op
+
+@[reassoc (attr := simp)]
+theorem diagonalTorus_comp_diagonalProjection :
+    diagonalTorus K n ≫ diagonalProjection K n = 𝟙 _ := by
+  rw [diagonalTorus_def, diagonalProjection]
+  simp only [eqToHom_refl, Category.comp_id]
+  change (hopfSpec (CommRingCat.of K)).map (diagonalTorusCoordinateMap K n).op ≫
+    (hopfSpec (CommRingCat.of K)).map (diagonalProjectionCoordinateMap K n).op = _
+  rw [← Functor.map_comp, ← op_comp,
+    diagonalProjectionCoordinateMap_comp_diagonalTorusCoordinateMap, op_id]
+  exact (hopfSpec (CommRingCat.of K)).map_id _
+
+@[reassoc (attr := simp)]
+theorem unitriangularInclusion_comp_inclusion :
+    unitriangularInclusion K n ≫ inclusion K n = UpperUnitriangular.inclusion K n := by
+  simp only [unitriangularInclusion, inclusion, UpperUnitriangular.inclusion_def,
+    GeneralLinear.weightParabolicInclusion_def, CommHopfAlgCat.quotientSpecι_def,
+    Category.assoc]
+  congr 1
+  rw [← Category.assoc, ← Functor.map_comp, ← op_comp, ← coordinateMap_def,
+    coordinateMap_comp_unitriangularCoordinateMap]
+
+/-- The torus projection has the existing relative weight-unipotent defining ideal. -/
+theorem kernelHopfIdeal_diagonalProjectionCoordinateMap :
+    CommHopfAlgCat.kernelHopfIdeal (diagonalProjectionCoordinateMap K n) =
+      Dynamic.weightUnipotentInParabolicHopfIdeal K (weights n) := by
+  rw [diagonalProjectionCoordinateMap,
+    CommHopfAlgCat.kernelHopfIdeal_comp_of_surjective _
+      (ConcreteCategory.bijective_of_isIso _).2,
+    Dynamic.kernelHopfIdeal_weightParabolicLimitCoordinateMap]
+
+/-- The actual kernel coordinate quotient is the canonical polynomial unitriangular algebra. -/
+def kernelCoordinateIso :
+    CommHopfAlgCat.quotient (coordinateHopfAlgebra K n)
+        (CommHopfAlgCat.kernelHopfIdeal (diagonalProjectionCoordinateMap K n)) ≅
+      UpperUnitriangular.coordinateHopfAlgebra K (Fin n) :=
+  eqToIso (congrArg (CommHopfAlgCat.quotient (coordinateHopfAlgebra K n))
+      (kernelHopfIdeal_diagonalProjectionCoordinateMap K n)) ≪≫
+    (Dynamic.weightUnipotentInParabolicCoordinateIso K (weights n)).symm ≪≫
+    weightUnipotentCoordinateIso K n
+
+@[reassoc (attr := simp)]
+theorem mkQuotient_comp_kernelCoordinateIso :
+    CommHopfAlgCat.mkQuotient (coordinateHopfAlgebra K n)
+        (CommHopfAlgCat.kernelHopfIdeal (diagonalProjectionCoordinateMap K n)) ≫
+      (kernelCoordinateIso K n).hom = unitriangularCoordinateMap K n := by
+  apply _root_.CommHopfAlgCat.mkQuotient_hom_ext
+  rw [← coordinateMap_def, ← Category.assoc,
+    coordinateMap_comp_unitriangularCoordinateMap, kernelCoordinateIso,
+    Iso.trans_hom, Iso.trans_hom, eqToIso.hom]
+  simp only [Category.assoc]
+  rw [← Category.assoc (CommHopfAlgCat.mkQuotient (coordinateHopfAlgebra K n)
+      (CommHopfAlgCat.kernelHopfIdeal (diagonalProjectionCoordinateMap K n))),
+    _root_.CommHopfAlgCat.mkQuotient_comp_eqToHom
+      (kernelHopfIdeal_diagonalProjectionCoordinateMap K n).symm,
+    ← Category.assoc,
+    ← Dynamic.mkQuotient_weightUnipotent_comp_weightUnipotentInParabolicCoordinateIso_hom]
+  simp only [Category.assoc, Iso.symm_hom, Iso.hom_inv_id_assoc,
+    coordinateMap_comp_weightUnipotentCoordinateIso]
+
+/-- The polynomial unitriangular group is the scheme-theoretic kernel of the diagonal
+projection, with its canonical coordinate inclusion. -/
+def kernelIso : UpperUnitriangular.groupScheme K (Fin n) ≅
+    CommHopfAlgCat.kernelSpec (diagonalProjectionCoordinateMap K n) :=
+  eqToIso (UpperUnitriangular.groupScheme_def K (Fin n)) ≪≫
+    (hopfSpec (CommRingCat.of K)).mapIso (kernelCoordinateIso K n).op
+
+@[reassoc (attr := simp)]
+theorem kernelIso_hom_comp_kernelSpecι :
+    (kernelIso K n).hom ≫
+      CommHopfAlgCat.kernelSpecι (diagonalProjectionCoordinateMap K n) =
+        unitriangularInclusion K n := by
+  rw [kernelIso, Iso.trans_hom, eqToIso.hom, Functor.mapIso_hom, Iso.op_hom,
+    CommHopfAlgCat.kernelSpecι_def, CommHopfAlgCat.quotientSpecι_def,
+    Category.assoc, ← Functor.map_comp, ← op_comp, mkQuotient_comp_kernelCoordinateIso]
   rfl
 
-theorem upperTriangularUnitriangularCoordinateMap_comp_quotient :
-    (upperTriangularUnitriangularCoordinateMap K n).comp
-      (UpperTriangularCoordinateRing.quotient K n) =
-        UnitriangularCoordinateRing.quotient K n := by
-  rw [upperTriangularUnitriangularCoordinateMap,
-    upperTriangularFromGL_comp_quotient]
-  exact GeneralLinearCoordinateRing.evaluate_toGL
-    (UnitriangularCoordinateRing.quotient K n)
+/-- The unitriangular subgroup is the categorical kernel for arbitrary group-scheme sources. -/
+theorem isPullback_diagonalProjection_group :
+    IsPullback (unitriangularInclusion K n)
+      (0 : UpperUnitriangular.groupScheme K (Fin n) ⟶
+        Grp.trivial (Over (Spec (CommRingCat.of K))))
+      (diagonalProjection K n)
+      (0 : Grp.trivial (Over (Spec (CommRingCat.of K))) ⟶
+        SplitTorus.groupScheme K (ULift.{u} (Fin n))) := by
+  apply (CommHopfAlgCat.isPullback_kernelSpec (diagonalProjectionCoordinateMap K n)).of_iso
+    (kernelIso K n).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
+  · simp only [Iso.refl_hom, Category.comp_id, Iso.symm_hom]
+    exact (Iso.eq_inv_comp _).mpr (kernelIso_hom_comp_kernelSpecι K n)
+  · simp only [Iso.refl_hom, Category.comp_id, Iso.symm_hom, comp_zero]
+  · simp only [Iso.refl_hom, Category.comp_id, Category.id_comp, diagonalProjection]
+  · exact (Category.id_comp _).symm
 
-theorem upperTriangularDiagonalSectionCoordinateMap_surjective :
-    Function.Surjective (upperTriangularDiagonalSectionCoordinateMap K n) := by
-  intro x
-  obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
-  exact ⟨UpperTriangularCoordinateRing.quotient K n y,
-    congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K]
-      DiagonalCoordinateRing.CoordinateRing K n => f y)
-      (upperTriangularDiagonalSectionCoordinateMap_comp_quotient K n)⟩
+/-- The unitriangular kernel inclusion is a closed immersion over arbitrary base rings. -/
+instance isClosedImmersion_unitriangularInclusion :
+    IsClosedImmersion (unitriangularInclusion K n).hom.hom.left := by
+  rw [← kernelIso_hom_comp_kernelSpecι]
+  change IsClosedImmersion ((kernelIso K n).hom.hom.hom.left ≫
+    (CommHopfAlgCat.kernelSpecι (diagonalProjectionCoordinateMap K n)).hom.hom.left)
+  have : IsIso (kernelIso K n).hom.hom.hom.left := by
+    change IsIso ((Over.forget _).map ((Grp.forget _).map (kernelIso K n).hom))
+    infer_instance
+  have : IsClosedImmersion
+      (CommHopfAlgCat.kernelSpecι (diagonalProjectionCoordinateMap K n)).hom.hom.left := by
+    rw [CommHopfAlgCat.kernelSpecι_def]
+    infer_instance
+  infer_instance
 
-theorem upperTriangularUnitriangularCoordinateMap_surjective :
-    Function.Surjective (upperTriangularUnitriangularCoordinateMap K n) := by
-  intro x
-  obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
-  exact ⟨UpperTriangularCoordinateRing.quotient K n y,
-    congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K]
-      UnitriangularCoordinateRing.CoordinateRing K n => f y)
-      (upperTriangularUnitriangularCoordinateMap_comp_quotient K n)⟩
+/-- The kernel universal property for arbitrary schemes over the base. -/
+theorem isPullback_diagonalProjection_over :
+    IsPullback (unitriangularInclusion K n).hom.hom
+      (CartesianMonoidalCategory.toUnit (UpperUnitriangular.groupScheme K (Fin n)).X)
+      (diagonalProjection K n).hom.hom
+      η[(SplitTorus.groupScheme K (ULift.{u} (Fin n))).X] := by
+  have h := (isPullback_diagonalProjection_group K n).map
+    (Grp.forget (Over (Spec (CommRingCat.of K))))
+  exact h
 
-theorem upperTriangularDiagonalCoordinateMap_matrix (i j : n) :
-    upperTriangularDiagonalCoordinateMap K n
-      (DiagonalCoordinateRing.quotient K n (GeneralLinearCoordinateRing.matrix K n i j)) =
-        if i = j then UpperTriangularCoordinateRing.quotient K n
-          (GeneralLinearCoordinateRing.matrix K n i i) else 0 := by
-  rw [upperTriangularDiagonalCoordinateMap, ← AlgHom.comp_apply,
-    diagonalFromGL_comp_quotient, GeneralLinearCoordinateRing.evaluate_matrix,
-    Matrix.UpperTriangularGroup.diagonal_apply,
-    UpperTriangularCoordinateRing.universal_apply]
+/-- The same kernel square is a pullback among arbitrary schemes. -/
+theorem isPullback_diagonalProjection :
+    IsPullback (unitriangularInclusion K n).hom.hom.left
+      (UpperUnitriangular.groupScheme K (Fin n)).X.hom
+      (diagonalProjection K n).hom.hom.left
+      η[(SplitTorus.groupScheme K (ULift.{u} (Fin n))).X].left := by
+  exact (isPullback_diagonalProjection_over K n).map
+    (Over.forget (Spec (CommRingCat.of K)))
 
-/-- A factorization of the upper-triangular quotient through a bialgebra morphism
-inherits its bialgebra structure without imposing tensor-product injectivity. -/
-def bialgHomOfCompQuotient
-    {B : Type u} [CommRing B] [Bialgebra K B]
-    (target : GeneralLinearCoordinateRing.CoordinateRing K n →ₐc[K] B)
-    (f : UpperTriangularCoordinateRing.CoordinateRing K n →ₐ[K] B)
-    (h : f.comp (UpperTriangularCoordinateRing.quotient K n) = target.toAlgHom) :
-    UpperTriangularCoordinateRing.CoordinateRing K n →ₐc[K] B :=
-  BialgHom.ofAlgHom f (by
-    apply Ideal.Quotient.algHom_ext K
-    change ((Bialgebra.counitAlgHom K B).comp f).comp
-      (UpperTriangularCoordinateRing.quotient K n) =
-        (Bialgebra.counitAlgHom K
-          (UpperTriangularCoordinateRing.CoordinateRing K n)).comp
-            (UpperTriangularCoordinateRing.quotient K n)
-    rw [AlgHom.comp_assoc, h]
-    exact (BialgHom.counitAlgHom_comp target).trans
-      (BialgHom.counitAlgHom_comp (upperTriangularQuotientBialgHom K n)).symm)
-    (by
-    apply Ideal.Quotient.algHom_ext K
-    change ((Algebra.TensorProduct.map f f).comp
-      (Bialgebra.comulAlgHom K (UpperTriangularCoordinateRing.CoordinateRing K n))).comp
-        (UpperTriangularCoordinateRing.quotient K n) =
-        ((Bialgebra.comulAlgHom K B).comp f).comp
-          (UpperTriangularCoordinateRing.quotient K n)
-    rw [AlgHom.comp_assoc, AlgHom.comp_assoc, h]
-    have hq := BialgHom.map_comp_comulAlgHom
-      (upperTriangularQuotientBialgHom K n)
-    change (Algebra.TensorProduct.map
-      (UpperTriangularCoordinateRing.quotient K n)
-      (UpperTriangularCoordinateRing.quotient K n)).comp
-        (Bialgebra.comulAlgHom K (GeneralLinearCoordinateRing.CoordinateRing K n)) =
-          (Bialgebra.comulAlgHom K (UpperTriangularCoordinateRing.CoordinateRing K n)).comp
-            (UpperTriangularCoordinateRing.quotient K n) at hq
-    rw [← hq, ← AlgHom.comp_assoc,
-      ← Algebra.TensorProduct.map_comp f (UpperTriangularCoordinateRing.quotient K n)
-        f (UpperTriangularCoordinateRing.quotient K n)]
-    rw [h]
-    exact BialgHom.map_comp_comulAlgHom target)
-
-/-- The diagonal section is a morphism of Hopf coordinate algebras. -/
-def upperTriangularDiagonalSectionBialgHom :
-    UpperTriangularCoordinateRing.CoordinateRing K n →ₐc[K]
-      DiagonalCoordinateRing.CoordinateRing K n :=
-  bialgHomOfCompQuotient K n (diagonalQuotientBialgHom K n)
-    (upperTriangularDiagonalSectionCoordinateMap K n)
-    (upperTriangularDiagonalSectionCoordinateMap_comp_quotient K n)
-
-/-- The unitriangular quotient is a morphism of Hopf coordinate algebras. -/
-def upperTriangularUnitriangularBialgHom :
-    UpperTriangularCoordinateRing.CoordinateRing K n →ₐc[K]
-      UnitriangularCoordinateRing.CoordinateRing K n :=
-  bialgHomOfCompQuotient K n (unitriangularQuotientBialgHom K n)
-    (upperTriangularUnitriangularCoordinateMap K n)
-    (upperTriangularUnitriangularCoordinateMap_comp_quotient K n)
-
-private theorem upperTriangular_comul_diagonal (i : n) :
-    (Bialgebra.comulAlgHom K (UpperTriangularCoordinateRing.CoordinateRing K n))
-      (UpperTriangularCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i i)) =
-      (UpperTriangularCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i i)) ⊗ₜ[K]
-      (UpperTriangularCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i i)) := by
-  change (Algebra.TensorProduct.map (UpperTriangularCoordinateRing.quotient K n)
-    (UpperTriangularCoordinateRing.quotient K n))
-      (Coalgebra.comul (R := K) (GeneralLinearCoordinateRing.matrix K n i i)) = _
-  rw [GeneralLinearCoordinateRing.native_comul_matrix, map_sum]
-  simp only [Algebra.TensorProduct.map_tmul]
-  rw [Finset.sum_eq_single i]
-  · intro index _ hne
-    rcases lt_or_gt_of_ne hne with hlt | hgt
-    · rw [UpperTriangularCoordinateRing.quotient_lower K n i index hlt,
-        TensorProduct.zero_tmul]
-    · rw [UpperTriangularCoordinateRing.quotient_lower K n index i hgt,
-        TensorProduct.tmul_zero]
-  · simp
-
-/-- The native diagonal projection preserves both counit and coproduct, including
-the lower-factor vanishing in the quotient tensor algebra. -/
-def upperTriangularDiagonalBialgHom :
-    DiagonalCoordinateRing.CoordinateRing K n →ₐc[K]
-      UpperTriangularCoordinateRing.CoordinateRing K n :=
-  BialgHom.ofAlgHom (upperTriangularDiagonalCoordinateMap K n) (by
-    apply Ideal.Quotient.algHom_ext K
-    apply GeneralLinearCoordinateRing.hom_ext
-    intro i j
-    change Coalgebra.counit (R := K)
-      (upperTriangularDiagonalCoordinateMap K n
-        (DiagonalCoordinateRing.quotient K n
-          (GeneralLinearCoordinateRing.matrix K n i j))) =
-      Coalgebra.counit (R := K)
-        (DiagonalCoordinateRing.quotient K n
-          (GeneralLinearCoordinateRing.matrix K n i j))
-    rw [upperTriangularDiagonalCoordinateMap_matrix]
-    by_cases hij : i = j
-    · subst j
-      simp only [ite_true]
-      change Coalgebra.counit (R := K) (Ideal.Quotient.mk
-        (UpperTriangularCoordinateRing.ideal K n) (GeneralLinearCoordinateRing.matrix K n i i)) =
-        Coalgebra.counit (R := K) (Ideal.Quotient.mk
-          (DiagonalCoordinateRing.ideal K n) (GeneralLinearCoordinateRing.matrix K n i i))
-      rw [Bialgebra.Quotient.counit_mk, Bialgebra.Quotient.counit_mk]
-    · simp only [hij, ite_false, map_zero]
-      change 0 = Coalgebra.counit (R := K)
-        (Ideal.Quotient.mk (DiagonalCoordinateRing.ideal K n)
-          (GeneralLinearCoordinateRing.matrix K n i j))
-      rw [Bialgebra.Quotient.counit_mk,
-        GeneralLinearCoordinateRing.native_counit_matrix]
-      simp [hij])
-    (by
-    let : CommRing (UpperTriangularCoordinateRing.CoordinateRing K n ⊗[K]
-      UpperTriangularCoordinateRing.CoordinateRing K n) := inferInstance
-    apply Ideal.Quotient.algHom_ext K
-    apply GeneralLinearCoordinateRing.hom_ext (K := K) (n := n)
-    intro i j
-    by_cases hij : i = j
-    · subst j
-      change (Algebra.TensorProduct.map
-        (upperTriangularDiagonalCoordinateMap K n)
-        (upperTriangularDiagonalCoordinateMap K n))
-          (Coalgebra.comul (R := K)
-            (DiagonalCoordinateRing.quotient K n
-              (GeneralLinearCoordinateRing.matrix K n i i))) =
-        Coalgebra.comul (R := K)
-          (upperTriangularDiagonalCoordinateMap K n
-            (DiagonalCoordinateRing.quotient K n
-              (GeneralLinearCoordinateRing.matrix K n i i)))
-      rw [upperTriangularDiagonalCoordinateMap_matrix, ite_eq_left rfl]
-      change (Algebra.TensorProduct.map
-        (upperTriangularDiagonalCoordinateMap K n)
-        (upperTriangularDiagonalCoordinateMap K n))
-          ((Algebra.TensorProduct.map (DiagonalCoordinateRing.quotient K n)
-            (DiagonalCoordinateRing.quotient K n))
-              (Coalgebra.comul (R := K)
-                (GeneralLinearCoordinateRing.matrix K n i i))) = _
-      rw [GeneralLinearCoordinateRing.native_comul_matrix, map_sum, map_sum]
-      simp only [Algebra.TensorProduct.map_tmul]
-      rw [Finset.sum_eq_single i]
-      · rw [upperTriangularDiagonalCoordinateMap_matrix, ite_eq_left rfl]
-        exact (upperTriangular_comul_diagonal K n i).symm
-      · intro index _ hne
-        by_cases h : i = index
-        · exact (hne h.symm).elim
-        · rw [DiagonalCoordinateRing.quotient_offDiagonal K n i index h,
-            map_zero, TensorProduct.zero_tmul]
-      · simp
-    · change (Algebra.TensorProduct.map
-        (upperTriangularDiagonalCoordinateMap K n)
-        (upperTriangularDiagonalCoordinateMap K n))
-          (Coalgebra.comul (R := K)
-            (DiagonalCoordinateRing.quotient K n
-              (GeneralLinearCoordinateRing.matrix K n i j))) =
-        Coalgebra.comul (R := K)
-          (upperTriangularDiagonalCoordinateMap K n
-            (DiagonalCoordinateRing.quotient K n
-              (GeneralLinearCoordinateRing.matrix K n i j)))
-      rw [DiagonalCoordinateRing.quotient_offDiagonal K n i j hij,
-        map_zero, map_zero]
-      simp)
-
-/-- Diagonal projection on group schemes. -/
-def upperTriangularDiagonalProjection :
-    upperTriangularGroupScheme K n ⟶ diagonalGroupScheme K n :=
-  (hopfSpec (.of K)).map
-    (Opposite.op (CommHopfAlgCat.ofHom (upperTriangularDiagonalBialgHom K n)))
-
-/-- Diagonal section on group schemes. -/
-def upperTriangularDiagonalSection :
-    diagonalGroupScheme K n ⟶ upperTriangularGroupScheme K n :=
-  (hopfSpec (.of K)).map
-    (Opposite.op (CommHopfAlgCat.ofHom (upperTriangularDiagonalSectionBialgHom K n)))
-
-/-- The unitriangular closed subgroup of the upper-triangular group. -/
-def unitriangularToUpperTriangular :
-    unitriangularGroupScheme K n ⟶ upperTriangularGroupScheme K n :=
-  (hopfSpec (.of K)).map
-    (Opposite.op (CommHopfAlgCat.ofHom (upperTriangularUnitriangularBialgHom K n)))
-
-theorem upperTriangularDiagonalProjection_left :
-    (upperTriangularDiagonalProjection K n).hom.hom.left =
-      Spec.map (CommRingCat.ofHom (upperTriangularDiagonalCoordinateMap K n).toRingHom) := rfl
-
-theorem upperTriangularDiagonalSection_left :
-    (upperTriangularDiagonalSection K n).hom.hom.left =
-      Spec.map (CommRingCat.ofHom
-        (upperTriangularDiagonalSectionCoordinateMap K n).toRingHom) := rfl
-
-theorem unitriangularToUpperTriangular_left :
-    (unitriangularToUpperTriangular K n).hom.hom.left =
-      Spec.map (CommRingCat.ofHom
-        (upperTriangularUnitriangularCoordinateMap K n).toRingHom) := rfl
-
-theorem unitriangularToUpperTriangular_isClosedImmersion :
-    IsClosedImmersion (unitriangularToUpperTriangular K n).hom.hom.left := by
-  rw [unitriangularToUpperTriangular_left]
-  exact IsClosedImmersion.spec_of_surjective _
-    (upperTriangularUnitriangularCoordinateMap_surjective K n)
-
-theorem upperTriangularDiagonalCoordinateMap_section :
-    (upperTriangularDiagonalSectionCoordinateMap K n).comp
-      (upperTriangularDiagonalCoordinateMap K n) = AlgHom.id K _ := by
-  apply Ideal.Quotient.algHom_ext K
-  apply GeneralLinearCoordinateRing.hom_ext (K := K) (n := n)
-  intro i j
-  change upperTriangularDiagonalSectionCoordinateMap K n
-    (upperTriangularDiagonalCoordinateMap K n
-      (DiagonalCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i j))) =
-    DiagonalCoordinateRing.quotient K n (GeneralLinearCoordinateRing.matrix K n i j)
-  rw [upperTriangularDiagonalCoordinateMap_matrix]
-  by_cases hij : i = j
-  · subst j
-    simp only [ite_true]
-    have h := congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K]
-      DiagonalCoordinateRing.CoordinateRing K n =>
-        f (GeneralLinearCoordinateRing.matrix K n i i))
-      (upperTriangularDiagonalSectionCoordinateMap_comp_quotient K n)
-    exact h
-  · simp only [hij, ite_false, map_zero]
-    exact (DiagonalCoordinateRing.quotient_offDiagonal K n i j hij).symm
-
-/-- Diagonal section followed by projection is the identity on `D`, not on `T`.
-Compare the field-base split triangular group in Milne, *Algebraic Groups*
-(course notes, version 2.00), §2.20. -/
-theorem upperTriangularDiagonal_section :
-    upperTriangularDiagonalSection K n ≫ upperTriangularDiagonalProjection K n =
-      𝟙 (diagonalGroupScheme K n) := by
-  apply Grp.hom_ext
-  apply Over.OverMorphism.ext
-  change (upperTriangularDiagonalSection K n).hom.hom.left ≫
-    (upperTriangularDiagonalProjection K n).hom.hom.left =
-      𝟙 (Spec (.of (DiagonalCoordinateRing.CoordinateRing K n)))
-  rw [upperTriangularDiagonalSection_left,
-    upperTriangularDiagonalProjection_left]
-  change Spec.map (CommRingCat.ofHom
-    (upperTriangularDiagonalSectionCoordinateMap K n).toRingHom) ≫
-      Spec.map (CommRingCat.ofHom (upperTriangularDiagonalCoordinateMap K n).toRingHom) =
-    𝟙 (Spec (.of (DiagonalCoordinateRing.CoordinateRing K n)))
-  rw [← Spec.map_comp]
-  change Spec.map (CommRingCat.ofHom
-    ((upperTriangularDiagonalSectionCoordinateMap K n).comp
-      (upperTriangularDiagonalCoordinateMap K n)).toRingHom) = _
-  rw [upperTriangularDiagonalCoordinateMap_section]
-  exact Spec.map_id (CommRingCat.of (DiagonalCoordinateRing.CoordinateRing K n))
-
-theorem unitriangularToUpperTriangular_inclusion :
-    unitriangularToUpperTriangular K n ≫ upperTriangularInclusion K n =
-      unitriangularInclusion K n := by
-  apply Grp.hom_ext
-  apply Over.OverMorphism.ext
-  change (unitriangularToUpperTriangular K n).hom.hom.left ≫
-    (upperTriangularInclusion K n).hom.hom.left =
-      (unitriangularInclusion K n).hom.hom.left
-  rw [unitriangularToUpperTriangular_left,
-    upperTriangularInclusion_left, unitriangularInclusion_left]
-  change Spec.map (CommRingCat.ofHom
-    (upperTriangularUnitriangularCoordinateMap K n).toRingHom) ≫
-      Spec.map (CommRingCat.ofHom (UpperTriangularCoordinateRing.quotient K n).toRingHom) =
-    Spec.map (CommRingCat.ofHom (UnitriangularCoordinateRing.quotient K n).toRingHom)
-  rw [← Spec.map_comp]
-  change Spec.map (CommRingCat.ofHom
-    ((upperTriangularUnitriangularCoordinateMap K n).comp
-      (UpperTriangularCoordinateRing.quotient K n)).toRingHom) = _
-  rw [upperTriangularUnitriangularCoordinateMap_comp_quotient]
-
-theorem upperTriangularDiagonalSection_inclusion :
-    upperTriangularDiagonalSection K n ≫ upperTriangularInclusion K n =
-      diagonalInclusion K n := by
-  apply Grp.hom_ext
-  apply Over.OverMorphism.ext
-  change (upperTriangularDiagonalSection K n).hom.hom.left ≫
-    (upperTriangularInclusion K n).hom.hom.left =
-      (diagonalInclusion K n).hom.hom.left
-  rw [upperTriangularDiagonalSection_left,
-    upperTriangularInclusion_left, diagonalInclusion_left]
-  change Spec.map (CommRingCat.ofHom
-    (upperTriangularDiagonalSectionCoordinateMap K n).toRingHom) ≫
-      Spec.map (CommRingCat.ofHom (UpperTriangularCoordinateRing.quotient K n).toRingHom) =
-    Spec.map (CommRingCat.ofHom (DiagonalCoordinateRing.quotient K n).toRingHom)
-  rw [← Spec.map_comp]
-  change Spec.map (CommRingCat.ofHom
-    ((upperTriangularDiagonalSectionCoordinateMap K n).comp
-      (UpperTriangularCoordinateRing.quotient K n)).toRingHom) = _
-  rw [upperTriangularDiagonalSectionCoordinateMap_comp_quotient]
-
-private theorem diagonalCounit_matrix (i j : n) :
-    (Bialgebra.counitAlgHom K (DiagonalCoordinateRing.CoordinateRing K n))
-      (DiagonalCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i j)) = if i = j then 1 else 0 := by
-  change Coalgebra.counit (R := K)
-    (Ideal.Quotient.mk (DiagonalCoordinateRing.ideal K n)
-      (GeneralLinearCoordinateRing.matrix K n i j)) = _
-  rw [Bialgebra.Quotient.counit_mk,
-    GeneralLinearCoordinateRing.native_counit_matrix]
-  simp [Matrix.one_apply]
-
-theorem upperTriangularDiagonalSquare_alg :
-    (upperTriangularUnitriangularCoordinateMap K n).comp
-      (upperTriangularDiagonalCoordinateMap K n) =
-        (Algebra.ofId K (UnitriangularCoordinateRing.CoordinateRing K n)).comp
-          (Bialgebra.counitAlgHom K (DiagonalCoordinateRing.CoordinateRing K n)) := by
-  apply Ideal.Quotient.algHom_ext K
-  apply GeneralLinearCoordinateRing.hom_ext (K := K) (n := n)
-  intro i j
-  change (upperTriangularUnitriangularCoordinateMap K n)
-    (upperTriangularDiagonalCoordinateMap K n
-      (DiagonalCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i j))) =
-    (Algebra.ofId K (UnitriangularCoordinateRing.CoordinateRing K n))
-      ((Bialgebra.counitAlgHom K (DiagonalCoordinateRing.CoordinateRing K n))
-        (DiagonalCoordinateRing.quotient K n
-          (GeneralLinearCoordinateRing.matrix K n i j)))
-  rw [upperTriangularDiagonalCoordinateMap_matrix, diagonalCounit_matrix]
-  by_cases hij : i = j
-  · subst j
-    simp only [ite_true, map_one]
-    have h := congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K]
-      UnitriangularCoordinateRing.CoordinateRing K n =>
-        f (GeneralLinearCoordinateRing.matrix K n i i))
-      (upperTriangularUnitriangularCoordinateMap_comp_quotient K n)
-    change upperTriangularUnitriangularCoordinateMap K n
-      (UpperTriangularCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i i)) = _ at h
-    rw [h, UnitriangularCoordinateRing.quotient_diag]
-  · simp [hij]
-
-/-- The square of coordinate rings with the diagonal counit commutes. -/
-theorem upperTriangularDiagonalSquare_commutes :
-    CommRingCat.ofHom (upperTriangularDiagonalCoordinateMap K n).toRingHom ≫
-      CommRingCat.ofHom (upperTriangularUnitriangularCoordinateMap K n).toRingHom =
-    CommRingCat.ofHom
-        (Bialgebra.counitAlgHom K (DiagonalCoordinateRing.CoordinateRing K n)).toRingHom ≫
-      CommRingCat.ofHom
-        (algebraMap K (UnitriangularCoordinateRing.CoordinateRing K n)) := by
-  apply CommRingCat.hom_ext
-  exact congrArg AlgHom.toRingHom (upperTriangularDiagonalSquare_alg K n)
-
-/-- The unitriangular quotient is the pushout of the diagonal
-projection's coordinate map along the diagonal Hopf counit, for arbitrary
-commutative target rings and arbitrary compatible scalar maps. The proof
-kills the full lower-entry and diagonal-minus-one ideal and uses the base
-scalar compatibility; it is not a pointwise kernel argument. Compare the
-field-base triangular split in Milne, *Algebraic Groups* (course notes,
-version 2.00), §2.20. -/
-theorem upperTriangularDiagonalSquare_isPushout :
+/-- The coordinate square is a pushout for arbitrary commutative-ring targets and compatible
+scalar maps, with no assumption that those maps are morphisms of `K`-algebras. -/
+theorem isPushout_diagonalProjection :
     IsPushout
-      (CommRingCat.ofHom (upperTriangularDiagonalCoordinateMap K n).toRingHom)
+      (CommRingCat.ofHom (diagonalProjectionCoordinateMap K n).hom.toAlgHom.toRingHom)
+      (CommRingCat.ofHom (Bialgebra.counitAlgHom K
+        (MonoidAlgebra K (Multiplicative (ULift.{u} (Fin n) →₀ ℤ)))).toRingHom)
+      (CommRingCat.ofHom (unitriangularCoordinateMap K n).hom.toAlgHom.toRingHom)
       (CommRingCat.ofHom
-        (Bialgebra.counitAlgHom K (DiagonalCoordinateRing.CoordinateRing K n)).toRingHom)
-      (CommRingCat.ofHom (upperTriangularUnitriangularCoordinateMap K n).toRingHom)
+        (algebraMap K (UpperUnitriangular.coordinateHopfAlgebra K (Fin n)))) := by
+  have h := isPullback_diagonalProjection K n
+  have h' : IsPullback
+      (CommRingCat.ofHom (unitriangularCoordinateMap K n).hom.toAlgHom.toRingHom).op
       (CommRingCat.ofHom
-        (algebraMap K (UnitriangularCoordinateRing.CoordinateRing K n))) := by
-  refine IsPushout.mk' (upperTriangularDiagonalSquare_commutes K n) ?_ ?_
-  · intro B phi psi hphi _
-    apply CommRingCat.hom_ext
-    apply RingHom.ext
-    intro x
-    obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
-    have h := congrArg (fun f : CommRingCat.of
-        (UpperTriangularCoordinateRing.CoordinateRing K n) ⟶ B =>
-          f.hom (UpperTriangularCoordinateRing.quotient K n y)) hphi
-    change phi.hom (upperTriangularUnitriangularCoordinateMap K n
-      (UpperTriangularCoordinateRing.quotient K n y)) =
-      psi.hom (upperTriangularUnitriangularCoordinateMap K n
-        (UpperTriangularCoordinateRing.quotient K n y)) at h
-    rw [← AlgHom.comp_apply,
-      upperTriangularUnitriangularCoordinateMap_comp_quotient] at h
+        (algebraMap K (UpperUnitriangular.coordinateHopfAlgebra K (Fin n)))).op
+      (CommRingCat.ofHom (diagonalProjectionCoordinateMap K n).hom.toAlgHom.toRingHom).op
+      (CommRingCat.ofHom (Bialgebra.counitAlgHom K
+        (MonoidAlgebra K (Multiplicative (ULift.{u} (Fin n) →₀ ℤ)))).toRingHom).op := by
+    apply IsPullback.of_map_of_faithful (F := Scheme.Spec)
     exact h
-  · intro B a b hcompatible
-    have hdiag (i : n) : a.hom (UpperTriangularCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i i)) = 1 := by
-      have h := congrArg (fun f : CommRingCat.of
-        (DiagonalCoordinateRing.CoordinateRing K n) ⟶ B =>
-          f.hom (DiagonalCoordinateRing.quotient K n
-            (GeneralLinearCoordinateRing.matrix K n i i))) hcompatible
-      change a.hom (upperTriangularDiagonalCoordinateMap K n
-        (DiagonalCoordinateRing.quotient K n
-          (GeneralLinearCoordinateRing.matrix K n i i))) =
-        b.hom ((Bialgebra.counitAlgHom K (DiagonalCoordinateRing.CoordinateRing K n))
-          (DiagonalCoordinateRing.quotient K n
-            (GeneralLinearCoordinateRing.matrix K n i i))) at h
-      rw [upperTriangularDiagonalCoordinateMap_matrix, ite_eq_left rfl,
-        diagonalCounit_matrix, ite_eq_left rfl, map_one] at h
-      exact h
-    have hbase (r : K) : a.hom (algebraMap K
-        (UpperTriangularCoordinateRing.CoordinateRing K n) r) = b.hom r := by
-      have h := congrArg (fun f : CommRingCat.of
-        (DiagonalCoordinateRing.CoordinateRing K n) ⟶ B =>
-          f.hom (algebraMap K (DiagonalCoordinateRing.CoordinateRing K n) r))
-        hcompatible
-      change a.hom (upperTriangularDiagonalCoordinateMap K n
-        (algebraMap K (DiagonalCoordinateRing.CoordinateRing K n) r)) =
-        b.hom ((Bialgebra.counitAlgHom K (DiagonalCoordinateRing.CoordinateRing K n))
-          (algebraMap K (DiagonalCoordinateRing.CoordinateRing K n) r)) at h
-      simpa only [AlgHom.commutes, Algebra.algebraMap_self, RingHom.id_apply] using h
-    let source : GeneralLinearCoordinateRing.CoordinateRing K n →+* B :=
-      a.hom.comp (UpperTriangularCoordinateRing.quotient K n).toRingHom
-    have hkill (i j : n) : source (UnitriangularCoordinateRing.relation K n i j) = 0 := by
-      change a.hom ((UpperTriangularCoordinateRing.quotient K n)
-        (UnitriangularCoordinateRing.relation K n i j)) = 0
-      by_cases hji : j < i
-      · simp only [UnitriangularCoordinateRing.relation, hji, ite_true]
-        rw [UpperTriangularCoordinateRing.quotient_lower K n i j hji, map_zero]
-      · by_cases hij : i = j
-        · subst j
-          simp only [UnitriangularCoordinateRing.relation, lt_irrefl, ite_false, ite_true]
-          rw [map_sub, map_one, map_sub, map_one, hdiag, sub_self]
-        · simp [UnitriangularCoordinateRing.relation, hji, hij]
-    let lift : UnitriangularCoordinateRing.CoordinateRing K n →+* B :=
-      Ideal.Quotient.lift (UnitriangularCoordinateRing.ideal K n) source (by
-        intro element membership
-        have h : UnitriangularCoordinateRing.ideal K n ≤ RingHom.ker source := by
-          apply Ideal.span_le.mpr
-          rintro _ ⟨⟨i, j⟩, rfl⟩
-          exact RingHom.mem_ker.mpr (hkill i j)
-        exact RingHom.mem_ker.mp (h membership))
-    refine ⟨CommRingCat.ofHom lift, ?_, ?_⟩
-    · apply CommRingCat.hom_ext
-      apply RingHom.ext
-      intro element
-      obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective element
-      change lift (upperTriangularUnitriangularCoordinateMap K n
-        (UpperTriangularCoordinateRing.quotient K n y)) =
-          a.hom (UpperTriangularCoordinateRing.quotient K n y)
-      rw [← AlgHom.comp_apply,
-        upperTriangularUnitriangularCoordinateMap_comp_quotient]
-      rfl
-    · apply CommRingCat.hom_ext
-      apply RingHom.ext
-      intro r
-      change lift (algebraMap K (UnitriangularCoordinateRing.CoordinateRing K n) r) =
-        b.hom r
-      change source (algebraMap K (GeneralLinearCoordinateRing.CoordinateRing K n) r) =
-        b.hom r
-      exact hbase r
+  exact h'.unop.flip
 
-/-- The identity fiber of the diagonal projection is the existing unitriangular
-scheme, as a pullback of arbitrary schemes. -/
-theorem upperTriangularDiagonalSquare_isPullback :
-    IsPullback (unitriangularToUpperTriangular K n).hom.hom.left
-      (unitriangularGroupUnderlyingScheme K n).hom
-      (upperTriangularDiagonalProjection K n).hom.hom.left
-      η[diagonalGroupUnderlyingScheme K n].left := by
-  change IsPullback
-    (Spec.map (CommRingCat.ofHom
-      (upperTriangularUnitriangularCoordinateMap K n).toRingHom))
-    (Spec.map (CommRingCat.ofHom
-      (algebraMap K (UnitriangularCoordinateRing.CoordinateRing K n))))
-    (Spec.map (CommRingCat.ofHom
-      (upperTriangularDiagonalCoordinateMap K n).toRingHom))
-    (Spec.map (CommRingCat.ofHom
-      (Bialgebra.counitAlgHom K (DiagonalCoordinateRing.CoordinateRing K n)).toRingHom))
-  exact isPullback_SpecMap_of_isPushout _ _ _ _
-    (upperTriangularDiagonalSquare_isPushout K n)
+section Points
 
-/-- The identity fiber square remains a pullback over the fixed base `Spec K`. -/
-theorem upperTriangularDiagonalSquare_isPullback_over :
-    IsPullback (unitriangularToUpperTriangular K n).hom.hom
-      (toUnit (unitriangularGroupScheme K n).toMon.X)
-      (upperTriangularDiagonalProjection K n).hom.hom
-      η[(diagonalGroupScheme K n).toMon.X] := by
-  exact IsPullback.of_map_of_faithful (F := Over.forget (Spec (.of K)))
-    (upperTriangularDiagonalSquare_isPullback K n)
+variable {A : Type u} [CommRing A] [Algebra K A]
 
-/-- Unique morphism to the trivial group object. -/
-def unitriangularToTrivialGroupHom :
-    unitriangularGroupScheme K n ⟶ Grp.trivial (Over (Spec (.of K))) :=
-  Grp.homMk' (default : (unitriangularGroupScheme K n).toMon ⟶
-    Mon.trivial (Over (Spec (.of K))))
+/-- Restriction of a polynomial unitriangular point gives its ordinary upper-triangular matrix. -/
+theorem pointsMulEquiv_unitriangularCoordinateMap
+    (f : WithConv (UpperUnitriangular.coordinateHopfAlgebra K (Fin n) →ₐ[K] A)) :
+    pointsMulEquiv (R := K) (n := n) (A := A)
+        (toConv (f.ofConv.comp (unitriangularCoordinateMap K n).hom.toAlgHom)) =
+      (Subgroup.inclusion UpperTriangularGroup.upperUnitriangularGroup_le_upperTriangularGroup)
+        (UpperUnitriangular.pointsMulEquiv K (Fin n) f) := by
+  apply Subtype.ext
+  rw [← pointsMulEquiv_coe]
+  have h := CommHopfAlgCat.mapPointsFunctor_eq_quotientPointsHom_of_mkQuotient_comp
+    (definingHopfIdeal K n) (unitriangularCoordinateMap K n)
+    (UpperUnitriangular.coordinateMap K n)
+    (by simpa only [coordinateMap_def] using coordinateMap_comp_unitriangularCoordinateMap K n)
+    (CommAlgCat.of K A) f
+  have hu := CommHopfAlgCat.Hom.mapPointsFunctor_app_apply
+    (unitriangularCoordinateMap K n) (CommAlgCat.of K A) f
+  have h' := h.trans (congrArg
+    (CommHopfAlgCat.quotientPointsHom (GeneralLinear.coordinateHopfAlgebra K n)
+      (definingHopfIdeal K n) (CommAlgCat.of K A)) hu)
+  have ha := (CommHopfAlgCat.Hom.mapPointsFunctor_app_apply
+    (UpperUnitriangular.coordinateMap K n) (CommAlgCat.of K A) f).trans
+      (UpperUnitriangular.mapPointsFunctor_coordinateMap_app K n (CommAlgCat.of K A) f)
+  exact (congrArg (GeneralLinear.pointToGeneralLinear n)
+    (h'.symm.trans ha)).trans
+      (UpperUnitriangular.pointToGeneralLinear_inclusionPoints K n f)
 
-/-- The identity section of the diagonal group scheme. -/
-def diagonalUnitGroupHom :
-    Grp.trivial (Over (Spec (.of K))) ⟶ diagonalGroupScheme K n :=
-  Grp.homMk' (0 : Mon.trivial (Over (Spec (.of K))) ⟶
-    (diagonalGroupScheme K n).toMon)
+/-- The diagonal projection on all algebra-valued points is the ordinary tuple of diagonal units. -/
+theorem pointsMulEquiv_diagonalProjectionCoordinateMap
+    (f : WithConv (coordinateHopfAlgebra K n →ₐ[K] A)) :
+    SplitTorus.pointsMulEquiv (R := K) (A := A)
+        (toConv (f.ofConv.comp (diagonalProjectionCoordinateMap K n).hom.toAlgHom)) =
+      fun i : ULift.{u} (Fin n) ↦ UpperTriangularGroup.diag
+        (pointsMulEquiv (R := K) (n := n) (A := A) f) i.down := by
+  let e := weightLeviDiagonalCoordinateIso K (weights n) (weights_injective n)
+  have hc : GeneralLinear.diagonalTorusCoordinateMap (R := K) (N := n) ≫
+      diagonalProjectionCoordinateMap K n =
+      CommHopfAlgCat.mkQuotient (GeneralLinear.coordinateHopfAlgebra K n)
+        (weightLeviDefiningHopfIdeal K (weights n)) ≫
+          Dynamic.weightParabolicLimitCoordinateMap K (weights n) := by
+    rw [← weightLeviCoordinateMap_comp_weightLeviDiagonalCoordinateIso_hom K
+      (weights n) (weights_injective n), diagonalProjectionCoordinateMap]
+    simp only [Category.assoc, Iso.hom_inv_id_assoc]
+  have hp := congrArg (fun q ↦ (CommHopfAlgCat.Hom.mapPointsFunctor q).app
+    (CommAlgCat.of K A) f) hc
+  have hl := CommHopfAlgCat.Hom.mapPointsFunctor_comp_app_apply
+    (GeneralLinear.diagonalTorusCoordinateMap (R := K) (N := n))
+    (diagonalProjectionCoordinateMap K n) (CommAlgCat.of K A) f
+  have hr := CommHopfAlgCat.Hom.mapPointsFunctor_comp_app_apply
+    (CommHopfAlgCat.mkQuotient (GeneralLinear.coordinateHopfAlgebra K n)
+      (weightLeviDefiningHopfIdeal K (weights n)))
+    (Dynamic.weightParabolicLimitCoordinateMap K (weights n)) (CommAlgCat.of K A) f
+  have hp' := hl.symm.trans (hp.trans hr)
+  have hd := GeneralLinear.mapPointsFunctor_diagonalTorusCoordinateMap_app
+    (CommAlgCat.of K A)
+    ((CommHopfAlgCat.Hom.mapPointsFunctor (diagonalProjectionCoordinateMap K n)).app
+      (CommAlgCat.of K A) f)
+  have he := CommHopfAlgCat.Hom.mapPointsFunctor_app_apply
+    (diagonalProjectionCoordinateMap K n) (CommAlgCat.of K A) f
+  have hp := (hd.trans (congrArg GeneralLinear.diagonalTorusPoints he)).symm.trans hp'
+  have hpq : GeneralLinear.diagonalTorusPoints
+      (toConv (f.ofConv.comp (diagonalProjectionCoordinateMap K n).hom.toAlgHom)) =
+      CommHopfAlgCat.quotientPointsHom (GeneralLinear.coordinateHopfAlgebra K n)
+        (weightLeviDefiningHopfIdeal K (weights n)) (CommAlgCat.of K A)
+        ((CommHopfAlgCat.Hom.mapPointsFunctor
+          (Dynamic.weightParabolicLimitCoordinateMap K (weights n))).app
+            (CommAlgCat.of K A) f) := hp
+  rw [Dynamic.mapPointsFunctor_weightParabolicLimitCoordinateMap_app,
+    Dynamic.quotientPointsHom_weightLeviPointsIso_inv_app_apply] at hpq
+  let p : Cocharacter.parabolic (CommAlgCat.of K A)
+      (weightCocharacter (R := K) (weights n)) :=
+    (Dynamic.weightParabolicPointsIso K (weights n)).hom.app (CommAlgCat.of K A) f
+  have hpq' : GeneralLinear.diagonalTorusPoints
+      (toConv (f.ofConv.comp (diagonalProjectionCoordinateMap K n).hom.toAlgHom)) =
+      Cocharacter.limit (CommAlgCat.of K A)
+        (weightCocharacter (R := K) (weights n)) p :=
+    hpq.trans (Cocharacter.coe_limitToLevi_apply _ _ p)
+  have hpcoe : (p : WithConv (GeneralLinear.coordinateHopfAlgebra K n →ₐ[K] A)) =
+      CommHopfAlgCat.quotientPointsHom (GeneralLinear.coordinateHopfAlgebra K n)
+        (definingHopfIdeal K n) (CommAlgCat.of K A) f := by
+    exact Dynamic.coe_weightParabolicPointsIso_hom_app_apply K (weights n) f
+  funext i
+  apply Units.ext
+  have hm := congrArg (fun q ↦ (GeneralLinear.pointsMulEquiv n q :
+    Matrix (Fin n) (Fin n) A) i.down i.down) hpq'
+  have hlim : (GeneralLinear.pointsMulEquiv n
+      (Cocharacter.limit (CommAlgCat.of K A) (weightCocharacter (R := K) (weights n)) p) :
+      Matrix (Fin n) (Fin n) A) i.down i.down =
+      (GeneralLinear.pointsMulEquiv n p.1 : Matrix (Fin n) (Fin n) A) i.down i.down := by
+    have hpeta : (⟨p.1, p.2⟩ : Cocharacter.parabolic (CommAlgCat.of K A)
+        (weightCocharacter (R := K) (weights n))) = p := Subtype.ext rfl
+    have hentry := Dynamic.pointsMulEquiv_limit_weightCocharacter_apply
+      (weights n) p.1 p.2 i.down i.down
+    have heta := congrArg (fun q ↦ (GeneralLinear.pointsMulEquiv n
+      (Cocharacter.limit (CommAlgCat.of K A) (weightCocharacter (R := K) (weights n)) q) :
+        Matrix (Fin n) (Fin n) A) i.down i.down) hpeta.symm
+    exact heta.trans (by simpa only [ite_true, eq_self] using hentry)
+  have hm := hm.trans hlim
+  rw [GeneralLinear.pointsMulEquiv_diagonalTorusPoints, diagGL_apply, ite_eq_left rfl,
+    hpcoe, GeneralLinear.pointsMulEquiv_apply, pointsMulEquiv_coe] at hm
+  simpa only [diagonalTorusCoordinates_apply, ULift.up_down] using
+    hm.trans (UpperTriangularGroup.diag_apply_val _ _).symm
 
-/-- The unitriangular group scheme is the genuine categorical kernel of the
-upper-triangular diagonal projection over any commutative base ring. The
-coordinate pushout becomes a scheme pullback by Mathlib's
-`isPullback_SpecMap_of_isPushout`, then a group-object pullback by limit
-creation; Milne, *Algebraic Groups* (course notes, version 2.00), §2.20
-provides the field-base split triangular antecedent. -/
-theorem upperTriangularDiagonalSquare_isPullback_group :
-    IsPullback (unitriangularToUpperTriangular K n)
-      (unitriangularToTrivialGroupHom K n)
-      (upperTriangularDiagonalProjection K n) (diagonalUnitGroupHom K n) := by
-  apply IsPullback.of_map_of_faithful (Grp.forget (Over (Spec (.of K))))
-  change IsPullback (unitriangularToUpperTriangular K n).hom.hom
-    (toUnit (unitriangularGroupScheme K n).toMon.X)
-    (upperTriangularDiagonalProjection K n).hom.hom
-    (toUnit (MonoidalCategoryStruct.tensorUnit (Over (Spec (.of K)))) ≫
-      η[(diagonalGroupScheme K n).toMon.X])
-  simpa only [toUnit_unit, Category.id_comp]
-    using upperTriangularDiagonalSquare_isPullback_over K n
+/-- The existing diagonal-torus section is the native diagonal matrix on all algebra points. -/
+theorem pointsMulEquiv_diagonalTorusCoordinateMap_native
+    (f : WithConv
+      (MonoidAlgebra K (Multiplicative (ULift.{u} (Fin n) →₀ ℤ)) →ₐ[K] A)) :
+    pointsMulEquiv (R := K) (n := n) (A := A)
+        (toConv (f.ofConv.comp (diagonalTorusCoordinateMap K n).hom.toAlgHom)) =
+      UpperTriangularGroup.diagonalHom
+        (fun i ↦ SplitTorus.pointsMulEquiv (R := K) (A := A) f (ULift.up i)) := by
+  apply Subtype.ext
+  refine (pointsMulEquiv_diagonalTorusCoordinateMap K n f).trans
+    ((GeneralLinear.pointsMulEquiv_diagonalTorusPoints f).trans ?_)
+  rw [UpperTriangularGroup.coe_diagonalHom]
+  congr 1
+  funext i
+  exact diagonalTorusCoordinates_apply _ i
 
-variable (R : Type u) [CommRing R] [Algebra K R]
+/-- On represented points, inclusion of the kernel is the ordinary inclusion of matrices. -/
+theorem unitriangularInclusion_point
+    (s : upperUnitriangularGroup (Fin n) A) :
+    Spec.mapMulEquiv ((UpperUnitriangular.pointsMulEquiv K (Fin n) (A := A)).symm s) ≫
+      (unitriangularInclusion K n).hom.hom =
+      Spec.mapMulEquiv ((pointsMulEquiv (R := K) (n := n) (A := A)).symm
+        ((Subgroup.inclusion
+          UpperTriangularGroup.upperUnitriangularGroup_le_upperTriangularGroup) s)) := by
+  let f := (UpperUnitriangular.pointsMulEquiv K (Fin n) (A := A)).symm s
+  have h := CommHopfAlgCat.mapMulEquiv_mapDomain (CommAlgCat.of K A)
+    (unitriangularCoordinateMap K n).hom f
+  have hc : toConv (f.ofConv.comp (unitriangularCoordinateMap K n).hom.toAlgHom) =
+      (pointsMulEquiv (R := K) (n := n) (A := A)).symm
+        ((Subgroup.inclusion
+          UpperTriangularGroup.upperUnitriangularGroup_le_upperTriangularGroup) s) := by
+    apply (pointsMulEquiv (R := K) (n := n) (A := A)).injective
+    simpa only [f, MulEquiv.apply_symm_apply] using
+      pointsMulEquiv_unitriangularCoordinateMap K n f
+  exact h.symm.trans (congrArg Spec.mapMulEquiv
+    ((BialgHom.mapDomain_apply _ f).trans hc))
 
-/-- Projection on every commutative test algebra is the native diagonal map. -/
-theorem upperTriangularDiagonalCoordinateMap_point
-    (s : Matrix.UpperTriangularGroup n R) :
-    (upperTriangularFromGL K n R s).comp (upperTriangularDiagonalCoordinateMap K n) =
-      diagonalFromGL K n R (Matrix.UpperTriangularGroup.diagonal s) := by
-  apply Ideal.Quotient.algHom_ext K
-  apply GeneralLinearCoordinateRing.hom_ext (K := K) (n := n)
-  intro i j
-  change (upperTriangularFromGL K n R s)
-    (upperTriangularDiagonalCoordinateMap K n
-      (DiagonalCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i j))) =
-    (diagonalFromGL K n R (Matrix.UpperTriangularGroup.diagonal s))
-      (DiagonalCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i j))
-  rw [upperTriangularDiagonalCoordinateMap_matrix]
-  have h := diagonalFromGL_comp_quotient K n R
-    (Matrix.UpperTriangularGroup.diagonal s)
-  have ht := upperTriangularFromGL_comp_quotient K n R s
-  rw [← AlgHom.comp_apply, h, GeneralLinearCoordinateRing.evaluate_matrix,
-    Matrix.UpperTriangularGroup.diagonal_apply]
-  by_cases hij : i = j
-  · subst j
-    simp only [ite_true]
-    have hs := congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K] R =>
-      f (GeneralLinearCoordinateRing.matrix K n i i)) ht
-    simpa only [AlgHom.comp_apply, GeneralLinearCoordinateRing.evaluate_matrix] using hs
-  · simp [hij]
+/-- The represented diagonal projection recovers diagonal units on every algebra-valued point. -/
+theorem diagonalProjection_point (s : upperTriangularGroup (Fin n) A) :
+    Spec.mapMulEquiv ((pointsMulEquiv (R := K) (n := n) (A := A)).symm s) ≫
+      (diagonalProjection K n).hom.hom =
+      Spec.mapMulEquiv ((SplitTorus.pointsMulEquiv (R := K) (A := A)).symm
+        (fun i : ULift.{u} (Fin n) ↦ UpperTriangularGroup.diag s i.down)) := by
+  let f := (pointsMulEquiv (R := K) (n := n) (A := A)).symm s
+  have h := CommHopfAlgCat.mapMulEquiv_mapDomain (CommAlgCat.of K A)
+    (diagonalProjectionCoordinateMap K n).hom f
+  have hc : toConv (f.ofConv.comp (diagonalProjectionCoordinateMap K n).hom.toAlgHom) =
+      (SplitTorus.pointsMulEquiv (R := K) (A := A)).symm
+        (fun i : ULift.{u} (Fin n) ↦ UpperTriangularGroup.diag s i.down) := by
+    apply (SplitTorus.pointsMulEquiv (R := K) (A := A)).injective
+    simpa only [f, MulEquiv.apply_symm_apply] using
+      pointsMulEquiv_diagonalProjectionCoordinateMap K n f
+  exact h.symm.trans (congrArg Spec.mapMulEquiv
+    ((BialgHom.mapDomain_apply _ f).trans hc))
 
-/-- Section on every commutative test algebra is the native diagonal inclusion. -/
-theorem upperTriangularDiagonalSectionCoordinateMap_point
-    (s : Matrix.DiagonalGroup n R) :
-    (diagonalFromGL K n R s).comp
-      (upperTriangularDiagonalSectionCoordinateMap K n) =
-        upperTriangularFromGL K n R
-          (Matrix.UpperTriangularGroup.diagonalSection s) := by
-  apply Ideal.Quotient.algHom_ext K
-  apply GeneralLinearCoordinateRing.hom_ext (K := K) (n := n)
-  intro i j
-  change (diagonalFromGL K n R s)
-    (upperTriangularDiagonalSectionCoordinateMap K n
-      (UpperTriangularCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i j))) =
-    (upperTriangularFromGL K n R (Matrix.UpperTriangularGroup.diagonalSection s))
-      (UpperTriangularCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i j))
-  have h := congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K]
-    DiagonalCoordinateRing.CoordinateRing K n =>
-      f (GeneralLinearCoordinateRing.matrix K n i j))
-    (upperTriangularDiagonalSectionCoordinateMap_comp_quotient K n)
-  change upperTriangularDiagonalSectionCoordinateMap K n
-    (UpperTriangularCoordinateRing.quotient K n
-      (GeneralLinearCoordinateRing.matrix K n i j)) = _ at h
-  rw [h]
-  have hd := congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K] R =>
-    f (GeneralLinearCoordinateRing.matrix K n i j))
-    (diagonalFromGL_comp_quotient K n R s)
-  have ht := congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K] R =>
-    f (GeneralLinearCoordinateRing.matrix K n i j))
-    (upperTriangularFromGL_comp_quotient K n R
-      (Matrix.UpperTriangularGroup.diagonalSection s))
-  simpa only [AlgHom.comp_apply, GeneralLinearCoordinateRing.evaluate_matrix]
-    using hd.trans ht.symm
-
-/-- Inclusion on every commutative test algebra is the native U-to-T map. -/
-theorem upperTriangularUnitriangularCoordinateMap_point
-    (s : Matrix.UnitriangularGroup n R) :
-    (unitriangularFromGL K n R s).comp
-      (upperTriangularUnitriangularCoordinateMap K n) =
-        upperTriangularFromGL K n R
-          (Matrix.UnitriangularGroup.inUpperTriangular s) := by
-  apply Ideal.Quotient.algHom_ext K
-  apply GeneralLinearCoordinateRing.hom_ext (K := K) (n := n)
-  intro i j
-  change (unitriangularFromGL K n R s)
-    (upperTriangularUnitriangularCoordinateMap K n
-      (UpperTriangularCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i j))) =
-    (upperTriangularFromGL K n R (Matrix.UnitriangularGroup.inUpperTriangular s))
-      (UpperTriangularCoordinateRing.quotient K n
-        (GeneralLinearCoordinateRing.matrix K n i j))
-  have h := congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K]
-    UnitriangularCoordinateRing.CoordinateRing K n =>
-      f (GeneralLinearCoordinateRing.matrix K n i j))
-    (upperTriangularUnitriangularCoordinateMap_comp_quotient K n)
-  change upperTriangularUnitriangularCoordinateMap K n
-    (UpperTriangularCoordinateRing.quotient K n
-      (GeneralLinearCoordinateRing.matrix K n i j)) = _ at h
-  rw [h]
-  have hu := congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K] R =>
-    f (GeneralLinearCoordinateRing.matrix K n i j))
-    (unitriangularFromGL_comp_quotient K n R s)
-  have ht := congrArg (fun f : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K] R =>
-    f (GeneralLinearCoordinateRing.matrix K n i j))
-    (upperTriangularFromGL_comp_quotient K n R
-      (Matrix.UnitriangularGroup.inUpperTriangular s))
-  simpa only [AlgHom.comp_apply, GeneralLinearCoordinateRing.evaluate_matrix]
-    using hu.trans ht.symm
-
-/-- All-algebra represented points of the projection recover the native diagonal. -/
-theorem upperTriangularDiagonalProjection_point
-    (s : Matrix.UpperTriangularGroup n R) :
-    upperTriangularGroupMulEquivPoints K n R s ≫
-      (upperTriangularDiagonalProjection K n).hom.hom =
-        diagonalGroupMulEquivPoints K n R
-          (Matrix.UpperTriangularGroup.diagonal s) := by
+/-- The represented diagonal section is the ordinary diagonal matrix on every algebra point. -/
+theorem diagonalTorus_point (d : ULift.{u} (Fin n) → Aˣ) :
+    Spec.mapMulEquiv ((SplitTorus.pointsMulEquiv (R := K) (A := A)).symm d) ≫
+      (diagonalTorus K n).hom.hom =
+      Spec.mapMulEquiv ((pointsMulEquiv (R := K) (n := n) (A := A)).symm
+        (UpperTriangularGroup.diagonalHom (fun i ↦ d (ULift.up i)))) := by
+  let f := (SplitTorus.pointsMulEquiv (R := K) (A := A)).symm d
+  have hc : toConv (f.ofConv.comp (diagonalTorusCoordinateMap K n).hom.toAlgHom) =
+      (pointsMulEquiv (R := K) (n := n) (A := A)).symm
+        (UpperTriangularGroup.diagonalHom (fun i ↦ d (ULift.up i))) := by
+    apply (pointsMulEquiv (R := K) (n := n) (A := A)).injective
+    simpa only [f, MulEquiv.apply_symm_apply] using
+      pointsMulEquiv_diagonalTorusCoordinateMap_native K n f
+  have hleft : (diagonalTorus K n).hom.hom.left =
+      Spec.map (CommRingCat.ofHom (diagonalTorusCoordinateMap K n).hom.toAlgHom.toRingHom) := by
+    rw [diagonalTorus_def]
+    rfl
   apply Over.OverMorphism.ext
-  rw [Over.comp_left, upperTriangularGroupMulEquivPoints_apply_left,
-    upperTriangularDiagonalProjection_left, diagonalGroupMulEquivPoints_apply_left]
-  change Spec.map (CommRingCat.ofHom (upperTriangularFromGL K n R s).toRingHom) ≫
-    Spec.map (CommRingCat.ofHom (upperTriangularDiagonalCoordinateMap K n).toRingHom) =
-      Spec.map (CommRingCat.ofHom (diagonalFromGL K n R
-        (Matrix.UpperTriangularGroup.diagonal s)).toRingHom)
-  rw [← Spec.map_comp]
-  change Spec.map (CommRingCat.ofHom
-    ((upperTriangularFromGL K n R s).comp
-      (upperTriangularDiagonalCoordinateMap K n)).toRingHom) = _
-  rw [upperTriangularDiagonalCoordinateMap_point]
+  erw [Over.comp_left]
+  rw [hleft, CommHopfAlgCat.mapMulEquiv_left, CommHopfAlgCat.mapMulEquiv_left]
+  erw [← Spec.map_comp]
+  exact congrArg (fun q : WithConv
+      (coordinateHopfAlgebra K n →ₐ[K] A) ↦
+        Spec.map (CommRingCat.ofHom q.ofConv.toRingHom)) hc
 
-/-- All-algebra represented points of the section recover native diagonal inclusion. -/
-theorem upperTriangularDiagonalSection_point (s : Matrix.DiagonalGroup n R) :
-    diagonalGroupMulEquivPoints K n R s ≫
-      (upperTriangularDiagonalSection K n).hom.hom =
-        upperTriangularGroupMulEquivPoints K n R
-          (Matrix.UpperTriangularGroup.diagonalSection s) := by
-  apply Over.OverMorphism.ext
-  rw [Over.comp_left, diagonalGroupMulEquivPoints_apply_left,
-    upperTriangularDiagonalSection_left, upperTriangularGroupMulEquivPoints_apply_left]
-  change Spec.map (CommRingCat.ofHom (diagonalFromGL K n R s).toRingHom) ≫
-    Spec.map (CommRingCat.ofHom
-      (upperTriangularDiagonalSectionCoordinateMap K n).toRingHom) =
-      Spec.map (CommRingCat.ofHom (upperTriangularFromGL K n R
-        (Matrix.UpperTriangularGroup.diagonalSection s)).toRingHom)
-  rw [← Spec.map_comp]
-  change Spec.map (CommRingCat.ofHom
-    ((diagonalFromGL K n R s).comp
-      (upperTriangularDiagonalSectionCoordinateMap K n)).toRingHom) = _
-  rw [upperTriangularDiagonalSectionCoordinateMap_point]
+end Points
 
-/-- All-algebra represented points of the kernel inclusion recover native U-to-T. -/
-theorem unitriangularToUpperTriangular_point (s : Matrix.UnitriangularGroup n R) :
-    unitriangularGroupMulEquivPoints K n R s ≫
-      (unitriangularToUpperTriangular K n).hom.hom =
-        upperTriangularGroupMulEquivPoints K n R
-          (Matrix.UnitriangularGroup.inUpperTriangular s) := by
-  apply Over.OverMorphism.ext
-  rw [Over.comp_left, unitriangularGroupMulEquivPoints_apply_left,
-    unitriangularToUpperTriangular_left, upperTriangularGroupMulEquivPoints_apply_left]
-  change Spec.map (CommRingCat.ofHom (unitriangularFromGL K n R s).toRingHom) ≫
-    Spec.map (CommRingCat.ofHom
-      (upperTriangularUnitriangularCoordinateMap K n).toRingHom) =
-      Spec.map (CommRingCat.ofHom (upperTriangularFromGL K n R
-        (Matrix.UnitriangularGroup.inUpperTriangular s)).toRingHom)
-  rw [← Spec.map_comp]
-  change Spec.map (CommRingCat.ofHom
-    ((unitriangularFromGL K n R s).comp
-      (upperTriangularUnitriangularCoordinateMap K n)).toRingHom) = _
-  rw [upperTriangularUnitriangularCoordinateMap_point]
-
-end AlgebraicGeometry
+end TauCeti.GeneralLinear.UpperTriangular

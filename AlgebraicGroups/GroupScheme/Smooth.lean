@@ -34,7 +34,7 @@ finitely presented morphism of group schemes from smoothness of its kernel.
   `Mathlib.AlgebraicGeometry.Group.Smooth` provide the adapted closed-point translation
   and algebraic-closure descent proof. Mathlib assumes geometric reducedness for the group
   scheme; the identity-point result here assumes smoothness at the identity instead.
-- Mathlib's `GrpObj.mulRight`, `Scheme.Hom.smoothLocus`,
+- Mathlib's `TauCeti.rightTranslation`, `Scheme.Hom.smoothLocus`,
   `MorphismProperty.of_pullback_snd_of_descendsAlong`, and smooth descent
   provide the point-translation, base-change, and descent APIs. The
   kernel-torsor pullback identifies the self-pullback of the quotient with a
@@ -70,8 +70,8 @@ theorem smooth_of_unit_mem_smoothLocus_of_isAlgClosed
   let x' : 𝟙_ _ ⟶ Over.mk f :=
     Over.homMk _ ((pointEquivClosedPoint f).symm ⟨x, hxc⟩).2
   let y' : 𝟙_ _ ⟶ Over.mk f := η[Over.mk f]
-  let α := (GrpObj.mulRight (A := Over.mk f) x').symm ≪≫
-    (GrpObj.mulRight (A := Over.mk f) y')
+  let α := (TauCeti.rightTranslation (G := Over.mk f) x').symm ≪≫
+    (TauCeti.rightTranslation (G := Over.mk f) y')
   have hα : x' ≫ α.hom = y' := by
     dsimp only [Iso.trans_hom, Iso.symm_hom, α]
     rw [← Category.assoc, ← Iso.eq_comp_inv]

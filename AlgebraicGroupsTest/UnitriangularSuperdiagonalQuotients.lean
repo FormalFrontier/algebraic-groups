@@ -17,10 +17,10 @@ The coordinate theorem intentionally requires `1 ≤ r`.
 
 namespace AlgebraicGroupsTest.UnitriangularSuperdiagonalQuotients
 
-open Matrix.UnitriangularGroup
+open TauCeti.UpperUnitriangularGroup
 
 private theorem coordinate_evaluation (n r : ℕ) (R : Type) [CommRing R]
-    (hr : 1 ≤ r) (x : superdiagonalSubgroup n R r)
+    (hr : 1 ≤ r) (x : superdiagonalSubgroup (n := n) (R := R) r)
     (ij : superdiagonalIndex n r) :
     Multiplicative.toAdd (superdiagonalCoordinateHom n R r hr x) ij =
       (x.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2 :=
@@ -28,36 +28,36 @@ private theorem coordinate_evaluation (n r : ℕ) (R : Type) [CommRing R]
 
 private theorem exact_kernel (n r : ℕ) (R : Type) [CommRing R] (hr : 1 ≤ r) :
     (superdiagonalCoordinateHom n R r hr).ker =
-      (superdiagonalSubgroup n R (r + 1)).subgroupOf
-        (superdiagonalSubgroup n R r) :=
+      (superdiagonalSubgroup (n := n) (R := R) (r + 1)).subgroupOf
+        (superdiagonalSubgroup (n := n) (R := R) r) :=
   superdiagonalCoordinateHom_ker n R r hr
 
 private theorem normal_kernel (n r : ℕ) (R : Type) [CommRing R] :
-    ((superdiagonalSubgroup n R (r + 1)).subgroupOf
-      (superdiagonalSubgroup n R r)).Normal := inferInstance
+    ((superdiagonalSubgroup (n := n) (R := R) (r + 1)).subgroupOf
+      (superdiagonalSubgroup (n := n) (R := R) r)).Normal := inferInstance
 
 private theorem every_coordinate_has_lift (n r : ℕ) (R : Type) [CommRing R]
     (hr : 1 ≤ r) (a : Multiplicative (superdiagonalIndex n r → R)) :
-    ∃ x : superdiagonalSubgroup n R r,
+    ∃ x : superdiagonalSubgroup (n := n) (R := R) r,
       superdiagonalCoordinateHom n R r hr x = a :=
   superdiagonalCoordinateHom_surjective n R r hr a
 
 private theorem quotient_evaluation (n r : ℕ) (R : Type) [CommRing R]
-    (hr : 1 ≤ r) (x : superdiagonalSubgroup n R r)
+    (hr : 1 ≤ r) (x : superdiagonalSubgroup (n := n) (R := R) r)
     (ij : superdiagonalIndex n r) :
     Multiplicative.toAdd
         (superdiagonalQuotientEquiv n R r hr
-          (x : superdiagonalSubgroup n R r ⧸
-            (superdiagonalSubgroup n R (r + 1)).subgroupOf
-              (superdiagonalSubgroup n R r))) ij =
+          (x : superdiagonalSubgroup (n := n) (R := R) r ⧸
+            (superdiagonalSubgroup (n := n) (R := R) (r + 1)).subgroupOf
+              (superdiagonalSubgroup (n := n) (R := R) r))) ij =
       (x.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2 :=
   superdiagonalQuotientEquiv_mk n R r hr x ij
 
 private theorem arbitrary_ring_map_square (n r : ℕ) (R S : Type)
     [CommRing R] [CommRing S] (f : R →+* S) (hr : 1 ≤ r)
-    (x : superdiagonalSubgroup n R r ⧸
-      (superdiagonalSubgroup n R (r + 1)).subgroupOf
-        (superdiagonalSubgroup n R r)) :
+    (x : superdiagonalSubgroup (n := n) (R := R) r ⧸
+      (superdiagonalSubgroup (n := n) (R := R) (r + 1)).subgroupOf
+        (superdiagonalSubgroup (n := n) (R := R) r)) :
     superdiagonalQuotientEquiv n S r hr (superdiagonalQuotientMap n R f r x) =
       superdiagonalCoordinateMap n R f r
         (superdiagonalQuotientEquiv n R r hr x) :=
@@ -89,9 +89,9 @@ private theorem nonreduced :
 
 private theorem nonreduced_to_characteristic_two
     (f : ZMod 4 →+* ZMod 2)
-    (x : superdiagonalSubgroup 3 (ZMod 4) 1 ⧸
-      (superdiagonalSubgroup 3 (ZMod 4) 2).subgroupOf
-        (superdiagonalSubgroup 3 (ZMod 4) 1)) :
+    (x : superdiagonalSubgroup (n := 3) (R := ZMod 4) 1 ⧸
+      (superdiagonalSubgroup (n := 3) (R := ZMod 4) 2).subgroupOf
+        (superdiagonalSubgroup (n := 3) (R := ZMod 4) 1)) :
     superdiagonalQuotientEquiv 3 (ZMod 2) 1 (by omega)
         (superdiagonalQuotientMap 3 (ZMod 4) f 1 x) =
       superdiagonalCoordinateMap 3 (ZMod 4) f 1

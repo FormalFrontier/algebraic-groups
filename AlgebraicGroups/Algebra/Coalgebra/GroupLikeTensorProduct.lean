@@ -115,7 +115,7 @@ noncomputable def tensorEquiv :
     simp only [one_smul]
     have h := LinearMap.congr_fun
       (counit_tensor_contraction (R := R) (C := C) (D := D)) x.val
-    simpa only [CoalgHom.toLinearMap_eq_coe, CoalgHom.coe_toLinearMap,
+    simpa only [CoalgHom.toLinearMap_eq_ofClass, CoalgHom.coe_linearMapOfClass,
       LinearMap.comp_apply, LinearMap.id_apply,
       x.isGroupLikeElem_val.comul_eq_tmul_self, TensorProduct.map_tmul] using h
   right_inv p := by

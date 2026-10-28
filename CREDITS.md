@@ -275,3 +275,39 @@ neither claims permission to republish the book nor its author's endorsement.
 See the
 [mathematical introduction](README.md) and [formalization metadata](formalization.yaml)
 for this library's scope.
+
+## Foundation reuse and retained attribution
+
+This refactor uses Mathlib and Tau Ceti's canonical coalgebra, Hopf-algebra,
+projective characteristic-polynomial and algebraic-group constructions. Their
+contributors retain the credits and licenses in those dependencies. The original
+Formal Frontier proofs, examples and extensions retain their authorship notices.
+
+The removed foundation modules listed below originally carried these notices:
+
+```text
+SPDX-License-Identifier: Apache-2.0
+Authors: Formal Frontier Agents
+```
+
+Their source and attribution remain available at the pinned pre-refactor revision
+`91a72166fbd0703b83831f490c4f0d9c18bfc4b7`:
+
+- [AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean)
+- [AlgebraicGroups/Algebra/Coalgebra/GroupLikeSpan.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/Coalgebra/GroupLikeSpan.lean)
+- [AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra.lean)
+- [AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Coalgebra.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Coalgebra.lean)
+- [AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean)
+- [AlgebraicGroups/Algebra/DiagonalCoordinateRing.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/DiagonalCoordinateRing.lean)
+- [AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension.lean)
+- [AlgebraicGroups/Algebra/PolynomialRationalPointHeight.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/PolynomialRationalPointHeight.lean)
+- [AlgebraicGroups/Algebra/Smooth.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/Smooth.lean)
+- [AlgebraicGroups/Algebra/SymmetricAlgebra.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/SymmetricAlgebra.lean)
+- [AlgebraicGroups/Algebra/SymmetricAlgebraPoints.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/SymmetricAlgebraPoints.lean)
+- [AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean)
+- [AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean)
+- [AlgebraicGroups/GroupScheme/Diagonal.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/GroupScheme/Diagonal.lean)
+- [AlgebraicGroups/GroupScheme/Unitriangular.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/GroupScheme/Unitriangular.lean)
+- [AlgebraicGroups/GroupScheme/UpperTriangular.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/GroupScheme/UpperTriangular.lean)
+- [AlgebraicGroups/LinearAlgebra/FiniteProjective/Fredholm.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/LinearAlgebra/FiniteProjective/Fredholm.lean)
+- [AlgebraicGroups/Scheme/AffineEquivalenceRelationIntegrality.lean](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/Scheme/AffineEquivalenceRelationIntegrality.lean)

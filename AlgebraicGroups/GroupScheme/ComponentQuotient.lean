@@ -46,8 +46,7 @@ namespace AlgebraicGeometry
 variable {K : Type u} [Field K] [IsAlgClosed K] {G : Scheme.{u}}
 variable (f : G ⟶ Spec (.of K)) [GrpObj (Over.mk f)] [LocallyConnectedSpace G]
 
-local instance : LocallyConnectedSpace (Over.mk f).left :=
-  inferInstanceAs (LocallyConnectedSpace G)
+attribute [local instance] overMkLocallyConnected
 
 variable [ConnectedSpace ((Scheme.identityComponentOver (Over.mk f) ⊗
   Scheme.identityComponentOver (Over.mk f)).left)]
@@ -71,7 +70,7 @@ noncomputable def identityComponentRelativeFppfQuotientIso :
     IsMonHom.Normal.relativeFppfQuotient
         (Scheme.identityComponentι (Over.mk f)) ≅
       Scheme.relativeFppfYoneda
-        (finiteConstantGroupScheme K (rationalComponentGroup f)).X :=
+        (TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X :=
   IsMonHom.Normal.relativeFppfQuotientIso
     (componentSchemeMap f)
     (isPullback_identityComponentι_componentSchemeMap f)

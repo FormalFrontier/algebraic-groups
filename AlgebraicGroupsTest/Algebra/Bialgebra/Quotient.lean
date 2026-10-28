@@ -101,7 +101,7 @@ private theorem augmentationIdeal_properties (k : Type u) [Field k] :
     exact RingHom.mem_ker
   have hcoideal : ((augmentationIdeal k).restrictScalars k).IsCoideal := by
     rw [hker]
-    simpa only [CoalgHom.toLinearMap_eq_coe] using
+    simpa only [CoalgHom.toLinearMap_eq_ofClass] using
       CoalgHomClass.ker_isCoideal (Bialgebra.counitBialgHom k (WeightAlgebra k)).toCoalgHom
   refine ⟨?_, (Ideal.ne_top_iff_one _).mpr hone, hcoideal, ?_, hnonzero, hmem, ?_⟩
   · intro hbot

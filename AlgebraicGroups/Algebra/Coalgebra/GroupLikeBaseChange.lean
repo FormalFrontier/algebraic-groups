@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import TauCeti.Algebra.Coalgebra.GroupLike.BaseChange
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
@@ -46,26 +47,6 @@ open scoped TensorProduct
 
 namespace Coalgebra
 
-/-- Comultiplication on a scalar-extension pure tensor is the base-changed
-comultiplication followed by the tensor-product comparison equivalence. -/
-theorem comul_baseChange_tmul
-    (R : Type u) (S : Type v) {C : Type w}
-    [CommSemiring R] [CommSemiring S] [Algebra R S]
-    [AddCommMonoid C] [Module R C] [CoalgebraStruct R C]
-    (s : S) (c : C) :
-    comul (R := S) (s ⊗ₜ[R] c) =
-      TensorProduct.AlgebraTensorModule.distribBaseChange R S C C
-        (s ⊗ₜ[R] comul (R := R) c) := by
-  apply (TensorProduct.AlgebraTensorModule.distribBaseChange R S C C).symm.injective
-  rw [LinearEquiv.symm_apply_apply, TensorProduct.comul_tmul,
-    CommSemiring.comul_apply]
-  induction (comul (R := R) c) using TensorProduct.inductionOn with
-  | tmul x y =>
-    simp only [TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_tmul,
-      TensorProduct.AlgebraTensorModule.distribBaseChange_symm_tmul, one_mul]
-  | add x y hx hy =>
-    simp only [TensorProduct.tmul_add, map_add, hx, hy]
-
 /-- Extension of scalars preserves the counit-one and tensor-square equations
 using only the comultiplication and counit data. -/
 theorem baseChange_counit_eq_one_and_comul_eq_tmul_self
@@ -79,7 +60,7 @@ theorem baseChange_counit_eq_one_and_comul_eq_tmul_self
         ((1 : S) ⊗ₜ[R] c) ⊗ₜ[S] ((1 : S) ⊗ₜ[R] c) := by
   constructor
   · simp only [TensorProduct.counit_tmul, CommSemiring.counit_apply, hε, one_smul]
-  · rw [comul_baseChange_tmul, hΔ,
+  · rw [TauCeti.Coalgebra.baseChange_comul_tmul, hΔ,
       TensorProduct.AlgebraTensorModule.distribBaseChange_tmul]
 
 /-- A faithfully flat scalar extension detects the counit-one and tensor-square
@@ -103,7 +84,7 @@ theorem baseChange_counit_eq_one_and_comul_eq_tmul_self_iff
         (A := R) (B := S) (C ⊗[R] C)
       have h := congrArg
         (TensorProduct.AlgebraTensorModule.distribBaseChange R S C C).symm hΔ
-      simpa only [comul_baseChange_tmul, LinearEquiv.symm_apply_apply,
+      simpa only [TauCeti.Coalgebra.baseChange_comul_tmul, LinearEquiv.symm_apply_apply,
         TensorProduct.AlgebraTensorModule.distribBaseChange_symm_tmul,
         one_mul, TensorProduct.mk_apply] using h
   · rintro ⟨hε, hΔ⟩
@@ -122,14 +103,3 @@ theorem IsGroupLikeElem.baseChange
   exact (isGroupLikeElem_iff S _).2
     (Coalgebra.baseChange_counit_eq_one_and_comul_eq_tmul_self R S c
       hc.counit_eq_one hc.comul_eq_tmul_self)
-
-/-- Faithfully flat extension of scalars detects group-like elements of a
-coalgebra. -/
-theorem isGroupLikeElem_baseChange_iff
-    (R : Type u) (S : Type v) {C : Type w}
-    [CommRing R] [CommRing S] [Algebra R S]
-    [AddCommGroup C] [Module R C] [Coalgebra R C]
-    [Module.FaithfullyFlat R S] (c : C) :
-    IsGroupLikeElem S ((1 : S) ⊗ₜ[R] c) ↔ IsGroupLikeElem R c := by
-  rw [isGroupLikeElem_iff, isGroupLikeElem_iff]
-  exact Coalgebra.baseChange_counit_eq_one_and_comul_eq_tmul_self_iff R S c

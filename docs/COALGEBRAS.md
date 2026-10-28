@@ -23,202 +23,109 @@ quotient structures and linear universal property. See the
 
 ## Subcoalgebras and finite containment over a field
 
-For a field `K` and
-a `K`-coalgebra `C`, `Subcoalgebra K C` is a subspace `D` such that every
-member's comultiplication lies in the image of
-`D ⊗[K] D → C ⊗[K] C`. Its subtype carries the restricted comultiplication
-and counit satisfying the coalgebra laws. The inclusion is a coalgebra
-homomorphism, and any coalgebra homomorphism with values in `D` factors
-uniquely through it. `Coalgebra.exists_finite_subcoalgebra` puts every
-finitely generated subspace inside such a `D` with `Module.Finite K D`;
-there is also a finite-subset variant. The ambient coalgebra need not be
-finite-dimensional, no algebra or Hopf structure is required, and no least
-finite closure is asserted. See the
-[carrier](../AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra.lean),
-[restricted coalgebra](../AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Coalgebra.lean),
-[homomorphisms](../AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean) and
-[finite containment](../AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean).
-The [diagonal example](../AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraDiagonal.lean)
-uses the proper nonzero finite-dimensional subcoalgebra of `ℕ →₀ K`
-supported on `{0, 1}`.
+Shared foundations use `TauCeti.Subcoalgebra K C` directly. For a subcoalgebra
+`D`, its module carrier is `D.toSubmodule`, and `D.coalgebra` gives the
+restricted coalgebra. The inclusion and factorization API in the retained
+[homomorphism module](../AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean)
+uses this canonical type. Tau Ceti supplies the
+[restricted structures](https://github.com/TauCetiProject/TauCeti/blob/31e387c73506f4de0ba05e251d2905c46bea1419/TauCeti/Algebra/Coalgebra/Subcoalgebra/Structure.lean),
+[group-like spans](https://github.com/TauCetiProject/TauCeti/blob/31e387c73506f4de0ba05e251d2905c46bea1419/TauCeti/Algebra/Coalgebra/Subcoalgebra/GroupLike.lean) and
+[finite-subcoalgebra theorem](https://github.com/TauCetiProject/TauCeti/blob/31e387c73506f4de0ba05e251d2905c46bea1419/TauCeti/Algebra/Coalgebra/Subcoalgebra/Finite.lean).
+Over a field, finite subsets lie in module-finite subcoalgebras, without an
+ambient dimension bound or a claim of least finite closure. The proper nonzero
+`{0,1}`-supported diagonal example remains in
+[the regression client](../AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraDiagonal.lean).
 
 ## Subcoalgebra image equivalences
 
-For a field `K` and `K`-coalgebras
-`C`, `C'` in independent universes, `Subcoalgebra.equivMapOfInjOn f D hf`
-identifies `D` with its canonical image `Subcoalgebra.map f D` as a
-coalgebra. It assumes only `hf : Set.InjOn f (D : Set C)` for the coalgebra
-homomorphism `f`, not ambient injectivity. Under this local hypothesis, the
-image carrier is finitely generated exactly when the source carrier is;
-likewise `Module.Finite K (Subcoalgebra.map f D) ↔ Module.Finite K D`.
-`CoalgEquiv.subcoalgebraCongr` transports subcoalgebras along an ambient
-coalgebra equivalence as an ordinary `Equiv` (not a bundled order
-isomorphism), preserving and reflecting `Module.Finite`. No ambient
-finiteness is assumed. See the [API](../AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Equiv.lean) and the
-[infinite-dimensional, globally noninjective but locally injective example](../AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraImageEquiv.lean).
+The retained [image and equivalence API](../AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Equiv.lean)
+works on canonical subcoalgebras. Injectivity of a coalgebra map only on `D`
+suffices to identify `D.toSubmodule` with its image and to preserve and reflect
+module-finiteness. Ambient equivalences transport subcoalgebras as an ordinary
+`Equiv`; no ambient finite-dimensionality is assumed. The
+[locally injective example](../AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraImageEquiv.lean)
+remains globally noninjective.
 
 ## Changing the coacting coalgebra
 
-Given a specified `X : Coalgebra.RightComodule R C V` and a coalgebra morphism
-`f : C →ₗc[R] D`, `X.mapCoalgebra f` is a right `D`-comodule on the same `V`.
-Its coaction is `(id_V ⊗ f) ∘ X.coaction`, expressed as
-`f.toLinearMap.lTensor V ∘ₗ X.coaction`. The scalars form a commutative semiring;
-`C` and `D` have full coalgebra structures, and `C`, `D` and `V` are arbitrary
-additive-commutative-monoid modules, with independent scalar and carrier universes.
-No field, finiteness, projectivity, flatness or injectivity/surjectivity of `f`
-is required.
+The canonical class is `TauCeti.Comodule R C M`, with coaction `coact`, and
+morphisms are `TauCeti.Comodule.Hom R C M N`. A specified coaction is installed
+as a local instance when a proof compares two structures on the same module.
+For a coalgebra map `f : C →ₗc[R] D`,
+[`TauCeti.Comodule.Corestrict`](https://github.com/TauCetiProject/TauCeti/blob/31e387c73506f4de0ba05e251d2905c46bea1419/TauCeti/Algebra/Coalgebra/Comodule/Corestrict.lean)
+changes the coaction to `(id_M ⊗ f)ρ`; `corestrictHom` acts on morphisms, and
+`CoalgHom.toComoduleHom` makes the original coalgebra map colinear. Identity,
+composition and counit specialization use canonical corestriction lemmas.
+The scalars may be a commutative semiring and the independently sized modules
+need only be additive commutative monoids. No field, finiteness, flatness or
+injectivity assumption is imposed. The natural-number monoid-algebra example
+still collapses the coalgebra factor while retaining the two distinct module
+basis elements.
 
-The [right-comodule API](../AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean)
-provides the characteristic equations and uses:
-
-- `RightComodule.mapCoalgebra_coaction` and `mapCoalgebra_coaction_apply`
-  describe the coaction without unfolding the construction.
-- `mapCoalgebra_id` and `mapCoalgebra_comp` give
-  `X.mapCoalgebra (CoalgHom.id R C) = X` and
-  `(X.mapCoalgebra f).mapCoalgebra g = X.mapCoalgebra (g.comp f)`.
-- For a colinear map `h : Coalgebra.RightComoduleHom X Y`,
-  `h.mapCoalgebra f` has the same underlying linear map and sends
-  `X.mapCoalgebra f` to `Y.mapCoalgebra f`. For fixed `f`, this preserves
-  comodule-morphism identities and composition.
-- `RightComoduleHom.ofCoalgHom f` makes `f.toLinearMap` colinear from
-  `(RightComodule.regular R C).mapCoalgebra f` to `RightComodule.regular R D`.
-- For every `X`, `mapCoalgebra_counit` identifies
-  `X.mapCoalgebra (Coalgebra.counitCoalgHom R C)` with the existing
-  `RightComodule.scalar R V`, whose coaction is `v ↦ v ⊗ 1`.
-
-For example, take `R = D = ℕ`, `C = V = ℕ[ℕ]` (`MonoidAlgebra ℕ ℕ`),
-the regular coaction and the standard counit. This module has an infinite basis
-and its scalars are not a ring. The distinct nonzero basis elements `e₀` and `e₁`
-both have counit `1`, but the changed coaction sends `eᵢ` to `eᵢ ⊗ 1` and
-remains injective: only the coalgebra factor is collapsed, not the module factor.
-
-This forward change differs from `X.restrictCoalgebra S h` in the
-[coefficient API](../AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean).
-Over a field `K`, with an additive-group ambient coalgebra `C` and an
-additive-monoid module `V`, the latter lifts the coaction to a subcoalgebra
-`S : Subcoalgebra K C`. It requires every coaction value to lie in the range of
-`S.subtype.toLinearMap.lTensor V`. Its characteristic equation is
-`S.subtype.toLinearMap.lTensor V ∘ₗ (X.restrictCoalgebra S h).coaction = X.coaction`
-(`subtype_lTensor_comp_restrictCoalgebra_coaction`). The bridge
-`mapCoalgebra_restrictCoalgebra` expresses the inclusion round trip:
-`(X.restrictCoalgebra S h).mapCoalgebra S.subtype = X`.
-These field hypotheses belong to the inverse lift and its bridge, not to
-`mapCoalgebra`.
-
-In the elementwise inclusion formulas, the linear map is the tensor of the
-underlying submodule inclusion. Both `subtype_lTensor_coactionCodRestrict` and
-`subtype_lTensor_coefficientComodule_coaction` recover `X.coaction m`; their
-explicit `DFunLike.coe` carriers specify this same map without choosing a new
-factorization.
+The retained inverse lift to a subcoalgebra, in
+[ComoduleCoefficients](../AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean),
+requires the coaction to lie in the image of the tensor of its inclusion. Over
+a field it constructs `restrictCoalgebra` on the same module; its inclusion
+formula recovers the original coaction. This inverse lift differs from changing
+the module carrier.
 
 ## Inverses of colinear linear equivalences
 
-Let `X : Coalgebra.RightComodule R C M` and
-`Y : Coalgebra.RightComodule R C N` be specified right comodules over the same
-coalgebra. If `e : M ≃ₗ[R] N` satisfies
-`h : Y.coaction ∘ₗ e.toLinearMap = e.toLinearMap.rTensor C ∘ₗ X.coaction`, then
-`RightComoduleHom.colinear_symm e h` gives
-`X.coaction ∘ₗ e.symm.toLinearMap = e.symm.toLinearMap.rTensor C ∘ₗ Y.coaction`.
-Thus the inverse linear map supplies the colinearity field of a morphism from
-`Y` to `X`; this is not a change of coacting coalgebra. The scalars may be a
-commutative semiring, the carriers need only be additive commutative monoid
-modules, and their universes are independent. No flatness, basis or finiteness
-hypothesis is needed. The [clients](../AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean)
-include a nonidentity coordinate swap between distinct nonzero coactions over
-`ℕ`, as well as the identity case.
+`TauCeti.Comodule.Hom.colinear_symm` proves that the inverse of a colinear
+linear equivalence is colinear over a commutative semiring, for independently
+sized additive-monoid modules. No flatness, basis or finiteness is needed.
+The [coordinate-swap clients](../AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean)
+compare distinct nonzero coactions over `ℕ`. Carrier transport itself uses
+canonical `TauCeti.Comodule.Transport`; the retained
+[transport module](../AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean)
+adds identity/tower coherence and the target characterization.
 
 ## Finite right-subcomodule containment
 
-`Coalgebra.RightComodule R C M`
-specifies a right linear coaction `ρ : M →ₗ[R] M ⊗[R] C` satisfying
-coassociativity and right counitality. The scalars are an arbitrary commutative
-semiring; `C` and `M` are modules with additive commutative monoid structures,
-`C` is a coalgebra, and all three universes are independent. These definitions
-need no projectivity. With only the additional hypothesis
-`[Module.Projective R C]`, every finite subset of `M` lies in a
-`RightComodule.Subcomodule` whose underlying submodule is finitely generated.
-The witness carries a coaction on its subtype and a colinear inclusion;
-every member has coaction in the image of `U ⊗ C → M ⊗ C`.
-Neither `C` nor `M` need be finitely generated, and `M` need not be projective
-or free. Under `[Module.Flat R C]`, image stability induces a unique subtype
-coaction, with subcomodule extensionality and unique colinear factorization
-through the inclusion. The counit need not be surjective. See the
-[right-comodule API](../AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean) and
-[coefficient engine](../AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean).
-The [examples](../AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean) include
-the nonprojective `ℕ`-module `ℕ →₀ ZMod 2` and a coaction of the proper
-projective ideal `(3)` in `ZMod 6`, with nonsurjective counit and coacting
-generator satisfying `ε(e₃) = 3 ≠ 1`, so it is not group-like.
+The retained [projective containment theorem](../AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean)
+puts every finite subset in a finitely generated `TauCeti.Subcomodule R C M`
+when the coacting coalgebra is projective over a commutative semiring. Neither
+the ambient comodule nor the coalgebra need be finitely generated, and the
+comodule need not be projective. Canonical subcomodule carriers and inclusion
+morphisms are used directly. The module also proves directedness and exhaustion
+by these finite carriers and algebra-valued evaluation criteria for stability.
+The [boundary examples](../AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean)
+retain the nonprojective module `ℕ →₀ ZMod 2` and the projective ideal `(3)`
+in `ZMod 6` with nonsurjective counit `ε(e₃) = 3 ≠ 1`.
 
 ## Intrinsic coefficient coalgebras
 
-For a right comodule `X` with coaction
-`ρ : M →ₗ[K] M ⊗[K] C` over a commutative semiring, `X.coefficientSpan`
-spans the coefficients obtained by applying every linear functional
-`M →ₗ[K] K` to the first tensor factor, for every element of `M`.
-Over a field, `X.coefficientSubcoalgebra` has exactly this span as its
-underlying submodule, with comultiplication in the image of its tensor-square
-inclusion into `C ⊗ C`.
-For any subcoalgebra `D`, there is a unique full structure
-`Y : Coalgebra.RightComodule K D M` satisfying
-`(id_M ⊗ ι_D) ∘ Y.coaction = ρ` if and only if
-`X.coefficientSpan ≤ D.toSubmodule`. This changes the coacting coalgebra
-from `C` to `D`, not the module `M`. Neither `M` nor `C` need be
-finite-dimensional; `[Module.Finite K M]` is required only for finite
-generation of the coefficient subcoalgebra's underlying module, not algebra
-finite generation. See the [intrinsic API](../AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean),
-[rational GL₂ model](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsGL2.lean)
-and [corestriction clients](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsUse.lean).
+Use canonical `TauCeti.Comodule.matrixCoefficient` and
+`matrixCoefficientSubmodule`; the coalgebra argument is explicit when it cannot
+be inferred from the functional and vector. Over a field, the retained
+`TauCeti.Comodule.coefficientSubcoalgebra` has this coefficient span as its
+underlying submodule. Full corestriction to a subcoalgebra on the same module
+exists uniquely exactly when that span is contained in its carrier. No ambient
+finite dimension is required. Module-finiteness of the comodule gives
+module-finite coefficients, not finite generation of an algebra.
 
 ### Coefficients under comodule morphisms
 
-For `h : Coalgebra.RightComoduleHom X Y`, with the coacting coalgebra fixed,
-`RightComoduleHom.coefficient_apply` states
-`Y.coefficient ell (h m) = X.coefficient (ell.comp h.toLinearMap) m`.
-Over a commutative semiring, a surjective `h` gives
-`Y.coefficientSpan ≤ X.coefficientSpan`
-(`coefficientSpan_le_of_surjective`), while a bijective `h` gives
-`X.coefficientSpan = Y.coefficientSpan` (`coefficientSpan_eq_of_bijective`).
-Over a field, an injective `h` gives the opposite containment
-`X.coefficientSpan ≤ Y.coefficientSpan` (`coefficientSpan_le_of_injective`):
-linear functionals extend from the source subspace. The coacted-on carriers
-are additive commutative monoid modules in independent universes, with no
-finite-generation premise. The injective result is not asserted over an
-arbitrary commutative semiring.
-
-For a field and an ambient coalgebra with its additive commutative group
-structure, `coefficientSubcoalgebra_toSubmodule_le_of_surjective` and
-`coefficientSubcoalgebra_toSubmodule_le_of_injective` give the same respective
-containments of underlying submodules; `coefficientSubcoalgebra_eq_of_bijective`
-gives equality of subcoalgebras. These are morphisms between comodules over
-one fixed coalgebra, not the coalgebra-changing corestriction described above.
-
-The [GL₂ clients](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsGL2.lean)
-transport the rational column representation to a universe-lifted carrier.
-The resulting bijective comodule morphism compares individual coefficients,
-coefficient spans and coefficient subcoalgebras. Its coefficient span remains
-finitely generated, proper and nonzero; a nonzero off-diagonal coefficient
-remains visible. Carrier transport uses
-[`RightComodule.transport`](../AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean),
-whose coaction is `(e ⊗ id_C) ∘ ρ ∘ e.symm`; unlike `mapCoalgebra`, it changes
-the module factor and keeps the coalgebra fixed.
+Canonical matrix coefficients pull back along comodule morphisms. Surjections
+decrease coefficient spans over a commutative semiring; bijections preserve
+them. Over a field, injections increase them, by extension of linear
+functionals. The retained
+[functoriality and corestriction API](../AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean)
+gives the corresponding coefficient-subcoalgebra comparisons. The
+[rational GL₂ model](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsGL2.lean)
+and its universe-lifted carrier retain a proper, nonzero, finitely generated
+coefficient span and a visible off-diagonal coefficient. They use canonical
+GL Hopf coordinates, rather than an external duplicate localization.
 
 ## Finite coalgebra containment
 
-Over a commutative semiring, every finite
-subset of a coalgebra with projective ambient module lies in a
-module-finitely-generated submodule `U` whose every member has comultiplication in the image of
-`U ⊗ C → C ⊗ C`; the ambient additive structure need only be a commutative
-monoid. No ambient finite generation is required, and free modules are included
-through Mathlib's free-to-projective instance. Over a field, every finite subset
-lies in a module-finitely-generated submodule `D` with every-member image closure
-under `D ⊗ D → C ⊗ C`.
-These theorems assert tensor-image containment, not algebra finite generation;
-the restricted coalgebra structure over a field is constructed separately by
-the subcoalgebra API above. See
-[finite containment](../AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean),
-[coefficient spans with explicit ambient coordinate maps](../AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean)
-and [group-like spans](../AlgebraicGroups/Algebra/Coalgebra/GroupLikeSpan.lean).
+The retained [coefficient engine](../AlgebraicGroups/Algebra/Coalgebra/FiniteSubcoalgebra.lean)
+works over commutative semirings with a projective ambient coalgebra: every
+finite subset lies in finitely generated `U` with `Δ(U)` in the tensor image
+of `U ⊗ C`. Over a field the stronger `D ⊗ D` containment and canonical
+finite-subcoalgebra theorem apply. The assertions concern module finiteness,
+not algebra finite generation, and allow infinite ambient modules. Explicit
+ambient coordinates remain in [Coefficients](../AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean).
 
 ## Algebra-generating coalgebra coefficients
 
@@ -353,39 +260,16 @@ translation equivalence.
 
 ## Modules and examples
 
-Import `AlgebraicGroups` for the aggregate or a focused producer linked above.
-For images under coalgebra homomorphisms over a field `K`, import
-[`AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map`](../AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Map.lean).
-`Subcoalgebra.map f D` has underlying submodule
-`Submodule.map f.toLinearMap D.toSubmodule`. Image membership means
-`∃ x ∈ D, f x = y`; containment in a target submodule means every member
-of `D` maps into it. The API also gives identity and composition laws,
-monotonicity for containment of underlying submodules, preservation of
-finite generation, and zero reflection: the image carrier is zero exactly
-when the source carrier is zero, even for a noninjective homomorphism.
-The [homomorphism API](../AlgebraicGroups/Algebra/Coalgebra/Hom.lean) gives the
-underlying linear-map zero criterion over any commutative scalar semiring;
-only the source needs the coalgebra laws.
+Import `AlgebraicGroups` for the aggregate, or a focused retained module linked
+above. Import canonical Tau Ceti foundation modules directly when only their
+mathematics is needed. There are no forwarding modules for the removed local
+subcoalgebra or group-like-span definitions.
 
-For right comodules, the focused import is
-`AlgebraicGroups.Algebra.Coalgebra.RightComodule`. Given `X : Coalgebra.RightComodule R C M`
-and `hs : s.Finite`, use `X.exists_fg_subcomodule_of_finite hs` when
-`[Module.Projective R C]` is available. Its witness `U` exposes `U.toSubmodule`,
-`U.comodule`, the bundled colinear inclusion `U.subtype` and every-member closure
-`U.coaction_mem`. For linear-map operations on a `Coalgebra.RightComoduleHom`,
-use its `toLinearMap` projection.
-
-For intrinsic coefficients, import
-`AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients`. Over a field,
-`X.coefficientComodule` is a right comodule on the same `M` over
-`X.coefficientSubcoalgebra`, and
-`X.subtype_lTensor_comp_coefficientComodule_coaction` gives its inclusion equation.
-Use `X.existsUnique_restrictCoalgebra_iff D` to characterize full corestriction
-uniqueness by coefficient-span containment, and `X.coefficientSubcoalgebra_fg`
-when `[Module.Finite K M]` is available. The
-[ordinary-import GL₂ clients](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsUse.lean)
-apply both theorems to the proper nonzero span of the four matrix entries in the
-[rational column representation](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsGL2.lean).
+Use `D.toSubmodule` for a canonical subcoalgebra’s module carrier. Install a
+specified `TauCeti.Comodule` structure with `letI` when using its class-based
+morphism or coefficient API. The retained finite-containment and coefficient
+modules extend these canonical structures; their ordinary-import clients cover
+infinite ambient coalgebras, nonfree semiring modules and degenerate rings.
 
 [Split tensor coordinates](../AlgebraicGroups/Algebra/TensorProduct/Split.lean)
 give finite-support reconstruction and all-index contraction formulas along an

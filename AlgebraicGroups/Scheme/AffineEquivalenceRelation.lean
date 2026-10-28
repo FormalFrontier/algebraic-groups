@@ -326,7 +326,7 @@ lemma exists_composition_coordinates (s t : A →ₐ[C] B)
     exact hkfst
   let hderived : IsLimit
       (PullbackCone.mk h.t h.c.fst h.transitivity₁) :=
-    CategoryTheory.EquivalenceRelation.isLimit_composition_fst h
+    CategoryTheory.EquivalenceRelation.isLimitCompositionFst h
   let derivedLift (z : PullbackCone (specMap s) (specMap s)) :
       z.pt ⟶ h.c.pt := hderived.lift z
   have derivedLift_t (z : PullbackCone (specMap s) (specMap s)) :

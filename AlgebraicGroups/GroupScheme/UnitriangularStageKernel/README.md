@@ -4,7 +4,7 @@
 
 Let `K` be any commutative ring, `n r : ℕ` and **`hr : 1 ≤ r`**. Write
 `S_r` for the [closed stage](../UnitriangularStages/README.md) and
-`J = Matrix.UnitriangularGroup.superdiagonalIndex n r`. The
+`J = TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r`. The
 [coordinate map](../UnitriangularStageCoordinates/README.md) is the actual
 group-scheme morphism `S_r → ∏ᶜ (_ : J), Gₐ`; the successor is the existing
 closed morphism `S_(r+1) → S_r`.

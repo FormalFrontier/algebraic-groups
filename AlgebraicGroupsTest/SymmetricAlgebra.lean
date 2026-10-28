@@ -5,7 +5,7 @@ Authors: Formal Frontier Agents
 
 module
 
-public import AlgebraicGroups.Algebra.SymmetricAlgebra
+public import TauCeti.Algebra.HopfAlgebra.SymmetricAlgebra.Basic
 public import Mathlib.Data.ZMod.Basic
 
 /-!
@@ -35,10 +35,11 @@ variable (K : Type u) [CommRing K] (M : Type v) [AddCommMonoid M] [Module K M]
     HopfAlgebra K (SymmetricAlgebra K M) := inferInstance
 
 private theorem persistentTestSymmetricAlgebra003 :
-    (instHopfAlgebra K M).toHopfAlgebraStruct.toBialgebra = instBialgebra K M := rfl
+    (TauCeti.SymmetricAlgebra.instHopfAlgebra K M).toHopfAlgebraStruct.toBialgebra =
+      instBialgebra K M := rfl
 
 private theorem persistentTestSymmetricAlgebra004 (x : M) :
-    antipodeAlgHom K M (ι K M x) = -ι K M x := by simp
+    TauCeti.SymmetricAlgebra.antipodeHom K M (ι K M x) = -ι K M x := by simp
 
 private theorem persistentTestSymmetricAlgebra005 (x : M) :
     HopfAlgebra.antipode K (ι K M x) = -ι K M x := by simp

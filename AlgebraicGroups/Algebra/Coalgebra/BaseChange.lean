@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
+public import TauCeti.Algebra.Coalgebra.BaseChange
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Coalgebra.Quotient
@@ -82,39 +83,6 @@ theorem counit_range_baseChange :
 
 end Coalgebra
 
-namespace Coalgebra
-
-section WeakBaseChange
-
-variable (R : Type u) (S : Type v) (C : Type w)
-variable [CommSemiring R] [CommSemiring S] [Algebra R S]
-variable [AddCommMonoid C] [Module R C] [CoalgebraStruct R C]
-
-/-- The canonical scalar-extension comultiplication is the base change of the
-source comultiplication, followed by the stock tensor-distribution equivalence.
-Only the structure maps, not the coalgebra identities, are required. -/
-theorem comul_baseChange :
-    comul (R := S) (A := S ⊗[R] C) =
-      (TensorProduct.AlgebraTensorModule.distribBaseChange R S C C).toLinearMap ∘ₗ
-        (comul (R := R) (A := C)).baseChange S := by
-  apply TensorProduct.AlgebraTensorModule.ext
-  intro s c
-  simp only [LinearMap.comp_apply, LinearMap.baseChange_tmul, LinearEquiv.coe_coe,
-    TensorProduct.comul_tmul, CommSemiring.comul_apply]
-  generalize comul (R := R) c = t
-  induction t using TensorProduct.inductionOn with
-  | tmul x y =>
-    rw [TensorProduct.AlgebraTensorModule.tensorTensorTensorComm_tmul,
-      TensorProduct.AlgebraTensorModule.distribBaseChange_tmul,
-      TensorProduct.tmul_eq_smul_one_tmul s y, TensorProduct.tmul_smul,
-      TensorProduct.smul_tmul', TensorProduct.smul_tmul', smul_eq_mul, mul_one]
-  | add x y hx hy =>
-    simp only [TensorProduct.tmul_add, map_add, hx, hy]
-
-end WeakBaseChange
-
-end Coalgebra
-
 namespace Submodule.IsCoideal
 
 section Weak
@@ -142,7 +110,7 @@ private theorem map_mkQ_comul_baseChange_eq_zero_iff
       E (TensorProduct.map (I.baseChange S).mkQ (I.baseChange S).mkQ
         (Coalgebra.comul (R := S) (s ⊗ₜ[R] c))) =
       s ⊗ₜ[R] (TensorProduct.map I.mkQ I.mkQ (Coalgebra.comul (R := R) c)) := by
-    rw [Coalgebra.comul_baseChange R S C]
+    rw [TauCeti.Coalgebra.baseChange_comul (R := R) (H := C) S]
     simp only [LinearMap.comp_apply, LinearMap.baseChange_tmul]
     generalize Coalgebra.comul (R := R) c = t
     induction t using TensorProduct.inductionOn with

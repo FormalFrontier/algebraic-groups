@@ -521,7 +521,7 @@ theorem antipode_x {p : ℕ} [Fact p.Prime] [CharP K p] (t : K) :
 theorem antipode_y {p : ℕ} [Fact p.Prime] [CharP K p] (t : K) :
     antipode K t (y K p t) = -y K p t := lift_y K _ _ _ _ _
 
-noncomputable instance coordinateRing_bialgebra {p : ℕ} [Fact p.Prime]
+noncomputable instance coordinateRingBialgebra {p : ℕ} [Fact p.Prime]
     [CharP K p] (t : K) : Bialgebra K (CoordinateRing K p t) :=
   Bialgebra.ofAlgHom (comul K t) (counit K t)
     (by
@@ -541,7 +541,7 @@ noncomputable instance coordinateRing_bialgebra {p : ℕ} [Fact p.Prime]
         simp [comulX, comulY, Algebra.TensorProduct.includeLeft_apply,
           Algebra.TensorProduct.includeRight_apply])
 
-noncomputable instance coordinateRing_hopfAlgebra {p : ℕ} [Fact p.Prime]
+noncomputable instance coordinateRingHopfAlgebra {p : ℕ} [Fact p.Prime]
     [CharP K p] (t : K) : HopfAlgebra K (CoordinateRing K p t) :=
   HopfAlgebra.ofAlgHom (antipode K t)
     (by

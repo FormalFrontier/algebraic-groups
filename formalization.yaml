@@ -58,7 +58,7 @@ sources:
       credits appear in CREDITS.md. This entry is not third-party rights clearance.
 
 related_formalizations:
-  - id: https://github.com/leanprover-community/mathlib4/tree/83abb3e776bdefcbc447a1e44d0debe4010039e5
+  - id: https://github.com/leanprover-community/mathlib4/tree/2cabef97b63d3275776b8b060d802de6a6fa1055
     relationship: builds-on
     note: >-
       Pinned external dependency for commutative algebra, linear algebra,
@@ -67,6 +67,14 @@ related_formalizations:
       and coherent-modules dependencies; their credit and licenses are distinct.
       Mathlib also supplies submodule, coalgebra, tensor-map, vector-space,
       flatness and module-finiteness APIs for field subcoalgebras.
+  - id: https://github.com/TauCetiProject/TauCeti
+    relationship: builds-on
+    note: >-
+      Canonical subcoalgebras, comodules, Hopf algebras, matrix and diagonalizable
+      group schemes supply the shared foundations. This project retains its
+      additional containment, presentation, kernel, product and geometry results
+      on those carriers. The manifest pins the exact local dependency revision;
+      docs/TAUCETIFY.md records its unpublished constructor and universe refactors.
   - id: https://github.com/FormalFrontier/general-linear-groups/tree/8b3b07bf2744a870b53934542e4c5ed383765bd6
     relationship: builds-on
     note: >-
@@ -88,7 +96,8 @@ status:
   scope: >-
     This repository contains reusable algebraic-group, group-scheme and
     coordinate-algebra definitions and results, with focused ordinary-import
-    clients. Every finite subset of a coalgebra over a commutative semiring
+    clients. Shared foundations are imported from Mathlib and Tau Ceti; the
+    main results below list declarations owned by this project. Every finite subset of a coalgebra over a commutative semiring
     with projective ambient module lies in a module-finitely-generated submodule
     with every-member first-factor tensor-image closure, without ambient finite
     generation. Free modules are included. Over a field,
@@ -132,8 +141,6 @@ status:
     or complete formalization of Milne's book. Read exact limitations with
     each mathematical guide.
   main_results:
-    - declaration: Coalgebra.comul_mem_range_mapIncl_span_of_isGroupLikeElem
-      file: AlgebraicGroups/Algebra/Coalgebra/GroupLikeSpan.lean
     - declaration: Coalgebra.span_le_span_coefficients
       file: AlgebraicGroups/Algebra/Coalgebra/Coefficients.lean
     - declaration: Coalgebra.comul_coefficient
@@ -170,7 +177,7 @@ status:
       file: AlgebraicGroups/GroupScheme/AffineHomOver.lean
     - declaration: AlgebraicGeometry.additiveGroupHomOverEquiv
       file: AlgebraicGroups/GroupScheme/AffineHomOver.lean
-    - declaration: AlgebraicGeometry.additiveGroupAffineProductFan_isLimit
+    - declaration: AlgebraicGeometry.additiveGroupAffineProductFanIsLimit
       file: AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean
     - declaration: AlgebraicGeometry.additiveGroupProductUnderlyingSpecIso
       file: AlgebraicGroups/GroupScheme/AdditiveProductAffineSpace.lean
@@ -204,21 +211,15 @@ status:
       file: AlgebraicGroups/Algebra/LocalizedCoordinateQuotient.lean
     - declaration: MvPolynomial.localizedCoordinateQuotientEquiv_symm_algebraMap
       file: AlgebraicGroups/Algebra/LocalizedCoordinateQuotient.lean
-    - declaration: MvPolynomial.ringKrullDim_localizationAway_of_eval_ne_zero
-      file: AlgebraicGroups/Algebra/FinitePolynomialLocalizationDimension.lean
-    - declaration: DiagonalCoordinateRing.ideal_eq_localizedCoordinateIdeal
+    - declaration: TauCeti.SplitTorus.polynomialLocalizationEquiv
       file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
-    - declaration: DiagonalCoordinateRing.localizedPolynomialEquiv
+    - declaration: TauCeti.SplitTorus.polynomialLocalizationEquiv_variable
       file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
-    - declaration: DiagonalCoordinateRing.localizedPolynomialEquiv_diagonal
+    - declaration: TauCeti.SplitTorus.polynomialLocalizationEquiv_symm_variable
       file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
-    - declaration: DiagonalCoordinateRing.localizedPolynomialEquiv_symm_diagonal
+    - declaration: TauCeti.SplitTorus.ringKrullDim_coordinateRing
       file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
-    - declaration: DiagonalCoordinateRing.erasedDeterminant_eval_one
-      file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
-    - declaration: AlgebraicGeometry.diagonalCoordinateRing_ringKrullDim
-      file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
-    - declaration: AlgebraicGeometry.diagonalGroupUnderlyingScheme_topologicalKrullDim
+    - declaration: TauCeti.SplitTorus.topologicalKrullDim_groupScheme
       file: AlgebraicGroups/GroupScheme/DiagonalDimension.lean
     - declaration: UnitriangularCoordinateRing.baseChange
       file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
@@ -232,24 +233,10 @@ status:
       file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
     - declaration: UnitriangularCoordinateRing.baseChange_symm_entry
       file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
-    - declaration: UnitriangularCoordinateRing.baseChange_symm_algebraMap
-      file: AlgebraicGroups/Algebra/UnitriangularBaseChange.lean
     - declaration: UnitriangularCoordinateRing.baseChange_self
       file: AlgebraicGroups/Algebra/UnitriangularBaseChangeCoherence.lean
     - declaration: UnitriangularCoordinateRing.baseChange_tower
       file: AlgebraicGroups/Algebra/UnitriangularBaseChangeCoherence.lean
-    - declaration: UnitriangularCoordinateRing.ideal_isHopfIdeal
-      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
-    - declaration: UnitriangularCoordinateRing.coordinatePolynomialEquiv
-      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
-    - declaration: UnitriangularCoordinateRing.polynomialFreeEquiv
-      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
-    - declaration: UnitriangularCoordinateRing.freeEquiv
-      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
-    - declaration: UnitriangularCoordinateRing.freeEquiv_variable
-      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
-    - declaration: UnitriangularCoordinateRing.finiteType
-      file: AlgebraicGroups/Algebra/UnitriangularCoordinateRing.lean
     - declaration: UnitriangularStageCoordinateRing.ideal
       file: AlgebraicGroups/Algebra/UnitriangularStageCoordinateRing.lean
     - declaration: UnitriangularStageCoordinateRing.CoordinateRing
@@ -272,26 +259,6 @@ status:
       file: AlgebraicGroups/Algebra/UnitriangularStagePolynomial.lean
     - declaration: UnitriangularStageCoordinateRing.polynomialEquiv_symm_X
       file: AlgebraicGroups/Algebra/UnitriangularStagePolynomial.lean
-    - declaration: Matrix.unitriangularSubgroup
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
-    - declaration: Matrix.UnitriangularGroup.map
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
-    - declaration: AlgebraicGeometry.unitriangularGroupScheme
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
-    - declaration: AlgebraicGeometry.unitriangularInclusion
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
-    - declaration: AlgebraicGeometry.unitriangularInclusion_isClosedImmersion
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
-    - declaration: AlgebraicGeometry.unitriangularGroupMulEquivAlgHom
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
-    - declaration: AlgebraicGeometry.unitriangularGroupMulEquivPoints
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
-    - declaration: AlgebraicGeometry.unitriangularGroupPointsIso
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
-    - declaration: AlgebraicGeometry.unitriangularFromGL_natural
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
-    - declaration: AlgebraicGeometry.unitriangularInclusion_point
-      file: AlgebraicGroups/GroupScheme/Unitriangular.lean
     - declaration: AlgebraicGeometry.unitriangularStageScheme
       file: AlgebraicGroups/GroupScheme/UnitriangularStages.lean
     - declaration: AlgebraicGeometry.unitriangularStageInclusion
@@ -340,8 +307,6 @@ status:
       file: AlgebraicGroups/Algebra/UnitriangularStageKernel.lean
     - declaration: UnitriangularStageCoordinateRing.existsUnique_comp_successor
       file: AlgebraicGroups/Algebra/UnitriangularStageKernel.lean
-    - declaration: AlgebraicGeometry.unitriangularStageSuccessor_existsUnique_scheme
-      file: AlgebraicGroups/GroupScheme/UnitriangularStageKernel.lean
     - declaration: AlgebraicGeometry.unitriangularStageCoordinateMap_isPullback
       file: AlgebraicGroups/GroupScheme/UnitriangularStageKernel.lean
     - declaration: AlgebraicGeometry.unitriangularUnderlyingAffineSpaceIso
@@ -351,8 +316,6 @@ status:
     - declaration: AlgebraicGeometry.unitriangularUnderlyingAffineSpaceIso_preimage_inverse
       file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
     - declaration: AlgebraicGeometry.unitriangularCoordinateRing_standardSmooth
-      file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
-    - declaration: AlgebraicGeometry.unitriangularCoordinateRing_finitePresentation
       file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
     - declaration: AlgebraicGeometry.unitriangularGroupUnderlyingScheme_smooth
       file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
@@ -368,99 +331,75 @@ status:
       file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
     - declaration: AlgebraicGeometry.unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin
       file: AlgebraicGroups/GroupScheme/UnitriangularGeometry.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup_zero
       file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.mem_superdiagonalSubgroup
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup_normal
       file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_one
+    - declaration: TauCeti.UpperUnitriangularGroup.map_mem_superdiagonalSubgroup
       file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_zero
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup_map
       file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_antitone
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_succ_le
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_end
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_normal
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_commutator
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.descendingSeries
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.descendingSeries_isDescendingCentralSeries
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.descendingSeries_end
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.instIsNilpotent
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.nilpotencyClass_le
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.map_mem_superdiagonalSubgroup
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_map
-      file: AlgebraicGroups/GroupTheory/UnitriangularCentralFiltration.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalIndex
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalIndex
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom_apply
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom_apply
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom_ker
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom_ker
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom_surjective
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom_surjective
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalQuotientEquiv
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalQuotientEquiv
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalQuotientEquiv_mk
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalQuotientEquiv_mk
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalStageMap
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalStageMap
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateMap
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateMap
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalCoordinateHom_natural
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom_natural
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalQuotientMap
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalQuotientMap
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalQuotientEquiv_natural
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalQuotientEquiv_natural
       file: AlgebraicGroups/GroupTheory/UnitriangularSuperdiagonalQuotients.lean
-    - declaration: Matrix.UnitriangularGroup.elementary
+    - declaration: TauCeti.UpperUnitriangularGroup.elementary
       file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
-    - declaration: Matrix.UnitriangularGroup.elementary_gl
+    - declaration: TauCeti.UpperUnitriangularGroup.elementary_gl
       file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
-    - declaration: Matrix.UnitriangularGroup.elementary_coe
+    - declaration: TauCeti.UpperUnitriangularGroup.elementary_coe
       file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
-    - declaration: Matrix.UnitriangularGroup.elementary_commutator
+    - declaration: TauCeti.UpperUnitriangularGroup.elementary_commutator
       file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
-    - declaration: Matrix.UnitriangularGroup.nilpotencyClass_eq_of_nontrivial
+    - declaration: TauCeti.UpperUnitriangularGroup.nilpotencyClass_eq_of_nontrivial
       file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
-    - declaration: Matrix.UnitriangularGroup.nilpotencyClass_eq_zero_of_subsingleton
+    - declaration: TauCeti.UpperUnitriangularGroup.nilpotencyClass_eq_zero_of_subsingleton
       file: AlgebraicGroups/GroupTheory/UnitriangularNilpotencyClass.lean
-    - declaration: Matrix.UnitriangularGroup.elementary_mem_lowerCentralSeries_of_distance
+    - declaration: TauCeti.UpperUnitriangularGroup.elementary_mem_lowerCentralSeries_of_distance
       file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
-    - declaration: Matrix.UnitriangularGroup.elementary_mem_superdiagonalSubgroup
+    - declaration: TauCeti.UpperUnitriangularGroup.elementary_mem_superdiagonalSubgroup
       file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_le_of_elementary_mem
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup_le_of_elementary_mem
       file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
-    - declaration: Matrix.UnitriangularGroup.lowerCentralSeries_eq_superdiagonalSubgroup
+    - declaration: TauCeti.UpperUnitriangularGroup.lowerCentralSeries_eq_superdiagonalSubgroup
       file: AlgebraicGroups/GroupTheory/UnitriangularLowerCentralSeries.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_commutator_eq
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup_commutator_eq
       file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
-    - declaration: Matrix.UnitriangularGroup.derivedSeries_eq_superdiagonalSubgroup
+    - declaration: TauCeti.UpperUnitriangularGroup.derivedSeries_eq_superdiagonalSubgroup
       file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
-    - declaration: Matrix.UnitriangularGroup.superdiagonalSubgroup_eq_bot_iff
+    - declaration: TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup_eq_bot_iff
       file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
-    - declaration: Matrix.UnitriangularGroup.derivedSeries_eq_bot_iff
+    - declaration: TauCeti.UpperUnitriangularGroup.derivedSeries_eq_bot_iff
       file: AlgebraicGroups/GroupTheory/UnitriangularDerivedSeries.lean
     - declaration: Matrix.pow_card_eq_zero_of_upperTriangular_diag_zero
       file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
-    - declaration: Matrix.UnitriangularGroup.pow_prime_pow_eq_one
+    - declaration: TauCeti.UpperUnitriangularGroup.pow_prime_pow_eq_one
       file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
-    - declaration: Matrix.UnitriangularGroup.exists_pow_ne_one_of_pos_lt
+    - declaration: TauCeti.UpperUnitriangularGroup.exists_pow_ne_one_of_pos_lt
       file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
-    - declaration: Matrix.UnitriangularGroup.forall_pow_prime_pow_eq_one_iff
+    - declaration: TauCeti.UpperUnitriangularGroup.forall_pow_prime_pow_eq_one_iff
       file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
-    - declaration: Matrix.UnitriangularGroup.exponent_dvd_prime_pow_iff
+    - declaration: TauCeti.UpperUnitriangularGroup.exponent_dvd_prime_pow_iff
       file: AlgebraicGroups/GroupTheory/UnitriangularExponent.lean
     - declaration: Matrix.diagonalSubgroup
       file: AlgebraicGroups/GroupTheory/Diagonal.lean
@@ -468,121 +407,41 @@ status:
       file: AlgebraicGroups/GroupTheory/Diagonal.lean
     - declaration: Matrix.DiagonalGroup.map
       file: AlgebraicGroups/GroupTheory/Diagonal.lean
-    - declaration: DiagonalCoordinateRing.ideal_isHopfIdeal
-      file: AlgebraicGroups/Algebra/DiagonalCoordinateRing.lean
-    - declaration: DiagonalCoordinateRing.universal_detInverse
-      file: AlgebraicGroups/Algebra/DiagonalCoordinateRing.lean
-    - declaration: DiagonalCoordinateRing.finiteType
-      file: AlgebraicGroups/Algebra/DiagonalCoordinateRing.lean
-    - declaration: AlgebraicGeometry.diagonalGroupScheme
-      file: AlgebraicGroups/GroupScheme/Diagonal.lean
-    - declaration: AlgebraicGeometry.diagonalInclusion_isClosedImmersion
-      file: AlgebraicGroups/GroupScheme/Diagonal.lean
-    - declaration: AlgebraicGeometry.diagonalGroupMulEquivPoints
-      file: AlgebraicGroups/GroupScheme/Diagonal.lean
-    - declaration: AlgebraicGeometry.diagonalInclusion_point
-      file: AlgebraicGroups/GroupScheme/Diagonal.lean
-    - declaration: AlgebraicGeometry.diagonalGroupPointsIso
-      file: AlgebraicGroups/GroupScheme/Diagonal.lean
-    - declaration: AlgebraicGeometry.diagonalGroupUnitsEquivPoints
-      file: AlgebraicGroups/GroupScheme/Diagonal.lean
     - declaration: MvPolynomial.card_le_card_of_unique_common_zero
       file: AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero.lean
     - declaration: MvPolynomial.exists_common_zero_ne
       file: AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero.lean
     - declaration: MvPolynomial.exists_nonzero_common_zero_of_isHomogeneous
       file: AlgebraicGroups/Algebra/AlgebraicallyClosedCommonZero.lean
-    - declaration: Matrix.upperTriangularSubgroup
+    - declaration: TauCeti.UpperTriangularGroup.kernelEquiv
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.map
+    - declaration: TauCeti.UpperTriangularGroup.diagonalAction
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.isUnit_entry
+    - declaration: TauCeti.UpperTriangularGroup.diagonalAction_apply
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.diagonal
+    - declaration: TauCeti.UpperTriangularGroup.unipotentPart
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.diagonalSection
+    - declaration: TauCeti.UpperTriangularGroup.unipotentPart_apply
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UnitriangularGroup.inUpperTriangular
+    - declaration: TauCeti.UpperTriangularGroup.semidirEquiv
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.range_unitriangular
+    - declaration: TauCeti.UpperTriangularGroup.semidirEquiv_mul_formula
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.kernelEquiv
+    - declaration: TauCeti.UpperTriangularGroup.semidirMap
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.diagonalAction
+    - declaration: TauCeti.UpperTriangularGroup.semidirEquiv_map
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.diagonalAction_apply
+    - declaration: TauCeti.UpperTriangularGroup.semidirEquiv_symm_map
       file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.unipotentPart
-      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.unipotentPart_apply
-      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.semidirEquiv
-      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.semidirEquiv_mul_formula
-      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.semidirMap
-      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.diagonal_map
-      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.semidirEquiv_map
-      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: Matrix.UpperTriangularGroup.semidirEquiv_symm_map
-      file: AlgebraicGroups/GroupTheory/UpperTriangular.lean
-    - declaration: UpperTriangularCoordinateRing.CoordinateRing
-      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
-    - declaration: UpperTriangularCoordinateRing.ideal
-      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
-    - declaration: UpperTriangularCoordinateRing.quotient
-      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
-    - declaration: UpperTriangularCoordinateRing.quotient_lower
-      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
-    - declaration: UpperTriangularCoordinateRing.universal
-      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
-    - declaration: UpperTriangularCoordinateRing.universal_detInverse
-      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
-    - declaration: UpperTriangularCoordinateRing.ideal_isHopfIdeal
-      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
-    - declaration: UpperTriangularCoordinateRing.finiteType
-      file: AlgebraicGroups/Algebra/UpperTriangularCoordinateRing.lean
-    - declaration: AlgebraicGeometry.upperTriangularGroupScheme
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularInclusion
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularInclusion_isClosedImmersion
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularToGL
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularFromGL
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularGroupMulEquivAlgHom
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularGroupMulEquivPoints
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularInclusion_point
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularToGL_natural
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularFromGL_natural
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.upperTriangularGroupPointsIso
-      file: AlgebraicGroups/GroupScheme/UpperTriangular.lean
-    - declaration: AlgebraicGeometry.diagonalGroupProjectionCoordinateMap
-      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
-    - declaration: AlgebraicGeometry.diagonalGroupProjectionBialgHom
-      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
-    - declaration: AlgebraicGeometry.diagonalGroupProjection
-      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
-    - declaration: AlgebraicGeometry.diagonalGroupProjection_point
-      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
     - declaration: AlgebraicGeometry.diagonalGroupHomUnits
       file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
     - declaration: AlgebraicGeometry.multiplicativeGroupHomUnits
-      file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
+      file: AlgebraicGroups/GroupScheme/Multiplicative.lean
     - declaration: AlgebraicGeometry.diagonalGroupProjection_globalUnit
       file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
-    - declaration: AlgebraicGeometry.diagonalGroupProductFan_forget_isLimit
+    - declaration: AlgebraicGeometry.diagonalGroupProductFanForgetIsLimit
       file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
-    - declaration: AlgebraicGeometry.diagonalGroupProductFan_isLimit
+    - declaration: AlgebraicGeometry.diagonalGroupProductFanIsLimit
       file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
     - declaration: AlgebraicGeometry.diagonalGroupSchemeProductIso
       file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
@@ -594,42 +453,6 @@ status:
       file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
     - declaration: AlgebraicGeometry.diagonalGroupSchemeFin0IsTerminal
       file: AlgebraicGroups/GroupScheme/DiagonalProduct.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalCoordinateMap
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalSectionCoordinateMap
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularUnitriangularCoordinateMap
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalProjection
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalSection
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.unitriangularToUpperTriangular
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonal_section
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.unitriangularToUpperTriangular_isClosedImmersion
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.unitriangularToUpperTriangular_inclusion
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalSection_inclusion
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalSquare_isPushout
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalSquare_isPullback
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalSquare_isPullback_over
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalSquare_isPullback_group
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalProjection_point
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularDiagonalSection_point
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.unitriangularToUpperTriangular_point
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
-    - declaration: AlgebraicGeometry.upperTriangularSection_over
-      file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
     - declaration: AlgebraicGeometry.upperTriangularDiagonalConj
       file: AlgebraicGroups/GroupScheme/UpperTriangularSchemeProduct.lean
     - declaration: AlgebraicGeometry.upperTriangularDiagonalConj_lift_comp_inclusion
@@ -711,25 +534,21 @@ status:
     - declaration: Matrix.card_upperTriangularRetainedIndices
       file: AlgebraicGroups/LinearAlgebra/Matrix/UpperTriangularIndices.lean
     - file: AlgebraicGroupsTest/LinearAlgebra/Matrix/UpperTriangularIndices.lean
-    - declaration: UpperTriangularCoordinateRing.retainedIndices
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.retainedIndices
       file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
-    - declaration: UpperTriangularCoordinateRing.ideal_eq_localizedCoordinateIdeal
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.localizedPolynomialEquiv
       file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
-    - declaration: UpperTriangularCoordinateRing.localizedPolynomialEquiv
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.localizedPolynomialEquiv_entry
       file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
-    - declaration: UpperTriangularCoordinateRing.localizedPolynomialEquiv_entry
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.localizedPolynomialEquiv_symm_entry
       file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
-    - declaration: UpperTriangularCoordinateRing.localizedPolynomialEquiv_symm_entry
-      file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
-    - declaration: UpperTriangularCoordinateRing.erasedDeterminant_eval_one
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.erasedDeterminant_eval_one
       file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
     - declaration: AlgebraicGeometry.upperTriangularCoordinateRing_ringKrullDim
       file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
     - declaration: AlgebraicGeometry.upperTriangularGroupUnderlyingScheme_topologicalKrullDim
       file: AlgebraicGroups/GroupScheme/UpperTriangularDimension.lean
     - file: AlgebraicGroupsTest/GroupScheme/UpperTriangularDimension.lean
-    - declaration: UnitriangularCoordinateRing.comul_entry
-      file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
     - declaration: UnitriangularCoordinateRing.baseChange_counit
       file: AlgebraicGroups/Algebra/UnitriangularHopfBaseChange.lean
     - declaration: UnitriangularCoordinateRing.baseChange_comul
@@ -760,23 +579,24 @@ status:
       file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
     - declaration: AlgebraicGeometry.unitriangularGroupSchemeBaseChangeIso_tower
       file: AlgebraicGroups/GroupScheme/UnitriangularBaseChangeCoherence.lean
-    - declaration: Subcoalgebra
-      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra.lean
-    - declaration: Subcoalgebra.mk'
-      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra.lean
-    - declaration: Subcoalgebra.coalgebra
-      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Coalgebra.lean
-    - declaration: Subcoalgebra.subtype
+    - declaration: TauCeti.Subcoalgebra.subtype
       file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean
     - declaration: CoalgHom.codRestrict
       file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean
     - declaration: CoalgHom.existsUnique_subtype_comp_iff
       file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean
-    - declaration: Coalgebra.exists_finite_subcoalgebra
-      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean
-    - declaration: Coalgebra.exists_finite_subcoalgebra_of_finite
-      file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean
     - file: AlgebraicGroupsTest/Algebra/Coalgebra/SubcoalgebraDiagonal.lean
+
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.weightUnipotentCoordinateIso
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.isPullback_diagonalProjection_group
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.isPullback_diagonalProjection_over
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.isPullback_diagonalProjection
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
+    - declaration: TauCeti.GeneralLinear.UpperTriangular.isPushout_diagonalProjection
+      file: AlgebraicGroups/GroupScheme/UpperTriangularSplitKernel.lean
 
 review:
   status: >-

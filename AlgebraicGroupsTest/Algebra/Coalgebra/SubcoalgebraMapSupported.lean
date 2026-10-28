@@ -5,7 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
-public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
+public import TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike
+import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finsupp
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map
 public import Mathlib.Algebra.MonoidAlgebra.Module
@@ -26,7 +27,7 @@ subcoalgebra is exactly the span of this single vector, again nonzero, proper an
 module-finite. In particular, injectivity of the homomorphism is not needed for this
 carrier calculation, and the field may be finite or have positive characteristic.
 
-The subcoalgebras are constructed with `Subcoalgebra.mk'` and the group-like-span closure
+The subcoalgebras are constructed with `Subcoalgebra.ofSubmodule` and the group-like-span closure
 lemma. Their coalgebras and inclusions are the restricted structures supplied by
 `Subcoalgebra`. The coordinate vectors are group-like for these structures, by factoring
 the scalar-source coalgebra homomorphisms through the inclusions. The image calculation
@@ -52,6 +53,9 @@ proper and nonzero properties of this image.
 
 @[expose] public section
 
+open TauCeti
+
+
 noncomputable section
 
 universe u
@@ -63,13 +67,24 @@ variable (K : Type u) [Field K]
 /-- The diagonal subcoalgebra whose coefficients are supported on `s`. -/
 private abbrev supportedSubcoalgebra (s : Set ℕ) :
     Subcoalgebra K (AddMonoidAlgebra K ℕ) :=
-  Subcoalgebra.mk' (AddMonoidAlgebra.supported K K s) <| by
-    intro x hx
-    rw [AddMonoidAlgebra.supported_eq_span_single] at hx ⊢
-    exact comul_mem_range_mapIncl_span_of_isGroupLikeElem
-      (by
-        rintro y ⟨i, _hi, rfl⟩
-        exact AddMonoidAlgebra.isGroupLikeElem_single_one (R := K) (A := K) i) hx
+  Subcoalgebra.ofSubmodule (AddMonoidAlgebra.supported K K s) <| by
+    let D := Subcoalgebra.groupLikeSetSpan ((fun i : ℕ =>
+      (⟨AddMonoidAlgebra.single i 1,
+        AddMonoidAlgebra.isGroupLikeElem_single_one (R := K) (A := K) i⟩ :
+          GroupLike K (AddMonoidAlgebra K ℕ))) '' s)
+    have hD : D.toSubmodule = AddMonoidAlgebra.supported K K s := by
+      rw [Subcoalgebra.groupLikeSetSpan_toSubmodule,
+        AddMonoidAlgebra.supported_eq_span_single, Set.image_image]
+    intro c hc
+    have hcD : c ∈ D := by
+      rw [← Subcoalgebra.mem_toSubmodule, hD]
+      exact hc
+    have hd := D.comul_mem hcD
+    change Coalgebra.comul c ∈ LinearMap.range
+      (_root_.TensorProduct.map D.toSubmodule.subtype D.toSubmodule.subtype) at hd
+    exact (congrArg (fun U : Submodule K (AddMonoidAlgebra K ℕ) =>
+      Coalgebra.comul (R := K) c ∈
+        LinearMap.range (_root_.TensorProduct.map U.subtype U.subtype)) hD).mp hd
 
 private lemma supportedSubcoalgebra_toSubmodule (s : Set ℕ) :
     (supportedSubcoalgebra K s).toSubmodule = AddMonoidAlgebra.supported K K s :=
@@ -111,7 +126,7 @@ private lemma supportedSubcoalgebra_fg (s : Set ℕ) (hs : s.Finite) :
 
 /-- A coordinate vector viewed in the supported subcoalgebra. -/
 private abbrev supportedVector (s : Set ℕ) (i : ℕ) (hi : i ∈ s) :
-    supportedSubcoalgebra K s :=
+    (supportedSubcoalgebra K s).toSubmodule :=
   ⟨AddMonoidAlgebra.single i (1 : K),
     (single_one_mem_supportedSubcoalgebra_iff K s i).mpr hi⟩
 
@@ -121,14 +136,16 @@ private lemma supportedVector_isGroupLike (s : Set ℕ) (i : ℕ) (hi : i ∈ s)
     ⟨AddMonoidAlgebra.single i (1 : K),
       AddMonoidAlgebra.isGroupLikeElem_single_one (R := K) (A := K) i⟩
   have hg (r : K) : GroupLike.coalgHomEquiv g r ∈ supportedSubcoalgebra K s := by
-    simpa only [GroupLike.coalgHomEquiv_apply] using
-      (supportedSubcoalgebra K s).smul_mem r
+    change r • (g : AddMonoidAlgebra K ℕ) ∈ (supportedSubcoalgebra K s).toSubmodule
+    simpa only [g] using
+      (supportedSubcoalgebra K s).toSubmodule.smul_mem r
         ((single_one_mem_supportedSubcoalgebra_iff K s i).mpr hi)
   let f := (GroupLike.coalgHomEquiv g).codRestrict (supportedSubcoalgebra K s) hg
   have hf : f 1 = supportedVector K s i hi := by
     apply Subtype.ext
-    simp only [f, CoalgHom.coe_codRestrict, GroupLike.coalgHomEquiv_apply, one_smul]
-    rfl
+    exact (CoalgHom.coe_codRestrict (GroupLike.coalgHomEquiv g)
+      (supportedSubcoalgebra K s) hg 1).trans
+        (by simp [GroupLike.coalgHomEquiv_apply, g])
   have h := ((isGroupLikeElem_self (R := K) (r := (1 : K))).mpr rfl).map f
   rwa [hf] at h
 
@@ -169,8 +186,8 @@ theorem exists_finite_proper_subcoalgebra_addMonoidAlgebra_nat_map_zero :
         ({AddMonoidAlgebra.single 0 (1 : K), AddMonoidAlgebra.single 1 (1 : K)} :
           Set (AddMonoidAlgebra K ℕ)) ∧
       D.toSubmodule ≠ ⊥ ∧ D.toSubmodule ≠ ⊤ ∧ D.toSubmodule.FG ∧
-      Module.Finite K D ∧ ¬ Module.Finite K (AddMonoidAlgebra K ℕ) ∧
-      (∃ x₀ x₁ : D,
+      Module.Finite K D.toSubmodule ∧ ¬ Module.Finite K (AddMonoidAlgebra K ℕ) ∧
+      (∃ x₀ x₁ : D.toSubmodule,
         D.subtype x₀ = AddMonoidAlgebra.single 0 (1 : K) ∧
         D.subtype x₁ = AddMonoidAlgebra.single 1 (1 : K) ∧
         IsGroupLikeElem K x₀ ∧ IsGroupLikeElem K x₁) ∧
@@ -216,12 +233,13 @@ theorem exists_finite_proper_subcoalgebra_addMonoidAlgebra_nat_image_zero :
       (AddMonoidAlgebra.mapDomainBialgHom K (0 : ℕ →+ ℕ)).toCoalgHom
     ∃ D : Subcoalgebra K (AddMonoidAlgebra K ℕ),
       D.toSubmodule = AddMonoidAlgebra.supported K K ({0, 1} : Set ℕ) ∧
-      D.toSubmodule ≠ ⊥ ∧ D.toSubmodule ≠ ⊤ ∧ D.toSubmodule.FG ∧ Module.Finite K D ∧
+      D.toSubmodule ≠ ⊥ ∧ D.toSubmodule ≠ ⊤ ∧ D.toSubmodule.FG ∧ Module.Finite K D.toSubmodule ∧
       (Subcoalgebra.map f D).toSubmodule = Submodule.span K
         ({AddMonoidAlgebra.single 0 (1 : K)} : Set (AddMonoidAlgebra K ℕ)) ∧
       (Subcoalgebra.map f D).toSubmodule ≠ ⊥ ∧
       (Subcoalgebra.map f D).toSubmodule ≠ ⊤ ∧
-      (Subcoalgebra.map f D).toSubmodule.FG ∧ Module.Finite K (Subcoalgebra.map f D) := by
+      (Subcoalgebra.map f D).toSubmodule.FG ∧ Module.Finite K (Subcoalgebra.map f D).toSubmodule
+          := by
   obtain ⟨D, hDsupport, _hDspan, hDbot, hDtop, hDfg, hDfinite, _hinfinite, _hvectors, hI⟩ :=
     exists_finite_proper_subcoalgebra_addMonoidAlgebra_nat_map_zero K
   rcases hI with ⟨hIspan, _hIbot, hItop, hIfg, _hIfinite, _hzero, _hone⟩

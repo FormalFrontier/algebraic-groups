@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.Hom
+public import TauCeti.Algebra.Coalgebra.Subcoalgebra.Map
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.RingTheory.Finiteness.Basic
@@ -36,54 +37,21 @@ Mathlib's linear-map range and submodule subsingleton criteria.
 
 @[expose] public section
 
+open TauCeti
+
+
 universe u v w w₁
 
-namespace Subcoalgebra
+namespace TauCeti.Subcoalgebra
 
 variable {K : Type u} {C : Type v} {C' : Type w}
 variable [Field K] [AddCommGroup C] [Module K C] [Coalgebra K C]
 variable [AddCommGroup C'] [Module K C'] [Coalgebra K C']
 
-/-- The image of a subcoalgebra under a coalgebra homomorphism. -/
-def map (f : C →ₗc[K] C') (D : Subcoalgebra K C) : Subcoalgebra K C' where
-  toSubmodule := Submodule.map f.toLinearMap D.toSubmodule
-  comul_mem' := by
-    intro y hy
-    rcases Submodule.mem_map.mp hy with ⟨x, hx, rfl⟩
-    rcases D.comul_mem' hx with ⟨t, ht⟩
-    let I : Submodule K C' := Submodule.map f.toLinearMap D.toSubmodule
-    let j : D.toSubmodule →ₗ[K] I := f.toLinearMap.submoduleMap D.toSubmodule
-    have hj : I.subtype.comp j = f.toLinearMap.comp D.toSubmodule.subtype :=
-      LinearMap.ext fun z => LinearMap.submoduleMap_coe_apply f.toLinearMap z
-    refine ⟨TensorProduct.map j j t, ?_⟩
-    calc
-      TensorProduct.mapIncl I I (TensorProduct.map j j t) =
-          TensorProduct.map f.toLinearMap f.toLinearMap
-            (TensorProduct.mapIncl D.toSubmodule D.toSubmodule t) := by
-        simp only [TensorProduct.mapIncl, TensorProduct.map_map, hj]
-      _ = TensorProduct.map f.toLinearMap f.toLinearMap
-          (Coalgebra.comul (R := K) x) := by rw [ht]
-      _ = Coalgebra.comul (R := K) (f x) :=
-        CoalgHomClass.map_comp_comul_apply f x
-
-/-- The underlying submodule of the image is the image of the underlying submodule. -/
-@[simp]
-theorem map_toSubmodule (f : C →ₗc[K] C') (D : Subcoalgebra K C) :
-    (map f D).toSubmodule = Submodule.map f.toLinearMap D.toSubmodule :=
-  rfl
-
 /-- The carrier of the image is the set-theoretic image of the source subcoalgebra. -/
 @[simp]
 theorem coe_map (f : C →ₗc[K] C') (D : Subcoalgebra K C) :
     (map f D : Set C') = f '' (D : Set C) :=
-  rfl
-
-/-- An element belongs to the image exactly when it is the image of a member of the
-source subcoalgebra. -/
-@[simp]
-theorem mem_map {f : C →ₗc[K] C'} {D : Subcoalgebra K C} {y : C'} :
-    y ∈ map f D ↔ ∃ x ∈ D, f x = y := by
-  rw [← SetLike.mem_coe, coe_map]
   rfl
 
 /-- The image carrier of a subcoalgebra is zero exactly when its source carrier is zero.
@@ -97,30 +65,14 @@ theorem map_toSubmodule_eq_bot_iff (f : C →ₗc[K] C') (D : Subcoalgebra K C) 
           LinearMap.range (f.toLinearMap.comp D.subtype.toLinearMap) :=
         congrArg LinearMap.range (CoalgHom.comp_toLinearMap f D.subtype)
       _ = (map f D).toSubmodule := by
-        rw [CoalgHom.toLinearMap_eq_coe D.subtype, subtype_toLinearMap, LinearMap.range_comp,
+        rw [CoalgHom.toLinearMap_eq_ofClass D.subtype, subtype_toLinearMap, LinearMap.range_comp,
           Submodule.range_subtype, map_toSubmodule]
   rw [← hrange, LinearMap.range_eq_bot, CoalgHom.toLinearMap_eq_zero_iff]
   exact Submodule.subsingleton_iff_eq_bot
 
-/-- The image of a subcoalgebra under the identity homomorphism is itself. -/
-@[simp]
-theorem map_id (D : Subcoalgebra K C) : map (CoalgHom.id K C) D = D := by
-  apply toSubmodule_injective
-  simpa only [map_toSubmodule, CoalgHom.toLinearMap_eq_coe, CoalgHom.id_toLinearMap] using
-    (Submodule.map_id D.toSubmodule)
-
-variable {C'' : Type w₁} [AddCommGroup C''] [Module K C''] [Coalgebra K C'']
-
-/-- Taking the image under a composite homomorphism agrees with successive images. -/
-theorem map_comp (f : C →ₗc[K] C') (g : C' →ₗc[K] C'') (D : Subcoalgebra K C) :
-    map (g.comp f) D = map g (map f D) := by
-  apply toSubmodule_injective
-  simpa only [map_toSubmodule, CoalgHom.toLinearMap_eq_coe, CoalgHom.comp_toLinearMap] using
-    (Submodule.map_comp f.toLinearMap g.toLinearMap D.toSubmodule)
-
 /-- Containment of the image in a target submodule is equivalent to every member of the
 source subcoalgebra mapping into that submodule. -/
-theorem map_le_iff {f : C →ₗc[K] C'} {D : Subcoalgebra K C} {S : Submodule K C'} :
+theorem map_toSubmodule_le_iff {f : C →ₗc[K] C'} {D : Subcoalgebra K C} {S : Submodule K C'} :
     (map f D).toSubmodule ≤ S ↔ ∀ x ∈ D, f x ∈ S := by
   constructor
   · intro h x hx
@@ -129,16 +81,10 @@ theorem map_le_iff {f : C →ₗc[K] C'} {D : Subcoalgebra K C} {S : Submodule K
     obtain ⟨x, hx, rfl⟩ := mem_map.mp hy
     exact h x hx
 
-/-- Taking images preserves containment of underlying submodules. -/
-theorem map_mono {f : C →ₗc[K] C'} {D E : Subcoalgebra K C}
-    (hDE : D.toSubmodule ≤ E.toSubmodule) :
-    (map f D).toSubmodule ≤ (map f E).toSubmodule := by
-  simpa only [map_toSubmodule] using (Submodule.map_mono (f := f.toLinearMap) hDE)
-
 /-- The image of a subcoalgebra with finitely generated underlying submodule has finitely
 generated underlying submodule. -/
 theorem fg_map (f : C →ₗc[K] C') {D : Subcoalgebra K C} (hD : D.toSubmodule.FG) :
     (map f D).toSubmodule.FG := by
   simpa only [map_toSubmodule] using hD.map f.toLinearMap
 
-end Subcoalgebra
+end TauCeti.Subcoalgebra

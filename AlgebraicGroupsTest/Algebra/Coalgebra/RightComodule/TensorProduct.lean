@@ -4,16 +4,16 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
-import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct
-import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
+public import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct
+public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 
 /-!
 # Regular and bottom-subcomodule external tensor products
 
 The regular comodules on `A = MonoidAlgebra ℕ ℕ` give the regular comodule of
 the tensor coalgebra on `A ⊗[ℕ] A`. The monomials at indices `2` and `3`, with
-coefficient `1`, have a nonzero tensor whose coaction is its tensor square.
+coefficient `1`, have a nonzero tensor whose coact is its tensor square.
 The tensor of the two counits detects this input without a field or basis.
 
 For the distinct coalgebras `MonoidAlgebra ℕ Bool` and `MonoidAlgebra ℕ (Fin 3)`,
@@ -23,7 +23,7 @@ counit distinguishes that value from the input. Neither coordinate is a counit.
 
 The bottom subcomodule of the regular comodule on `A` gives a zero-carrier
 boundary. Its subtype and tensor domain are inhabited subsingletons, and the
-specified external tensor coaction is zero.
+specified external tensor coact is zero.
 
 For the scalar coalgebra `ℕ`, tensoring twice the identity with three times the
 identity sends `1 ⊗ₜ 1` to `2 ⊗ₜ 3`. The left unitor sends the latter to `6`,
@@ -32,7 +32,7 @@ laws are also exercised on these regular comodules.
 
 ## References
 
-The specified right comodules and raw external coaction are AlgebraicGroups
+The specified right comodules and raw external coact are AlgebraicGroups
 constructions by Formal Frontier Agents. Mathlib supplies the tensor maps and
 permutations by Kenny Lau and Mario Carneiro, tensor coalgebras by Amelia
 Livingston and Andrew Yang, scalar-tower tensor APIs by Kim Morrison, Johan
@@ -48,20 +48,21 @@ Classical comodules are credited bibliographically to M. E. Sweedler,
 
 open scoped TensorProduct
 
-open Coalgebra.RightComodule (externalTensor regular)
+open TauCeti.Comodule (externalTensor instSelf)
+open TauCeti
 
 noncomputable section
 
 namespace CoalgebraExternalTensorExamples
 
 private abbrev regularMonoidAlgebra :=
-  @regular ℕ (MonoidAlgebra ℕ ℕ) _ _ _ (MonoidAlgebra.instCoalgebra ℕ ℕ ℕ)
+  @instSelf ℕ (MonoidAlgebra ℕ ℕ) _ _ _ (MonoidAlgebra.instCoalgebra ℕ ℕ ℕ)
 
 private abbrev externalRegular :=
   externalTensor regularMonoidAlgebra regularMonoidAlgebra
 
 private abbrev regularTensor :=
-  @regular ℕ ((MonoidAlgebra ℕ ℕ) ⊗[ℕ] (MonoidAlgebra ℕ ℕ)) _ _ _
+  @instSelf ℕ ((MonoidAlgebra ℕ ℕ) ⊗[ℕ] (MonoidAlgebra ℕ ℕ)) _ _ _
     (TensorProduct.instCoalgebra (R := ℕ) (S := ℕ)
       (A := MonoidAlgebra ℕ ℕ) (B := MonoidAlgebra ℕ ℕ))
 
@@ -72,15 +73,15 @@ private abbrev monomialRight : MonoidAlgebra ℕ ℕ := MonoidAlgebra.single (3 
 private abbrev tensorMonomial := monomialLeft ⊗ₜ[ℕ] monomialRight
 
 /-- A closed regular model: recovery on the tensor coalgebra, a counit-detected
-nonzero input, and its diagonal, nonzero coaction. -/
+nonzero input, and its diagonal, nonzero coact. -/
 private theorem regular_semiring_contract :
     externalRegular = regularTensor ∧
-    externalRegular.coaction =
+    externalRegular.coact =
       ((TensorProduct.instCoalgebra (R := ℕ) (S := ℕ)
         (A := MonoidAlgebra ℕ ℕ) (B := MonoidAlgebra ℕ ℕ)).toCoalgebraStruct).comul ∧
     tensorMonomial ≠ 0 ∧
-    externalRegular.coaction tensorMonomial = tensorMonomial ⊗ₜ[ℕ] tensorMonomial ∧
-    externalRegular.coaction tensorMonomial ≠ 0 := by
+    externalRegular.coact tensorMonomial = tensorMonomial ⊗ₜ[ℕ] tensorMonomial ∧
+    externalRegular.coact tensorMonomial ≠ 0 := by
   have ha : Coalgebra.counit (R := ℕ) monomialLeft = 1 := by
     exact (MonoidAlgebra.counit_single (R := ℕ) (2 : ℕ) (1 : ℕ)).trans
       (CommSemiring.counit_apply ℕ 1)
@@ -98,41 +99,41 @@ private theorem regular_semiring_contract :
     have hone : (1 : ℕ) = 0 :=
       hdetect.symm.trans ((congrArg detector h).trans (map_zero detector))
     exact Nat.one_ne_zero hone
-  have hleft : regularMonoidAlgebra.coaction monomialLeft =
+  have hleft : regularMonoidAlgebra.coact monomialLeft =
       monomialLeft ⊗ₜ[ℕ] monomialLeft := by
-    rw [Coalgebra.RightComodule.regular_coaction]
+    rw [TauCeti.Comodule.instSelf_coact]
     simp only [monomialLeft, MonoidAlgebra.comul_single, CommSemiring.comul_apply,
       TensorProduct.map_tmul, MonoidAlgebra.lsingle_apply]
-  have hright : regularMonoidAlgebra.coaction monomialRight =
+  have hright : regularMonoidAlgebra.coact monomialRight =
       monomialRight ⊗ₜ[ℕ] monomialRight := by
-    rw [Coalgebra.RightComodule.regular_coaction]
+    rw [TauCeti.Comodule.instSelf_coact]
     simp only [monomialRight, MonoidAlgebra.comul_single, CommSemiring.comul_apply,
       TensorProduct.map_tmul, MonoidAlgebra.lsingle_apply]
-  have hvalue : externalRegular.coaction tensorMonomial =
+  have hvalue : externalRegular.coact tensorMonomial =
       tensorMonomial ⊗ₜ[ℕ] tensorMonomial := by
     calc
       _ = TensorProduct.tensorTensorTensorComm ℕ (MonoidAlgebra ℕ ℕ)
           (MonoidAlgebra ℕ ℕ) (MonoidAlgebra ℕ ℕ) (MonoidAlgebra ℕ ℕ)
-          (regularMonoidAlgebra.coaction monomialLeft ⊗ₜ[ℕ]
-            regularMonoidAlgebra.coaction monomialRight) :=
-        Coalgebra.RightComodule.externalTensor_coaction_tmul _ _ _ _
+          (regularMonoidAlgebra.coact monomialLeft ⊗ₜ[ℕ]
+            regularMonoidAlgebra.coact monomialRight) :=
+        TauCeti.Comodule.externalTensor_coact_tmul _ _ _ _
       _ = _ := by
         rw [hleft, hright]
         exact TensorProduct.tensorTensorTensorComm_tmul (R := ℕ)
           monomialLeft monomialLeft monomialRight monomialRight
-  refine ⟨Coalgebra.RightComodule.externalTensor_regular, ?_, hinput, hvalue, ?_⟩
-  · rw [Coalgebra.RightComodule.externalTensor_coaction]
-    exact Coalgebra.RightComodule.externalTensorCoaction_regular
+  refine ⟨TauCeti.Comodule.externalTensor_regular, ?_, hinput, hvalue, ?_⟩
+  · rw [TauCeti.Comodule.externalTensor_coact]
+    exact TauCeti.Comodule.externalTensorCoaction_regular
   · intro h
     apply hinput
-    exact externalRegular.coaction_injective
-      (h.trans (map_zero externalRegular.coaction).symm)
+    exact externalRegular.coact_injective
+      (h.trans (map_zero externalRegular.coact).symm)
 
 private abbrev regularBool :=
-  @regular ℕ (MonoidAlgebra ℕ Bool) _ _ _ (MonoidAlgebra.instCoalgebra ℕ ℕ Bool)
+  @instSelf ℕ (MonoidAlgebra ℕ Bool) _ _ _ (MonoidAlgebra.instCoalgebra ℕ ℕ Bool)
 
 private abbrev regularFinThree :=
-  @regular ℕ (MonoidAlgebra ℕ (Fin 3)) _ _ _ (MonoidAlgebra.instCoalgebra ℕ ℕ (Fin 3))
+  @instSelf ℕ (MonoidAlgebra ℕ (Fin 3)) _ _ _ (MonoidAlgebra.instCoalgebra ℕ ℕ (Fin 3))
 
 private abbrev falseMonomial : MonoidAlgebra ℕ Bool := MonoidAlgebra.single false 1
 
@@ -167,24 +168,30 @@ private abbrev selectedTensor := falseMonomial ⊗ₜ[ℕ] zeroMonomial
 /-- Product coordinates on two distinct regular coalgebras select one monomial tensor
 from a tensor of two sums. -/
 private theorem external_coordinate_coefficient :
-    (regularBool.externalTensor regularFinThree).coefficient coordinateProduct tensorPair =
+    (@Comodule.matrixCoefficient ℕ ((MonoidAlgebra ℕ Bool) ⊗[ℕ] (MonoidAlgebra ℕ (Fin 3)))
+        ((MonoidAlgebra ℕ Bool) ⊗[ℕ] (MonoidAlgebra ℕ (Fin 3))) _ _ _ _ _ _
+        (regularBool.externalTensor regularFinThree)) coordinateProduct tensorPair =
       selectedTensor := by
-  have hleft : regularBool.coefficient falseCoordinate boolPair = falseMonomial := by
-    rw [Coalgebra.RightComodule.coefficient_eq,
-      Coalgebra.RightComodule.regular_coaction]
+  have hleft : (@Comodule.matrixCoefficient ℕ (MonoidAlgebra ℕ Bool) (MonoidAlgebra ℕ Bool) _ _
+      _ _ _ _ regularBool) falseCoordinate boolPair = falseMonomial := by
+    rw [TauCeti.Comodule.matrixCoefficient_def, ← LinearMap.rTensor_def,
+      TauCeti.Comodule.instSelf_coact]
     simp [boolPair, falseMonomial, trueMonomial, falseCoordinate,
       MonoidAlgebra.comul_single, TensorProduct.map_tmul, MonoidAlgebra.lsingle_apply,
       LinearMap.rTensor_tmul]
-  have hright : regularFinThree.coefficient zeroCoordinate finThreePair = zeroMonomial := by
-    rw [Coalgebra.RightComodule.coefficient_eq,
-      Coalgebra.RightComodule.regular_coaction]
+  have hright : (@Comodule.matrixCoefficient ℕ (MonoidAlgebra ℕ (Fin 3)) (MonoidAlgebra ℕ (Fin
+      3)) _ _ _ _ _ _ regularFinThree) zeroCoordinate finThreePair = zeroMonomial := by
+    rw [TauCeti.Comodule.matrixCoefficient_def, ← LinearMap.rTensor_def,
+      TauCeti.Comodule.instSelf_coact]
     simp [finThreePair, zeroMonomial, oneMonomial, zeroCoordinate,
       MonoidAlgebra.comul_single, TensorProduct.map_tmul, MonoidAlgebra.lsingle_apply,
       LinearMap.rTensor_tmul]
   calc
-    _ = regularBool.coefficient falseCoordinate boolPair ⊗ₜ[ℕ]
-        regularFinThree.coefficient zeroCoordinate finThreePair :=
-      Coalgebra.RightComodule.externalTensor_coefficient_tmul
+    _ = (@Comodule.matrixCoefficient ℕ (MonoidAlgebra ℕ Bool) (MonoidAlgebra ℕ Bool) _ _ _ _ _ _
+        regularBool) falseCoordinate boolPair ⊗ₜ[ℕ]
+        (@Comodule.matrixCoefficient ℕ (MonoidAlgebra ℕ (Fin 3)) (MonoidAlgebra ℕ (Fin 3)) _ _ _
+            _ _ _ regularFinThree) zeroCoordinate finThreePair :=
+      TauCeti.Comodule.externalTensor_coefficient_tmul
         regularBool regularFinThree falseCoordinate zeroCoordinate boolPair finThreePair
     _ = selectedTensor := by rw [hleft, hright]
 
@@ -228,29 +235,30 @@ private theorem coordinate_coefficient_contract :
   · simp [zeroCoordinate, oneMonomial]
 
 private abbrev regularBottom :=
-  Coalgebra.RightComodule.Subcomodule.bot regularMonoidAlgebra
+  (⊥ : Subcomodule ℕ (MonoidAlgebra ℕ ℕ) (MonoidAlgebra ℕ ℕ))
 
-private abbrev bottomExternal := externalTensor regularBottom.comodule regularMonoidAlgebra
+private abbrev bottomExternal := externalTensor (Subcomodule.instComodule (R := ℕ) (C :=
+    MonoidAlgebra ℕ ℕ) regularBottom) regularMonoidAlgebra
 
-/-- Tensoring the bottom subtype comodule gives a zero coaction on an inhabited
+/-- Tensoring the bottom subtype comodule gives a zero coact on an inhabited
 subsingleton carrier, with the same ordinary tensor coalgebra. -/
 private theorem bottom_regular_contract :
-    Subsingleton regularBottom.toSubmodule ∧
-    regularBottom.comodule.coaction = 0 ∧
-    Subsingleton (regularBottom.toSubmodule ⊗[ℕ] MonoidAlgebra ℕ ℕ) ∧
-    bottomExternal.coaction = 0 ∧
-    ∀ t : regularBottom.toSubmodule ⊗[ℕ] MonoidAlgebra ℕ ℕ,
-      bottomExternal.coaction t = 0 := by
-  have hbot : Subsingleton regularBottom.toSubmodule := by
+    Subsingleton regularBottom ∧
+    (Subcomodule.instComodule (R := ℕ) (C := MonoidAlgebra ℕ ℕ) regularBottom).coact = 0 ∧
+    Subsingleton (regularBottom ⊗[ℕ] MonoidAlgebra ℕ ℕ) ∧
+    bottomExternal.coact = 0 ∧
+    ∀ t : regularBottom ⊗[ℕ] MonoidAlgebra ℕ ℕ,
+      bottomExternal.coact t = 0 := by
+  have hbot : Subsingleton regularBottom := by
     change Subsingleton (⊥ : Submodule ℕ (MonoidAlgebra ℕ ℕ))
     infer_instance
-  have htensor : Subsingleton (regularBottom.toSubmodule ⊗[ℕ] MonoidAlgebra ℕ ℕ) := by
+  have htensor : Subsingleton (regularBottom ⊗[ℕ] MonoidAlgebra ℕ ℕ) := by
     change Subsingleton ((⊥ : Submodule ℕ (MonoidAlgebra ℕ ℕ)) ⊗[ℕ] MonoidAlgebra ℕ ℕ)
     infer_instance
-  have hzero : bottomExternal.coaction = 0 :=
-    bottomExternal.coaction_eq_zero_iff.mpr htensor
+  have hzero : bottomExternal.coact = 0 :=
+    bottomExternal.coact_eq_zero_iff.mpr htensor
   refine ⟨hbot, ?_, htensor, hzero, ?_⟩
-  · rfl
+  · ext m; exact Subsingleton.elim _ _
   · intro t
     exact (LinearMap.congr_fun hzero t).trans (LinearMap.zero_apply t)
 
@@ -261,53 +269,65 @@ end
 
 namespace CoalgebraExternalTensorHomExamples
 
-open Coalgebra (RightComoduleHom)
+open TauCeti
+open TauCeti.Comodule (externalTensor instSelf)
+
+/-- The standard tensor coalgebra specialized to the two scalar natural-number coalgebras. -/
+noncomputable local instance natTensorCoalgebra : Coalgebra ℕ (ℕ ⊗[ℕ] ℕ) :=
+  TensorProduct.instCoalgebra (R := ℕ) (S := ℕ) (A := ℕ) (B := ℕ)
+
+/-- The external tensor of the two regular natural-number coactions in this fixture. -/
+local instance natTensorComodule : TauCeti.Comodule ℕ (ℕ ⊗[ℕ] ℕ) (ℕ ⊗[ℕ] ℕ) :=
+  TauCeti.Comodule.externalTensor (TauCeti.Comodule.instSelf ℕ ℕ)
+    (TauCeti.Comodule.instSelf ℕ ℕ)
+
+open TauCeti.Comodule.Hom
 
 example :
-    (((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).externalTensor
-      ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ))) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) =
+    (((2 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ).externalTensor
+      ((3 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ)) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) =
         (2 : ℕ) ⊗ₜ[ℕ] (3 : ℕ) := by
-  rw [RightComoduleHom.externalTensor_tmul]
+  rw [Comodule.Hom.externalTensor_tmul]
   rfl
 
 example :
     TensorProduct.lid ℕ ℕ
-        ((((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).externalTensor
-          ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ))) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ))) = 6 ∧
-      ((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).externalTensor
-          ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)) ≠
-        RightComoduleHom.id ((regular ℕ ℕ).externalTensor (regular ℕ ℕ)) := by
+        ((((2 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ).externalTensor
+          ((3 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ)) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ))) = 6 ∧
+      ((2 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ).externalTensor
+          ((3 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ) ≠
+        Comodule.Hom.id ℕ (ℕ ⊗[ℕ] ℕ) (ℕ ⊗[ℕ] ℕ) := by
   constructor
-  · rw [RightComoduleHom.externalTensor_tmul, TensorProduct.lid_tmul]
+  · rw [Comodule.Hom.externalTensor_tmul, TensorProduct.lid_tmul]
     rfl
   · intro h
     have hvalue := congrArg
-      (fun k : RightComoduleHom ((regular ℕ ℕ).externalTensor (regular ℕ ℕ))
-          ((regular ℕ ℕ).externalTensor (regular ℕ ℕ)) ↦
+      (fun k : Comodule.Hom ℕ (ℕ ⊗[ℕ] ℕ) (ℕ ⊗[ℕ] ℕ) (ℕ ⊗[ℕ] ℕ) ↦
         TensorProduct.lid ℕ ℕ (k ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)))) h
     apply (by decide : (6 : ℕ) ≠ 1)
-    simpa only [RightComoduleHom.externalTensor_tmul, RightComoduleHom.smul_apply,
-      RightComoduleHom.id_apply, TensorProduct.lid_tmul, Nat.nsmul_eq_mul] using hvalue
+    simp only [
+      Comodule.Hom.id_apply, TensorProduct.lid_tmul, Nat.nsmul_eq_mul] at hvalue
+    exact hvalue
 
 example (t : ℕ ⊗[ℕ] ℕ) :
-    ((RightComoduleHom.id (regular ℕ ℕ)).externalTensor
-      (RightComoduleHom.id (regular ℕ ℕ))) t = t := by
-  rw [RightComoduleHom.externalTensor_id, RightComoduleHom.id_apply]
+    ((Comodule.Hom.id ℕ ℕ ℕ).externalTensor
+      (Comodule.Hom.id ℕ ℕ ℕ)) t = t := by
+  rw [Comodule.Hom.externalTensor_id, Comodule.Hom.id_apply]
 
 example :
-    ((((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).comp
-        ((2 : ℕ) • RightComoduleHom.id (regular ℕ ℕ))).externalTensor
-      (((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)).comp
-        ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ)))) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) =
+    ((((2 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ).comp
+        ((2 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ)).externalTensor
+      (((3 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ).comp
+        ((3 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ))) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) =
         (4 : ℕ) ⊗ₜ[ℕ] (9 : ℕ) := by
-  rw [RightComoduleHom.externalTensor_comp, RightComoduleHom.comp_apply,
-    RightComoduleHom.externalTensor_tmul, RightComoduleHom.externalTensor_tmul]
+  rw [Comodule.Hom.externalTensor_comp, Comodule.Hom.comp_apply,
+    Comodule.Hom.externalTensor_tmul, Comodule.Hom.externalTensor_tmul]
   rfl
 
 example :
-    ((0 : RightComoduleHom (regular ℕ ℕ) (regular ℕ ℕ)).externalTensor
-      ((3 : ℕ) • RightComoduleHom.id (regular ℕ ℕ))) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) = 0 := by
-  simp only [RightComoduleHom.externalTensor_tmul, RightComoduleHom.zero_apply,
+    ((0 : Comodule.Hom ℕ ℕ ℕ ℕ).externalTensor
+      ((3 : ℕ) • Comodule.Hom.id ℕ ℕ ℕ)) ((1 : ℕ) ⊗ₜ[ℕ] (1 : ℕ)) = 0 := by
+  simp only [Comodule.Hom.externalTensor_tmul, Comodule.Hom.zero_apply,
     TensorProduct.zero_tmul]
 
 end CoalgebraExternalTensorHomExamples

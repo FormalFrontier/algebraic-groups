@@ -6,6 +6,8 @@ module
 
 public import Mathlib.RingTheory.HopfAlgebra.Convolution
 
+public import TauCeti.Algebra.HopfAlgebra.Antipode
+
 /-!
 # Involutivity of antipodes in commutative or cocommutative Hopf algebras
 
@@ -51,23 +53,7 @@ universe u v
 
 namespace HopfAlgebra
 
-section CommSemiring
 
-variable {R : Type u} {A : Type v} [CommSemiring R] [CommSemiring A] [HopfAlgebra R A]
-
-/-- The antipode of a commutative Hopf algebra is involutive, by involutivity of
-inversion in Mathlib's convolution group of algebra endomorphisms. -/
-theorem antipode_involutive : Function.Involutive (antipode R (A := A)) := by
-  intro a
-  exact congrArg (fun f : WithConv (A →ₐ[R] A) => f.ofConv a)
-    (inv_inv (WithConv.toConv (AlgHom.id R A)))
-
-/-- Applying the antipode twice in a commutative Hopf algebra returns the input. -/
-@[simp]
-theorem antipode_antipode (a : A) : antipode R (antipode R a) = a :=
-  antipode_involutive a
-
-end CommSemiring
 
 section IsCocomm
 

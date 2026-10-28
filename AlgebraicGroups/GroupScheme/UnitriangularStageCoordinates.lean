@@ -50,94 +50,98 @@ variable (K : Type) [CommRing K] (n r : ℕ)
 Milne, *Algebraic Groups* (2017), §6.49 gives one-entry additive
 quotients in the finer field-case filtration. -/
 def unitriangularStageCoordinateProjection (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
-    unitriangularStageScheme K n r ⟶ additiveGroupScheme K := by
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
+    unitriangularStageScheme K n r ⟶ TauCeti.AdditiveGroup.groupScheme K := by
   let coordinateArrow :
-      CommHopfAlgCat.of K (additiveGroupCoordinateRing K) ⟶
+      CommHopfAlgCat.of K ((SymmetricAlgebra K K)) ⟶
         CommHopfAlgCat.of K (CoordinateRing K n r) :=
     CommHopfAlgCat.ofHom (coordinateBialgHom K n r hr ij)
-  exact (hopfSpec (.of K)).map (Opposite.op coordinateArrow)
+  exact (hopfSpec (.of K)).map (Opposite.op coordinateArrow) ≫
+    eqToHom (TauCeti.AdditiveGroup.groupScheme_def K).symm
 
 theorem unitriangularStageCoordinateProjection_left (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     (unitriangularStageCoordinateProjection K n r hr ij).hom.hom.left =
       Spec.map (CommRingCat.ofHom
         ((coordinateBialgHom K n r hr ij :
-          additiveGroupCoordinateRing K →ₐ[K] CoordinateRing K n r)).toRingHom) := rfl
+          SymmetricAlgebra K K →ₐ[K] CoordinateRing K n r)).toRingHom) := by
+  rfl
 
 /-- The categorical product of the positive-stage additive coordinates.
 Milne, *Algebraic Groups* (2017), §6.49 gives field-case one-entry additive
 quotients; this product map uses all entries on a positive superdiagonal. -/
 def unitriangularStageCoordinateMap (hr : 1 ≤ r) :
     unitriangularStageScheme K n r ⟶
-      (∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-        additiveGroupScheme K) :=
+      (∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+        TauCeti.AdditiveGroup.groupScheme K) :=
   Limits.Pi.lift (fun ij => unitriangularStageCoordinateProjection K n r hr ij)
 
 @[simp] theorem unitriangularStageCoordinateMap_π (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     unitriangularStageCoordinateMap K n r hr ≫
-        Limits.Pi.π (fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-          additiveGroupScheme K) ij =
+        Limits.Pi.π (fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+          TauCeti.AdditiveGroup.groupScheme K) ij =
       unitriangularStageCoordinateProjection K n r hr ij := by
   simp [unitriangularStageCoordinateMap]
 
 /-- The closed successor has zero `r`-th coordinate as a group-scheme arrow. -/
 theorem unitriangularStageCoordinateProjection_successor_zero (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     unitriangularStageSuccessor K n r ≫
         unitriangularStageCoordinateProjection K n r hr ij = 0 := by
   have hzeroAlg :
       (successor K n r).comp (coordinateAlgHom K n r ij) =
         (Algebra.ofId K (CoordinateRing K n (r + 1))).comp
-          (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)) := by
-    let pointEquiv := additiveGroupMulEquivAlgHom K (CoordinateRing K n (r + 1))
-    have decode (f : additiveGroupCoordinateRing K →ₐ[K] CoordinateRing K n (r + 1)) :
-        (pointEquiv.symm (WithConv.toConv f)).toAdd = f (additiveGroupCoordinate K) := by
-      calc
-        _ = (pointEquiv (pointEquiv.symm (WithConv.toConv f))).ofConv
-              (additiveGroupCoordinate K) := by
-                symm
-                exact additiveGroupMulEquivAlgHom_coordinate K _ _
-        _ = f (additiveGroupCoordinate K) := by
-              rw [pointEquiv.apply_symm_apply]
+          (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K))) := by
+    let pointEquiv :=
+      (TauCeti.AdditiveGroup.gaPointsMulEquiv
+        (R := K) (A := CoordinateRing K n (r + 1))).symm
+    have decode (f : SymmetricAlgebra K K →ₐ[K] CoordinateRing K n (r + 1)) :
+        (pointEquiv.symm (WithConv.toConv f)).toAdd = f (SymmetricAlgebra.ι K K 1) := by
+      exact TauCeti.AdditiveGroup.toAdd_gaPointsMulEquiv
+        (R := K) (A := CoordinateRing K n (r + 1)) (WithConv.toConv f)
     apply WithConv.toConv_injective
     apply pointEquiv.symm.injective
     apply Multiplicative.toAdd.injective
     rw [decode, decode]
     change ((successor K n r).comp (coordinateAlgHom K n r ij))
-        (additiveGroupCoordinate K) =
+        ((SymmetricAlgebra.ι K K 1)) =
       ((Algebra.ofId K (CoordinateRing K n (r + 1))).comp
-        (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)))
-          (additiveGroupCoordinate K)
+        (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K))))
+          ((SymmetricAlgebra.ι K K 1))
     rw [AlgHom.comp_apply, AlgHom.comp_apply, coordinateAlgHom_coordinate,
       successor_coordinate K n r hr ij,
-      Bialgebra.counitAlgHom_apply, additiveGroupCoordinate_counit]
+      Bialgebra.counitAlgHom_apply, SymmetricAlgebra.counit_ι]
     exact (map_zero (Algebra.ofId K (CoordinateRing K n (r + 1)))).symm
   have hzeroLeft :
-      (0 : unitriangularStageScheme K n (r + 1) ⟶ additiveGroupScheme K).hom.hom.left =
+      (0 : unitriangularStageScheme K n (r + 1) ⟶ TauCeti.AdditiveGroup.groupScheme
+        K).hom.hom.left =
         Spec.map (CommRingCat.ofHom
           (((Algebra.ofId K (CoordinateRing K n (r + 1))).comp
-            (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K))).toRingHom)) := by
-    rw [Grp.zero_hom, Mon.zero_hom, Over.comp_left, Over.toUnit_left]
-    rw [one_spec_asOver_spec_left]
-    change Spec.map (CommRingCat.ofHom (algebraMap K (CoordinateRing K n (r + 1)))) ≫
-      Spec.map (CommRingCat.ofHom
-        (Bialgebra.counitAlgHom K (additiveGroupCoordinateRing K)).toRingHom) = _
-    rw [← Spec.map_comp]
+            (Bialgebra.counitAlgHom K ((SymmetricAlgebra K K)))).toRingHom)) ≫
+          eqToHom (TauCeti.AdditiveGroup.groupScheme_X_left K).symm := by
+    change (1 :
+      (Spec (CommRingCat.of (CoordinateRing K n (r + 1)))).asOver
+        (Spec (CommRingCat.of K)) ⟶ (TauCeti.AdditiveGroup.groupScheme K).X).left = _
+    rw [← map_one (TauCeti.AdditiveGroup.groupSchemePointMulEquiv
+      (R := K) (CoordinateRing K n (r + 1)))]
+    rw [TauCeti.AdditiveGroup.groupSchemePointMulEquiv_apply_left]
     rfl
   apply InducedCategory.Hom.ext
   apply Mon.Hom.ext
   apply Over.OverMorphism.ext
   change (unitriangularStageSuccessor K n r).hom.hom.left ≫
       (unitriangularStageCoordinateProjection K n r hr ij).hom.hom.left =
-    (0 : unitriangularStageScheme K n (r + 1) ⟶ additiveGroupScheme K).hom.hom.left
+    (0 : unitriangularStageScheme K n (r + 1) ⟶ TauCeti.AdditiveGroup.groupScheme K).hom.hom.left
   rw [hzeroLeft]
   rw [unitriangularStageSuccessor_left, unitriangularStageCoordinateProjection_left]
+  change _ = Spec.map (CommRingCat.ofHom
+    (((Algebra.ofId K (CoordinateRing K n (r + 1))).comp
+      (Bialgebra.counitAlgHom K (SymmetricAlgebra K K)))).toRingHom)
   rw [← Spec.map_comp]
   congr 1
-  ext x
-  exact AlgHom.congr_fun hzeroAlg x
+  apply CommRingCat.hom_ext
+  exact congrArg AlgHom.toRingHom hzeroAlg
 
 /-- The whole positive-stage map vanishes on the closed successor. -/
 theorem unitriangularStageCoordinateMap_successor_zero (hr : 1 ≤ r) :
@@ -152,81 +156,92 @@ variable (R : Type) [CommRing R] [Algebra K R]
 
 /-- On every coefficient algebra, a genuine projection reads the matrix entry. -/
 theorem unitriangularStageCoordinateProjection_point (hr : 1 ≤ r)
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r)
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     unitriangularStagePointMulEquiv K n r R s ≫
         (unitriangularStageCoordinateProjection K n r hr ij).hom.hom =
-      additiveGroupMulEquivPoints K R
+      (TauCeti.AdditiveGroup.schemePointsMulEquiv (R := K) R).symm
         (.ofAdd (Multiplicative.toAdd
-          (Matrix.UnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij)) := by
+          (TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij)) := by
   have hcoordinate :
       (unitriangularStageFromGL K n r R s).comp (coordinateAlgHom K n r ij) =
-        (additiveGroupMulEquivAlgHom K R
+        ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm
           (.ofAdd (Multiplicative.toAdd
-            (Matrix.UnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij))).ofConv := by
+            (TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom n R r hr s)
+              ij))).ofConv := by
     apply SymmetricAlgebra.algHom_ext
     ext
     change ((unitriangularStageFromGL K n r R s).comp (coordinateAlgHom K n r ij))
-        (additiveGroupCoordinate K) =
-      (additiveGroupMulEquivAlgHom K R
+        ((SymmetricAlgebra.ι K K 1)) =
+      ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm
         (.ofAdd (Multiplicative.toAdd
-          (Matrix.UnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij))).ofConv
-          (additiveGroupCoordinate K)
+          (TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij))).ofConv
+          ((SymmetricAlgebra.ι K K 1))
     rw [AlgHom.comp_apply, coordinateAlgHom_coordinate]
-    rw [additiveGroupMulEquivAlgHom_coordinate,
-      Matrix.UnitriangularGroup.superdiagonalCoordinateHom_apply]
+    rw [TauCeti.AdditiveGroup.gaPointsMulEquiv_symm_apply_ι, toAdd_ofAdd,
+      TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom_apply]
     change (unitriangularStageFromGL K n r R s)
       (quotient K n r (entry K n ij.1.1 ij.1.2)) =
         (s.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2
     rw [← AlgHom.comp_apply, unitriangularStageFromGL_comp_quotient]
-    exact unitriangularGroupMulEquivAlgHom_entry K (Fin n) R s.1 ij.1.1 ij.1.2
+    have hij : ij.1.1 < ij.1.2 := by have := ij.2; omega
+    rw [entry, TauCeti.UpperUnitriangular.genericMatrix_apply_of_lt K (Fin n) hij]
+    exact TauCeti.UpperUnitriangular.upperUnitriangularToPoint_apply K (Fin n) s.1
+      ⟨ij.1, hij⟩
   apply Over.OverMorphism.ext
   change (unitriangularStagePointMulEquiv K n r R s).left ≫
       (unitriangularStageCoordinateProjection K n r hr ij).hom.hom.left =
-    (additiveGroupMulEquivPoints K R
+    ((TauCeti.AdditiveGroup.schemePointsMulEquiv (R := K) R).symm
       (.ofAdd (Multiplicative.toAdd
-        (Matrix.UnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij))).left
+        (TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij))).left
   rw [unitriangularStagePointMulEquiv_apply_left,
     unitriangularStageCoordinateProjection_left,
-    additiveGroupMulEquivPoints_apply_left, ← Spec.map_comp]
-  exact congrArg (fun f : additiveGroupCoordinateRing K →ₐ[K] R =>
-    Spec.map (CommRingCat.ofHom f.toRingHom)) hcoordinate
+    TauCeti.AdditiveGroup.schemePointsMulEquiv_symm_apply,
+    TauCeti.AdditiveGroup.groupSchemePointMulEquiv_apply_left]
+  change _ = Spec.map (CommRingCat.ofHom
+    ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm
+      (.ofAdd (Multiplicative.toAdd
+        (TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom n R r hr s)
+          ij))).ofConv.toRingHom)
+  rw [← Spec.map_comp]
+  congr 1
+  apply CommRingCat.hom_ext
+  exact congrArg AlgHom.toRingHom hcoordinate
 
 /-- The product projections agree with the point-group coordinate hom. -/
 theorem unitriangularStageCoordinateMap_point (hr : 1 ≤ r)
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r)
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     unitriangularStagePointMulEquiv K n r R s ≫
         (unitriangularStageCoordinateMap K n r hr).hom.hom ≫
-        (Limits.Pi.π (fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-          additiveGroupScheme K) ij).hom.hom =
-      additiveGroupMulEquivPoints K R
+        (Limits.Pi.π (fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+          TauCeti.AdditiveGroup.groupScheme K) ij).hom.hom =
+      (TauCeti.AdditiveGroup.schemePointsMulEquiv (R := K) R).symm
         (.ofAdd (Multiplicative.toAdd
-          (Matrix.UnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij)) := by
+          (TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij)) := by
   change unitriangularStagePointMulEquiv K n r R s ≫
       (unitriangularStageCoordinateMap K n r hr ≫
-        Limits.Pi.π (fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-          additiveGroupScheme K) ij).hom.hom = _
+        Limits.Pi.π (fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+          TauCeti.AdditiveGroup.groupScheme K) ij).hom.hom = _
   rw [unitriangularStageCoordinateMap_π]
   exact unitriangularStageCoordinateProjection_point K n r R hr s ij
 
 /-- The all-algebra point equation is compatible with every base-algebra map. -/
 theorem unitriangularStageCoordinateMap_point_natural
     {S : Type} [CommRing S] [Algebra K S] (hr : 1 ≤ r)
-    (f : R →ₐ[K] S) (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (f : R →ₐ[K] S) (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r)
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     unitriangularStagePointMulEquiv K n r S
         (unitriangularStageMap n r R f.toRingHom s) ≫
         (unitriangularStageCoordinateMap K n r hr).hom.hom ≫
-        (Limits.Pi.π (fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-          additiveGroupScheme K) ij).hom.hom =
-      additiveGroupMulEquivPoints K S
+        (Limits.Pi.π (fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+          TauCeti.AdditiveGroup.groupScheme K) ij).hom.hom =
+      (TauCeti.AdditiveGroup.schemePointsMulEquiv (R := K) S).symm
         (.ofAdd (f (Multiplicative.toAdd
-          (Matrix.UnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij))) := by
+          (TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom n R r hr s) ij))) := by
   rw [unitriangularStageCoordinateMap_point K n r S hr]
   congr 1
   simp [unitriangularStageMap,
-    Matrix.UnitriangularGroup.superdiagonalCoordinateHom_apply,
-    Matrix.UnitriangularGroup.map_apply]
+    TauCeti.UpperUnitriangularGroup.superdiagonalCoordinateHom_apply]
 
 end AlgebraicGeometry

@@ -30,58 +30,67 @@ variable (K R : Type u)
 variable [CommRing K] [CommRing R] [Algebra K R]
 
 private theorem persistentTestMultiplicative001 :
-    Algebra.FiniteType K (multiplicativeGroupCoordinateRing K) :=
+    Algebra.FiniteType K (LaurentPolynomial K) :=
   inferInstance
 
 private theorem persistentTestMultiplicative002 :
-    LocallyOfFiniteType (multiplicativeGroupUnderlyingScheme K).hom :=
+    LocallyOfFiniteType ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom :=
   inferInstance
 
 private theorem persistentTestMultiplicative003 :
-    QuasiCompact (multiplicativeGroupUnderlyingScheme K).hom :=
+    QuasiCompact ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X).hom :=
   inferInstance
 
 private noncomputable def persistentTestMultiplicative004 :
-    Rˣ ≃* WithConv (multiplicativeGroupCoordinateRing K →ₐ[K] R) :=
-  multiplicativeGroupMulEquivAlgHom K R
+    Rˣ ≃* WithConv (LaurentPolynomial K →ₐ[K] R) :=
+  (TauCeti.MultiplicativeGroup.pointsMulEquiv (R := K) (A := R)).symm
 
 private noncomputable def persistentTestMultiplicative005 :
-    Rˣ ≃* ((Spec (.of R)).asOver (Spec (.of K)) ⟶ multiplicativeGroupUnderlyingScheme K) :=
-  multiplicativeGroupMulEquivPoints K R
+    Rˣ ≃* ((Spec (.of R)).asOver (Spec (.of K)) ⟶
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) :=
+  (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := K) (A := R)).symm
 
 /-- The algebra map represented by a unit sends the multiplicative coordinate to that unit. -/
 public theorem multiplicativeGroup_coordinate_evaluation (u : Rˣ) :
-    (multiplicativeGroupMulEquivAlgHom K R u).ofConv
-        (multiplicativeGroupCoordinate K) = u :=
-  multiplicativeGroupMulEquivAlgHom_coordinate K R u
+    ((TauCeti.MultiplicativeGroup.pointsMulEquiv (R := K) (A := R)).symm u).ofConv
+        ((LaurentPolynomial.T (R := K) 1)) = u :=
+by
+  rw [TauCeti.MultiplicativeGroup.pointsMulEquiv_symm_apply]
+  exact TauCeti.laurentEval_T_one u
 
 private theorem persistentTestMultiplicative007 {S : Type u} [CommRing S] [Algebra K S]
     (f : R →ₐ[K] S) (u : Rˣ) :
-    (multiplicativeGroupMulEquivAlgHom K S (Units.map f u)).ofConv =
-      f.comp (multiplicativeGroupMulEquivAlgHom K R u).ofConv :=
-  multiplicativeGroupMulEquivAlgHom_naturality K R f u
+    ((TauCeti.MultiplicativeGroup.pointsMulEquiv (R := K) (A := S)).symm (Units.map f u)).ofConv =
+      f.comp ((TauCeti.MultiplicativeGroup.pointsMulEquiv (R := K) (A := R)).symm u).ofConv :=
+by
+  rw [TauCeti.MultiplicativeGroup.pointsMulEquiv_symm_apply,
+    TauCeti.MultiplicativeGroup.pointsMulEquiv_symm_apply]
+  exact (TauCeti.comp_laurentEval f u).symm
 
 private theorem persistentTestMultiplicative008 (u : Rˣ) :
-    (multiplicativeGroupMulEquivPoints K R u).left =
-      Spec.map (CommRingCat.ofHom
-        (multiplicativeGroupMulEquivAlgHom K R u).ofConv.toRingHom) :=
-  multiplicativeGroupMulEquivPoints_apply_left K R u
+    let G := TauCeti.DiagonalizableGroup.multiplicativeCharacterGroup
+    let f := WithConv.toConv (TauCeti.DiagonalizableGroup.point (R := K)
+      (TauCeti.DiagonalizableGroup.uliftZPowersMulEquiv Rˣ u))
+    ((TauCeti.DiagonalizableGroup.groupSchemePointsMulEquiv (R := K) (A := R) G).symm f).left =
+      Spec.map (CommRingCat.ofHom f.ofConv.toRingHom) ≫
+        eqToHom (TauCeti.DiagonalizableGroup.groupScheme_X_left K G).symm := by
+  exact TauCeti.DiagonalizableGroup.groupSchemePointsMulEquiv_symm_apply_left _ _
 
 private theorem persistentTestMultiplicative009 :
-    CoalgebraStruct.comul (multiplicativeGroupCoordinate K) =
-      multiplicativeGroupCoordinate K ⊗ₜ[K] multiplicativeGroupCoordinate K :=
-  multiplicativeGroupCoordinate_comul K
+    CoalgebraStruct.comul ((LaurentPolynomial.T (R := K) 1)) =
+      (LaurentPolynomial.T (R := K) 1) ⊗ₜ[K] (LaurentPolynomial.T (R := K) 1) :=
+  AddMonoidAlgebra.comul_single 1 (1 : K)
 
 -- The entire API remains available when the target algebra is the zero ring.
-private noncomputable def persistentTestMultiplicative010 [Subsingleton R] :
+private noncomputable def persistentTestMultiplicative010 :
     Rˣ ≃* ((Spec (.of R)).asOver (Spec (.of K)) ⟶
-      multiplicativeGroupUnderlyingScheme K) :=
-  multiplicativeGroupMulEquivPoints K R
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) :=
+  (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := K) (A := R)).symm
 
 private noncomputable def persistentTestMultiplicative011 :
     (ZMod 1)ˣ ≃* WithConv
-      (multiplicativeGroupCoordinateRing (ZMod 1) →ₐ[ZMod 1] ZMod 1) :=
-  multiplicativeGroupMulEquivAlgHom (ZMod 1) (ZMod 1)
+      (LaurentPolynomial (ZMod 1) →ₐ[ZMod 1] ZMod 1) :=
+  (TauCeti.MultiplicativeGroup.pointsMulEquiv (R := (ZMod 1)) (A := (ZMod 1))).symm
 
 end AlgebraicGeometry
 
@@ -96,23 +105,24 @@ section ProjectionKernel
 
 variable (R : Type w) [CommRing R]
 
-local notation "M" => multiplicativeGroupUnderlyingScheme R
+local notation "M" => Grp.X (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme R)
 local notation "q" => snd M M
 local notation "K" => pullback q η[M]
 
 -- Laurent-coordinate evaluation at the unit is evaluation at 1, over any ring.
 private theorem multiplicative_unit_coordinate_one :
-    (multiplicativeGroupMulEquivAlgHom R R (1 : Rˣ)).ofConv
-      (multiplicativeGroupCoordinate R) = 1 := by
-  exact multiplicativeGroupMulEquivAlgHom_coordinate R R (1 : Rˣ)
+    ((TauCeti.MultiplicativeGroup.pointsMulEquiv (R := R) (A := R)).symm (1 : Rˣ)).ofConv
+      ((LaurentPolynomial.T (R := R) 1)) = 1 := by
+  rw [TauCeti.MultiplicativeGroup.pointsMulEquiv_symm_apply]
+  exact TauCeti.laurentEval_T_one (1 : Rˣ)
 
 -- The counit is a quotient map: its composite with the scalar inclusion is identity.
 private theorem multiplicative_unit_closed : IsClosedImmersion η[M].left := by
-  rw [one_spec_asOver_spec_left]
-  apply IsClosedImmersion.spec_of_surjective
-  intro r
-  exact ⟨algebraMap R (multiplicativeGroupCoordinateRing R) r,
-    (Bialgebra.counitAlgHom R (multiplicativeGroupCoordinateRing R)).commutes r⟩
+  let : IsClosedImmersion (η[M].left ≫ (M).hom) := by
+    rw [η[M].w]
+    change IsClosedImmersion (𝟙 (Spec (.of R)))
+    infer_instance
+  exact IsClosedImmersion.of_comp η[M].left (M).hom
 
 -- The closed unit makes the group separated, hence so is this base-change projection.
 private theorem multiplicative_projection_separated : IsSeparated (q).left := by
@@ -152,24 +162,29 @@ end ProjectionKernel
 
 -- The first factor contributes distinct 1 and -1 points to the actual unit fibre over Z.
 private theorem multiplicative_projection_integer_kernel_nontrivial :
-    let M := multiplicativeGroupUnderlyingScheme ℤ
+    let M := (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).X
     let q := snd M M
     ∃ a b : (Spec (.of ℤ)).asOver (Spec (.of ℤ)) ⟶ pullback q η[M], a ≠ b := by
   dsimp only
-  let M := multiplicativeGroupUnderlyingScheme ℤ
+  let M := (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).X
   let q := snd M M
   let T := (Spec (.of ℤ)).asOver (Spec (.of ℤ))
   let point (u : ℤˣ) : T ⟶ pullback q η[M] :=
-    pullback.lift (lift (multiplicativeGroupMulEquivPoints ℤ ℤ u)
+    pullback.lift (lift
+      ((TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℤ) (A := ℤ)).symm u)
       (toUnit T ≫ η[M])) (toUnit T) (by simp [q])
   refine ⟨point 1, point (-1), ?_⟩
   intro h
-  have hpoints : multiplicativeGroupMulEquivPoints ℤ ℤ 1 =
-      multiplicativeGroupMulEquivPoints ℤ ℤ (-1) := by
+  have hpoints : (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℤ) (A := ℤ)).symm 1 =
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℤ) (A := ℤ)).symm (-1) := by
     have h' := congrArg (fun f : T ⟶ pullback q η[M] ↦
       f ≫ pullback.fst q η[M] ≫ fst M M) h
     simpa [point, Category.assoc, pullback.lift_fst_assoc] using h'
-  have hunits := (multiplicativeGroupMulEquivPoints ℤ ℤ).injective hpoints
+  have hunits := ((TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℤ) (A := ℤ)).symm).injective hpoints
   have hvalues := congrArg Units.val hunits
   norm_num at hvalues
 
@@ -196,8 +211,8 @@ private theorem identity_kernelUnit_closed (G : Over S) [GrpObj G] :
 
 -- Spec of the zero ring is an empty base; no nontriviality premise is used above.
 private theorem zero_base_projection_separated :
-    IsSeparated (snd (multiplicativeGroupUnderlyingScheme (ZMod 1))
-      (multiplicativeGroupUnderlyingScheme (ZMod 1))).left :=
+    IsSeparated (snd ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme (ZMod 1)).X)
+      ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme (ZMod 1)).X)).left :=
   multiplicative_projection_separated (ZMod 1)
 
 end Boundaries
@@ -214,10 +229,11 @@ private def integerMultiplicativeGroupPoints :
     Σ G : Grp (Over (Spec (.of ℤ))),
       {p : (((Spec (.of ℤ)).asOver (Spec (.of ℤ)) ⟶ G.X) ×
           ((Spec (.of ℤ)).asOver (Spec (.of ℤ)) ⟶ G.X)) // p.1 ≠ p.2} := by
-  let Gm : Grp (Over (Spec (.of ℤ))) := multiplicativeGroupScheme ℤ
-  let e := multiplicativeGroupMulEquivPoints ℤ ℤ
-  have h : Gm.X = multiplicativeGroupUnderlyingScheme ℤ :=
-    multiplicativeGroupScheme_X ℤ
+  let Gm : Grp (Over (Spec (.of ℤ))) := TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ
+  let e := (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℤ) (A := ℤ)).symm
+  have h : Gm.X = (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).X :=
+    rfl
   let pMinus : (Spec (.of ℤ)).asOver (Spec (.of ℤ)) ⟶ Gm.X :=
     e (-1 : ℤˣ) ≫ eqToHom h.symm
   let pPlus : (Spec (.of ℤ)).asOver (Spec (.of ℤ)) ⟶ Gm.X :=

@@ -20,7 +20,7 @@ public section
 
 noncomputable section
 
-open CategoryTheory GeneralLinearCoordinateRing SpecialLinearCoordinateRing
+open CategoryTheory TauCeti.GeneralLinear SpecialLinearCoordinateRing
 
 universe u
 
@@ -29,92 +29,96 @@ namespace AlgebraicGroupsTest.GeneralSpecialLinearSmooth
 variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
 
 example : Algebra.FinitePresentation K
-    (GeneralLinearCoordinateRing.CoordinateRing K n) := inferInstance
+    ((coordinateHopfAlgebra K (Fintype.card n))) := inferInstance
 
 example : Algebra.FinitePresentation K
-    (SpecialLinearCoordinateRing.CoordinateRing K n) := inferInstance
+    ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) := inferInstance
 
 example : Algebra.Smooth K
-    (GeneralLinearCoordinateRing.CoordinateRing K n) := inferInstance
+    ((coordinateHopfAlgebra K (Fintype.card n))) := inferInstance
 
 example : Algebra.Smooth K
-    (SpecialLinearCoordinateRing.CoordinateRing K n) := inferInstance
+    ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) := inferInstance
 
 example : AlgebraicGeometry.Smooth
-    (AlgebraicGeometry.generalLinearGroupUnderlyingScheme K n).hom := inferInstance
+    ((groupScheme K (Fintype.card n)).X).hom := inferInstance
 
 example : AlgebraicGeometry.Smooth
-    (AlgebraicGeometry.specialLinearGroupUnderlyingScheme K n).hom := inferInstance
+    ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X).hom := inferInstance
 
 variable (pivot : n)
 
-example : (SpecialLinearCoordinateRing.quotient K n).comp
+example : ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom).comp
       (AlgebraicGeometry.specialLinearNormalizationSection K n pivot) =
-      AlgHom.id K (SpecialLinearCoordinateRing.CoordinateRing K n) :=
+      AlgHom.id K ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) :=
   AlgebraicGeometry.specialLinearNormalizationSection_comp_quotient K n pivot
 
 example (i j : n) :
     AlgebraicGeometry.specialLinearNormalizationSection K n pivot
-        (SpecialLinearCoordinateRing.entry K n i j) =
+        (((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom
+          (reindexedGenericMatrix K n i j))) =
       (AlgebraicGeometry.specialLinearNormalization K n pivot : Matrix n n
-        (GeneralLinearCoordinateRing.CoordinateRing K n)) i j :=
+        ((coordinateHopfAlgebra K (Fintype.card n)))) i j :=
   AlgebraicGeometry.specialLinearNormalizationSection_entry K n pivot i j
 
 example (i j : n) :
-    (SpecialLinearCoordinateRing.quotient K n)
+    ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom)
         (AlgebraicGeometry.specialLinearNormalizationSection K n pivot
-          (SpecialLinearCoordinateRing.entry K n i j)) =
-      SpecialLinearCoordinateRing.entry K n i j := by
+          (((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom
+          (reindexedGenericMatrix K n i j)))) =
+      ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom
+          (reindexedGenericMatrix K n i j)) := by
   have retraction := AlgebraicGeometry.specialLinearNormalizationSection_comp_quotient
     K n pivot
   have readback := congrArg
-    (fun f : SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K]
-        SpecialLinearCoordinateRing.CoordinateRing K n ↦
-      f (SpecialLinearCoordinateRing.entry K n i j)) retraction
+    (fun f : (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)) →ₐ[K]
+        (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)) ↦
+      f (((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom
+          (reindexedGenericMatrix K n i j)))) retraction
   simpa only [AlgHom.comp_apply, AlgHom.id_apply] using readback
 
-example : Algebra.Smooth ℤ (SpecialLinearCoordinateRing.CoordinateRing ℤ (Fin 0)) :=
+example : Algebra.Smooth ℤ ((TauCeti.SpecialLinear.coordinateHopfAlgebra ℤ 0)) :=
   inferInstance
 
 example : AlgebraicGeometry.Smooth
-    (AlgebraicGeometry.specialLinearGroupUnderlyingScheme ℤ (Fin 0)).hom :=
+    ((TauCeti.SpecialLinear.groupScheme ℤ (Fintype.card (Fin 0))).X).hom :=
   inferInstance
 
-example : Algebra.Smooth ℤ (SpecialLinearCoordinateRing.CoordinateRing ℤ (Fin 1)) :=
+example : Algebra.Smooth ℤ ((TauCeti.SpecialLinear.coordinateHopfAlgebra ℤ 1)) :=
   inferInstance
 
-example : Algebra.Smooth ℤ (SpecialLinearCoordinateRing.CoordinateRing ℤ (Fin 2)) :=
+example : Algebra.Smooth ℤ ((TauCeti.SpecialLinear.coordinateHopfAlgebra ℤ 2)) :=
   inferInstance
 
-example : (SpecialLinearCoordinateRing.quotient ℤ (Fin 1)).comp
+example : ((TauCeti.SpecialLinear.coordinateMap ℤ (Fintype.card (Fin 1))).hom.toAlgHom).comp
       (AlgebraicGeometry.specialLinearNormalizationSection ℤ (Fin 1) 0) =
-      AlgHom.id ℤ (SpecialLinearCoordinateRing.CoordinateRing ℤ (Fin 1)) :=
+      AlgHom.id ℤ ((TauCeti.SpecialLinear.coordinateHopfAlgebra ℤ 1)) :=
   AlgebraicGeometry.specialLinearNormalizationSection_comp_quotient ℤ (Fin 1) 0
 
-example : (SpecialLinearCoordinateRing.quotient ℤ (Fin 2)).comp
+example : ((TauCeti.SpecialLinear.coordinateMap ℤ (Fintype.card (Fin 2))).hom.toAlgHom).comp
       (AlgebraicGeometry.specialLinearNormalizationSection ℤ (Fin 2) 1) =
-      AlgHom.id ℤ (SpecialLinearCoordinateRing.CoordinateRing ℤ (Fin 2)) :=
+      AlgHom.id ℤ ((TauCeti.SpecialLinear.coordinateHopfAlgebra ℤ 2)) :=
   AlgebraicGeometry.specialLinearNormalizationSection_comp_quotient ℤ (Fin 2) 1
 
 example : Algebra.Smooth (ZMod 1)
-    (GeneralLinearCoordinateRing.CoordinateRing (ZMod 1) (Fin 0)) := inferInstance
+    ((coordinateHopfAlgebra (ZMod 1) (Fintype.card (Fin 0)))) := inferInstance
 
 example : Algebra.Smooth (ZMod 1)
-    (SpecialLinearCoordinateRing.CoordinateRing (ZMod 1) (Fin 0)) := inferInstance
+    ((TauCeti.SpecialLinear.coordinateHopfAlgebra (ZMod 1) (Fintype.card (Fin 0)))) := inferInstance
 
 example : Algebra.Smooth (ZMod 1)
-    (SpecialLinearCoordinateRing.CoordinateRing (ZMod 1) (Fin 2)) := inferInstance
+    ((TauCeti.SpecialLinear.coordinateHopfAlgebra (ZMod 1) (Fintype.card (Fin 2)))) := inferInstance
 
 example : AlgebraicGeometry.Smooth
-    (AlgebraicGeometry.generalLinearGroupUnderlyingScheme (ZMod 1) (Fin 1)).hom :=
+    ((groupScheme (ZMod 1) (Fintype.card (Fin 1))).X).hom :=
   inferInstance
 
 example : AlgebraicGeometry.Smooth
-    (AlgebraicGeometry.specialLinearGroupUnderlyingScheme (ZMod 1) (Fin 0)).hom :=
+    ((TauCeti.SpecialLinear.groupScheme (ZMod 1) (Fintype.card (Fin 0))).X).hom :=
   inferInstance
 
 example : AlgebraicGeometry.Smooth
-    (AlgebraicGeometry.specialLinearGroupUnderlyingScheme (ZMod 1) (Fin 2)).hom :=
+    ((TauCeti.SpecialLinear.groupScheme (ZMod 1) (Fintype.card (Fin 2))).X).hom :=
   inferInstance
 
 end AlgebraicGroupsTest.GeneralSpecialLinearSmooth

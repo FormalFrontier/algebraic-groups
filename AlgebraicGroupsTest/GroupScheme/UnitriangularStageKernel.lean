@@ -34,8 +34,8 @@ variable (K : Type) [CommRing K]
 example : IsPullback (unitriangularStageSuccessor K 3 1).hom.hom
     (toUnit (unitriangularStageScheme K 3 2).toMon.X)
     (unitriangularStageCoordinateMap K 3 1 (by omega)).hom.hom
-    η[((∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex 3 1 =>
-      additiveGroupScheme K).toMon.X)] :=
+    η[((∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex 3 1 =>
+      TauCeti.AdditiveGroup.groupScheme K).toMon.X)] :=
   unitriangularStageCoordinateMap_isPullback K 3 1 (by omega)
 
 example {T : Over (Spec (.of K))}
@@ -48,29 +48,29 @@ example {T : Over (Spec (.of K))}
 example : IsPullback (unitriangularStageSuccessor K 0 1).hom.hom
     (toUnit (unitriangularStageScheme K 0 2).toMon.X)
     (unitriangularStageCoordinateMap K 0 1 (by omega)).hom.hom
-    η[((∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex 0 1 =>
-      additiveGroupScheme K).toMon.X)] :=
+    η[((∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex 0 1 =>
+      TauCeti.AdditiveGroup.groupScheme K).toMon.X)] :=
   unitriangularStageCoordinateMap_isPullback K 0 1 (by omega)
 
 example : IsPullback (unitriangularStageSuccessor K 1 1).hom.hom
     (toUnit (unitriangularStageScheme K 1 2).toMon.X)
     (unitriangularStageCoordinateMap K 1 1 (by omega)).hom.hom
-    η[((∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex 1 1 =>
-      additiveGroupScheme K).toMon.X)] :=
+    η[((∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex 1 1 =>
+      TauCeti.AdditiveGroup.groupScheme K).toMon.X)] :=
   unitriangularStageCoordinateMap_isPullback K 1 1 (by omega)
 
 example : IsPullback (unitriangularStageSuccessor K 3 3).hom.hom
     (toUnit (unitriangularStageScheme K 3 4).toMon.X)
     (unitriangularStageCoordinateMap K 3 3 (by omega)).hom.hom
-    η[((∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex 3 3 =>
-      additiveGroupScheme K).toMon.X)] :=
+    η[((∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex 3 3 =>
+      TauCeti.AdditiveGroup.groupScheme K).toMon.X)] :=
   unitriangularStageCoordinateMap_isPullback K 3 3 (by omega)
 
 example : IsPullback (unitriangularStageSuccessor (ZMod 1) 0 2).hom.hom
     (toUnit (unitriangularStageScheme (ZMod 1) 0 3).toMon.X)
     (unitriangularStageCoordinateMap (ZMod 1) 0 2 (by omega)).hom.hom
-    η[((∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex 0 2 =>
-      additiveGroupScheme (ZMod 1)).toMon.X)] :=
+    η[((∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex 0 2 =>
+      TauCeti.AdditiveGroup.groupScheme (ZMod 1)).toMon.X)] :=
   unitriangularStageCoordinateMap_isPullback (ZMod 1) 0 2 (by omega)
 
 private def rankTwoEvaluation (q : ℚ) : CoordinateRing ℚ 2 0 →ₐ[ℚ] ℚ :=
@@ -110,7 +110,7 @@ example : Nonempty (Spec (.of (CoordinateRing ℚ 2 0))) := by
     (rankTwoEvaluation 1).toRingHom.domain_nontrivial
   infer_instance
 
-example : Nonempty (Matrix.UnitriangularGroup.superdiagonalIndex 2 0) :=
+example : Nonempty (TauCeti.UpperUnitriangularGroup.superdiagonalIndex 2 0) :=
   ⟨⟨(0, 0), by decide⟩⟩
 
 example : IsIso (unitriangularStageSuccessor ℚ 2 0).hom.hom.left := by
@@ -189,7 +189,7 @@ example : ¬ IsIso (unitriangularStageSuccessor ℚ 3 1).hom.hom.left := by
   intro hIso
   rw [unitriangularStageSuccessor_left] at hIso
   have hinjective := (isIso_SpecMap_iff.mp hIso).injective
-  let ij : Matrix.UnitriangularGroup.superdiagonalIndex 3 1 := ⟨(0, 1), by decide⟩
+  let ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex 3 1 := ⟨(0, 1), by decide⟩
   have hzero : coordinate ℚ 3 1 ij = 0 :=
     hinjective ((successor_coordinate ℚ 3 1 (by decide) ij).trans (map_zero _).symm)
   have h := congrArg (polynomialEquiv ℚ 3 1) hzero

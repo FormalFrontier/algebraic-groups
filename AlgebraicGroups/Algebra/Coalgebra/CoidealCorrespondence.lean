@@ -38,13 +38,13 @@ variable {F : Type z} [FunLike F C D] [CoalgHomClass F R C D]
 theorem IsCoideal.comap_of_surjective {J : Submodule R D} (hJ : J.IsCoideal)
     (f : F) (hf : Function.Surjective f) : (J.comap (f : C →ₗ[R] D)).IsCoideal := by
   let : J.IsCoideal := hJ
-  let g := (Coalgebra.Quotient.mkQCoalgHom J).comp (CoalgHomClass.toCoalgHom f)
+  let g := (Coalgebra.Quotient.mkQCoalgHom J).comp (CoalgHom.ofClass f)
   have hg : Function.Surjective g := J.mkQ_surjective.comp hf
   have hker := CoalgHomClass.ker_isCoideal_of_surjective g hg
   have hlinear :
-      (CoalgHomClass.toCoalgHom f : C →ₗ[R] D) = (f : C →ₗ[R] D) := by
+      (CoalgHom.ofClass f : C →ₗ[R] D) = (f : C →ₗ[R] D) := by
     apply DFunLike.coe_injective
-    simp only [CoalgHom.coe_coe, LinearMap.coe_ofClass]
+    simp only [CoalgHom.coe_ofClass, LinearMap.coe_ofClass]
   simpa only [g, CoalgHom.comp_toLinearMap,
     Coalgebra.Quotient.mkQCoalgHom_toLinearMap, hlinear,
     LinearMap.ker_comp, Submodule.ker_mkQ] using hker

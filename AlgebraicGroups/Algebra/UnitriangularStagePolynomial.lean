@@ -39,18 +39,18 @@ variable (K : Type) [CommRing K] (n r : ℕ)
 
 /-- Strict-upper indices surviving the stage ideal. -/
 abbrev SurvivingPair (n r : ℕ) :=
-  {p : UnitriangularCoordinateRing.StrictUpperPair (Fin n) //
+  {p : TauCeti.UpperUnitriangular.Index (Fin n) //
     p.1.1.val + r ≤ p.1.2.val}
 
 /-- Include a surviving index among all strict-upper indices. -/
 def survivingInclusion : SurvivingPair n r →
-    UnitriangularCoordinateRing.StrictUpperPair (Fin n) := Subtype.val
+    TauCeti.UpperUnitriangular.Index (Fin n) := Subtype.val
 
 theorem survivingInclusion_injective : Function.Injective (survivingInclusion n r) :=
   Subtype.val_injective
 
 theorem mem_range_survivingInclusion
-    (p : UnitriangularCoordinateRing.StrictUpperPair (Fin n)) :
+    (p : TauCeti.UpperUnitriangular.Index (Fin n)) :
     p ∈ Set.range (survivingInclusion n r) ↔ p.1.1.val + r ≤ p.1.2.val := by
   constructor
   · rintro ⟨s, rfl⟩
@@ -60,12 +60,12 @@ theorem mem_range_survivingInclusion
 
 /-- Projection of all free entries onto the surviving variables. -/
 def killForbidden :
-    MvPolynomial (UnitriangularCoordinateRing.StrictUpperPair (Fin n)) K →ₐ[K]
+    MvPolynomial (TauCeti.UpperUnitriangular.Index (Fin n)) K →ₐ[K]
       MvPolynomial (SurvivingPair n r) K :=
   MvPolynomial.killCompl (survivingInclusion_injective n r)
 
 @[simp] theorem killForbidden_X
-    (p : UnitriangularCoordinateRing.StrictUpperPair (Fin n)) :
+    (p : TauCeti.UpperUnitriangular.Index (Fin n)) :
     killForbidden K n r (MvPolynomial.X p) =
       if hp : p.1.1.val + r ≤ p.1.2.val then MvPolynomial.X ⟨p, hp⟩ else 0 := by
   classical
@@ -90,16 +90,16 @@ def killForbidden :
 /-- Evaluate the ambient algebra in the surviving polynomial variables. -/
 def toPolynomial : Ambient K n →ₐ[K] MvPolynomial (SurvivingPair n r) K :=
   (killForbidden K n r).comp
-    (UnitriangularCoordinateRing.freeEquiv K (Fin n)).symm.toAlgHom
+    ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin n))).symm.toAlgHom
 
 @[simp] theorem toPolynomial_entry
-    (p : UnitriangularCoordinateRing.StrictUpperPair (Fin n)) :
+    (p : TauCeti.UpperUnitriangular.Index (Fin n)) :
     toPolynomial K n r (entry K n p.1.1 p.1.2) =
       if hp : p.1.1.val + r ≤ p.1.2.val then MvPolynomial.X ⟨p, hp⟩ else 0 := by
   change toPolynomial K n r
-    (UnitriangularCoordinateRing.quotient K (Fin n)
-      (GeneralLinearCoordinateRing.matrix K (Fin n) p.1.1 p.1.2)) = _
-  rw [← UnitriangularCoordinateRing.freeEquiv_variable K (Fin n) p]
+    ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin n)
+      (TauCeti.UpperUnitriangular.genericMatrix K (Fin n) p.1.1 p.1.2))) = _
+  rw [TauCeti.UpperUnitriangular.genericMatrix_apply_of_lt K (Fin n) p.2]
   simp only [toPolynomial, AlgHom.comp_apply, AlgEquiv.toAlgHom_apply,
     AlgEquiv.symm_apply_apply, killForbidden_X]
 
@@ -128,16 +128,18 @@ def toPolynomialQuotient :
 def fromPolynomial :
     MvPolynomial (SurvivingPair n r) K →ₐ[K] CoordinateRing K n r :=
   ((quotient K n r).comp
-    (UnitriangularCoordinateRing.freeEquiv K (Fin n)).toAlgHom).comp
+    ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin n))).toAlgHom).comp
       (MvPolynomial.rename (survivingInclusion n r))
 
 @[simp] theorem fromPolynomial_X (s : SurvivingPair n r) :
     fromPolynomial K n r (MvPolynomial.X s) =
       quotient K n r (entry K n s.1.1.1 s.1.1.2) := by
   change (quotient K n r)
-    ((UnitriangularCoordinateRing.freeEquiv K (Fin n))
+    (((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin n)))
       (MvPolynomial.rename (survivingInclusion n r) (MvPolynomial.X s))) = _
-  rw [MvPolynomial.rename_X, UnitriangularCoordinateRing.freeEquiv_variable]
+  rw [MvPolynomial.rename_X]
+  unfold entry
+  rw [TauCeti.UpperUnitriangular.genericMatrix_apply_of_lt K (Fin n) s.1.2]
   rfl
 
 theorem toPolynomialQuotient_comp_fromPolynomial :
@@ -154,13 +156,13 @@ theorem fromPolynomial_comp_toPolynomialQuotient :
       AlgHom.id K (CoordinateRing K n r) := by
   have hgen :
       ((fromPolynomial K n r).comp (toPolynomial K n r)).comp
-          (UnitriangularCoordinateRing.freeEquiv K (Fin n)).toAlgHom =
+          ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin n))).toAlgHom =
         (quotient K n r).comp
-          (UnitriangularCoordinateRing.freeEquiv K (Fin n)).toAlgHom := by
+          ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin n))).toAlgHom := by
     apply MvPolynomial.algHom_ext
     intro p
     simp only [AlgHom.comp_apply, AlgEquiv.toAlgHom_apply]
-    rw [UnitriangularCoordinateRing.freeEquiv_variable]
+    rw [← TauCeti.UpperUnitriangular.genericMatrix_apply_of_lt K (Fin n) p.2]
     change fromPolynomial K n r
       (toPolynomial K n r (entry K n p.1.1 p.1.2)) =
         quotient K n r (entry K n p.1.1 p.1.2)
@@ -172,11 +174,13 @@ theorem fromPolynomial_comp_toPolynomialQuotient :
   apply Ideal.Quotient.algHom_ext K
   apply AlgHom.ext
   intro x
-  obtain ⟨p, rfl⟩ := (UnitriangularCoordinateRing.freeEquiv K (Fin n)).surjective x
+  obtain ⟨p, rfl⟩ := ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin
+    n))).surjective x
   change fromPolynomial K n r
       (toPolynomialQuotient K n r
-        (quotient K n r ((UnitriangularCoordinateRing.freeEquiv K (Fin n)) p))) =
-    quotient K n r ((UnitriangularCoordinateRing.freeEquiv K (Fin n)) p)
+        (quotient K n r (((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin
+          n))) p))) =
+    quotient K n r (((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin n))) p)
   rw [toPolynomialQuotient_quotient]
   simpa only [AlgHom.comp_apply, AlgEquiv.toAlgHom_apply] using AlgHom.congr_fun hgen p
 
@@ -192,7 +196,7 @@ def polynomialEquiv :
     (fromPolynomial_comp_toPolynomialQuotient K n r)
 
 @[simp] theorem polynomialEquiv_entry
-    (p : UnitriangularCoordinateRing.StrictUpperPair (Fin n)) :
+    (p : TauCeti.UpperUnitriangular.Index (Fin n)) :
     polynomialEquiv K n r (quotient K n r (entry K n p.1.1 p.1.2)) =
       if hp : p.1.1.val + r ≤ p.1.2.val then MvPolynomial.X ⟨p, hp⟩ else 0 := by
   change toPolynomialQuotient K n r (quotient K n r (entry K n p.1.1 p.1.2)) = _
@@ -206,7 +210,7 @@ theorem polynomialEquiv_surviving (s : SurvivingPair n r) :
   simp [hp]
 
 theorem polynomialEquiv_forbidden
-    (p : UnitriangularCoordinateRing.StrictUpperPair (Fin n))
+    (p : TauCeti.UpperUnitriangular.Index (Fin n))
     (hgap : p.1.2.val < p.1.1.val + r) :
     polynomialEquiv K n r (quotient K n r (entry K n p.1.1 p.1.2)) = 0 := by
   rw [polynomialEquiv_entry]

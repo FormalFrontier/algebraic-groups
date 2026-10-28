@@ -52,9 +52,10 @@ variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
 theorem generalLinearDeterminantSection_over_comp_det (pivot : n) :
     (generalLinearDeterminantSectionSchemeHom K n pivot).hom.hom ≫
       (generalLinearDeterminantSchemeHom K n).hom.hom =
-        𝟙 (multiplicativeGroupUnderlyingScheme K) := by
+        𝟙 ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) := by
   have h := congrArg
-    (fun f : multiplicativeGroupScheme K ⟶ multiplicativeGroupScheme K ↦ f.hom.hom)
+    (fun f : TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K ⟶
+      TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K ↦ f.hom.hom)
     (generalLinearDeterminantSectionSchemeHom_comp_det K n pivot)
   exact h
 
@@ -65,9 +66,10 @@ Milne, *Basic Theory of Affine Group Schemes*, XIII §3, item 3.14,
 uses a field-base functorial decomposition with the opposite factor order;
 the scheme-level isomorphism here applies the local `splitKernelProductIso`. -/
 def generalLinearDeterminantProductIso (pivot : n) :
-    specialLinearGroupUnderlyingScheme K n ⊗ multiplicativeGroupUnderlyingScheme K ≅
-      generalLinearGroupUnderlyingScheme K n :=
-  splitKernelProductIso (specialLinearInclusion K n).hom.hom
+    (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X ⊗
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X ≅
+      (TauCeti.GeneralLinear.groupScheme K (Fintype.card n)).X :=
+  splitKernelProductIso (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom
     (generalLinearDeterminantSchemeHom K n).hom.hom
     (generalLinearDeterminantSectionSchemeHom K n pivot).hom.hom
     (specialLinearDeterminantSquare_isPullback_over K n)
@@ -77,27 +79,27 @@ def generalLinearDeterminantProductIso (pivot : n) :
 from the direct-product group object in general. -/
 theorem generalLinearDeterminantProductIso_hom (pivot : n) :
     (generalLinearDeterminantProductIso K n pivot).hom =
-      (snd (specialLinearGroupUnderlyingScheme K n)
-        (multiplicativeGroupUnderlyingScheme K) ≫
+      (snd ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X)
+        ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) ≫
           (generalLinearDeterminantSectionSchemeHom K n pivot).hom.hom) *
-      (fst (specialLinearGroupUnderlyingScheme K n)
-        (multiplicativeGroupUnderlyingScheme K) ≫
-          (specialLinearInclusion K n).hom.hom) := by
+      (fst ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X)
+        ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) ≫
+          (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom) := by
   exact splitKernelProductIso_hom _ _ _ _ _
 
 /-- The genuine determinant projection triangle in schemes over `Spec K`. -/
 @[simp] theorem generalLinearDeterminantProductIso_hom_comp_det (pivot : n) :
     (generalLinearDeterminantProductIso K n pivot).hom ≫
       (generalLinearDeterminantSchemeHom K n).hom.hom =
-        snd (specialLinearGroupUnderlyingScheme K n)
-          (multiplicativeGroupUnderlyingScheme K) := by
+        snd ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X)
+          ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) := by
   exact splitKernelProductIso_hom_comp_q _ _ _ _ _
 
 /-- The second inverse projection recovers the actual determinant. -/
 @[simp] theorem generalLinearDeterminantProductIso_inv_comp_snd (pivot : n) :
     (generalLinearDeterminantProductIso K n pivot).inv ≫
-      snd (specialLinearGroupUnderlyingScheme K n)
-        (multiplicativeGroupUnderlyingScheme K) =
+      snd ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X)
+        ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) =
           (generalLinearDeterminantSchemeHom K n).hom.hom := by
   exact splitKernelProductIso_inv_comp_snd _ _ _ _ _
 
@@ -105,9 +107,9 @@ theorem generalLinearDeterminantProductIso_hom (pivot : n) :
 determinant-one kernel. -/
 @[simp] theorem generalLinearDeterminantProductIso_inv_comp_fst (pivot : n) :
     (generalLinearDeterminantProductIso K n pivot).inv ≫
-      fst (specialLinearGroupUnderlyingScheme K n)
-        (multiplicativeGroupUnderlyingScheme K) =
-          splitKernelRemainder (specialLinearInclusion K n).hom.hom
+      fst ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X)
+        ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) =
+          splitKernelRemainder (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom
             (generalLinearDeterminantSchemeHom K n).hom.hom
             (generalLinearDeterminantSectionSchemeHom K n pivot).hom.hom
             (specialLinearDeterminantSquare_isPullback_over K n)
@@ -118,15 +120,16 @@ determinant-one kernel. -/
 `diagonalSection(det(g))⁻¹ * g` in that noncommutative order. -/
 @[simp] theorem generalLinearDeterminantProductIso_inv_fst_comp_inclusion (pivot : n) :
     (generalLinearDeterminantProductIso K n pivot).inv ≫
-      fst (specialLinearGroupUnderlyingScheme K n)
-        (multiplicativeGroupUnderlyingScheme K) ≫
-          (specialLinearInclusion K n).hom.hom =
+      fst ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X)
+        ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X) ≫
+          (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom =
             ((generalLinearDeterminantSchemeHom K n).hom.hom ≫
               (generalLinearDeterminantSectionSchemeHom K n pivot).hom.hom)⁻¹ *
-                𝟙 (generalLinearGroupUnderlyingScheme K n) := by
+                𝟙 ((TauCeti.GeneralLinear.groupScheme K (Fintype.card n)).X) := by
   rw [← Category.assoc, generalLinearDeterminantProductIso_inv_comp_fst,
     splitKernelRemainder_comp_i]
 
+omit [DecidableEq n] in
 /-- The determinant scheme morphism is smooth whenever an explicit matrix
 index is available, including rank one and the zero ring. This transports
 the base-changed smooth SL structure morphism along the product iso, using
@@ -134,8 +137,9 @@ Mathlib's `smooth_isStableUnderBaseChange` and the local SL smoothness instance;
 no smoothness proof is attributed to Milne's product calculation. -/
 theorem generalLinearDeterminantSchemeHom_smooth (pivot : n) :
     Smooth (generalLinearDeterminantSchemeHom K n).hom.hom.left := by
-  let SL := specialLinearGroupUnderlyingScheme K n
-  let GM := multiplicativeGroupUnderlyingScheme K
+  classical
+  let SL := (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X
+  let GM := (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X
   let iso := generalLinearDeterminantProductIso K n pivot
   have hproj : Smooth (snd SL GM).left := by
     rw [Over.snd_left]

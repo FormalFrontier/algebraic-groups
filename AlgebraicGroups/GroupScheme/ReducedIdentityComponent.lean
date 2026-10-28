@@ -51,7 +51,7 @@ variable {S : Scheme.{u}}
 private lemma Scheme.range_isMonHom_subset_identityComponent
     {H G : Over S} [MonObj H] [GrpObj G] (i : H ⟶ G) [IsMonHom i]
     [ConnectedSpace H.left] [LocallyConnectedSpace G.left]
-    [Nonempty S] [Subsingleton S] :
+    [Nonempty S] :
     Set.range i.left ⊆ Set.range (Scheme.identityComponent G).ι := by
   let s₀ : S := Classical.choice (inferInstance : Nonempty S)
   let a : H.left := η[H].left s₀
@@ -69,11 +69,11 @@ private lemma Scheme.range_isMonHom_subset_identityComponent
 /-- A monoid-object morphism from a connected monoid scheme factors through the
 identity component of its target. This extends the connected-group
 factorization in Milne, *Algebraic Groups*, Remark 2.39(b), to monoid
-sources over a nonempty one-point base. -/
+sources over a nonempty base. -/
 noncomputable def Scheme.identityComponentLift
     {H G : Over S} [MonObj H] [GrpObj G] (i : H ⟶ G) [IsMonHom i]
     [ConnectedSpace H.left] [LocallyConnectedSpace G.left]
-    [Nonempty S] [Subsingleton S] : H ⟶ Scheme.identityComponentOver G :=
+    [Nonempty S] : H ⟶ Scheme.identityComponentOver G :=
   Over.homMk (IsOpenImmersion.lift (Scheme.identityComponent G).ι i.left
     (Scheme.range_isMonHom_subset_identityComponent i)) (by
       rw [show (Scheme.identityComponentOver G).hom =
@@ -87,7 +87,7 @@ original morphism. -/
 lemma Scheme.identityComponentLift_comp_ι
     {H G : Over S} [MonObj H] [GrpObj G] (i : H ⟶ G) [IsMonHom i]
     [ConnectedSpace H.left] [LocallyConnectedSpace G.left]
-    [Nonempty S] [Subsingleton S] :
+    [Nonempty S] :
     Scheme.identityComponentLift i ≫ Scheme.identityComponentι G = i := by
   ext
   exact IsOpenImmersion.lift_fac _ _ _
@@ -95,13 +95,13 @@ lemma Scheme.identityComponentLift_comp_ι
 instance Scheme.identityComponentLift_mono
     {H G : Over S} [MonObj H] [GrpObj G] (i : H ⟶ G) [IsMonHom i] [Mono i]
     [ConnectedSpace H.left] [LocallyConnectedSpace G.left]
-    [Nonempty S] [Subsingleton S] : Mono (Scheme.identityComponentLift i) :=
+    [Nonempty S] : Mono (Scheme.identityComponentLift i) :=
   mono_of_mono_fac (Scheme.identityComponentLift_comp_ι i)
 
 instance Scheme.identityComponentLift_isClosedImmersion
     {H G : Over S} [MonObj H] [GrpObj G] (i : H ⟶ G) [IsMonHom i]
     [IsClosedImmersion i.left] [ConnectedSpace H.left]
-    [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] :
+    [LocallyConnectedSpace G.left] [Nonempty S] :
     IsClosedImmersion (Scheme.identityComponentLift i).left := by
   let _ : IsClosedImmersion
       ((Scheme.identityComponentLift i ≫ Scheme.identityComponentι G).left) := by
@@ -144,7 +144,7 @@ noncomputable abbrev Scheme.reducedIdentityComponentOver (G : Over S) [GrpObj G]
     [IsReduced S]
     [IsReduced ((Scheme.reductionOver G ⊗ Scheme.reductionOver G).left)]
     [LocallyConnectedSpace (Scheme.reductionOver G).left]
-    [Nonempty S] [Subsingleton S] : Over S :=
+    [Nonempty S] : Over S :=
   Scheme.identityComponentOver (Scheme.reductionOver G)
 
 /-- The canonical inclusion `(G_red)⁰ ⟶ G`. -/
@@ -152,7 +152,7 @@ noncomputable abbrev Scheme.reducedIdentityComponentι (G : Over S) [GrpObj G]
     [IsReduced S]
     [IsReduced ((Scheme.reductionOver G ⊗ Scheme.reductionOver G).left)]
     [LocallyConnectedSpace (Scheme.reductionOver G).left]
-    [Nonempty S] [Subsingleton S] :
+    [Nonempty S] :
     Scheme.reducedIdentityComponentOver G ⟶ G :=
   Scheme.identityComponentι (Scheme.reductionOver G) ≫ Scheme.reductionOverι G
 
@@ -164,7 +164,7 @@ lemma Scheme.reducedIdentityComponentι_isOpen_range
     (G : Over S) [GrpObj G] [IsReduced S]
     [IsReduced ((Scheme.reductionOver G ⊗ Scheme.reductionOver G).left)]
     [LocallyConnectedSpace (Scheme.reductionOver G).left]
-    [Nonempty S] [Subsingleton S] :
+    [Nonempty S] :
     IsOpen (Set.range (Scheme.reducedIdentityComponentι G).left) := by
   change IsOpen (Set.range
     ((Scheme.identityComponentι (Scheme.reductionOver G) ≫

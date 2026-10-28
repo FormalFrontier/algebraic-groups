@@ -5,7 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.UnitriangularHopfBaseChange
-public import AlgebraicGroups.GroupScheme.Unitriangular
+public import TauCeti.Algebra.AlgebraicGroup.UpperUnitriangular.Scheme
+public import TauCeti.Algebra.AlgebraicGroup.CommHopfAlgCat.SchemePoints
 public import Mathlib.AlgebraicGeometry.Group.Affine
 
 /-!
@@ -70,24 +71,29 @@ Milne, *Algebraic Groups*, item 2.9 describes the underlying `U_n` coordinates
 over a field, not this arbitrary-base group-object isomorphism. -/
 def unitriangularGroupSchemeBaseChangeIso :
     ((Over.pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))).mapGrp.obj
-      (unitriangularGroupScheme R ι)) ≅ unitriangularGroupScheme S ι := by
-  letI : HopfAlgebra S (S ⊗[R] CoordinateRing R ι) := inferInstance
+      ((TauCeti.UpperUnitriangular.groupScheme R ι))) ≅
+        (TauCeti.UpperUnitriangular.groupScheme S ι) := by
+  letI : HopfAlgebra S (S ⊗[R] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)) :=
+    inferInstance
   let affine :
       ((Over.pullback (Spec.map (CommRingCat.ofHom (algebraMap R S)))).mapGrp.obj
-        (unitriangularGroupScheme R ι)).X ≅
-          (Spec (.of (S ⊗[R] CoordinateRing R ι))).asOver
+        ((TauCeti.UpperUnitriangular.groupScheme R ι))).X ≅
+          (Spec (.of (S ⊗[R] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)))).asOver
             (Spec (.of S)) :=
     Over.isoMk (pullbackSymmetry .. ≪≫
-      pullbackSpecIso' R S (CoordinateRing R ι)) (by
+      pullbackSpecIso' R S ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))) (by
         exact (inferInstance :
           (pullbackSymmetry .. ≪≫
-            pullbackSpecIso' R S (CoordinateRing R ι)).hom.IsOver (Spec (.of S))).comp_over)
-  let algebraIso : CommHopfAlgCat.of S (S ⊗[R] CoordinateRing R ι) ≅
-      CommHopfAlgCat.of S (CoordinateRing S ι) :=
+            pullbackSpecIso' R S ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R
+              ι))).hom.IsOver (Spec (.of S))).comp_over)
+  let algebraIso : CommHopfAlgCat.of S (S ⊗[R]
+    (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)) ≅
+      CommHopfAlgCat.of S ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra S ι)) :=
     CommHopfAlgCat.isoMk (baseChangeBialgEquiv R S ι)
   haveI : IsMonHom affine.hom := by
     change IsMonHom ((pullbackSymmetry .. ≪≫
-      pullbackSpecIso' R S (CoordinateRing R ι)).hom.asOver (Spec (.of S)))
+      pullbackSpecIso' R S ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R
+        ι))).hom.asOver (Spec (.of S)))
     infer_instance
   exact (Grp.mkIso' affine).trans ((hopfSpec (.of S)).mapIso algebraIso.symm.op)
 
@@ -95,7 +101,8 @@ def unitriangularGroupSchemeBaseChangeIso :
 and `Spec` of the *inverse* scalar-extension bialgebra map. -/
 theorem unitriangularGroupSchemeBaseChangeIso_hom_left :
     (unitriangularGroupSchemeBaseChangeIso R S ι).hom.hom.hom.left =
-      (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S (CoordinateRing R ι)).hom ≫
+      (pullbackSymmetry .. ≪≫ pullbackSpecIso' R S
+        ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))).hom ≫
         Spec.map (CommRingCat.ofHom
           (baseChangeBialgEquiv R S ι).symm.toBialgHom.toAlgHom.toRingHom) := by
   rfl
@@ -103,9 +110,11 @@ theorem unitriangularGroupSchemeBaseChangeIso_hom_left :
 /-- The canonical comparison respects the projection to the new base. -/
 theorem unitriangularGroupSchemeBaseChangeIso_hom_over :
     (unitriangularGroupSchemeBaseChangeIso R S ι).hom.hom.hom.left ≫
-      Spec.map (CommRingCat.ofHom (algebraMap S (CoordinateRing S ι))) =
+      Spec.map (CommRingCat.ofHom (algebraMap S
+        ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra S ι)))) =
         pullback.snd
-          (Spec.map (CommRingCat.ofHom (algebraMap R (CoordinateRing R ι))))
+          (Spec.map (CommRingCat.ofHom (algebraMap R
+            ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)))))
           (Spec.map (CommRingCat.ofHom (algebraMap R S))) := by
   exact (unitriangularGroupSchemeBaseChangeIso R S ι).hom.hom.hom.w
 

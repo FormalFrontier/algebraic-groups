@@ -119,10 +119,10 @@ theorem ringKrullDim_stalk_groupSchemeSection_eq_unit
     (a : 𝟙_ (Over S) ⟶ Over.mk f) (s : S) :
     ringKrullDim (G.presheaf.stalk (a.left s)) =
       ringKrullDim (G.presheaf.stalk (η[Over.mk f].left s)) := by
-  let e : G ≅ G := (Over.forget _).mapIso (CategoryTheory.GrpObj.mulLeft a)
+  let e : G ≅ G := (Over.forget _).mapIso (TauCeti.leftTranslation a)
   have h : e.hom (η[Over.mk f].left s) = a.left s := by
-    change (η[Over.mk f] ≫ (CategoryTheory.GrpObj.mulLeft a).hom).left s = _
-    rw [CategoryTheory.GrpObj.unit_comp_mulLeft_hom]
+    change (η[Over.mk f] ≫ (TauCeti.leftTranslation a).hom).left s = _
+    rw [TauCeti.unit_comp_leftTranslation_hom]
   rw [ringKrullDim_stalk_eq_coheight, ringKrullDim_stalk_eq_coheight,
     ← h, coheight_eq_of_isOpenImmersion e.hom]
 
@@ -235,8 +235,7 @@ noncomputable section
 variable {K : Type u} [Field K] [IsAlgClosed K] {G : Scheme.{u}}
 variable (f : G ⟶ Spec (.of K)) [GrpObj (Over.mk f)] [LocallyConnectedSpace G]
 
-local instance : LocallyConnectedSpace (Over.mk f).left :=
-  inferInstanceAs (LocallyConnectedSpace G)
+attribute [local instance] overMkLocallyConnected
 
 /-- A locally finite-type group scheme over an algebraically closed field and
 its identity component have the same topological Krull dimension. This

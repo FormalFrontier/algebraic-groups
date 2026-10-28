@@ -6,6 +6,8 @@ module
 
 import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Equiv
 
+open TauCeti
+
 universe u v w w₁
 
 section

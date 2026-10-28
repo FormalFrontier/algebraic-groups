@@ -5,7 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
-public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
+public import TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 public import Mathlib.RingTheory.Finiteness.Basic
 
@@ -20,8 +20,8 @@ no finiteness assumption.
 
 The construction extends the two-coordinate construction in
 `AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraDiagonal` to arbitrary index types and
-supports. It uses `Subcoalgebra.mk'` and the closure of spans of group-like elements from
-`AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan`. The restricted coalgebra and its
+supports. It uses `Subcoalgebra.ofSubmodule` and the closure of spans of group-like elements from
+`TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike`. The restricted coalgebra and its
 inclusion are the canonical ones supplied by `Subcoalgebra`.
 
 ## References
@@ -34,6 +34,9 @@ The diagonal coalgebra and the unit-coordinate formulas are from Mathlib's
 
 @[expose] public section
 
+open TauCeti
+
+
 noncomputable section
 
 universe u v
@@ -42,30 +45,36 @@ namespace Finsupp
 
 variable (K : Type u) [Field K] {ι : Type v} (s : Set ι)
 
-/-- The subcoalgebra of the diagonal Finsupp coalgebra consisting of the functions
-supported on `s`. -/
+/-- The subcoalgebra of the diagonal Finsupp coalgebra supported on a set. -/
 def supportedSubcoalgebra : Subcoalgebra K (ι →₀ K) :=
-  Subcoalgebra.mk' (supported K K s) <| by
-    intro x hx
-    rw [supported_eq_span_single] at hx ⊢
-    exact Coalgebra.comul_mem_range_mapIncl_span_of_isGroupLikeElem
-      (by
-        rintro y ⟨i, hi, rfl⟩
-        exact {
-          counit_eq_one := by simp
-          comul_eq_tmul_self := by simp }) hx
+  Subcoalgebra.ofSubmodule (supported K K s) <| by
+    let D := Subcoalgebra.groupLikeSetSpan ((fun i : ι =>
+      (⟨single i 1, { counit_eq_one := by simp, comul_eq_tmul_self := by simp }⟩ :
+        GroupLike K (ι →₀ K))) '' s)
+    have hD : D.toSubmodule = supported K K s := by
+      rw [Subcoalgebra.groupLikeSetSpan_toSubmodule, supported_eq_span_single,
+        Set.image_image]
+    intro c hc
+    have hcD : c ∈ D := by
+      rw [← Subcoalgebra.mem_toSubmodule, hD]
+      exact hc
+    have hd := D.comul_mem hcD
+    change Coalgebra.comul c ∈ LinearMap.range
+      (TensorProduct.map D.toSubmodule.subtype D.toSubmodule.subtype) at hd
+    exact (congrArg (fun U : Submodule K (ι →₀ K) =>
+      Coalgebra.comul (R := K) c ∈
+        LinearMap.range (TensorProduct.map U.subtype U.subtype)) hD).mp hd
 
-/-- The underlying submodule consists exactly of functions supported on `s`. -/
-@[simp]
-theorem supportedSubcoalgebra_toSubmodule :
+/-- Its underlying submodule is exactly the usual supported submodule. -/
+@[simp] theorem supportedSubcoalgebra_toSubmodule :
     (supportedSubcoalgebra K s).toSubmodule = supported K K s := by
-  simp only [supportedSubcoalgebra, Subcoalgebra.toSubmodule_mk']
+  rfl
 
 /-- Membership in the supported subcoalgebra is containment of the finite support in `s`. -/
 @[simp]
 theorem mem_supportedSubcoalgebra (x : ι →₀ K) :
     x ∈ supportedSubcoalgebra K s ↔ (↑x.support : Set ι) ⊆ s := by
-  rw [Subcoalgebra.mem_iff, supportedSubcoalgebra_toSubmodule]
+  rw [← Subcoalgebra.mem_toSubmodule, supportedSubcoalgebra_toSubmodule]
   exact mem_supported K x
 
 /-- The supported subcoalgebra is spanned by its unit coordinate vectors. -/
@@ -78,7 +87,7 @@ theorem supportedSubcoalgebra_toSubmodule_eq_span :
 whenever its index belongs to `s`. -/
 theorem single_mem_supportedSubcoalgebra {i : ι} (a : K) (hi : i ∈ s) :
     single i a ∈ supportedSubcoalgebra K s := by
-  rw [Subcoalgebra.mem_iff, supportedSubcoalgebra_toSubmodule]
+  rw [← Subcoalgebra.mem_toSubmodule, supportedSubcoalgebra_toSubmodule]
   exact single_mem_supported K a hi
 
 /-- The carrier lies in a submodule exactly when that submodule contains all the unit
@@ -100,7 +109,7 @@ theorem supportedSubcoalgebra_fg (hs : s.Finite) :
 
 /-- The supported subcoalgebra is finite as a module when its support set is finite. -/
 theorem supportedSubcoalgebra_finite (hs : s.Finite) :
-    Module.Finite K (supportedSubcoalgebra K s) :=
+    Module.Finite K (supportedSubcoalgebra K s).toSubmodule :=
   Module.Finite.iff_fg.mpr (supportedSubcoalgebra_fg K s hs)
 
 end Finsupp

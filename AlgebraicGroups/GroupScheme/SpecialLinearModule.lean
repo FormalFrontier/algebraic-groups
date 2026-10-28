@@ -40,7 +40,7 @@ coefficient algebra. No basis-independent representing scheme is constructed.
 
 noncomputable section
 
-open CategoryTheory TensorProduct GeneralLinearCoordinateRing SpecialLinearCoordinateRing
+open CategoryTheory TensorProduct TauCeti.GeneralLinear SpecialLinearCoordinateRing
 open scoped CategoryTheory.MonObj TensorProduct Matrix
 
 universe u
@@ -192,7 +192,7 @@ theorem specialLinearModuleMatrixEquiv_action (R : Type u)
 automorphism groups with matrix SL, extending the field setting of Milne,
 *Algebraic Groups*, item 2.8. -/
 def specialLinearModuleMatrixIso :
-    specialLinearModuleFunctor K V ≅ specialLinearGroupFunctor K indexType :=
+    specialLinearModuleFunctor K V ≅ specialLinearIndexedFunctor K indexType :=
   NatIso.ofComponents
     (fun R ↦ (specialLinearModuleMatrixEquiv K V indexType basis R).toGrpIso)
     (fun {R S} g ↦ by
@@ -202,18 +202,19 @@ def specialLinearModuleMatrixIso :
       exact specialLinearModuleMatrixEquiv_natural K V indexType basis R S g.hom f)
 
 /-- Chosen-basis representation by the finite matrix SL affine group scheme,
-using `specialLinearGroupPointsIso`. -/
+using `specialLinearIndexedPointsIso`. -/
 def specialLinearModulePointsIso :
-    specialLinearModuleFunctor K V ≅ specialLinearGroupPointsFunctor K indexType :=
+    specialLinearModuleFunctor K V ≅ TauCeti.GroupScheme.algebraPointsFunctor K
+      (TauCeti.SpecialLinear.groupScheme K (Fintype.card indexType)) :=
   (specialLinearModuleMatrixIso K V indexType basis) ≪≫
-    specialLinearGroupPointsIso K indexType
+    specialLinearIndexedPointsIso K indexType
 
 /-- Evaluation of SL coordinate functions on a finite-free module automorphism. -/
 def specialLinearModuleCoordinateEval (R : Type u) [CommRing R] [Algebra K R]
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
-    SpecialLinearCoordinateRing.CoordinateRing K indexType →ₐ[K] R :=
-  specialLinearFromSL K indexType R
-    (specialLinearModuleMatrixEquiv K V indexType basis R f)
+    (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card indexType)) →ₐ[K] R :=
+  ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K indexType R).symm
+    (specialLinearModuleMatrixEquiv K V indexType basis R f)).ofConv
 
 theorem specialLinearModuleCoordinateEval_natural (R S : Type u)
     [CommRing R] [Algebra K R] [CommRing S] [Algebra K S]
@@ -221,22 +222,26 @@ theorem specialLinearModuleCoordinateEval_natural (R S : Type u)
     specialLinearModuleCoordinateEval K V indexType basis S
         (specialLinearModuleBaseChange K V R S g f) =
       g.comp (specialLinearModuleCoordinateEval K V indexType basis R f) := by
-  rw [specialLinearModuleCoordinateEval, specialLinearModuleMatrixEquiv_natural,
-    specialLinearFromSL_natural]
-  rfl
+  rw [specialLinearModuleCoordinateEval, specialLinearModuleMatrixEquiv_natural]
+  have h := TauCeti.SpecialLinear.mapValue_reindexedPointsMulEquiv_symm_apply
+    K indexType g (specialLinearModuleMatrixEquiv K V indexType basis R f)
+  rw [AlgHom.mapValue_apply] at h
+  exact congrArg WithConv.ofConv h.symm
 
 omit [Module.Free K V] [Module.Finite K V] in
 theorem specialLinearModuleCoordinateEval_entry (R : Type u)
     [CommRing R] [Algebra K R]
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) (row column : indexType) :
     specialLinearModuleCoordinateEval K V indexType basis R f
-        (entry K indexType row column) =
+        ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card indexType)).hom
+          (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType row column)) =
       (generalLinearScalarBasis K V indexType basis R).repr
         (f ((generalLinearScalarBasis K V indexType basis R) column)) row := by
-  change (specialLinearGroupMulEquivAlgHom K indexType R
+  change ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K indexType R).symm
       (specialLinearModuleMatrixEquiv K V indexType basis R f)).ofConv
-        (entry K indexType row column) = _
-  exact (specialLinearGroupMulEquivAlgHom_entry K indexType R
+        ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card indexType)).hom
+          (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType row column)) = _
+  exact (TauCeti.SpecialLinear.reindexedPointsMulEquiv_symm_apply K indexType R
     (specialLinearModuleMatrixEquiv K V indexType basis R f) row column).trans
       (specialLinearModuleMatrixEquiv_entry K V indexType basis R f row column)
 
@@ -245,8 +250,9 @@ theorem specialLinearModuleCoordinateEval_detInverse (R : Type u)
     [CommRing R] [Algebra K R]
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
     specialLinearModuleCoordinateEval K V indexType basis R f
-      (quotient K indexType (detInverse K indexType)) = 1 :=
-  specialLinearGroupMulEquivAlgHom_detInverse K indexType R
+      ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card indexType)).hom.toAlgHom
+        ((Ring.inverse (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType).det))) = 1 :=
+  TauCeti.SpecialLinear.reindexedPointsMulEquiv_symm_apply_ringInverse_det K indexType R
     (specialLinearModuleMatrixEquiv K V indexType basis R f)
 
 /-- The underlying morphism of the represented `Spec R` point. -/
@@ -254,7 +260,13 @@ theorem specialLinearModulePointsIso_apply_left (R : CommAlgCat K)
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
     ((specialLinearModulePointsIso K V indexType basis).hom.app R f).left =
       Spec.map (CommRingCat.ofHom
-        (specialLinearModuleCoordinateEval K V indexType basis R f).toRingHom) := rfl
+        (specialLinearModuleCoordinateEval K V indexType basis R f).toRingHom) := by
+  change ((TauCeti.SpecialLinear.groupSchemePointMulEquiv
+    (R := K) (Fintype.card indexType) R)
+      ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K indexType R).symm
+        (specialLinearModuleMatrixEquiv K V indexType basis R f))).left = _
+  rw [TauCeti.SpecialLinear.groupSchemePointMulEquiv_apply_left]
+  rfl
 
 /-- Pull back a universal matrix entry along the represented `Spec` point. -/
 theorem specialLinearModulePoint_preimage_entry (R : Type u)
@@ -262,14 +274,20 @@ theorem specialLinearModulePoint_preimage_entry (R : Type u)
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) (row column : indexType) :
     (Spec.preimage
       ((specialLinearModulePointsIso K V indexType basis).hom.app (CommAlgCat.of K R) f).left).hom
-        (entry K indexType row column) =
+        ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card indexType)).hom
+          (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType row column)) =
       (generalLinearScalarBasis K V indexType basis R).repr
         (f ((generalLinearScalarBasis K V indexType basis R) column)) row := by
-  change (Spec.preimage (specialLinearGroupMulEquivPoints K indexType R
+  change (Spec.preimage (((TauCeti.SpecialLinear.reindexedPointsMulEquiv K indexType R).symm.trans
+    (TauCeti.SpecialLinear.groupSchemePointMulEquiv (R := K) (Fintype.card indexType) R))
     (specialLinearModuleMatrixEquiv K V indexType basis R f)).left).hom
-      (entry K indexType row column) = _
-  exact (specialLinearGroupPoint_preimage_entry K indexType R
-    (specialLinearModuleMatrixEquiv K V indexType basis R f) row column).trans
+      ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card indexType)).hom
+          (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType row column)) = _
+  rw [MulEquiv.trans_apply,
+    TauCeti.SpecialLinear.groupSchemePointMulEquiv_apply_left]
+  erw [Spec.preimage_map]
+  exact (TauCeti.SpecialLinear.reindexedPointsMulEquiv_symm_apply K indexType R _
+    row column).trans
       (specialLinearModuleMatrixEquiv_entry K V indexType basis R f row column)
 
 /-- The inverse-determinant coordinate evaluates to one at every SL point. -/
@@ -278,26 +296,35 @@ theorem specialLinearModulePoint_preimage_detInverse (R : Type u)
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
     (Spec.preimage
       ((specialLinearModulePointsIso K V indexType basis).hom.app (CommAlgCat.of K R) f).left).hom
-        (quotient K indexType (detInverse K indexType)) = 1 := by
-  change (Spec.preimage (specialLinearGroupMulEquivPoints K indexType R
+        ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card indexType)).hom.toAlgHom
+          ((Ring.inverse (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType).det))) = 1 := by
+  change (Spec.preimage (((TauCeti.SpecialLinear.reindexedPointsMulEquiv K indexType R).symm.trans
+    (TauCeti.SpecialLinear.groupSchemePointMulEquiv (R := K) (Fintype.card indexType) R))
     (specialLinearModuleMatrixEquiv K V indexType basis R f)).left).hom
-      (quotient K indexType (detInverse K indexType)) = 1
-  exact specialLinearGroupPoint_preimage_detInverse K indexType R
-    (specialLinearModuleMatrixEquiv K V indexType basis R f)
+      ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card indexType)).hom.toAlgHom
+        ((Ring.inverse (TauCeti.GeneralLinear.reindexedGenericMatrix K indexType).det))) = 1
+  rw [MulEquiv.trans_apply,
+    TauCeti.SpecialLinear.groupSchemePointMulEquiv_apply_left]
+  erw [Spec.preimage_map]
+  exact TauCeti.SpecialLinear.reindexedPointsMulEquiv_symm_apply_ringInverse_det
+    K indexType R _
 
 /-- The SL-to-GL inclusion agrees with the matrix-scheme inclusion on points. -/
 theorem specialLinearModulePointsIso_inclusion (R : CommAlgCat K)
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
     (specialLinearModulePointsIso K V indexType basis).hom.app R f ≫
-        (specialLinearInclusion K indexType).hom.hom =
+        (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card indexType)).hom.hom =
       (generalLinearModulePointsIso K V indexType basis).hom.app R
         f.toGeneralLinearGroup := by
-  change specialLinearGroupMulEquivPoints K indexType R
+  change ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K indexType R).symm.trans
+    (TauCeti.SpecialLinear.groupSchemePointMulEquiv (R := K) (Fintype.card indexType) R))
       (specialLinearModuleMatrixEquiv K V indexType basis R f) ≫
-        (specialLinearInclusion K indexType).hom.hom =
-    generalLinearGroupMulEquivPoints K indexType R
+        (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card indexType)).hom.hom =
+    ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K indexType R).symm.trans
+      (TauCeti.GeneralLinear.groupSchemePointMulEquiv (R := K) (Fintype.card indexType) R))
       (generalLinearModuleMatrixEquiv K V indexType basis R f.toGeneralLinearGroup)
-  rw [specialLinearInclusion_point,
+  rw [MulEquiv.trans_apply, MulEquiv.trans_apply,
+    TauCeti.SpecialLinear.reindexedSchemePoint_comp_groupSchemeι,
     specialLinearModuleMatrixEquiv_toGL]
 
 variable (otherBasis thirdBasis : Module.Basis indexType K V)
@@ -361,7 +388,7 @@ theorem specialLinearModuleChangeBasis_toGL (R : Type u)
 
 /-- Natural isomorphism between two matrix SL presentations of the same module. -/
 def specialLinearModuleChangeBasisIso :
-    specialLinearGroupFunctor K indexType ≅ specialLinearGroupFunctor K indexType :=
+    specialLinearIndexedFunctor K indexType ≅ specialLinearIndexedFunctor K indexType :=
   (specialLinearModuleMatrixIso K V indexType basis).symm ≪≫
     specialLinearModuleMatrixIso K V indexType otherBasis
 
@@ -369,7 +396,7 @@ def specialLinearModuleChangeBasisIso :
 theorem specialLinearModulePointsIso_changeBasis (R : CommAlgCat K)
     (f : SpecialLinearGroup R (SourceOrderTensor K V R)) :
     (specialLinearModulePointsIso K V indexType otherBasis).hom.app R f =
-      (specialLinearGroupPointsIso K indexType).hom.app R
+      (specialLinearIndexedPointsIso K indexType).hom.app R
         (specialLinearModuleChangeBasis K V indexType basis otherBasis R
           (specialLinearModuleMatrixEquiv K V indexType basis R f)) := by
   rw [specialLinearModuleChangeBasis_apply]

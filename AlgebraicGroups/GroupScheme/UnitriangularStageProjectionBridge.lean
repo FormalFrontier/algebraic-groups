@@ -50,8 +50,8 @@ variable (K : Type) [CommRing K] (n r : ℕ)
 /-- An index on the current superdiagonal is the same matrix position among
 the entries surviving the `r`-th stage ideal. -/
 def stageSuperdiagonalInclusion (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) : SurvivingPair n r := by
-  let pair : UnitriangularCoordinateRing.StrictUpperPair (Fin n) :=
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) : SurvivingPair n r := by
+  let pair : TauCeti.UpperUnitriangular.Index (Fin n) :=
     ⟨ij.1, Fin.lt_def.mpr (by have hgap := ij.2; omega)⟩
   refine ⟨pair, ?_⟩
   change ij.1.1.val + r ≤ ij.1.2.val
@@ -92,13 +92,13 @@ theorem stageSurviving_gap_gt_of_not_mem_range (hr : 1 ≤ r)
 /-- The complete algebra pullback of the affine coordinate projection, using
 Mathlib's `MvPolynomial.rename` and the stage polynomial equivalence. -/
 def stageProductCoordinatePullback (hr : 1 ≤ r) :
-    MvPolynomial (Matrix.UnitriangularGroup.superdiagonalIndex n r) K →ₐ[K]
+    MvPolynomial (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) K →ₐ[K]
       CoordinateRing K n r :=
   (polynomialEquiv K n r).symm.toAlgHom.comp
     (MvPolynomial.rename (stageSuperdiagonalInclusion n r hr))
 
 @[simp] theorem stageProductCoordinatePullback_X (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     stageProductCoordinatePullback K n r hr (MvPolynomial.X ij) =
       coordinate K n r ij := by
   change (polynomialEquiv K n r).symm
@@ -110,22 +110,22 @@ def stageProductCoordinatePullback (hr : 1 ≤ r) :
 /-- The official positive-stage coordinate algebra map is the corresponding
 polynomial projection, on its *entire* rank-one coordinate algebra. -/
 theorem stageCoordinateAlgHom_eq_productPullback (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     coordinateAlgHom K n r ij =
       (stageProductCoordinatePullback K n r hr).comp
         (additiveProductCoordinateAlgHom K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r) ij) := by
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) ij) := by
   let : AddCommMonoid (CoordinateRing K n r) :=
     (inferInstance : CommRing (CoordinateRing K n r)).toCommSemiring.toAddCommMonoid
   let : Module K (CoordinateRing K n r) := Algebra.toModule
   apply SymmetricAlgebra.algHom_ext (R := K) (M := K)
     (A := CoordinateRing K n r)
   ext
-  change coordinateAlgHom K n r ij (additiveGroupCoordinate K) =
+  change coordinateAlgHom K n r ij ((SymmetricAlgebra.ι K K 1)) =
     stageProductCoordinatePullback K n r hr
       (additiveProductCoordinateAlgHom K
-        (Matrix.UnitriangularGroup.superdiagonalIndex n r) ij
-          (additiveGroupCoordinate K))
+        (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) ij
+          ((SymmetricAlgebra.ι K K 1)))
   rw [coordinateAlgHom_coordinate, additiveProductCoordinateAlgHom_coordinate,
     stageProductCoordinatePullback_X]
 
@@ -152,33 +152,33 @@ theorem unitriangularStageUnderlyingSpecIso_hom_left :
 def stageProductSpecRename (hr : 1 ≤ r) :
     additiveGroupAffineProductScheme K (SurvivingPair n r) ⟶
       additiveGroupAffineProductScheme K
-        (Matrix.UnitriangularGroup.superdiagonalIndex n r) :=
+        (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :=
   (algSpec (.of K)).map
     (CommAlgCat.ofHom (MvPolynomial.rename
       (stageSuperdiagonalInclusion n r hr) :
-        MvPolynomial (Matrix.UnitriangularGroup.superdiagonalIndex n r) K →ₐ[K]
+        MvPolynomial (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) K →ₐ[K]
           MvPolynomial (SurvivingPair n r) K)).op
 
 /-- The actual coordinate projection agrees with the polynomial projection
 after composing with the genuine product projection at any index. -/
 theorem unitriangularStage_projection_triangle (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     ((unitriangularStageCoordinateMap K n r hr).hom.hom ≫
         (additiveGroupProductUnderlyingSpecIso K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom) ≫
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom) ≫
           additiveGroupAffineProductProjection K
-            (Matrix.UnitriangularGroup.superdiagonalIndex n r) ij =
+            (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) ij =
       ((unitriangularStageUnderlyingSpecIso K n r).hom ≫
         stageProductSpecRename K n r hr) ≫
           additiveGroupAffineProductProjection K
-            (Matrix.UnitriangularGroup.superdiagonalIndex n r) ij := by
+            (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) ij := by
   rw [Category.assoc, additiveGroupProductUnderlyingSpecIso_hom_projection]
   have hproj := congrArg (fun f : unitriangularStageScheme K n r ⟶
-      additiveGroupScheme K => f.hom.hom)
+      TauCeti.AdditiveGroup.groupScheme K => f.hom.hom)
     (unitriangularStageCoordinateMap_π K n r hr ij)
   change (unitriangularStageCoordinateMap K n r hr).hom.hom ≫
-      (Limits.Pi.π (fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-        additiveGroupScheme K) ij).hom.hom =
+      (Limits.Pi.π (fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+        TauCeti.AdditiveGroup.groupScheme K) ij).hom.hom =
         (unitriangularStageCoordinateProjection K n r hr ij).hom.hom at hproj
   rw [hproj]
   apply Over.OverMorphism.ext
@@ -190,7 +190,7 @@ theorem unitriangularStage_projection_triangle (hr : 1 ≤ r)
         (MvPolynomial.rename (stageSuperdiagonalInclusion n r hr)).toRingHom) ≫
       Spec.map (CommRingCat.ofHom
         (additiveProductCoordinateAlgHom K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r) ij).toRingHom)
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) ij).toRingHom)
   rw [← Category.assoc, ← Spec.map_comp, ← Spec.map_comp]
   rw [coordinateBialgHom_toAlgHom,
     stageCoordinateAlgHom_eq_productPullback]
@@ -204,11 +204,11 @@ statement of this over-scheme arrow identity. -/
 theorem unitriangularStageCoordinateMap_underlying_spec (hr : 1 ≤ r) :
     (unitriangularStageCoordinateMap K n r hr).hom.hom ≫
         (additiveGroupProductUnderlyingSpecIso K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom =
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom =
       (unitriangularStageUnderlyingSpecIso K n r).hom ≫
         stageProductSpecRename K n r hr := by
   apply (additiveGroupAffineProductFanIsLimit K
-    (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom_ext
+    (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom_ext
   intro ⟨ij⟩
   exact unitriangularStage_projection_triangle K n r hr ij
 
@@ -219,25 +219,25 @@ theorem unitriangularStageCoordinateMap_underlying_affineSpace (hr : 1 ≤ r) :
     (unitriangularStageUnderlyingAffineSpaceIso K n r).inv ≫
         (unitriangularStageCoordinateMap K n r hr).hom.hom ≫
         (additiveGroupProductUnderlyingAffineSpaceIso K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom =
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom =
       (additiveGroupAffineProductSpecToSpaceIso K (SurvivingPair n r)).symm.hom ≫
         stageProductSpecRename K n r hr ≫
         (additiveGroupAffineProductSpecToSpaceIso K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom := by
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom := by
   rw [additiveGroupProductUnderlyingAffineSpaceIso, Iso.trans_hom]
   calc
     _ = (unitriangularStageUnderlyingAffineSpaceIso K n r).inv ≫
         (((unitriangularStageCoordinateMap K n r hr).hom.hom ≫
           (additiveGroupProductUnderlyingSpecIso K
-            (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom) ≫
+            (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom) ≫
           (additiveGroupAffineProductSpecToSpaceIso K
-            (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom) := by
+            (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom) := by
               simp only [Category.assoc]
     _ = (unitriangularStageUnderlyingAffineSpaceIso K n r).inv ≫
         (((unitriangularStageUnderlyingSpecIso K n r).hom ≫
           stageProductSpecRename K n r hr) ≫
           (additiveGroupAffineProductSpecToSpaceIso K
-            (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom) := by
+            (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom) := by
               rw [unitriangularStageCoordinateMap_underlying_spec]
     _ = _ := by
       rw [unitriangularStageUnderlyingSpecIso, Iso.trans_hom]
@@ -247,11 +247,11 @@ theorem unitriangularStageCoordinateMap_underlying_affineSpace (hr : 1 ≤ r) :
 using Mathlib's `MvPolynomial.killCompl`. -/
 def stageProductCoordinateKill (hr : 1 ≤ r) :
     MvPolynomial (SurvivingPair n r) K →ₐ[K]
-      MvPolynomial (Matrix.UnitriangularGroup.superdiagonalIndex n r) K :=
+      MvPolynomial (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) K :=
   MvPolynomial.killCompl (stageSuperdiagonalInclusion_injective n r hr)
 
 @[simp] theorem stageProductCoordinateKill_inclusion (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     stageProductCoordinateKill K n r hr
         (MvPolynomial.X (stageSuperdiagonalInclusion n r hr ij)) =
       MvPolynomial.X ij := by
@@ -274,11 +274,11 @@ theorem stageProductCoordinateKill_higher (hr : 1 ≤ r)
 /-- The coordinate-algebra pullback induced by the underlying section. -/
 def stageProductSectionPullback (hr : 1 ≤ r) :
     CoordinateRing K n r →ₐ[K]
-      MvPolynomial (Matrix.UnitriangularGroup.superdiagonalIndex n r) K :=
+      MvPolynomial (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) K :=
   (stageProductCoordinateKill K n r hr).comp (polynomialEquiv K n r).toAlgHom
 
 @[simp] theorem stageProductSectionPullback_inclusion (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     stageProductSectionPullback K n r hr (coordinate K n r ij) =
       MvPolynomial.X ij := by
   change stageProductCoordinateKill K n r hr
@@ -306,7 +306,7 @@ theorem stageProductSectionPullback_higher (hr : 1 ≤ r)
 /-- The complementary-variable retraction as a genuine arrow over `Spec K`. -/
 def stageProductSpecKill (hr : 1 ≤ r) :
     additiveGroupAffineProductScheme K
-        (Matrix.UnitriangularGroup.superdiagonalIndex n r) ⟶
+        (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) ⟶
       additiveGroupAffineProductScheme K (SurvivingPair n r) :=
   (algSpec (.of K)).map
     (CommAlgCat.ofHom (stageProductCoordinateKill K n r hr)).op
@@ -316,19 +316,19 @@ on the entire polynomial coordinate algebra, even for empty index sets. -/
 theorem stageProductSpecKill_comp_rename (hr : 1 ≤ r) :
     stageProductSpecKill K n r hr ≫ stageProductSpecRename K n r hr =
       𝟙 (additiveGroupAffineProductScheme K
-        (Matrix.UnitriangularGroup.superdiagonalIndex n r)) := by
+        (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)) := by
   apply Over.OverMorphism.ext
   change Spec.map (CommRingCat.ofHom
       (stageProductCoordinateKill K n r hr).toRingHom) ≫
     Spec.map (CommRingCat.ofHom
       (MvPolynomial.rename (stageSuperdiagonalInclusion n r hr)).toRingHom) =
         𝟙 (Spec (.of (MvPolynomial
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r) K)))
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) K)))
   rw [← Spec.map_comp]
   have hkill : (stageProductCoordinateKill K n r hr).comp
       (MvPolynomial.rename (stageSuperdiagonalInclusion n r hr)) =
         AlgHom.id K (MvPolynomial
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r) K) :=
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) K) :=
     MvPolynomial.killCompl_comp_rename
       (stageSuperdiagonalInclusion_injective n r hr)
   change Spec.map (CommRingCat.ofHom
@@ -340,10 +340,10 @@ theorem stageProductSpecKill_comp_rename (hr : 1 ≤ r) :
 /-- Section of the *actual* positive-stage underlying coordinate arrow;
 not a morphism of group schemes. -/
 def unitriangularStageCoordinateSectionOver (hr : 1 ≤ r) :
-    (∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-      additiveGroupScheme K).X ⟶ unitriangularStageUnderlyingScheme K n r :=
+    (∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+      TauCeti.AdditiveGroup.groupScheme K).X ⟶ unitriangularStageUnderlyingScheme K n r :=
   (additiveGroupProductUnderlyingSpecIso K
-      (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom ≫
+      (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom ≫
     stageProductSpecKill K n r hr ≫
       (unitriangularStageUnderlyingSpecIso K n r).inv
 
@@ -366,12 +366,12 @@ theorem unitriangularStageCoordinateSectionOver_preimage (hr : 1 ≤ r)
     (f : CoordinateRing K n r) :
     Spec.preimage
       (((additiveGroupProductUnderlyingSpecIso K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r)).inv ≫
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).inv ≫
         unitriangularStageCoordinateSectionOver K n r hr).left) f =
       stageProductSectionPullback K n r hr f := by
   have hcancel :
       (additiveGroupProductUnderlyingSpecIso K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r)).inv ≫
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).inv ≫
         unitriangularStageCoordinateSectionOver K n r hr =
       stageProductSpecKill K n r hr ≫
         (unitriangularStageUnderlyingSpecIso K n r).inv := by
@@ -390,10 +390,10 @@ theorem unitriangularStageCoordinateSectionOver_preimage (hr : 1 ≤ r)
 coordinate after identifying the real group product with its polynomial
 spectrum. -/
 @[simp↓] theorem unitriangularStageCoordinateSectionOver_coordinate (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     Spec.preimage
       (((additiveGroupProductUnderlyingSpecIso K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r)).inv ≫
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).inv ≫
         unitriangularStageCoordinateSectionOver K n r hr).left)
         (coordinate K n r ij) = MvPolynomial.X ij := by
   rw [unitriangularStageCoordinateSectionOver_preimage,
@@ -406,7 +406,7 @@ theorem unitriangularStageCoordinateSectionOver_higher (hr : 1 ≤ r)
     (hs : s.1.1.1.val + r < s.1.1.2.val) :
     Spec.preimage
       (((additiveGroupProductUnderlyingSpecIso K
-          (Matrix.UnitriangularGroup.superdiagonalIndex n r)).inv ≫
+          (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).inv ≫
         unitriangularStageCoordinateSectionOver K n r hr).left)
         (quotient K n r (entry K n s.1.1.1 s.1.1.2)) = 0 := by
   rw [unitriangularStageCoordinateSectionOver_preimage,
@@ -419,10 +419,10 @@ published theorem of Milne is asserted. -/
 theorem unitriangularStageCoordinateSectionOver_comp (hr : 1 ≤ r) :
     unitriangularStageCoordinateSectionOver K n r hr ≫
         (unitriangularStageCoordinateMap K n r hr).hom.hom =
-      𝟙 ((∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-        additiveGroupScheme K).X) := by
+      𝟙 ((∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+        TauCeti.AdditiveGroup.groupScheme K).X) := by
   apply (cancel_mono (additiveGroupProductUnderlyingSpecIso K
-    (Matrix.UnitriangularGroup.superdiagonalIndex n r)).hom).mp
+    (TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r)).hom).mp
   rw [Category.id_comp, Category.assoc,
     unitriangularStageCoordinateMap_underlying_spec]
   unfold unitriangularStageCoordinateSectionOver

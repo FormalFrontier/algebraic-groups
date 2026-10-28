@@ -7,7 +7,7 @@ stage quotient is a polynomial algebra on strict-upper index pairs `(i,j)` with
 `i.val + r ≤ j.val`. This module carries that algebra
 equivalence through `Spec` to an isomorphism over `Spec K`:
 
-```lean
+```text
 unitriangularStageUnderlyingScheme K n r ≅
   (AffineSpace (SurvivingPair n r) (Spec (.of K))).asOver (Spec (.of K))
 ```

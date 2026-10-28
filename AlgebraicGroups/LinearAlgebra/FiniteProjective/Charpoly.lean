@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.LinearAlgebra.FiniteProjective.Fredholm
+public import TauCeti.LinearAlgebra.Charpoly.Projective
 public import AlgebraicGroups.RingTheory.Equalizer
 public import Mathlib.RingTheory.LocalProperties.Exactness
 public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
@@ -13,9 +13,8 @@ public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 # Characteristic polynomials of finite projective modules
 
 For a finite projective module and a supplied natural number `n`, this file
-defines a polynomial by reflecting the presentation-independent Fredholm
-polynomial at `n`. Scalar-base-change and intertwining formulas need no rank
-hypothesis. At constant maximal-local rank `n`, comparison with the ordinary
+uses the reflection of Tau Ceti’s canonical reversed characteristic
+polynomial at `n`. At constant maximal-local rank `n`, comparison with the ordinary
 characteristic polynomial after localization gives monicity and
 Cayley--Hamilton. The polynomial itself does not supply a global basis.
 
@@ -50,184 +49,28 @@ open scoped TensorProduct
 
 namespace Module.FiniteProjective
 
-universe uR uS uM uN uL
-
-variable (R : Type uR) (M : Type uM)
-  [CommRing R] [AddCommGroup M] [Module R M]
-
-/-- The characteristic polynomial obtained by reflecting the canonical
-Fredholm polynomial at the prescribed constant rank. -/
-noncomputable def finiteProjectiveCharpoly [Module.Finite R M]
-    [Module.Projective R M] (n : ℕ) (f : Module.End R M) : R[X] :=
-  (FreePresentation.fredholm (R := R) (M := M)
-    (freePresentation R M) f).reflect n
-
-section BaseChange
-
-variable {R : Type uR} {S : Type uS} {M : Type uM}
-  [CommRing R] [CommRing S] [Algebra R S]
-  [AddCommGroup M] [Module R M]
-  [Module.Finite R M] [Module.Projective R M]
-
-/-- The finite-projective characteristic polynomial commutes with arbitrary
-scalar extension. -/
-lemma finiteProjectiveCharpoly_baseChange (n : ℕ) (f : Module.End R M) :
-    (finiteProjectiveCharpoly R M n f).map (algebraMap R S) =
-      finiteProjectiveCharpoly S (TensorProduct R S M) n
-        (f.baseChange S) := by
-  unfold finiteProjectiveCharpoly
-  rw [← reflect_map]
-  congr 1
-  rw [FreePresentation.fredholm_baseChange]
-  exact FreePresentation.fredholm_eq (R := S) (M := TensorProduct R S M)
-    (FreePresentation.baseChange (R := R) (M := M)
-      (freePresentation R M) S)
-    (freePresentation S (TensorProduct R S M)) (f.baseChange S)
-
-/-- Coefficients of the finite-projective characteristic polynomial commute
-with arbitrary scalar extension. -/
-lemma finiteProjectiveCharpoly_coeff_baseChange (n k : ℕ)
-    (f : Module.End R M) :
-    algebraMap R S ((finiteProjectiveCharpoly R M n f).coeff k) =
-      (finiteProjectiveCharpoly S (TensorProduct R S M) n
-        (f.baseChange S)).coeff k := by
-  rw [← coeff_map, finiteProjectiveCharpoly_baseChange]
-
-end BaseChange
-
-section Equivariance
-
-variable {R : Type uR} {S : Type uS}
-  {M : Type uM} {N : Type uN}
-  [CommRing R] [CommRing S]
-  [AddCommGroup M] [Module R M]
-  [AddCommGroup N]
-
-/-- The finite-projective characteristic polynomial is invariant under an
-intertwining linear equivalence. -/
-lemma finiteProjectiveCharpoly_eq_of_equiv_intertwine
-    [Module R N]
-    [Module.Finite R M] [Module.Projective R M]
-    [Module.Finite R N] [Module.Projective R N]
-    (n : ℕ) (e : M ≃ₗ[R] N) (f : Module.End R M) (g : Module.End R N)
-    (h : e.toLinearMap ∘ₗ f = g ∘ₗ e.toLinearMap) :
-    finiteProjectiveCharpoly R M n f =
-      finiteProjectiveCharpoly R N n g := by
-  unfold finiteProjectiveCharpoly
-  congr 1
-  exact FreePresentation.fredholm_eq_of_equiv_intertwine
-    (R := R) (M := M) (N := N)
-    (freePresentation R M) (freePresentation R N) e f g h
-
-/-- Extension of scalars along a ring equivalence followed by the equivalence
-itself recovers the original module. -/
-noncomputable def ringEquivTensorLid [Module S N] (e : R ≃+* S) :
-    letI : Algebra R S := e.toRingHom.toAlgebra
-    letI : Module R N := Module.compHom N e.toRingHom
-    S ⊗[R] N ≃ₗ[S] N := by
-  let _ : Algebra R S := e.toRingHom.toAlgebra
-  let _ : Module R N := Module.compHom N e.toRingHom
-  let _ : IsScalarTower R S N := ⟨fun r s x ↦ by
-    change (e r * s) • x = e r • s • x
-    rw [mul_smul]⟩
-  let _ : Algebra S R := e.symm.toRingHom.toAlgebra
-  let _ : IsScalarTower S R N := ⟨fun s r x ↦ by
-    change e (e.symm s * r) • x = s • e r • x
-    rw [map_mul, e.apply_symm_apply, mul_smul]⟩
-  let _ : IsScalarTower S R S := ⟨fun s r z ↦ by
-    change e (e.symm s * r) * z = s * (e r * z)
-    rw [map_mul, e.apply_symm_apply, mul_assoc]⟩
-  let _ : TensorProduct.CompatibleSMul R S S N :=
-    TensorProduct.CompatibleSMul.of_algebraMap_surjective S N e.surjective
-  let _ : TensorProduct.CompatibleSMul S R S N :=
-    TensorProduct.CompatibleSMul.of_algebraMap_surjective S N e.symm.surjective
-  exact TensorProduct.lidOfCompatibleSMul R S N
-
-attribute [local instance] RingHomInvPair.of_ringEquiv
-
-/-- The finite-projective characteristic polynomial is natural under an
-intertwining semilinear equivalence over a ring equivalence. -/
-lemma finiteProjectiveCharpoly_map_ringEquiv_of_intertwine
-    [Module S N]
-    [Module.Finite R M] [Module.Projective R M]
-    [Module.Finite S N] [Module.Projective S N]
-    (n : ℕ) (e : R ≃+* S)
-    (q : M ≃ₛₗ[RingHomClass.toRingHom e] N)
-    (f : Module.End R M) (g : Module.End S N)
-    (h : ∀ x, q.toLinearMap (f x) = g (q.toLinearMap x)) :
-    (finiteProjectiveCharpoly R M n f).map e.toRingHom =
-      finiteProjectiveCharpoly S N n g := by
-  let _ : Algebra R S := e.toRingHom.toAlgebra
-  let _ : Module R N := Module.compHom N e.toRingHom
-  let _ : IsScalarTower R S N := ⟨fun r s x ↦ by
-    change (e r * s) • x = e r • s • x
-    rw [mul_smul]⟩
-  let qR : M ≃ₗ[R] N :=
-    { q with
-      map_smul' := fun r x ↦ by
-        change q.toLinearMap (r • x) = e r • q.toLinearMap x
-        exact q.toLinearMap.map_smulₛₗ r x }
-  let qS : TensorProduct R S M ≃ₗ[S] N :=
-    (qR.baseChange R S M N).trans (ringEquivTensorLid e)
-  have hqS : qS.toLinearMap ∘ₗ f.baseChange S =
-      g ∘ₗ qS.toLinearMap := by
-    apply LinearMap.ext
-    intro z
-    induction z using TensorProduct.inductionOn with
-    | add x y hx hy => simp_all
-    | tmul s x =>
-      change s • q.toLinearMap (f x) = g (s • q.toLinearMap x)
-      rw [h, g.map_smul]
-  change (finiteProjectiveCharpoly R M n f).map (algebraMap R S) = _
-  rw [finiteProjectiveCharpoly_baseChange]
-  exact finiteProjectiveCharpoly_eq_of_equiv_intertwine n qS
-    (f.baseChange S) g hqS
-
-end Equivariance
+universe uR uS uM uL
 
 section FreeComparison
 
 variable {R : Type uR} {M : Type uM}
   [CommRing R] [AddCommGroup M] [Module R M]
 
-/-- The split presentation associated to a finite basis. -/
-@[expose] noncomputable def FreePresentation.ofBasis {n : ℕ}
-    (b : Module.Basis (Fin n) R M) : FreePresentation R M where
-  n := n
-  proj := b.equivFun.symm.toLinearMap
-  incl := b.equivFun.toLinearMap
-  proj_comp_incl := by simp
-
-/-- With a finite basis, the finite-projective characteristic polynomial is
-the ordinary characteristic polynomial. -/
-lemma finiteProjectiveCharpoly_eq_charpoly
+/-- With a finite basis, the reflected projective reversed characteristic polynomial is
+ the ordinary characteristic polynomial. -/
+lemma projectiveCharpolyRev_reflect_eq_charpoly
     [Module.Finite R M] [Module.Projective R M]
     {n : ℕ} (b : Module.Basis (Fin n) R M)
     [Module.Free R M] (f : Module.End R M) :
-    finiteProjectiveCharpoly R M n f = f.charpoly := by
-  by_cases hR : Nontrivial R
-  · let _ : Nontrivial R := hR
-    unfold finiteProjectiveCharpoly
-    rw [FreePresentation.fredholm_eq (R := R) (M := M)
-      (freePresentation R M) (FreePresentation.ofBasis (R := R) (M := M) b) f]
-    unfold FreePresentation.fredholm
-    have hmatrix : LinearMap.toMatrix'
-        ((FreePresentation.ofBasis (R := R) (M := M) b).incl.comp
-      (f.comp (FreePresentation.ofBasis (R := R) (M := M) b).proj)) =
-        LinearMap.toMatrix b b f := by
-      dsimp only [FreePresentation.ofBasis]
-      rfl
-    rw [hmatrix]
-    change (Matrix.charpolyRev (LinearMap.toMatrix b b f)).reflect n =
-      f.charpoly
-    rw [← Matrix.reverse_charpoly]
-    unfold Polynomial.reverse
-    rw [Matrix.charpoly_natDegree_eq_dim]
-    simp only [Fintype.card_fin]
-    rw [reflect_reflect]
-    exact f.charpoly_toMatrix b
-  · let _ : Subsingleton R := not_nontrivial_iff_subsingleton.mp hR
-    exact Subsingleton.elim _ _
+    (LinearMap.projectiveCharpolyRev f).reflect n = f.charpoly := by
+  rcases subsingleton_or_nontrivial R with _ | _
+  · exact Subsingleton.elim _ _
+  rw [LinearMap.projectiveCharpolyRev_eq_charpolyRev b, ← Matrix.reverse_charpoly]
+  unfold Polynomial.reverse
+  rw [Matrix.charpoly_natDegree_eq_dim]
+  simp only [Fintype.card_fin]
+  rw [reflect_reflect]
+  exact f.charpoly_toMatrix b
 
 end FreeComparison
 
@@ -288,14 +131,14 @@ variable [Module.Finite R M] [Module.Projective R M]
 /-- After localization at a maximal ideal where the projective module has
 rank `n`, the finite-projective polynomial is the ordinary characteristic
 polynomial. -/
-lemma finiteProjectiveCharpoly_map_localization_eq_charpoly
+lemma projectiveCharpolyRev_reflect_map_localization_eq_charpoly
     (f : Module.End R M) (J : Ideal R) [J.IsMaximal]
     (hrank : Module.finrank (Localization J.primeCompl)
       (LocalizedModule J.primeCompl M) = n) :
     let _ : Module.Free (Localization J.primeCompl)
         (TensorProduct R (Localization J.primeCompl) M) :=
       Module.free_of_flat_of_isLocalRing
-    (finiteProjectiveCharpoly R M n f).map
+    ((LinearMap.projectiveCharpolyRev f).reflect n).map
         (algebraMap R (Localization J.primeCompl)) =
       (f.baseChange (Localization J.primeCompl)).charpoly := by
   let _ : Module.Free (Localization J.primeCompl)
@@ -307,20 +150,20 @@ lemma finiteProjectiveCharpoly_map_localization_eq_charpoly
     exact hrank
   let b := Module.finBasisOfFinrankEq (Localization J.primeCompl)
     (TensorProduct R (Localization J.primeCompl) M) htensorRank
-  rw [finiteProjectiveCharpoly_baseChange]
-  exact finiteProjectiveCharpoly_eq_charpoly b
+  rw [← reflect_map, ← LinearMap.projectiveCharpolyRev_baseChange]
+  exact projectiveCharpolyRev_reflect_eq_charpoly b
     (f.baseChange (Localization J.primeCompl))
 
 /-- For constant maximal-local rank `n`, the finite-projective
 characteristic polynomial is monic. This uses Mathlib's finite-free
 characteristic-polynomial monicity after localization at maximal ideals. -/
-lemma finiteProjectiveCharpoly_monic_of_local_finrank
+lemma projectiveCharpolyRev_reflect_monic_of_local_finrank
     (f : Module.End R M)
     (hrank : ∀ (J : Ideal R) [J.IsMaximal],
       Module.finrank (Localization J.primeCompl)
         (LocalizedModule J.primeCompl M) = n) :
-    (finiteProjectiveCharpoly R M n f).Monic := by
-  let p := finiteProjectiveCharpoly R M n f
+    ((LinearMap.projectiveCharpolyRev f).reflect n).Monic := by
+  let p := (LinearMap.projectiveCharpolyRev f).reflect n
   have hcoeff : p.coeff n = 1 := by
     apply eq_of_algebraMap_localization_maximal_eq
     intro J hJ
@@ -332,7 +175,7 @@ lemma finiteProjectiveCharpoly_monic_of_local_finrank
       rw [← (LocalizedModule.equivTensorProduct J.primeCompl M).finrank_eq]
       exact hrank J
     rw [← coeff_map]
-    rw [finiteProjectiveCharpoly_map_localization_eq_charpoly f J (hrank J)]
+    rw [projectiveCharpolyRev_reflect_map_localization_eq_charpoly f J (hrank J)]
     simpa [LinearMap.charpoly_natDegree, htensorRank] using
       (LinearMap.charpoly_monic
         (f.baseChange (Localization J.primeCompl))).coeff_natDegree
@@ -349,7 +192,7 @@ lemma finiteProjectiveCharpoly_monic_of_local_finrank
       rw [← (LocalizedModule.equivTensorProduct J.primeCompl M).finrank_eq]
       exact hrank J
     rw [← coeff_map]
-    rw [finiteProjectiveCharpoly_map_localization_eq_charpoly f J (hrank J)]
+    rw [projectiveCharpolyRev_reflect_map_localization_eq_charpoly f J (hrank J)]
     rw [map_zero]
     apply coeff_eq_zero_of_natDegree_lt
     simpa [LinearMap.charpoly_natDegree, htensorRank] using hk
@@ -358,13 +201,13 @@ lemma finiteProjectiveCharpoly_monic_of_local_finrank
 /-- Cayley--Hamilton for a finite projective module of constant maximal-local
 rank, obtained from Mathlib's `LinearMap.aeval_self_charpoly` after
 localization. -/
-lemma finiteProjectiveCharpoly_aeval_eq_zero_of_local_finrank
+lemma projectiveCharpolyRev_reflect_aeval_eq_zero_of_local_finrank
     (f : Module.End R M)
     (hrank : ∀ (J : Ideal R) [J.IsMaximal],
       Module.finrank (Localization J.primeCompl)
         (LocalizedModule J.primeCompl M) = n) :
-    aeval f (finiteProjectiveCharpoly R M n f) = 0 := by
-  let p := finiteProjectiveCharpoly R M n f
+    aeval f ((LinearMap.projectiveCharpolyRev f).reflect n) = 0 := by
+  let p := (LinearMap.projectiveCharpolyRev f).reflect n
   apply LinearMap.ext
   intro x
   apply Module.eq_zero_of_localization_maximal
@@ -378,7 +221,7 @@ lemma finiteProjectiveCharpoly_aeval_eq_zero_of_local_finrank
     Module.free_of_flat_of_isLocalRing
   have hbase : (aeval f p).baseChange (Localization J.primeCompl) = 0 := by
     rw [aeval_end_baseChange]
-    rw [finiteProjectiveCharpoly_map_localization_eq_charpoly
+    rw [projectiveCharpolyRev_reflect_map_localization_eq_charpoly
       f J (hrank J)]
     exact LinearMap.aeval_self_charpoly
       (f.baseChange (Localization J.primeCompl))
@@ -399,7 +242,7 @@ variable {C : Type uL} {A : Type uR} {B : Type uM}
 give integrality over the equalizer. Compare the norm-polynomial argument in
 Stacks Project, Lemma 39.23.4 (tag 03BJ), using Lemma 39.23.2 (tag 03BH):
 the invariance of coefficients is assumed here, not deduced from a groupoid. -/
-lemma isIntegral_equalizer_of_finiteProjectiveCharpoly_coeff_invariant
+lemma isIntegral_equalizer_of_projectiveCharpolyRev_reflect_coeff_invariant
     (s t : A →ₐ[C] B) (hs : IsScalarTower.toAlgHom C A B = s)
     (ht : Function.Injective t) (n : ℕ)
     (hrank : ∀ (J : Ideal A) [J.IsMaximal],
@@ -407,13 +250,11 @@ lemma isIntegral_equalizer_of_finiteProjectiveCharpoly_coeff_invariant
         (LocalizedModule J.primeCompl B) = n)
     (x : A)
     (hcoeff : ∀ k,
-      s ((finiteProjectiveCharpoly A B n
-        (Algebra.lmul A B (t x))).coeff k) =
-      t ((finiteProjectiveCharpoly A B n
-        (Algebra.lmul A B (t x))).coeff k)) :
+      s (((LinearMap.projectiveCharpolyRev (Algebra.lmul A B (t x))).reflect n).coeff k) =
+      t (((LinearMap.projectiveCharpolyRev (Algebra.lmul A B (t x))).reflect n).coeff k)) :
     IsIntegral (AlgHom.equalizer s t) x := by
   let f : Module.End A B := Algebra.lmul A B (t x)
-  let p : A[X] := finiteProjectiveCharpoly A B n f
+  let p : A[X] := (LinearMap.projectiveCharpolyRev f).reflect n
   have hp_lifts : p ∈ Polynomial.lifts
       (algebraMap (AlgHom.equalizer s t) A) := by
     rw [Polynomial.lifts_iff_coeff_lifts]
@@ -422,7 +263,7 @@ lemma isIntegral_equalizer_of_finiteProjectiveCharpoly_coeff_invariant
     simpa [p, f] using hcoeff k
   obtain ⟨q, hqmap, -, hqmonic⟩ :=
     Polynomial.lifts_and_natDegree_eq_and_monic hp_lifts
-      (finiteProjectiveCharpoly_monic_of_local_finrank f hrank)
+      (projectiveCharpolyRev_reflect_monic_of_local_finrank f hrank)
   refine ⟨q, hqmonic, ?_⟩
   apply ht
   have hbase : s.toRingHom.comp (algebraMap (AlgHom.equalizer s t) A) =
@@ -463,7 +304,7 @@ lemma isIntegral_equalizer_of_finiteProjectiveCharpoly_coeff_invariant
     _ = 0 := by
       rw [hsRing]
       rw [Polynomial.aeval_map_algebraMap]
-      have hCH := finiteProjectiveCharpoly_aeval_eq_zero_of_local_finrank
+      have hCH := projectiveCharpolyRev_reflect_aeval_eq_zero_of_local_finrank
         f hrank
       apply Algebra.lmul_injective (R := A)
       simpa [← aeval_algHom_apply, f, p] using hCH

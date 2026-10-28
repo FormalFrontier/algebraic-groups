@@ -47,102 +47,93 @@ private theorem rationalTwoRoot_ne_one : rationalTwoRoot ≠ 1 := by
   change (2 : ℚ) = 1 at hv
   norm_num at hv
 
-private def rationalTwoCharacter : Multiplicative (ZMod 0) →* ℚ :=
-  (Units.coeHom ℚ).comp (zpowersMulHom ℚˣ rationalTwoUnit)
+private def rationalTwoCharacter :
+    TauCeti.RootsOfUnityGroup.characterGroup.{0} 0 →* ℚ :=
+  (Units.coeHom ℚ).comp
+    ((zpowersMulHom ℚˣ rationalTwoUnit).comp MulEquiv.ulift.toMonoidHom)
 
 private theorem rationalTwoCharacter_generator :
-    rationalTwoCharacter (.ofAdd 1) = 2 := by
+    rationalTwoCharacter (ULift.up (TauCeti.RootsOfUnityGroup.generator 0)) = 2 := by
   -- At order zero, normalize the carrier and its instances to the integer domain.
   change ((Units.coeHom ℚ).comp (zpowersMulHom ℚˣ rationalTwoUnit))
     (Multiplicative.ofAdd (1 : ℤ)) = 2
-  calc
-    _ = (rationalTwoUnit : ℚ) := by
-      rw [MonoidHom.comp_apply, zpowersMulHom_apply, toAdd_ofAdd, zpow_one,
-        Units.coeHom_apply]
-    _ = 2 := rationalTwoUnit_value
+  simp [zpowersMulHom_apply, rationalTwoUnit_value]
 
-private def rationalTwoAlgHom : rootsOfUnityCoordinateRing ℚ 0 →ₐ[ℚ] ℚ :=
-  AddMonoidAlgebra.lift ℚ ℚ (ZMod 0) rationalTwoCharacter
+private def rationalTwoAlgHom :
+    MonoidAlgebra ℚ (TauCeti.RootsOfUnityGroup.characterGroup.{0} 0) →ₐ[ℚ] ℚ :=
+  MonoidAlgebra.lift ℚ ℚ _ rationalTwoCharacter
 
 private theorem rationalTwoAlgHom_generator :
-    rationalTwoAlgHom (rootsOfUnityCoordinateGenerator ℚ 0) = 2 := by
-  change AddMonoidAlgebra.lift ℚ ℚ (ZMod 0) rationalTwoCharacter
-    (AddMonoidAlgebra.single 1 1) = 2
-  rw [AddMonoidAlgebra.lift_single, one_smul]
+    rationalTwoAlgHom
+      (MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator 0)) 1) = 2 := by
+  rw [rationalTwoAlgHom, MonoidAlgebra.lift_single, one_smul]
   exact rationalTwoCharacter_generator
 
 private def rationalTwoPoint :
-    (Spec (.of ℚ)).asOver (Spec (.of ℚ)) ⟶ rootsOfUnityScheme ℚ 0 :=
-  Spec.mapMulEquiv
-    (R := ℚ) (S := rootsOfUnityCoordinateRing ℚ 0) (T := ℚ)
-    (WithConv.toConv rationalTwoAlgHom)
+    (Spec (.of ℚ)).asOver (Spec (.of ℚ)) ⟶
+      (TauCeti.RootsOfUnityGroup.groupScheme ℚ 0).X :=
+  (TauCeti.DiagonalizableGroup.groupSchemePointsMulEquiv
+    (R := ℚ) (A := ℚ) (TauCeti.RootsOfUnityGroup.characterGroup.{0} 0)).symm
+      (WithConv.toConv rationalTwoAlgHom)
 
 private theorem rationalTwoPoint_ne_one : rationalTwoPoint ≠ 1 := by
   intro hp
   have hconv : WithConv.toConv rationalTwoAlgHom =
-      (1 : WithConv (rootsOfUnityCoordinateRing ℚ 0 →ₐ[ℚ] ℚ)) := by
-    apply (Spec.mapMulEquiv
-      (R := ℚ) (S := rootsOfUnityCoordinateRing ℚ 0) (T := ℚ)).injective
+      (1 : WithConv (MonoidAlgebra ℚ
+        (TauCeti.RootsOfUnityGroup.characterGroup.{0} 0) →ₐ[ℚ] ℚ)) := by
+    apply (TauCeti.DiagonalizableGroup.groupSchemePointsMulEquiv
+      (R := ℚ) (A := ℚ) (TauCeti.RootsOfUnityGroup.characterGroup.{0} 0)).symm.injective
     simpa only [rationalTwoPoint, map_one] using hp
   have heval := congrArg
-    (fun f : WithConv (rootsOfUnityCoordinateRing ℚ 0 →ₐ[ℚ] ℚ) ↦
-      f.ofConv (rootsOfUnityCoordinateGenerator ℚ 0)) hconv
+    (fun f : WithConv (MonoidAlgebra ℚ
+        (TauCeti.RootsOfUnityGroup.characterGroup.{0} 0) →ₐ[ℚ] ℚ) ↦
+      f.ofConv (MonoidAlgebra.single
+        (ULift.up (TauCeti.RootsOfUnityGroup.generator 0)) 1)) hconv
   have hcounit : Coalgebra.counit (R := ℚ)
-      (AddMonoidAlgebra.single (1 : ZMod 0) (1 : ℚ)) = 1 :=
-    (AddMonoidAlgebra.isGroupLikeElem_single_one
-      (R := ℚ) (A := ℚ) (1 : ZMod 0)).counit_eq_one
-  have hone : (1 : WithConv (rootsOfUnityCoordinateRing ℚ 0 →ₐ[ℚ] ℚ)).ofConv
-      (rootsOfUnityCoordinateGenerator ℚ 0) = (1 : ℚ) := by
-    change (1 : WithConv (rootsOfUnityCoordinateRing ℚ 0 →ₐ[ℚ] ℚ))
-      (AddMonoidAlgebra.single (1 : ZMod 0) (1 : ℚ)) = 1
-    rw [AlgHom.convOne_apply, hcounit, map_one]
+      (MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator 0)) (1 : ℚ) :
+        MonoidAlgebra ℚ (TauCeti.RootsOfUnityGroup.characterGroup.{0} 0)) = 1 :=
+    (MonoidAlgebra.isGroupLikeElem_single_one _).counit_eq_one
   have htwo : (2 : ℚ) = 1 := by
-    calc
-      (2 : ℚ) = rationalTwoAlgHom (rootsOfUnityCoordinateGenerator ℚ 0) :=
-        rationalTwoAlgHom_generator.symm
-      _ = (1 : WithConv (rootsOfUnityCoordinateRing ℚ 0 →ₐ[ℚ] ℚ)).ofConv
-          (rootsOfUnityCoordinateGenerator ℚ 0) := heval
-      _ = 1 := hone
+    simpa only [WithConv.ofConv_toConv, rationalTwoAlgHom_generator,
+      AlgHom.convOne_apply, hcounit, map_one] using heval
   norm_num at htwo
 
 -- Comparison obligations are separate from the stock constructions and proofs above.
-private theorem rationalTwo_character_comparison :
-    RootsOfUnity.equivMonoidHom 0 rationalTwoRoot = rationalTwoCharacter := by
-  change RootsOfUnity.rootMonoidHom rationalTwoRoot = rationalTwoCharacter
-  apply MonoidHom.ext_mint
-  calc
-    RootsOfUnity.rootMonoidHom rationalTwoRoot (.ofAdd 1) =
-        ((rationalTwoRoot : ℚˣ) : ℚ) :=
-      RootsOfUnity.rootMonoidHom_generator rationalTwoRoot
-    _ = 2 := rationalTwoRoot_value
-    _ = rationalTwoCharacter (.ofAdd 1) := rationalTwoCharacter_generator.symm
-
-private theorem rationalTwo_algHom_comparison :
-    (rootsOfUnityMulEquivAlgHom ℚ ℚ 0 rationalTwoRoot).ofConv = rationalTwoAlgHom := by
-  rw [rootsOfUnityMulEquivAlgHom_apply]
-  exact congrArg (AddMonoidAlgebra.lift ℚ ℚ (ZMod 0)) rationalTwo_character_comparison
-
 private theorem rationalTwo_point_comparison :
-    rootsOfUnityMulEquivPoints ℚ ℚ 0 rationalTwoRoot = rationalTwoPoint := by
-  apply Over.OverMorphism.ext
-  rw [rootsOfUnityMulEquivPoints_apply_left, rationalTwo_algHom_comparison]
-  rfl
+    (TauCeti.RootsOfUnityGroup.schemePointsMulEquiv (R := ℚ) (A := ℚ) 0).symm
+      rationalTwoRoot = rationalTwoPoint := by
+  apply (TauCeti.RootsOfUnityGroup.schemePointsMulEquiv (R := ℚ) (A := ℚ) 0).injective
+  apply Subtype.ext
+  apply Units.ext
+  rw [MulEquiv.apply_symm_apply, TauCeti.RootsOfUnityGroup.schemePointsMulEquiv_apply_coe]
+  simp only [rationalTwoPoint, MulEquiv.apply_symm_apply, WithConv.ofConv_toConv]
+  exact rationalTwoRoot_value.trans rationalTwoAlgHom_generator.symm
 
 private theorem rationalTwo_multiplicativePoint_comparison :
-    rationalTwoPoint ≫ (rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup ℚ).hom.hom.hom =
-      multiplicativeGroupMulEquivPoints ℚ ℚ rationalTwoUnit := by
-  rw [← rationalTwo_point_comparison]
-  exact rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup_point ℚ ℚ rationalTwoRoot
+    rationalTwoPoint ≫ (TauCeti.RootsOfUnityGroup.inclusionGroupSchemeMap ℚ 0).hom.hom =
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℚ) (A := ℚ)).symm rationalTwoUnit := by
+  apply (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+    (R := ℚ) (A := ℚ)).injective
+  rw [TauCeti.RootsOfUnityGroup.multiplicativeGroupSchemePointsMulEquiv_inclusionGroupSchemeMap,
+    ← rationalTwo_point_comparison, MulEquiv.apply_symm_apply, MulEquiv.apply_symm_apply]
+  rfl
 
 private theorem rationalTwo_inclusion_zero_comparison :
-    rationalTwoPoint ≫ (rootsOfUnityGroupSchemeInclusion ℚ 0).hom.hom =
-      rationalTwoPoint ≫
-        (rootsOfUnityGroupSchemeZeroIsoMultiplicativeGroup ℚ).hom.hom.hom := by
-  calc
-    _ = multiplicativeGroupMulEquivPoints ℚ ℚ rationalTwoUnit := by
-      rw [← rationalTwo_point_comparison]
-      exact rootsOfUnityGroupSchemeInclusion_point ℚ ℚ 0 rationalTwoRoot
-    _ = _ := rationalTwo_multiplicativePoint_comparison.symm
+    rationalTwoPoint ≫ (TauCeti.RootsOfUnityGroup.inclusionGroupSchemeMap ℚ 0).hom.hom =
+      rationalTwoPoint := by
+  have hq : TauCeti.RootsOfUnityGroup.characterQuotient.{0} 0 =
+      𝟙 TauCeti.DiagonalizableGroup.multiplicativeCharacterGroup := by
+    apply TauCeti.FGCommGrpCat.hom_ext
+    apply MonoidHom.ext
+    rintro ⟨x⟩
+    rw [TauCeti.RootsOfUnityGroup.characterQuotient_apply_up]
+    obtain ⟨z, rfl⟩ := Multiplicative.ofAdd.surjective x
+    rw [TauCeti.RootsOfUnityGroup.toMultiplicativeZMod_ofAdd]
+    rfl
+  rw [TauCeti.RootsOfUnityGroup.inclusionGroupSchemeMap_def, hq]
+  erw [TauCeti.DiagonalizableGroup.groupSchemeMap_id]
+  rfl
 
 private def rationalNegOneRoot : rootsOfUnity 2 ℚ :=
   rootsOfUnity.mkOfPowEq (-1 : ℚ) (n := 2) (by norm_num)
@@ -154,69 +145,84 @@ private theorem rationalNegOneRoot_unit_ne_one : (rationalNegOneRoot : ℚˣ) �
   norm_num at hv
 
 private theorem rationalNegOne_multiplicativePoint_ne_one :
-    multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ) ≠ 1 := by
+    (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := ℚ) (A := ℚ)).symm
+      (rationalNegOneRoot : ℚˣ) ≠ 1 := by
   intro h
   apply rationalNegOneRoot_unit_ne_one
-  apply (multiplicativeGroupMulEquivPoints ℚ ℚ).injective
+  apply ((TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := ℚ) (A :=
+    ℚ)).symm).injective
   simpa only [map_one] using h
 
 /-- The canonical inclusion has a nonidentity rational image at order two,
 and that image is killed by the stock square endomorphism. -/
 private theorem rationalNegOne_inclusion_model :
-    (rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot ≫
-        (rootsOfUnityGroupSchemeInclusion ℚ 2).hom.hom =
-      multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ)) ∧
-    (rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot ≫
-        (rootsOfUnityGroupSchemeInclusion ℚ 2).hom.hom ≠ 1) ∧
-    ((rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot ≫
-        (rootsOfUnityGroupSchemeInclusion ℚ 2).hom.hom) ≫
-        ((𝟙 (multiplicativeGroupScheme ℚ)) ^ (2 : ℕ)).hom.hom = 1) := by
-  refine ⟨rootsOfUnityGroupSchemeInclusion_point ℚ ℚ 2 rationalNegOneRoot, ?_, ?_⟩
-  · rw [rootsOfUnityGroupSchemeInclusion_point]
+    ((TauCeti.RootsOfUnityGroup.schemePointsMulEquiv (R := ℚ) (A := ℚ) 2).symm rationalNegOneRoot ≫
+        (TauCeti.RootsOfUnityGroup.inclusionGroupSchemeMap ℚ 2).hom.hom =
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := ℚ) (A := ℚ)).symm
+        (rationalNegOneRoot : ℚˣ)) ∧
+    ((TauCeti.RootsOfUnityGroup.schemePointsMulEquiv (R := ℚ) (A := ℚ) 2).symm rationalNegOneRoot ≫
+        (TauCeti.RootsOfUnityGroup.inclusionGroupSchemeMap ℚ 2).hom.hom ≠ 1) ∧
+    (((TauCeti.RootsOfUnityGroup.schemePointsMulEquiv (R := ℚ) (A := ℚ) 2).symm rationalNegOneRoot ≫
+        (TauCeti.RootsOfUnityGroup.inclusionGroupSchemeMap ℚ 2).hom.hom) ≫
+        ((𝟙 (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℚ)) ^ (2 : ℕ)).hom.hom = 1) := by
+  have hpoint :
+      (TauCeti.RootsOfUnityGroup.schemePointsMulEquiv (R := ℚ) (A := ℚ) 2).symm
+          rationalNegOneRoot ≫
+        (TauCeti.RootsOfUnityGroup.inclusionGroupSchemeMap ℚ 2).hom.hom =
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℚ) (A := ℚ)).symm (rationalNegOneRoot : ℚˣ) := by
+    apply (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+      (R := ℚ) (A := ℚ)).injective
+    simp
+  refine ⟨hpoint, ?_, ?_⟩
+  · rw [hpoint]
     exact rationalNegOne_multiplicativePoint_ne_one
-  · rw [rootsOfUnityGroupSchemeInclusion_point, Grp.Hom.hom_pow, Mon.Hom.hom_pow]
-    change multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ) ≫
-      (𝟙 (multiplicativeGroupUnderlyingScheme ℚ)) ^ (2 : ℕ) = 1
+  · rw [hpoint, Grp.Hom.hom_pow, Mon.Hom.hom_pow]
+    change (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+      (R := ℚ) (A := ℚ)).symm (rationalNegOneRoot : ℚˣ) ≫
+        (𝟙 ((TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℚ).X)) ^ (2 : ℕ) = 1
     rw [MonObj.comp_pow, Category.comp_id, ← map_pow, rationalNegOneRoot.prop, map_one]
 
 /-- A lift of the rational `−1` point through the order-two inclusion is exactly
 its explicitly constructed root point. -/
 private theorem rationalNegOne_lift_iff
-    (candidate : (Spec (.of ℚ)).asOver (Spec (.of ℚ)) ⟶ rootsOfUnityScheme ℚ 2) :
-    candidate ≫ (rootsOfUnityGroupSchemeInclusion ℚ 2).hom.hom =
-        multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ) ↔
-      candidate = rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot := by
+    (candidate : (Spec (.of ℚ)).asOver (Spec (.of ℚ)) ⟶ (TauCeti.RootsOfUnityGroup.groupScheme ℚ
+      2).X) :
+    candidate ≫ (TauCeti.RootsOfUnityGroup.inclusionGroupSchemeMap ℚ 2).hom.hom =
+        (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := ℚ) (A :=
+          ℚ)).symm (rationalNegOneRoot : ℚˣ) ↔
+      candidate = (TauCeti.RootsOfUnityGroup.schemePointsMulEquiv (R := ℚ) (A := ℚ) 2).symm
+        rationalNegOneRoot := by
   have hpower := rationalNegOne_inclusion_model.2.2
   rw [rationalNegOne_inclusion_model.1] at hpower
   obtain ⟨lift, _, unique⟩ := rootsOfUnitySchemeKernel_universal ℚ 2
     ((Spec (.of ℚ)).asOver (Spec (.of ℚ)))
-    (multiplicativeGroupMulEquivPoints ℚ ℚ (rationalNegOneRoot : ℚˣ)) (by
+    ((TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := ℚ) (A := ℚ)).symm
+      (rationalNegOneRoot : ℚˣ)) (by
       simpa only [CategoryTheory.Hom.one_def] using hpower)
   constructor
   · intro h
     exact (unique candidate h).trans
-      (unique (rootsOfUnityMulEquivPoints ℚ ℚ 2 rationalNegOneRoot)
+      (unique ((TauCeti.RootsOfUnityGroup.schemePointsMulEquiv (R := ℚ) (A := ℚ) 2).symm
+        rationalNegOneRoot)
         rationalNegOne_inclusion_model.1).symm
   · rintro rfl
     exact rationalNegOne_inclusion_model.1
 
 private theorem positiveCoordinate_zeroRing :
-    rootsOfUnityCoordinateAlgEquiv (ZMod 1) 2
-        (rootsOfUnityCoordinateGenerator (ZMod 1) 2) =
-      AdjoinRoot.root (rootsOfUnityPolynomial (ZMod 1) 2) :=
-  rootsOfUnityCoordinateAlgEquiv_generator (ZMod 1) 2
+    (TauCeti.RootsOfUnityGroup.adjoinRootEquiv (R := ZMod 1) 2).symm
+      (MonoidAlgebra.single (TauCeti.RootsOfUnityGroup.generator 2) 1) =
+        AdjoinRoot.root (Polynomial.X ^ 2 - 1 : Polynomial (ZMod 1)) :=
+  TauCeti.RootsOfUnityGroup.adjoinRootEquiv_symm_single_generator 2
 
-end AlgebraicGeometry
-
-namespace AlgebraicGeometry
-
-/-- Order-zero roots of unity over `ℚ` retain finite presentation, flatness and
-local finite presentation, with Laurent coordinates. -/
+/-- Order-zero roots of unity over ℚ retain finite presentation, flatness and
+local finite presentation, with canonical cyclic coordinates. -/
 private theorem rootsOfUnity_rational_zero_properties :
-    Algebra.FinitePresentation ℚ (rootsOfUnityCoordinateRing ℚ 0) ∧
-      Flat (rootsOfUnityScheme ℚ 0).hom ∧
-      LocallyOfFinitePresentation (rootsOfUnityScheme ℚ 0).hom :=
-  ⟨rootsOfUnityCoordinateRing_finitePresentation ℚ 0,
+    Algebra.FinitePresentation ℚ
+        (MonoidAlgebra ℚ (TauCeti.RootsOfUnityGroup.characterGroup.{0} 0)) ∧
+      Flat (TauCeti.RootsOfUnityGroup.groupScheme ℚ 0).X.hom ∧
+      LocallyOfFinitePresentation (TauCeti.RootsOfUnityGroup.groupScheme ℚ 0).X.hom :=
+  ⟨rootsOfUnityCoordinate_finitePresentation ℚ 0,
     rootsOfUnityScheme_flat ℚ 0,
     rootsOfUnityScheme_locallyOfFinitePresentation ℚ 0⟩
 
