@@ -73,8 +73,8 @@ related_formalizations:
       Canonical subcoalgebras, comodules, Hopf algebras, matrix and diagonalizable
       group schemes supply the shared foundations. This project retains its
       additional containment, presentation, kernel, product and geometry results
-      on those carriers. The manifest pins the exact local dependency revision;
-      docs/TAUCETIFY.md records its unpublished constructor and universe refactors.
+      on those carriers. The manifest pins the exact dependency revision;
+      docs/TAUCETIFY.md links its published constructor and universe refactors.
   - id: https://github.com/FormalFrontier/general-linear-groups/tree/8b3b07bf2744a870b53934542e4c5ed383765bd6
     relationship: builds-on
     note: >-

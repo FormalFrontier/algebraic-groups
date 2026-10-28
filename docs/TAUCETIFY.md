@@ -57,27 +57,24 @@ private and generated declarations. The only axioms used are `propext`,
 checked against its compiled source ownership, and retained attribution notices
 were compared with the original revision.
 
-## Local dependency branches
+## Dependency branches
 
 These changes use Lean `v4.36.0-rc1` and Mathlib
-`2cabef97b63d3275776b8b060d802de6a6fa1055`. The dependency alignment changes are
-local commits, not published upstream:
+`2cabef97b63d3275776b8b060d802de6a6fa1055`. The supporting changes are published
+on these branches:
 
-- `/home/kim/worktrees/FormalFrontier/coherent-modules-taucetify`, branch
-  `taucetify/mathlib-alignment`, commit
+- [coherent-modules: taucetify/mathlib-alignment](https://github.com/FormalFrontier/coherent-modules/tree/taucetify/mathlib-alignment), commit
   `2ade813e288fe643aa156961bbc8e8185a18bac0`.
-- `/home/kim/worktrees/FormalFrontier/scheme-properties-taucetify`, branch
-  `taucetify/mathlib-alignment`, commit
+- [scheme-properties: taucetify/mathlib-alignment](https://github.com/FormalFrontier/scheme-properties/tree/taucetify/mathlib-alignment), commit
   `3853f0d1b21c53f3fb4d99a7104d40a4e3d9b844`.
-- `/home/kim/worktrees/TauCeti/TauCeti-taucetify-api`, branch
-  `refactor/expose-group-scheme-presentations`, commit
+- [TauCeti: refactor/expose-group-scheme-presentations](https://github.com/TauCetiProject/TauCeti/tree/refactor/expose-group-scheme-presentations), commit
   `31e387c73506f4de0ba05e251d2905c46bea1419`. This refactors existing
   constructors to expose their canonical Hopf-spectrum presentations for direct
   elaboration by downstream clients.
 
-The manifest records the exact dependency commits. The local checkout's
-`.lake/packages` links point to these working copies. A checkout elsewhere needs
-these local commits made available before Lake can fetch the pinned graph.
+The manifest records the exact dependency commits, which Lake can fetch from
+the repositories above. The development checkout's `.lake/packages` links point
+to the corresponding local working copies.
 
 ## Attribution
 

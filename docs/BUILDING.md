@@ -4,8 +4,8 @@ Use the pinned Lean toolchain in [lean-toolchain](../lean-toolchain) and the
 exact GitHub revisions in [lakefile.toml](../lakefile.toml) and
 [lake-manifest.json](../lake-manifest.json). The dependency graph includes Mathlib, Tau Ceti, scheme-properties,
 general-linear-groups and coherent-modules. Exact revisions are recorded in the
-manifest. This local refactor also requires the local dependency branches listed
-in [the migration guide](TAUCETIFY.md); their commits have not been published.
+manifest. Supporting dependency branches are linked in
+[the migration guide](TAUCETIFY.md); their exact commits are pinned and published.
 Use the matching
 precompiled mathlib cache before any build; a failed cache fetch is not a reason
 to rebuild mathlib from source silently.
