@@ -35,21 +35,22 @@ variable (K R : Type u)
 variable [CommRing K] [CommRing R] [Algebra K R]
 
 private theorem testCoordinateRingFiniteType :
-    Algebra.FiniteType K (additiveGroupCoordinateRing K) :=
+    Algebra.FiniteType K ((SymmetricAlgebra K K)) :=
   inferInstance
 
 private theorem testUnderlyingSchemeLocallyFiniteType :
-    LocallyOfFiniteType (additiveGroupUnderlyingScheme K).hom :=
+    LocallyOfFiniteType ((TauCeti.AdditiveGroup.groupScheme K).X).hom :=
   inferInstance
 
 private theorem testUnderlyingSchemeQuasiCompact :
-    QuasiCompact (additiveGroupUnderlyingScheme K).hom :=
+    QuasiCompact ((TauCeti.AdditiveGroup.groupScheme K).X).hom :=
   inferInstance
 
 private def testAdditiveGroupScheme : Grp (Over (Spec (.of K))) :=
-  additiveGroupScheme K
+  TauCeti.AdditiveGroup.groupScheme K
 
-private def testPointsFunctorIso : additiveGroupFunctor K ≅ additiveGroupPointsFunctor K :=
+private def testPointsFunctorIso : additiveGroupFunctor K ≅
+    TauCeti.GroupScheme.algebraPointsFunctor K (TauCeti.AdditiveGroup.groupScheme K) :=
   additiveGroupPointsIso K
 
 private theorem testFunctorMap {S : Type u} [CommRing S] [Algebra K S]
@@ -58,93 +59,103 @@ private theorem testFunctorMap {S : Type u} [CommRing S] [Algebra K S]
   rfl
 
 private theorem testCoordinatePolynomial :
-    additiveGroupCoordinateAlgEquiv K (additiveGroupCoordinate K) =
+    additiveGroupCoordinateAlgEquiv K ((SymmetricAlgebra.ι K K 1)) =
     Polynomial.X :=
   additiveGroupCoordinateAlgEquiv_coordinate K
 
 private def testMultiplicativeAlgHomEquiv : Multiplicative R ≃*
-    WithConv (additiveGroupCoordinateRing K →ₐ[K] R) :=
-  additiveGroupMulEquivAlgHom K R
+    WithConv ((SymmetricAlgebra K K) →ₐ[K] R) :=
+  (TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm
 
 /-- The algebra map represented by an additive point sends the coordinate to that point. -/
 public theorem additiveGroup_coordinate_evaluation (r : R) :
-    (additiveGroupMulEquivAlgHom K R (.ofAdd r)).ofConv
-        (additiveGroupCoordinate K) = r :=
-  additiveGroupMulEquivAlgHom_coordinate K R r
+    ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm (.ofAdd r)).ofConv
+        ((SymmetricAlgebra.ι K K 1)) = r :=
+  TauCeti.AdditiveGroup.gaPointsMulEquiv_symm_apply_ι (.ofAdd r)
 
 private theorem testMultiplicativeHom (r s : R) :
-    additiveGroupMulEquivAlgHom K R (.ofAdd (r + s)) =
-      additiveGroupMulEquivAlgHom K R (.ofAdd r) *
-        additiveGroupMulEquivAlgHom K R (.ofAdd s) :=
-  (additiveGroupMulEquivAlgHom K R).map_mul (.ofAdd r) (.ofAdd s)
+    (TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm (.ofAdd (r + s)) =
+      (TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm (.ofAdd r) *
+        (TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm (.ofAdd s) :=
+  ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm).map_mul (.ofAdd r) (.ofAdd s)
 
 private theorem testNaturality {S : Type u} [CommRing S] [Algebra K S]
     (f : R →ₐ[K] S) (r : R) :
-    (additiveGroupMulEquivAlgHom K S (.ofAdd (f r))).ofConv =
-      f.comp (additiveGroupMulEquivAlgHom K R (.ofAdd r)).ofConv :=
-  additiveGroupMulEquivAlgHom_naturality K R f r
+    ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := S)).symm (.ofAdd (f r))).ofConv =
+      f.comp ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm (.ofAdd r)).ofConv :=
+by
+  apply AlgHom.ext
+  intro x
+  have h := congrArg (fun F => F.ofConv x)
+    (TauCeti.AdditiveGroup.mapValue_gaPointsMulEquiv_symm_apply f (.ofAdd r))
+  simpa only [AlgHom.mapValue_apply, WithConv.ofConv_toConv, AlgHom.comp_apply,
+    toAdd_ofAdd] using h.symm
 
 private def testMultiplicativePointsEquiv : Multiplicative R ≃*
-    ((Spec (.of R)).asOver (Spec (.of K)) ⟶ additiveGroupUnderlyingScheme K) :=
-  additiveGroupMulEquivPoints K R
+    ((Spec (.of R)).asOver (Spec (.of K)) ⟶ (TauCeti.AdditiveGroup.groupScheme K).X) :=
+  (TauCeti.AdditiveGroup.schemePointsMulEquiv (R := K) R).symm
 
 private theorem testPointsApplyLeft (r : R) :
-    (additiveGroupMulEquivPoints K R (.ofAdd r)).left =
+    ((TauCeti.AdditiveGroup.schemePointsMulEquiv (R := K) R).symm (.ofAdd r)).left =
       Spec.map (CommRingCat.ofHom
-        (additiveGroupMulEquivAlgHom K R (.ofAdd r)).ofConv.toRingHom) :=
-  additiveGroupMulEquivPoints_apply_left K R r
+        ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K)
+          (A := R)).symm (.ofAdd r)).ofConv.toRingHom) ≫
+        eqToHom (TauCeti.AdditiveGroup.groupScheme_X_left K).symm := by
+  rw [TauCeti.AdditiveGroup.schemePointsMulEquiv_symm_apply]
+  exact TauCeti.AdditiveGroup.groupSchemePointMulEquiv_apply_left (R := K) R
+    ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm (.ofAdd r))
 
 private theorem testCoordinateComul :
-    CoalgebraStruct.comul (additiveGroupCoordinate K) =
-      additiveGroupCoordinate K ⊗ₜ[K] 1 +
-        1 ⊗ₜ[K] additiveGroupCoordinate K :=
-  additiveGroupCoordinate_comul K
+    CoalgebraStruct.comul ((SymmetricAlgebra.ι K K 1)) =
+      (SymmetricAlgebra.ι K K 1) ⊗ₜ[K] 1 +
+        1 ⊗ₜ[K] (SymmetricAlgebra.ι K K 1) :=
+  SymmetricAlgebra.comul_ι K K 1
 
 private theorem testCoordinateCounit :
-    CoalgebraStruct.counit (R := K) (additiveGroupCoordinate K) = (0 : K) :=
-  additiveGroupCoordinate_counit K
+    CoalgebraStruct.counit (R := K) ((SymmetricAlgebra.ι K K 1)) = (0 : K) :=
+  SymmetricAlgebra.counit_ι K K 1
 
 private theorem testCoordinateAntipode :
-    (HopfAlgebraStruct.antipode K) (additiveGroupCoordinate K) =
-      -additiveGroupCoordinate K :=
-  additiveGroupCoordinate_antipode K
+    (HopfAlgebraStruct.antipode K) ((SymmetricAlgebra.ι K K 1)) =
+      -(SymmetricAlgebra.ι K K 1) :=
+  TauCeti.SymmetricAlgebra.antipode_ι K K 1
 
 -- The entire API remains available when the target algebra is subsingleton.
-private def testSubsingletonPointsEquiv [Subsingleton R] : Multiplicative R ≃*
-    ((Spec (.of R)).asOver (Spec (.of K)) ⟶ additiveGroupUnderlyingScheme K) :=
-  additiveGroupMulEquivPoints K R
+private def testSubsingletonPointsEquiv : Multiplicative R ≃*
+    ((Spec (.of R)).asOver (Spec (.of K)) ⟶ (TauCeti.AdditiveGroup.groupScheme K).X) :=
+  (TauCeti.AdditiveGroup.schemePointsMulEquiv (R := K) R).symm
 
 private def testIntegerAlgHomEquiv : Multiplicative Int ≃*
-    WithConv (additiveGroupCoordinateRing Int →ₐ[Int] Int) :=
-  additiveGroupMulEquivAlgHom Int Int
+    WithConv ((SymmetricAlgebra Int Int) →ₐ[Int] Int) :=
+  (TauCeti.AdditiveGroup.gaPointsMulEquiv (R := Int) (A := Int)).symm
 
 private def testZModTwoAlgHomEquiv : Multiplicative (ZMod 2) ≃*
-    WithConv (additiveGroupCoordinateRing (ZMod 2) →ₐ[ZMod 2] ZMod 2) :=
-  additiveGroupMulEquivAlgHom (ZMod 2) (ZMod 2)
+    WithConv ((SymmetricAlgebra (ZMod 2) (ZMod 2)) →ₐ[ZMod 2] ZMod 2) :=
+  (TauCeti.AdditiveGroup.gaPointsMulEquiv (R := (ZMod 2)) (A := (ZMod 2))).symm
 
 private def testZModOneAlgHomEquiv : Multiplicative (ZMod 1) ≃*
-    WithConv (additiveGroupCoordinateRing (ZMod 1) →ₐ[ZMod 1] ZMod 1) :=
-  additiveGroupMulEquivAlgHom (ZMod 1) (ZMod 1)
+    WithConv ((SymmetricAlgebra (ZMod 1) (ZMod 1)) →ₐ[ZMod 1] ZMod 1) :=
+  (TauCeti.AdditiveGroup.gaPointsMulEquiv (R := (ZMod 1)) (A := (ZMod 1))).symm
 
 -- The group-object instance is the projection from the bundled additive group.
 private theorem testAdditiveGroupSeparated (k : Type u) [Field k] :
-    IsSeparated (additiveGroupScheme k).X.hom :=
-  isSeparated_of_grpObj_of_subsingleton (additiveGroupScheme k).X
+    IsSeparated (TauCeti.AdditiveGroup.groupScheme k).X.hom :=
+  isSeparated_of_grpObj_of_subsingleton (TauCeti.AdditiveGroup.groupScheme k).X
 
 private theorem testAdditiveGroupDistinctPoints (k : Type u) [Field k] :
-    additiveGroupMulEquivPoints k k (.ofAdd 0) ≠
-      additiveGroupMulEquivPoints k k (.ofAdd 1) := by
+    (TauCeti.AdditiveGroup.schemePointsMulEquiv (R := k) k).symm (.ofAdd 0) ≠
+      (TauCeti.AdditiveGroup.schemePointsMulEquiv (R := k) k).symm (.ofAdd 1) := by
   intro h
   exact (zero_ne_one : (0 : k) ≠ 1) (congrArg Multiplicative.toAdd
-    ((additiveGroupMulEquivPoints k k).injective h))
+    (((TauCeti.AdditiveGroup.schemePointsMulEquiv (R := k) k).symm).injective h))
 
 -- The target need not carry a group structure, nor the map respect multiplication.
 private theorem testAdditiveGroupMorphismSeparated (k : Type u) [Field k]
-    {X : Over (Spec (.of k))} (f : (additiveGroupScheme k).X ⟶ X) :
+    {X : Over (Spec (.of k))} (f : (TauCeti.AdditiveGroup.groupScheme k).X ⟶ X) :
     IsSeparated f.left := by
   have : IsSeparated (f.left ≫ X.hom) := by
     rw [Over.w f]
-    exact isSeparated_of_grpObj_of_subsingleton (additiveGroupScheme k).X
+    exact isSeparated_of_grpObj_of_subsingleton (TauCeti.AdditiveGroup.groupScheme k).X
   exact IsSeparated.of_comp f.left X.hom
 
 private theorem testEmptyBaseGroupSeparated :

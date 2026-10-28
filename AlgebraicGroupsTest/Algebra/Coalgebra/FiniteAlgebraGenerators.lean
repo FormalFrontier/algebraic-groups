@@ -47,8 +47,8 @@ open scoped TensorProduct
 
 namespace CoalgebraExamples.FiniteAlgebraGenerators
 
-local notation "C" => AlgebraicGeometry.additiveGroupCoordinateRing ℚ
-local notation "x" => AlgebraicGeometry.additiveGroupCoordinate ℚ
+local notation "C" => (SymmetricAlgebra ℚ ℚ)
+local notation "x" => (SymmetricAlgebra.ι ℚ ℚ 1)
 
 /-- The upper-triangular coefficient matrix of the additive coordinate. -/
 def additiveMatrix : Matrix (Fin 2) (Fin 2) C :=

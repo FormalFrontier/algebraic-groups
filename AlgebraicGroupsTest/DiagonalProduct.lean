@@ -20,75 +20,88 @@ open scoped CategoryTheory.MonObj DualNumber
 universe u
 
 example (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n] :
-    diagonalGroupScheme K n ≅ (∏ᶜ fun _ : n ↦ multiplicativeGroupScheme K) :=
+    TauCeti.SplitTorus.groupScheme K n ≅
+      (∏ᶜ fun _ : n ↦ TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K) :=
   diagonalGroupSchemeProductIso K n
 
 example (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
     (j : n) :
     (diagonalGroupSchemeProductIso K n).hom ≫
-      Limits.Pi.π (fun _ : n ↦ multiplicativeGroupScheme K) j =
-        diagonalGroupProjection K n j :=
+      Limits.Pi.π (fun _ : n ↦ TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K) j =
+        TauCeti.SplitTorus.characterGroupSchemeMap
+          (R := K) (Finsupp.single j 1) :=
   diagonalGroupSchemeProductIso_hom_π K n j
 
 example (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
     (j : n) :
-    (diagonalGroupSchemeProductIso K n).inv ≫ diagonalGroupProjection K n j =
-      Limits.Pi.π (fun _ : n ↦ multiplicativeGroupScheme K) j :=
+    (diagonalGroupSchemeProductIso K n).inv ≫
+      TauCeti.SplitTorus.characterGroupSchemeMap (R := K) (Finsupp.single j 1) =
+      Limits.Pi.π (fun _ : n ↦ TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K) j :=
   diagonalGroupSchemeProductIso_inv_projection K n j
 
 example (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
-    (j : n) (X : Over (Spec (.of K))) (hom : X ⟶ (diagonalGroupScheme K n).X) :
-    multiplicativeGroupHomUnits K X (hom ≫ (diagonalGroupProjection K n j).hom.hom) =
+    (j : n) (X : Over (Spec (.of K)))
+    (hom : X ⟶ (TauCeti.SplitTorus.groupScheme K n).X) :
+    multiplicativeGroupHomUnits K X
+      (hom ≫ (TauCeti.SplitTorus.characterGroupSchemeMap
+        (R := K) (Finsupp.single j 1)).hom.hom) =
       diagonalGroupHomUnits K n X hom j :=
   diagonalGroupProjection_globalUnit K n j X hom
 
 example (K : Type) [CommRing K] :
-    Limits.IsTerminal (diagonalGroupScheme K (Fin 0)) :=
+    Limits.IsTerminal (TauCeti.SplitTorus.groupScheme K (Fin 0)) :=
   diagonalGroupSchemeFin0IsTerminal K
 
 example (K : Type) [CommRing K] :
-    diagonalGroupScheme K (Fin 0) ≅
-      (∏ᶜ fun _ : Fin 0 ↦ multiplicativeGroupScheme K) :=
+    TauCeti.SplitTorus.groupScheme K (Fin 0) ≅
+      (∏ᶜ fun _ : Fin 0 ↦ TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K) :=
   diagonalGroupSchemeProductIso K (Fin 0)
 
 example (K : Type) [CommRing K] :
-    diagonalGroupScheme K (Fin 1) ≅
-      (∏ᶜ fun _ : Fin 1 ↦ multiplicativeGroupScheme K) :=
+    TauCeti.SplitTorus.groupScheme K (Fin 1) ≅
+      (∏ᶜ fun _ : Fin 1 ↦ TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K) :=
   diagonalGroupSchemeProductIso K (Fin 1)
 
 example (K : Type) [CommRing K] (j : Fin 1) :
     (diagonalGroupSchemeProductIso K (Fin 1)).hom ≫
-      Limits.Pi.π (fun _ : Fin 1 ↦ multiplicativeGroupScheme K) j =
-        diagonalGroupProjection K (Fin 1) j :=
+      Limits.Pi.π (fun _ : Fin 1 ↦ TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K) j =
+        TauCeti.SplitTorus.characterGroupSchemeMap
+          (R := K) (Finsupp.single j 1) :=
   diagonalGroupSchemeProductIso_hom_π K (Fin 1) j
 
 example (K : Type) [CommRing K] :
-    diagonalGroupScheme K (Fin 2) ≅
-      (∏ᶜ fun _ : Fin 2 ↦ multiplicativeGroupScheme K) :=
+    TauCeti.SplitTorus.groupScheme K (Fin 2) ≅
+      (∏ᶜ fun _ : Fin 2 ↦ TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K) :=
   diagonalGroupSchemeProductIso K (Fin 2)
 
 example (K : Type) [CommRing K] (j : Fin 2) :
     (diagonalGroupSchemeProductIso K (Fin 2)).inv ≫
-      diagonalGroupProjection K (Fin 2) j =
-        Limits.Pi.π (fun _ : Fin 2 ↦ multiplicativeGroupScheme K) j :=
+      TauCeti.SplitTorus.characterGroupSchemeMap (R := K) (Finsupp.single j 1) =
+        Limits.Pi.π (fun _ : Fin 2 ↦ TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K) j :=
   diagonalGroupSchemeProductIso_inv_projection K (Fin 2) j
 
-example : Limits.IsTerminal (diagonalGroupScheme (ZMod 1) (Fin 0)) :=
+example : Limits.IsTerminal (TauCeti.SplitTorus.groupScheme (ZMod 1) (Fin 0)) :=
   diagonalGroupSchemeFin0IsTerminal (ZMod 1)
 
 example (j : Fin 2) :
-    diagonalGroupProjectionCoordinateMap (ZMod 1) (Fin 2) j
-      (multiplicativeGroupCoordinate (ZMod 1)) =
-    DiagonalCoordinateRing.quotient (ZMod 1) (Fin 2)
-      (GeneralLinearCoordinateRing.matrix (ZMod 1) (Fin 2) j j) :=
-  diagonalGroupProjection_coordinate (ZMod 1) (Fin 2) j
+    MonoidAlgebra.mapDomainBialgHom (ZMod 1)
+      (TauCeti.DiagonalizableGroup.uliftZPowersMulEquiv
+        (Multiplicative (Fin 2 →₀ ℤ)) (Multiplicative.ofAdd (Finsupp.single j 1)))
+      (MonoidAlgebra.single (ULift.up (Multiplicative.ofAdd 1)) 1) =
+    MonoidAlgebra.single (Multiplicative.ofAdd (Finsupp.single j 1)) 1 := by
+  rw [MonoidAlgebra.mapDomainBialgHom_single,
+    TauCeti.DiagonalizableGroup.uliftZPowersMulEquiv_apply, toAdd_ofAdd, zpow_one]
 
 example (j : Fin 2) :
-    diagonalGroupMulEquivPoints (ZMod 1) (Fin 2) (ZMod 1) 1 ≫
-      (diagonalGroupProjection (ZMod 1) (Fin 2) j).hom.hom =
-      multiplicativeGroupMulEquivPoints (ZMod 1) (ZMod 1) 1 := by
-  simpa only [map_one, Pi.one_apply] using
-    diagonalGroupProjection_point (ZMod 1) (Fin 2) (ZMod 1) 1 j
+    (TauCeti.SplitTorus.schemePointsMulEquiv (R := ZMod 1) (A := ZMod 1)).symm
+        (1 : Fin 2 → (ZMod 1)ˣ) ≫
+      (TauCeti.SplitTorus.characterGroupSchemeMap (R := ZMod 1)
+        (Finsupp.single j 1)).hom.hom =
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ZMod 1) (A := ZMod 1)).symm 1 := by
+  apply (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+    (R := ZMod 1) (A := ZMod 1)).injective
+  simp
 
 private def dualNumberUnit : (DualNumber ℤ)ˣ :=
   ⟨1 + DualNumber.eps, 1 - DualNumber.eps,
@@ -103,9 +116,8 @@ private def dualNumberUnit : (DualNumber ℤ)ˣ :=
           (1 : DualNumber ℤ) - DualNumber.eps * DualNumber.eps := by ring
         _ = 1 := by simp⟩
 
-private def dualNumberDiagonal : Matrix.DiagonalGroup (Fin 2) (DualNumber ℤ) :=
-  (Matrix.DiagonalGroup.unitsEquiv).symm
-    (fun j => if j = 0 then dualNumberUnit else 1)
+private def dualNumberDiagonal : Fin 2 → (DualNumber ℤ)ˣ :=
+  fun j ↦ if j = 0 then dualNumberUnit else 1
 
 example : (DualNumber.eps : DualNumber ℤ) ≠ 0 := by
   intro assumption
@@ -114,14 +126,24 @@ example : (DualNumber.eps : DualNumber ℤ) ≠ 0 := by
 
 example : (DualNumber.eps : DualNumber ℤ) ^ 2 = 0 := by simp
 
-example : diagonalGroupMulEquivPoints ℤ (Fin 2) (DualNumber ℤ) dualNumberDiagonal ≫
-    (diagonalGroupProjection ℤ (Fin 2) 0).hom.hom =
-    multiplicativeGroupMulEquivPoints ℤ (DualNumber ℤ) dualNumberUnit := by
-  simpa [dualNumberDiagonal] using
-    diagonalGroupProjection_point ℤ (Fin 2) (DualNumber ℤ) dualNumberDiagonal 0
+example :
+    (TauCeti.SplitTorus.schemePointsMulEquiv (R := ℤ) (A := DualNumber ℤ)).symm
+        dualNumberDiagonal ≫
+      (TauCeti.SplitTorus.characterGroupSchemeMap (R := ℤ)
+        (Finsupp.single (0 : Fin 2) 1)).hom.hom =
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℤ) (A := DualNumber ℤ)).symm dualNumberUnit := by
+  apply (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+    (R := ℤ) (A := DualNumber ℤ)).injective
+  simp [dualNumberDiagonal]
 
-example : diagonalGroupMulEquivPoints ℤ (Fin 2) (DualNumber ℤ) dualNumberDiagonal ≫
-    (diagonalGroupProjection ℤ (Fin 2) 1).hom.hom =
-    multiplicativeGroupMulEquivPoints ℤ (DualNumber ℤ) 1 := by
-  simpa [dualNumberDiagonal] using
-    diagonalGroupProjection_point ℤ (Fin 2) (DualNumber ℤ) dualNumberDiagonal 1
+example :
+    (TauCeti.SplitTorus.schemePointsMulEquiv (R := ℤ) (A := DualNumber ℤ)).symm
+        dualNumberDiagonal ≫
+      (TauCeti.SplitTorus.characterGroupSchemeMap (R := ℤ)
+        (Finsupp.single (1 : Fin 2) 1)).hom.hom =
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℤ) (A := DualNumber ℤ)).symm 1 := by
+  apply (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+    (R := ℤ) (A := DualNumber ℤ)).injective
+  simp [dualNumberDiagonal]

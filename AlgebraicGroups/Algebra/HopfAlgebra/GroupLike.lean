@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.Bialgebra.GroupLike
+public import TauCeti.Algebra.Bialgebra.GroupLike.Map
 public import Mathlib.Algebra.Group.Units.Hom
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 
@@ -69,15 +69,15 @@ theorem mem_range_toUnits (u : Aˣ) :
 /-- Forming the unit of a group-like element commutes with a bialgebra morphism. -/
 @[simp]
 theorem toUnits_groupLikeMap (f : A →ₐc[R] B) (g : GroupLike R A) :
-    GroupLike.toUnits R (f.groupLikeMap g) =
+    GroupLike.toUnits R ((TauCeti.GroupLike.map f) g) =
       Units.map f.toAlgHom.toMonoidHom (GroupLike.toUnits R g) := by
   apply Units.ext
-  exact BialgHom.groupLikeMap_val f g
+  exact TauCeti.GroupLike.val_map f g
 
 /-- The group-like inclusion into units is natural as an equality of monoid
 homomorphisms. -/
 theorem toUnits_comp_groupLikeMap (f : A →ₐc[R] B) :
-    (GroupLike.toUnits R (A := B)).comp f.groupLikeMap =
+    (GroupLike.toUnits R (A := B)).comp (TauCeti.GroupLike.map f) =
       (Units.map f.toAlgHom.toMonoidHom).comp (GroupLike.toUnits R (A := A)) := by
   apply MonoidHom.ext
   intro g

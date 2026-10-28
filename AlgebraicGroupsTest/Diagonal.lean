@@ -4,7 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.GroupScheme.Diagonal
+public import TauCeti.Algebra.AlgebraicGroup.SplitTorus.Scheme
+public import TauCeti.Algebra.AlgebraicGroup.GeneralLinear.DiagonalTorus.ClosedImmersion
 public import Mathlib.Algebra.DualNumber
 public import Mathlib.Data.ZMod.Basic
 
@@ -14,7 +15,7 @@ public import Mathlib.Data.ZMod.Basic
 
 noncomputable section
 
-open CategoryTheory AlgebraicGeometry DiagonalCoordinateRing
+open CategoryTheory AlgebraicGeometry
 open scoped CategoryTheory.MonObj DualNumber
 
 universe u
@@ -23,34 +24,39 @@ variable (K : Type) [CommRing K]
 
 example (n : Type) [Fintype n] [DecidableEq n]
     (R S : Type) [CommRing R] [CommRing S] [Algebra K R] [Algebra K S]
-    (v : R →ₐ[K] S) (s : Matrix.DiagonalGroup n R) :
-    diagonalFromGL K n S (Matrix.DiagonalGroup.map v.toRingHom s) =
-      v.comp (diagonalFromGL K n R s) :=
-  diagonalFromGL_natural K n R v s
+    (v : R →ₐ[K] S) (s : n → Rˣ) :
+    AlgHom.mapValue v ((TauCeti.SplitTorus.pointsMulEquiv (R := K) (A := R)).symm s) =
+      (TauCeti.SplitTorus.pointsMulEquiv (R := K) (A := S)).symm
+        (fun i ↦ Units.map v.toMonoidHom (s i)) :=
+  TauCeti.SplitTorus.mapValue_pointsMulEquiv_symm_apply v s
 
 example (n : Type) [Fintype n] [DecidableEq n]
     (R S : Type) [CommRing R] [CommRing S] [Algebra K R] [Algebra K S]
-    (v : R →ₐ[K] S) (f : DiagonalCoordinateRing.CoordinateRing K n →ₐ[K] R) :
-    diagonalToGL K n S (v.comp f) =
-      Matrix.DiagonalGroup.map v.toRingHom (diagonalToGL K n R f) :=
-  diagonalToGL_natural K n R v f
+    (v : R →ₐ[K] S)
+    (f : WithConv (MonoidAlgebra K (Multiplicative (n →₀ ℤ)) →ₐ[K] R)) (i : n) :
+    TauCeti.SplitTorus.pointsMulEquiv (AlgHom.mapValue v f) i =
+      Units.map v.toMonoidHom (TauCeti.SplitTorus.pointsMulEquiv f i) :=
+  TauCeti.SplitTorus.pointsMulEquiv_mapValue v f i
+
+example (n : ℕ) (R : Type) [CommRing R] [Algebra K R]
+    (s : ULift (Fin n) → Rˣ) :
+    TauCeti.GeneralLinear.schemePointsMulEquiv n R
+      ((TauCeti.SplitTorus.schemePointsMulEquiv (R := K) (A := R)).symm s ≫
+        (TauCeti.GeneralLinear.diagonalTorus (R := K) (N := n)).hom.hom) =
+      TauCeti.diagGL (fun i ↦ s (ULift.up i)) := by
+  rw [TauCeti.GeneralLinear.schemePointsMulEquiv_diagonalTorus,
+    MulEquiv.apply_symm_apply]
+  congr 1
+  funext i
+  exact TauCeti.GeneralLinear.diagonalTorusCoordinates_apply s i
 
 example (n : Type) [Fintype n] [DecidableEq n]
-    (R : Type) [CommRing R] [Algebra K R] (s : Matrix.DiagonalGroup n R) :
-    diagonalGroupMulEquivPoints K n R s ≫ (diagonalInclusion K n).hom.hom =
-      generalLinearGroupMulEquivPoints K n R s.1 :=
-  diagonalInclusion_point K n R s
+    (R : Type) [CommRing R] [Algebra K R] (s : n → Rˣ) (i : n) :
+    ((TauCeti.SplitTorus.pointsMulEquiv (R := K) (A := R)).symm s).ofConv
+      (MonoidAlgebra.single (Multiplicative.ofAdd (Finsupp.single i 1)) 1) = (s i : R) :=
+  TauCeti.SplitTorus.pointsMulEquiv_symm_apply_single s i
 
-example (n : Type) [Fintype n] [DecidableEq n]
-    (R : Type) [CommRing R] [Algebra K R] (s : Matrix.DiagonalGroup n R)
-    (i : n) :
-    (diagonalGroupMulEquivAlgHom K n R s).ofConv
-      (quotient K n (GeneralLinearCoordinateRing.matrix K n i i)) =
-        ((Matrix.DiagonalGroup.unitsEquiv s i : Rˣ) : R) := by
-  rw [diagonalGroupMulEquivAlgHom_entry, Matrix.DiagonalGroup.unitsEquiv_apply_val]
-
-example (R : Type) [CommRing R] (s : Matrix.DiagonalGroup (Fin 0) R) : s = 1 := by
-  apply Subtype.ext
+example (R : Type) [CommRing R] (s : Matrix.GeneralLinearGroup (Fin 0) R) : s = 1 := by
   apply Matrix.GeneralLinearGroup.ext
   intro i j
   exact Fin.elim0 i
@@ -60,41 +66,40 @@ example (R : Type) [CommRing R] (units : Fin 0 → Rˣ) : units = 1 := by
   exact Fin.elim0 index
 
 example (R : Type) [CommRing R] [Algebra K R] (unit : Rˣ) :
-    (multiplicativeGroupMulEquivPoints K R).symm
-      (multiplicativeGroupMulEquivPoints K R unit) =
-    ((diagonalGroupUnitsEquivPoints K (Fin 1) R).symm
-      (diagonalGroupUnitsEquivPoints K (Fin 1) R (fun _ => unit))) 0 := by
+    TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := K) (A := R)
+      ((TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := K) (A := R)).symm unit) =
+      (TauCeti.SplitTorus.schemePointsMulEquiv (R := K) (A := R)
+        ((TauCeti.SplitTorus.schemePointsMulEquiv (R := K) (A := R)).symm
+          (fun _ : Fin 1 ↦ unit))) 0 := by
   simp
 
 example (R : Type) [CommRing R] (first second : Rˣ) :
-    ((Matrix.DiagonalGroup.unitsEquiv : Matrix.DiagonalGroup (Fin 2) R ≃*
-      (Fin 2 → Rˣ)).symm
-      (fun index => if index = 0 then first else second)).1 0 0 = first := by
-  simp [Matrix.DiagonalGroup.unitsEquiv_symm_apply]
+    TauCeti.diagGL (fun index : Fin 2 ↦ if index = 0 then first else second) 0 0 = first := by
+  simp [TauCeti.diagGL_apply]
 
 example (R : Type) [CommRing R] [Algebra K R] (first second : Rˣ) :
-    diagonalGroupMulEquivPoints K (Fin 2) R
-        ((Matrix.DiagonalGroup.unitsEquiv : Matrix.DiagonalGroup (Fin 2) R ≃*
-          (Fin 2 → Rˣ)).symm (fun index => if index = 0 then first else second)) ≫
-      (diagonalInclusion K (Fin 2)).hom.hom =
-    generalLinearGroupMulEquivPoints K (Fin 2) R
-      ((Matrix.DiagonalGroup.unitsEquiv : Matrix.DiagonalGroup (Fin 2) R ≃*
-        (Fin 2 → Rˣ)).symm (fun index => if index = 0 then first else second)).1 :=
-  diagonalInclusion_point K (Fin 2) R _
+    TauCeti.GeneralLinear.schemePointsMulEquiv 2 R
+      ((TauCeti.SplitTorus.schemePointsMulEquiv (R := K) (A := R)).symm
+        (fun i : ULift (Fin 2) ↦ if i.down = 0 then first else second) ≫
+        (TauCeti.GeneralLinear.diagonalTorus (R := K) (N := 2)).hom.hom) =
+      TauCeti.diagGL (fun i : Fin 2 ↦ if i = 0 then first else second) := by
+  rw [TauCeti.GeneralLinear.schemePointsMulEquiv_diagonalTorus,
+    MulEquiv.apply_symm_apply]
+  congr 1
+  funext i
+  exact TauCeti.GeneralLinear.diagonalTorusCoordinates_apply _ i
 
 example (R : Type) [CommRing R] (first second : Rˣ) :
-    ((Matrix.DiagonalGroup.unitsEquiv : Matrix.DiagonalGroup (Fin 2) R ≃*
-      (Fin 2 → Rˣ)).symm
-      (fun index => if index = 0 then first else second)).1 1 1 = second := by
-  simp [Matrix.DiagonalGroup.unitsEquiv_symm_apply]
+    TauCeti.diagGL (fun index : Fin 2 ↦ if index = 0 then first else second) 1 1 = second := by
+  simp [TauCeti.diagGL_apply]
 
 example : Algebra.FiniteType (ZMod 1)
-    (DiagonalCoordinateRing.CoordinateRing (ZMod 1) (Fin 0)) := inferInstance
+    (MonoidAlgebra (ZMod 1) (Multiplicative (Fin 0 →₀ ℤ))) := inferInstance
 
-example : quotient (ZMod 1) (Fin 0)
-    (GeneralLinearCoordinateRing.detInverse (ZMod 1) (Fin 0)) = 1 := by
-  have h := universal_detInverse (ZMod 1) (Fin 0)
-  simpa using h
+example : (TauCeti.GeneralLinear.diagonalTorusCoordinateMap (R := ZMod 1) (N := 0)).hom
+    (Ring.inverse (TauCeti.GeneralLinear.genericMatrix (ZMod 1) 0).det) = 1 :=
+  Subsingleton.elim _ _
 
 private def dualNumberUnit : (DualNumber ℤ)ˣ :=
   ⟨1 + DualNumber.eps, 1 - DualNumber.eps,
@@ -117,18 +122,14 @@ example : (DualNumber.eps : DualNumber ℤ) ≠ 0 := by
 example : (DualNumber.eps : DualNumber ℤ) ^ 2 = 0 := by simp
 
 example :
-    ((Matrix.DiagonalGroup.unitsEquiv : Matrix.DiagonalGroup (Fin 2) (DualNumber ℤ) ≃*
-      (Fin 2 → (DualNumber ℤ)ˣ)).symm
-      (fun index => if index = 0 then dualNumberUnit else 1)).1 0 0 =
+    TauCeti.diagGL (fun index : Fin 2 ↦ if index = 0 then dualNumberUnit else 1) 0 0 =
       1 + DualNumber.eps := by
-  simp [Matrix.DiagonalGroup.unitsEquiv_symm_apply, dualNumberUnit]
+  simp [TauCeti.diagGL_apply, dualNumberUnit]
 
 example :
-    (diagonalGroupMulEquivAlgHom ℤ (Fin 2) (DualNumber ℤ)
-      ((Matrix.DiagonalGroup.unitsEquiv : Matrix.DiagonalGroup (Fin 2) (DualNumber ℤ) ≃*
-        (Fin 2 → (DualNumber ℤ)ˣ)).symm
-        (fun index => if index = 0 then dualNumberUnit else 1))).ofConv
-      (quotient ℤ (Fin 2) (GeneralLinearCoordinateRing.matrix ℤ (Fin 2) 0 0)) =
+    ((TauCeti.SplitTorus.pointsMulEquiv (R := ℤ) (A := DualNumber ℤ)).symm
+      (fun index : Fin 2 ↦ if index = 0 then dualNumberUnit else 1)).ofConv
+      (MonoidAlgebra.single (Multiplicative.ofAdd (Finsupp.single (0 : Fin 2) 1)) 1) =
       1 + DualNumber.eps := by
-  rw [diagonalGroupMulEquivAlgHom_entry]
-  simp [Matrix.DiagonalGroup.unitsEquiv_symm_apply, dualNumberUnit]
+  rw [TauCeti.SplitTorus.pointsMulEquiv_symm_apply_single]
+  simp [dualNumberUnit]

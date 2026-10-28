@@ -107,20 +107,28 @@ private theorem tensorMulEquiv_bialgebra_naturality
     (f : C →ₐc[R] C') (g : D →ₐc[R] D')
     (x : GroupLike R (C ⊗[R] D)) :
     GroupLike.tensorMulEquiv R C' D'
-        ((Bialgebra.TensorProduct.map f g).groupLikeMap x) =
-      (f.groupLikeMap ((GroupLike.tensorMulEquiv R C D x).1),
-       g.groupLikeMap ((GroupLike.tensorMulEquiv R C D x).2)) := by
+        ((TauCeti.GroupLike.map (Bialgebra.TensorProduct.map f g)) x) =
+      ((TauCeti.GroupLike.map f) ((GroupLike.tensorMulEquiv R C D x).1),
+       (TauCeti.GroupLike.map g) ((GroupLike.tensorMulEquiv R C D x).2)) := by
   change GroupLike.tensorEquiv R C' D'
-      (GroupLike.map (Bialgebra.TensorProduct.map f g).toCoalgHom x) =
-    (GroupLike.map f.toCoalgHom ((GroupLike.tensorEquiv R C D x).1),
-     GroupLike.map g.toCoalgHom ((GroupLike.tensorEquiv R C D x).2))
+      ((TauCeti.GroupLike.map (Bialgebra.TensorProduct.map f g)) x) =
+    ((TauCeti.GroupLike.map f) ((GroupLike.tensorEquiv R C D x).1),
+      (TauCeti.GroupLike.map g) ((GroupLike.tensorEquiv R C D x).2))
+  have ht : (TauCeti.GroupLike.map (Bialgebra.TensorProduct.map f g)) x =
+      GroupLike.map (Bialgebra.TensorProduct.map f g).toCoalgHom x :=
+    GroupLike.ext (TauCeti.GroupLike.val_map _ _)
+  have hf (y : GroupLike R C) : (TauCeti.GroupLike.map f) y =
+      GroupLike.map f.toCoalgHom y := GroupLike.ext (TauCeti.GroupLike.val_map _ _)
+  have hg (y : GroupLike R D) : (TauCeti.GroupLike.map g) y =
+      GroupLike.map g.toCoalgHom y := GroupLike.ext (TauCeti.GroupLike.val_map _ _)
+  rw [ht, hf, hg]
   have hmap :
       (Bialgebra.TensorProduct.map f g).toCoalgHom =
         Coalgebra.TensorProduct.map f.toCoalgHom g.toCoalgHom := by
-    apply CoalgHom.coe_linearMap_injective
+    apply CoalgHom.linearMapOfClass_injective
     apply TensorProduct.ext'
     intro c d
-    simp only [CoalgHom.coe_toLinearMap, BialgHom.toCoalgHom_apply,
+    simp only [CoalgHom.coe_linearMapOfClass, BialgHom.toCoalgHom_apply,
       Bialgebra.TensorProduct.map_tmul, Coalgebra.TensorProduct.map_tmul]
   rw [hmap]
   exact GroupLike.tensorEquiv_mapCoalgHoms f.toCoalgHom g.toCoalgHom x

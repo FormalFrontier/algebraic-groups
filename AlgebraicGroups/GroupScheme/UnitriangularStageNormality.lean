@@ -49,7 +49,7 @@ namespace UnitriangularStageNormality
 
 /-- The coordinate `K`-algebra of the ambient upper unitriangular group on `Fin n`,
 the first tensor factor in `productRing`. -/
-abbrev ambientRing := UnitriangularCoordinateRing.CoordinateRing K (Fin n)
+abbrev ambientRing := (TauCeti.UpperUnitriangular.coordinateHopfAlgebra K (Fin n))
 /-- The coordinate `K`-algebra of the closed `r`-th superdiagonal stage of the
 upper unitriangular group, the second tensor factor in `productRing`. -/
 abbrev stageRing := UnitriangularStageCoordinateRing.CoordinateRing K n r
@@ -66,7 +66,7 @@ abbrev productRing :=
 /-- The relative product of the two affine schemes is represented by their
 tensor-product coordinate ring. -/
 def stageProductIso :
-    (unitriangularGroupScheme K (Fin n)).X ⊗ (unitriangularStageScheme K n r).X ≅
+    ((TauCeti.UpperUnitriangular.groupScheme K (Fin n))).X ⊗ (unitriangularStageScheme K n r).X ≅
       (Spec (.of (productRing K n r))).asOver (Spec (.of K)) := by
   refine Over.isoMk (pullbackSpecIso K (ambientRing K n) (stageRing K n r)) ?_
   rw [Over.tensorObj_hom]
@@ -79,30 +79,36 @@ instance stageInclusion_mono : Mono (unitriangularStageInclusion K n r).hom.hom 
 
 /-- Normality of the matrix subgroup sends the universal conjugate into the stage. -/
 def affineConjugate (R : Type) [CommRing R] [Algebra K R]
-    (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶ (unitriangularGroupScheme K (Fin n)).X)
+    (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶ ((TauCeti.UpperUnitriangular.groupScheme K
+      (Fin n))).X)
     (s : (Spec (.of R)).asOver (Spec (.of K)) ⟶ (unitriangularStageScheme K n r).X) :
-    Matrix.UnitriangularGroup.superdiagonalSubgroup n R r := by
-  let u := (unitriangularGroupMulEquivPoints K (Fin n) R).symm g
+    TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r := by
+  let u := ((TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm).symm g
   let v := (unitriangularStagePointMulEquiv K n r R).symm s
   exact ⟨u * v.1 * u⁻¹,
-    (inferInstance : (Matrix.UnitriangularGroup.superdiagonalSubgroup n R r).Normal).conj_mem
+    (inferInstance : (TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R)
+      r).Normal).conj_mem
       v.1 v.2 u⟩
 
 /-- The stage quotient evaluates to the matrix conjugate on every affine point. -/
 theorem affineConjugate_inclusion (R : Type) [CommRing R] [Algebra K R]
-    (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶ (unitriangularGroupScheme K (Fin n)).X)
+    (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶ ((TauCeti.UpperUnitriangular.groupScheme K
+      (Fin n))).X)
     (s : (Spec (.of R)).asOver (Spec (.of K)) ⟶ (unitriangularStageScheme K n r).X) :
     unitriangularStagePointMulEquiv K n r R (affineConjugate K n r R g s) ≫
       (unitriangularStageInclusion K n r).hom.hom =
         g * (s ≫ (unitriangularStageInclusion K n r).hom.hom) * g⁻¹ := by
-  let u := (unitriangularGroupMulEquivPoints K (Fin n) R).symm g
+  let u := ((TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm).symm g
   let v := (unitriangularStagePointMulEquiv K n r R).symm s
   rw [unitriangularStageInclusion_point]
-  change unitriangularGroupMulEquivPoints K (Fin n) R (u * v.1 * u⁻¹) = _
+  change (TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm (u *
+    v.1 * u⁻¹) = _
   simp only [map_mul, map_inv]
-  have hu : unitriangularGroupMulEquivPoints K (Fin n) R u = g :=
-    (unitriangularGroupMulEquivPoints K (Fin n) R).apply_symm_apply g
-  have hv : unitriangularGroupMulEquivPoints K (Fin n) R v.1 =
+  have hu : (TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm u
+    = g :=
+    ((TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin
+      n)).symm).apply_symm_apply g
+  have hv : (TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm v.1 =
       s ≫ (unitriangularStageInclusion K n r).hom.hom := by
     rw [← unitriangularStageInclusion_point K n r R v]
     exact congrArg (fun t => t ≫ (unitriangularStageInclusion K n r).hom.hom)
@@ -118,7 +124,7 @@ open UnitriangularStageNormality
 Milne, *Algebraic Groups* (2017), §6.49(a) proves normality for the finer
 field-case filtration, including these superdiagonal block endpoints. -/
 def unitriangularStageConjugation :
-    (unitriangularGroupScheme K (Fin n)).X ⊗
+    ((TauCeti.UpperUnitriangular.groupScheme K (Fin n))).X ⊗
       (unitriangularStageScheme K n r).X ⟶ (unitriangularStageScheme K n r).X :=
   let e := stageProductIso K n r
   e.hom ≫ unitriangularStagePointMulEquiv K n r (productRing K n r)
@@ -130,9 +136,9 @@ def unitriangularStageConjugation :
 composing with the closed immersion. -/
 theorem unitriangularStageConjugation_inclusion :
     unitriangularStageConjugation K n r ≫ (unitriangularStageInclusion K n r).hom.hom =
-        (unitriangularGroupScheme K (Fin n)).X ◁
+        ((TauCeti.UpperUnitriangular.groupScheme K (Fin n))).X ◁
           (unitriangularStageInclusion K n r).hom.hom ≫
-          CategoryTheory.GrpObj.conj (unitriangularGroupScheme K (Fin n)).X := by
+          CategoryTheory.GrpObj.conj ((TauCeti.UpperUnitriangular.groupScheme K (Fin n))).X := by
   let e := stageProductIso K n r
   let f := (unitriangularStageInclusion K n r).hom.hom
   have ht := affineConjugate_inclusion K n r (productRing K n r)
@@ -143,8 +149,8 @@ theorem unitriangularStageConjugation_inclusion :
       (e.inv ≫ CategoryTheory.CartesianMonoidalCategory.fst _ _)
       (e.inv ≫ CategoryTheory.CartesianMonoidalCategory.snd _ _))) ≫ f = _
   apply (cancel_epi e.inv).mp
-  have hc : e.inv ≫ ((unitriangularGroupScheme K (Fin n)).X ◁ f ≫
-      CategoryTheory.GrpObj.conj (unitriangularGroupScheme K (Fin n)).X) =
+  have hc : e.inv ≫ (((TauCeti.UpperUnitriangular.groupScheme K (Fin n))).X ◁ f ≫
+      CategoryTheory.GrpObj.conj ((TauCeti.UpperUnitriangular.groupScheme K (Fin n))).X) =
       (e.inv ≫ CategoryTheory.CartesianMonoidalCategory.fst _ _) *
         ((e.inv ≫ CategoryTheory.CartesianMonoidalCategory.snd _ _) ≫ f) *
         (e.inv ≫ CategoryTheory.CartesianMonoidalCategory.fst _ _)⁻¹ := by
@@ -164,27 +170,31 @@ instance unitriangularStageInclusion_normal :
 /-- At every `K`-algebra, the categorical factor is the usual matrix
 conjugation. Its naturality follows from composition with algebra maps. -/
 theorem unitriangularStageConjugation_point (R : Type) [CommRing R] [Algebra K R]
-    (g : Matrix.UnitriangularGroup (Fin n) R)
-    (s : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r) :
+    (g : TauCeti.upperUnitriangularGroup (Fin n) R)
+    (s : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r) :
     CategoryTheory.CartesianMonoidalCategory.lift
-        (unitriangularGroupMulEquivPoints K (Fin n) R g)
+        ((TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm g)
         (unitriangularStagePointMulEquiv K n r R s) ≫
       unitriangularStageConjugation K n r =
         unitriangularStagePointMulEquiv K n r R
           ⟨g * s.1 * g⁻¹,
             (inferInstance :
-              (Matrix.UnitriangularGroup.superdiagonalSubgroup n R r).Normal).conj_mem
+              (TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R)
+                r).Normal).conj_mem
               s.1 s.2 g⟩ := by
   let f := (unitriangularStageInclusion K n r).hom.hom
   apply (cancel_mono f).mp
-  rw [Category.assoc, unitriangularStageConjugation_inclusion]
+  dsimp only [f]
+  erw [Category.assoc, unitriangularStageConjugation_inclusion]
   have hs := unitriangularStageInclusion_point K n r R s
   have ht := unitriangularStageInclusion_point K n r R
     (⟨g * s.1 * g⁻¹,
-      (inferInstance : (Matrix.UnitriangularGroup.superdiagonalSubgroup n R r).Normal).conj_mem
-        s.1 s.2 g⟩ : Matrix.UnitriangularGroup.superdiagonalSubgroup n R r)
+      (inferInstance : (TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R :=
+        R) r).Normal).conj_mem
+        s.1 s.2 g⟩ : TauCeti.UpperUnitriangularGroup.superdiagonalSubgroup (n := n) (R := R) r)
   rw [ht]
-  change _ = unitriangularGroupMulEquivPoints K (Fin n) R (g * s.1 * g⁻¹)
+  change _ = (TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := K) (A := R) (Fin n)).symm
+    (g * s.1 * g⁻¹)
   rw [map_mul, map_mul, map_inv]
   rw [← hs]
   simp [CategoryTheory.GrpObj.conj, MonObj.comp_mul, CategoryTheory.GrpObj.comp_inv]

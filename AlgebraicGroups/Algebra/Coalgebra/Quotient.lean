@@ -94,7 +94,7 @@ variable {C : Type v} [AddCommGroup C] [Module R C] [CoalgebraStruct R C]
 @[simp]
 theorem mkQCoalgHom_toLinearMap (I : Submodule R C) [I.IsCoideal] :
     (mkQCoalgHom I : C →ₗ[R] (C ⧸ I)) = I.mkQ := by
-  rw [← CoalgHom.toLinearMap_eq_coe]
+  rw [← CoalgHom.toLinearMap_eq_ofClass]
   rfl
 
 end Coalgebra.Quotient
@@ -257,14 +257,14 @@ def liftQCoalgHom (I : Submodule R C) [I.IsCoideal] (f : C →ₗc[R] D)
     apply LinearMap.ext
     intro x
     obtain ⟨y, rfl⟩ := I.mkQ_surjective x
-    simpa only [CoalgHom.toLinearMap_eq_coe, CoalgHom.coe_toLinearMap,
+    simpa only [CoalgHom.toLinearMap_eq_ofClass, CoalgHom.coe_linearMapOfClass,
       LinearMap.comp_apply, mkQ_apply, liftQ_apply,
       Coalgebra.Quotient.counit_mk] using CoalgHomClass.counit_comp_apply f y
   map_comp_comul := by
     apply LinearMap.ext
     intro x
     obtain ⟨y, rfl⟩ := I.mkQ_surjective x
-    simpa only [CoalgHom.toLinearMap_eq_coe, CoalgHom.coe_toLinearMap,
+    simpa only [CoalgHom.toLinearMap_eq_ofClass, CoalgHom.coe_linearMapOfClass,
       LinearMap.comp_apply, mkQ_apply, Coalgebra.Quotient.comul_mk,
       TensorProduct.map_map, liftQ_mkQ, liftQ_apply] using
       CoalgHomClass.map_comp_comul_apply f y
@@ -308,9 +308,9 @@ def mapQCoalgHom (I : Submodule R C) (J : Submodule R D) [I.IsCoideal] [J.IsCoid
   I.liftQCoalgHom ((Coalgebra.Quotient.mkQCoalgHom J).comp f)
     (by
       have hq : (Coalgebra.Quotient.mkQCoalgHom J : D →ₗ[R] (D ⧸ J)) = J.mkQ := by
-        rw [← CoalgHom.toLinearMap_eq_coe]
+        rw [← CoalgHom.toLinearMap_eq_ofClass]
         rfl
-      simpa only [CoalgHom.toLinearMap_eq_coe, CoalgHom.comp_toLinearMap, hq,
+      simpa only [CoalgHom.toLinearMap_eq_ofClass, CoalgHom.comp_toLinearMap, hq,
         LinearMap.ker_comp, ker_mkQ] using h)
 
 /-- The linear map underlying the induced quotient homomorphism is the linear quotient map. -/

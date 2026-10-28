@@ -19,6 +19,7 @@ set_option warningAsError true
 noncomputable section
 
 open CategoryTheory
+open scoped CategoryTheory.MonObj
 
 universe u
 
@@ -27,24 +28,27 @@ namespace AlgebraicGeometry
 variable (K : Type u) [Field K] (p : ℕ) [Fact p.Prime] [CharP K p] (m : ℕ)
 
 private def generic_equiv_test :
-    rootsOfUnityCoordinateRing K (p ^ m) ≃ₐ[K]
+    (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))) ≃ₐ[K]
       infinitesimalAdditiveCoordinateRing K p m :=
   infinitesimalAdditiveTranslationAlgEquiv K p m
 
 private theorem generic_generator_test :
     infinitesimalAdditiveTranslationAlgEquiv K p m
-      (rootsOfUnityCoordinateGenerator K (p ^ m)) =
+      ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) (1 : K) :
+        (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))))) =
         1 + infinitesimalAdditiveCoordinate K p m := by
   simp
 
 private theorem generic_inverse_generator_test :
     (infinitesimalAdditiveTranslationAlgEquiv K p m).symm
       (infinitesimalAdditiveCoordinate K p m) =
-        rootsOfUnityCoordinateGenerator K (p ^ m) - 1 := by
+        (MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) (1 : K) :
+          (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m)))) - 1 := by
   simp
 
 private def generic_scheme_iso_test :
-    infinitesimalAdditiveUnderlyingScheme K p m ≅ rootsOfUnityScheme K (p ^ m) :=
+    infinitesimalAdditiveUnderlyingScheme K p m ≅ (TauCeti.RootsOfUnityGroup.groupScheme K (p ^
+      m)).X :=
   infinitesimalAdditiveTranslationIso K p m
 
 private theorem generic_scheme_map_test :
@@ -63,16 +67,18 @@ private theorem generic_point_forward_test
     (R : Type u) [CommRing R] [Algebra K R]
     (sigma : infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R) :
     (sigma.comp (infinitesimalAdditiveTranslationAlgEquiv K p m).toAlgHom)
-      (rootsOfUnityCoordinateGenerator K (p ^ m)) =
+      ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) (1 : K) :
+        (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))))) =
         1 + sigma (infinitesimalAdditiveCoordinate K p m) := by
   simp
 
 private theorem generic_point_inverse_test
     (R : Type u) [CommRing R] [Algebra K R]
-    (rho : rootsOfUnityCoordinateRing K (p ^ m) →ₐ[K] R) :
+    (rho : (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))) →ₐ[K] R) :
     (rho.comp (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom)
       (infinitesimalAdditiveCoordinate K p m) =
-        rho (rootsOfUnityCoordinateGenerator K (p ^ m)) - 1 := by
+        rho ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) (1 :
+          K) : (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))))) - 1 := by
   simp
 
 private theorem generic_naturality_test
@@ -85,7 +91,7 @@ private theorem generic_naturality_test
 
 private theorem generic_inverse_naturality_test
     (R S : Type u) [CommRing R] [Algebra K R] [CommRing S] [Algebra K S]
-    (rho : rootsOfUnityCoordinateRing K (p ^ m) →ₐ[K] R)
+    (rho : (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))) →ₐ[K] R)
     (f : R →ₐ[K] S) :
     f.comp (rho.comp (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom) =
       (f.comp rho).comp (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom :=
@@ -97,18 +103,23 @@ public theorem infinitesimalAdditiveTranslation_additive_point_generator
     (r : infinitesimalAdditiveSubgroup K p m R) :
     ((infinitesimalAdditiveMulEquivAlgHom K p m R (.ofAdd r)).ofConv.comp
       (infinitesimalAdditiveTranslationAlgEquiv K p m).toAlgHom)
-        (rootsOfUnityCoordinateGenerator K (p ^ m)) = 1 + r.val := by
+        ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (p ^ m))) (1 : K) :
+          (MonoidAlgebra K (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))))) = 1 + r.val
+          := by
   rw [infinitesimalAdditiveTranslation_point_generator,
     infinitesimalAdditiveMulEquivAlgHom_coordinate]
 
 private theorem existing_roots_point_coordinate_test
     (R : Type u) [CommRing R] [Algebra K R]
     (zeta : rootsOfUnity (p ^ m) R) :
-    ((rootsOfUnityMulEquivAlgHom K R (p ^ m) zeta).ofConv.comp
+    ((TauCeti.DiagonalizableGroup.groupSchemePointsMulEquiv
+      (R := K) (A := R) (TauCeti.RootsOfUnityGroup.characterGroup.{u} (p ^ m))
+        ((TauCeti.RootsOfUnityGroup.schemePointsMulEquiv
+          (R := K) (A := R) (p ^ m)).symm zeta)).ofConv.comp
       (infinitesimalAdditiveTranslationAlgEquiv K p m).symm.toAlgHom)
         (infinitesimalAdditiveCoordinate K p m) = zeta.val - 1 := by
-  rw [infinitesimalAdditiveTranslation_point_coordinate]
-  simp [rootsOfUnityCoordinateGenerator, rootsOfUnityMulEquivAlgHom_apply]
+  rw [infinitesimalAdditiveTranslation_point_coordinate,
+    TauCeti.RootsOfUnityGroup.schemePointsMulEquiv_symm_apply_single_generator]
 
 private instance translation_test_fact_prime_two : Fact (Nat.Prime 2) := ⟨by decide⟩
 private instance translation_test_fact_prime_three : Fact (Nat.Prime 3) := ⟨by decide⟩
@@ -116,42 +127,52 @@ private instance translation_test_fact_prime_three : Fact (Nat.Prime 3) := ⟨by
 private theorem zero_target_forward_test
     (sigma : infinitesimalAdditiveCoordinateRing (ZMod 2) 2 1 →ₐ[ZMod 2] PUnit) :
     (sigma.comp (infinitesimalAdditiveTranslationAlgEquiv (ZMod 2) 2 1).toAlgHom)
-      (rootsOfUnityCoordinateGenerator (ZMod 2) (2 ^ 1)) =
+      ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (2 ^ 1))) (1 : (ZMod
+        2)) : (MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0} (2 ^ 1))))) =
         1 + sigma (infinitesimalAdditiveCoordinate (ZMod 2) 2 1) := by
   simp
 
 private theorem zero_target_inverse_test
-    (rho : rootsOfUnityCoordinateRing (ZMod 2) (2 ^ 1) →ₐ[ZMod 2] PUnit) :
+    (rho : (MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0} (2 ^ 1))) →ₐ[ZMod
+      2] PUnit) :
     (rho.comp (infinitesimalAdditiveTranslationAlgEquiv (ZMod 2) 2 1).symm.toAlgHom)
       (infinitesimalAdditiveCoordinate (ZMod 2) 2 1) =
-        rho (rootsOfUnityCoordinateGenerator (ZMod 2) (2 ^ 1)) - 1 := by
+        rho ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (2 ^ 1))) (1 :
+          (ZMod 2)) : (MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0} (2 ^
+          1))))) - 1 := by
   simp
 
 private def zmod2_zero_scheme_test :
     infinitesimalAdditiveUnderlyingScheme (ZMod 2) 2 0 ≅
-      rootsOfUnityScheme (ZMod 2) (2 ^ 0) :=
+      (TauCeti.RootsOfUnityGroup.groupScheme (ZMod 2) (2 ^ 0)).X :=
   infinitesimalAdditiveTranslationIso (ZMod 2) 2 0
 
 private theorem zmod2_zero_coordinate_test :
     infinitesimalAdditiveTranslationAlgEquiv (ZMod 2) 2 0
-        (rootsOfUnityCoordinateGenerator (ZMod 2) (2 ^ 0)) =
+        ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (2 ^ 0))) (1 : (ZMod
+          2)) : (MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0} (2 ^ 0))))) =
           1 + infinitesimalAdditiveCoordinate (ZMod 2) 2 0 ∧
       (infinitesimalAdditiveTranslationAlgEquiv (ZMod 2) 2 0).symm
         (infinitesimalAdditiveCoordinate (ZMod 2) 2 0) =
-          rootsOfUnityCoordinateGenerator (ZMod 2) (2 ^ 0) - 1 :=
+          (MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (2 ^ 0))) (1 :
+            (ZMod 2)) : (MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0} (2 ^
+            0)))) - 1 :=
   ⟨infinitesimalAdditiveTranslationAlgEquiv_generator (ZMod 2) 2 0,
     infinitesimalAdditiveTranslationAlgEquiv_symm_coordinate (ZMod 2) 2 0⟩
 
 private theorem zmod2_one_generator_test :
     infinitesimalAdditiveTranslationAlgEquiv (ZMod 2) 2 1
-      (rootsOfUnityCoordinateGenerator (ZMod 2) (2 ^ 1)) =
+      ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (2 ^ 1))) (1 : (ZMod
+        2)) : (MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0} (2 ^ 1))))) =
         1 + infinitesimalAdditiveCoordinate (ZMod 2) 2 1 :=
   infinitesimalAdditiveTranslationAlgEquiv_generator (ZMod 2) 2 1
 
 private theorem zmod3_one_inverse_test :
     (infinitesimalAdditiveTranslationAlgEquiv (ZMod 3) 3 1).symm
       (infinitesimalAdditiveCoordinate (ZMod 3) 3 1) =
-        rootsOfUnityCoordinateGenerator (ZMod 3) (3 ^ 1) - 1 :=
+        (MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator (3 ^ 1))) (1 : (ZMod
+          3)) : (MonoidAlgebra (ZMod 3) (TauCeti.RootsOfUnityGroup.characterGroup.{0} (3 ^ 1)))) -
+          1 :=
   infinitesimalAdditiveTranslationAlgEquiv_symm_coordinate (ZMod 3) 3 1
 
 private theorem zmod3_one_scheme_map_test :
@@ -191,9 +212,9 @@ private theorem zmod3_one_scheme_map_test :
 #print axioms AlgebraicGeometry.algSpec
 #print axioms AlgebraicGeometry.algSpec_map_left
 #print axioms AlgebraicGeometry.algSpec_obj_hom
-#print axioms AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv
-#print axioms AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv_generator
-#print axioms AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv_symm_root
+#print axioms TauCeti.RootsOfUnityGroup.adjoinRootEquiv
+#print axioms TauCeti.RootsOfUnityGroup.adjoinRootEquiv_symm_single_generator
+#print axioms TauCeti.RootsOfUnityGroup.adjoinRootEquiv_root
 #print axioms AlgebraicGeometry.additivePowerCoordinateAlgEquiv
 #print axioms AlgebraicGeometry.additivePowerCoordinateAlgEquiv_coordinate
 #print axioms AlgebraicGeometry.additivePowerCoordinateAlgEquiv_symm_root
@@ -208,22 +229,29 @@ namespace AlgebraicGeometry
 
 /-- The coordinate algebra of second roots of unity over `𝔽₂` has dimension two. -/
 private theorem rootsOfUnity_zmod_two_finrank :
-    Module.finrank (ZMod 2) (rootsOfUnityCoordinateRing (ZMod 2) 2) = 2 := by
-  simpa only [ZMod.card] using
-    Module.finrank_eq_card_basis (AddMonoidAlgebra.basis (ZMod 2) (ZMod 2))
+    Module.finrank (ZMod 2) ((MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0}
+      2))) = 2 := by
+  rw [Module.finrank_eq_card_basis (MonoidAlgebra.basis
+    (TauCeti.RootsOfUnityGroup.characterGroup.{0} 2) (ZMod 2))]
+  change Fintype.card (ULift.{0} (Multiplicative (ZMod 2))) = 2
+  simp [ZMod.card]
 
 /-- Translation carries the nonzero square-zero additive coordinate to `U - 1`
 in the coordinate algebra of second roots of unity over `𝔽₂`. -/
 private theorem rootsOfUnity_zmod_two_nonzero_square_zero :
-    rootsOfUnityCoordinateGenerator (ZMod 2) 2 - 1 ≠ 0 ∧
-      (rootsOfUnityCoordinateGenerator (ZMod 2) 2 - 1) ^ 2 = 0 := by
+    (MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator 2)) (1 : (ZMod 2)) :
+      (MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0} 2))) - 1 ≠ 0 ∧
+      ((MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator 2)) (1 : (ZMod 2)) :
+        (MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0} 2))) - 1) ^ 2 = 0 :=
+        by
   let e := (infinitesimalAdditiveTranslationAlgEquiv (ZMod 2) 2 1).symm
   have ht : infinitesimalAdditiveCoordinate (ZMod 2) 2 1 ≠ 0 :=
     additivePowerCoordinate_ne_zero (ZMod 2) (2 ^ 1) (by decide)
   have ht_square : infinitesimalAdditiveCoordinate (ZMod 2) 2 1 ^ 2 = 0 := by
     simpa only [pow_one] using infinitesimalAdditiveCoordinate_pow (ZMod 2) 2 1
   have he : e (infinitesimalAdditiveCoordinate (ZMod 2) 2 1) =
-      rootsOfUnityCoordinateGenerator (ZMod 2) 2 - 1 := by
+      (MonoidAlgebra.single (ULift.up (TauCeti.RootsOfUnityGroup.generator 2)) (1 : (ZMod 2)) :
+        (MonoidAlgebra (ZMod 2) (TauCeti.RootsOfUnityGroup.characterGroup.{0} 2))) - 1 := by
     exact infinitesimalAdditiveTranslationAlgEquiv_symm_coordinate (ZMod 2) 2 1
   constructor
   · intro hzero
@@ -239,13 +267,14 @@ namespace AlgebraicGeometry
 /-- Second roots of unity over `𝔽₂` are finitely presented, finite and flat, with
 rank two at the zero prime of the base. -/
 private theorem rootsOfUnity_zmod_two_finite_properties :
-    Algebra.FinitePresentation (ZMod 2) (rootsOfUnityCoordinateRing (ZMod 2) 2) ∧
-      IsFinite (rootsOfUnityScheme (ZMod 2) 2).hom ∧
-      Flat (rootsOfUnityScheme (ZMod 2) 2).hom ∧
-      LocallyOfFinitePresentation (rootsOfUnityScheme (ZMod 2) 2).hom ∧
-      (rootsOfUnityScheme (ZMod 2) 2).hom.finrank
+    Algebra.FinitePresentation (ZMod 2) ((MonoidAlgebra (ZMod 2)
+      (TauCeti.RootsOfUnityGroup.characterGroup.{0} 2))) ∧
+      IsFinite ((TauCeti.RootsOfUnityGroup.groupScheme (ZMod 2) 2).X).hom ∧
+      Flat ((TauCeti.RootsOfUnityGroup.groupScheme (ZMod 2) 2).X).hom ∧
+      LocallyOfFinitePresentation ((TauCeti.RootsOfUnityGroup.groupScheme (ZMod 2) 2).X).hom ∧
+      ((TauCeti.RootsOfUnityGroup.groupScheme (ZMod 2) 2).X).hom.finrank
         (⟨⊥, Ideal.isPrime_bot⟩ : Spec (.of (ZMod 2))) = 2 :=
-  ⟨rootsOfUnityCoordinateRing_finitePresentation (ZMod 2) 2,
+  ⟨rootsOfUnityCoordinate_finitePresentation (ZMod 2) 2,
     rootsOfUnityScheme_isFinite (ZMod 2) 2,
     rootsOfUnityScheme_flat (ZMod 2) 2,
     rootsOfUnityScheme_locallyOfFinitePresentation (ZMod 2) 2,

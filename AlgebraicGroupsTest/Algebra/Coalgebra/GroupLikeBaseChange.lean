@@ -92,7 +92,7 @@ theorem integral_polynomial_baseChange_single_one :
     (Coalgebra.baseChange_counit_eq_one_and_comul_eq_tmul_self_iff
       ℤ (Polynomial ℤ) (MonoidAlgebra.single 37 (1 : ℤ) : MonoidAlgebra ℤ ℕ)).mp htarget,
     htarget, hsource, IsGroupLikeElem.baseChange (Polynomial ℤ) hsource,
-    isGroupLikeElem_baseChange_iff ℤ (Polynomial ℤ)
+    TauCeti.isGroupLikeElem_one_tmul_iff (R := ℤ) (K := Polynomial ℤ)
       (MonoidAlgebra.single 37 (1 : ℤ) : MonoidAlgebra ℤ ℕ), htwo, ?_⟩
   · intro h
     apply hsource_ne
@@ -100,7 +100,7 @@ theorem integral_polynomial_baseChange_single_one :
       (A := ℤ) (B := Polynomial ℤ) (MonoidAlgebra ℤ ℕ)
     simpa only [TensorProduct.mk_apply, TensorProduct.tmul_zero] using h
   · intro h
-    exact htwo ((isGroupLikeElem_baseChange_iff ℤ (Polynomial ℤ)
+    exact htwo ((TauCeti.isGroupLikeElem_one_tmul_iff (R := ℤ) (K := Polynomial ℤ)
       (MonoidAlgebra.single 37 (2 : ℤ) : MonoidAlgebra ℤ ℕ)).mp h)
 
 /-- The zero element of the same integral coalgebra is not normalized, but

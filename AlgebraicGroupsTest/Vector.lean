@@ -34,38 +34,54 @@ variable (K : Type u) [CommRing K] (M : Type v) [AddCommMonoid M] [Module K M]
 
 private def testLinearMapConvolutionEquiv : Multiplicative (M →ₗ[K] R) ≃*
     WithConv (SymmetricAlgebra K M →ₐ[K] R) :=
-  SymmetricAlgebra.linearMapMulEquivAlgHom K M R
+  (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm
 
 private theorem testConvolutionAdds (f g : M →ₗ[K] R) :
-    SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd (f + g)) =
-      SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd f) *
-        SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd g) :=
-  (SymmetricAlgebra.linearMapMulEquivAlgHom K M R).map_mul (.ofAdd f) (.ofAdd g)
+    (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd (f + g)) =
+      (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd f) *
+        (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd g) :=
+  ((TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm).map_mul (.ofAdd f)
+    (.ofAdd g)
 
 private theorem testConvolutionZero :
-    SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd 0) = 1 :=
-  SymmetricAlgebra.linearMapMulEquivAlgHom_zero K M R
+    (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd 0) = 1 :=
+  by
+    change (TauCeti.AdditiveGroup.pointsMulEquiv
+      (R := K) (M := M) (A := R)).symm 1 = 1
+    exact map_one _
 
 private theorem testConvolutionLeftInverse (f : M →ₗ[K] R) :
-    SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd (-f)) *
-      SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd f) = 1 :=
-  SymmetricAlgebra.linearMapMulEquivAlgHom_neg_mul K M R f
+    (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd (-f)) *
+      (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd f) = 1 :=
+  by
+    change (TauCeti.AdditiveGroup.pointsMulEquiv
+      (R := K) (M := M) (A := R)).symm ((Multiplicative.ofAdd f)⁻¹) * _ = 1
+    rw [map_inv]
+    exact inv_mul_cancel _
 
 private theorem testConvolutionRightInverse (f : M →ₗ[K] R) :
-    SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd f) *
-      SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd (-f)) = 1 :=
-  SymmetricAlgebra.linearMapMulEquivAlgHom_mul_neg K M R f
+    (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd f) *
+      (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd (-f)) = 1 :=
+  by
+    change _ * (TauCeti.AdditiveGroup.pointsMulEquiv
+      (R := K) (M := M) (A := R)).symm ((Multiplicative.ofAdd f)⁻¹) = 1
+    rw [map_inv]
+    exact mul_inv_cancel _
 
 private theorem testConvolutionGenerator (f : M →ₗ[K] R) (m : M) :
-    (SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd f)).ofConv
+    ((TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd f)).ofConv
       (SymmetricAlgebra.ι K M m) = f m := by simp
 
 private theorem testConvolutionNaturality {S : Type u} [CommRing S] [Algebra K S]
     (h : R →ₐ[K] S) (f : M →ₗ[K] R) :
-    (SymmetricAlgebra.linearMapMulEquivAlgHom K M S (.ofAdd
+    ((TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := S)).symm (.ofAdd
       (h.toLinearMap.comp f))).ofConv =
-        h.comp (SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd f)).ofConv :=
-  SymmetricAlgebra.linearMapMulEquivAlgHom_naturality K M R h f
+        h.comp ((TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd
+          f)).ofConv :=
+  by
+    apply SymmetricAlgebra.algHom_ext
+    ext m
+    simp [TauCeti.AdditiveGroup.pointsMulEquiv_symm_apply]
 
 end Generic
 
@@ -80,7 +96,7 @@ private theorem testSchemeLocallyFiniteType :
     LocallyOfFiniteType (vectorGroupUnderlyingScheme K V).hom := inferInstance
 
 omit [FiniteDimensional K V] in
-private theorem testSchemeQuasiCompact [FiniteDimensional K V] :
+private theorem testSchemeQuasiCompact :
     QuasiCompact (vectorGroupUnderlyingScheme K V).hom := inferInstance
 
 private def testVectorScheme : Grp (Over (Spec (.of K))) := vectorGroupScheme K V
@@ -89,7 +105,7 @@ private def testPointsIso : vectorGroupFunctor K V ≅ vectorGroupPointsFunctor 
   vectorGroupPointsIso K V
 
 omit [FiniteDimensional K V] in
-private theorem testFunctorMap [FiniteDimensional K V]
+private theorem testFunctorMap
     (R : Type u) [CommRing R] [Algebra K R]
     {S : Type u} [CommRing S] [Algebra K S]
     (f : R →ₐ[K] S) (x : V ⊗[K] R) :
@@ -120,7 +136,7 @@ private theorem testTensorLinearMap (W : Type u) [AddCommGroup W] [Module K W]
   vectorGroupTensorDualEquiv_linearMap K V W f R x φ
 
 omit [FiniteDimensional K V] in
-private theorem testCoordinatePullback [FiniteDimensional K V]
+private theorem testCoordinatePullback
     (W : Type u) [AddCommGroup W] [Module K W]
     (f : V →ₗ[K] W) (φ : Module.Dual K W) :
     vectorGroupCoordinateMap K V W f (SymmetricAlgebra.ι K _ φ) =
@@ -238,12 +254,16 @@ variable (K : Type u) [CommRing K] (M : Type v) [AddCommMonoid M] [Module K M]
   (R : Type u) [CommRing R] [Algebra K R]
 
 private theorem testLinearMapForward (f : M →ₗ[K] R) :
-    SymmetricAlgebra.linearMapMulEquivAlgHom K M R (.ofAdd f) =
-      WithConv.toConv (SymmetricAlgebra.lift f) := rfl
+    (TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm (.ofAdd f) =
+      WithConv.toConv (SymmetricAlgebra.lift f) :=
+  TauCeti.AdditiveGroup.pointsMulEquiv_symm_apply _
 
 private theorem testLinearMapInverse (g : SymmetricAlgebra K M →ₐ[K] R) :
-    (SymmetricAlgebra.linearMapMulEquivAlgHom K M R).symm (WithConv.toConv g) =
-      .ofAdd (SymmetricAlgebra.lift.symm g) := rfl
+    ((TauCeti.AdditiveGroup.pointsMulEquiv (R := K) (M := M) (A := R)).symm).symm
+      (WithConv.toConv g) =
+      .ofAdd (SymmetricAlgebra.lift.symm g) := by
+  exact congrArg Multiplicative.ofAdd
+    (TauCeti.AdditiveGroup.toAdd_pointsMulEquiv (WithConv.toConv g))
 
 variable (F : Type u) [Field F] (V : Type u) [AddCommGroup V] [Module F V]
   [FiniteDimensional F V] (S : Type u) [CommRing S] [Algebra F S]
@@ -276,7 +296,8 @@ private theorem testFunctorObject (A : CommAlgCat F) :
 private theorem testConvolutionData :
     vectorGroupMulEquivAlgHom F V S =
       (vectorGroupTensorDualEquiv F V S).toAddEquiv.toMultiplicative.trans
-        (SymmetricAlgebra.linearMapMulEquivAlgHom F (Module.Dual F V) S) := rfl
+        ((TauCeti.AdditiveGroup.pointsMulEquiv (R := F) (M := (Module.Dual F V)) (A :=
+          S)).symm) := rfl
 
 private theorem testRepresentedPointsData :
     vectorGroupMulEquivPoints F V S =

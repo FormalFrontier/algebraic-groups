@@ -5,245 +5,186 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.SpecialLinearCoordinateRing
-public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import TauCeti.AlgebraicGeometry.GroupScheme.Points
 
 /-!
-# The finite special linear group scheme
+# Special linear points with arbitrary finite matrix indices
 
-The determinant-one Hopf quotient represents the native matrix special linear group
-over arbitrary coefficient algebras. Its inclusion into the finite general linear
-group scheme is a closed immersion.
+All coordinate algebras, quotient maps, inclusions and group schemes are the
+canonical Tau Ceti objects. Native determinant-one matrices are relabelled by
+an equivalence of finite index types, preserving the arbitrary-index API used
+by comparisons with module automorphisms.
 
 ## References
 
-* J. S. Milne, *Algebraic Groups*, §§2.8, 2.10(a) (mentions of the classical
-  special linear subgroup over a field).
-* J. S. Milne, *Basic Theory of Affine Group Schemes*, VII §4, Example 4.3
-  (determinant-one coordinate quotient and field-base subgroup).
-* Mathlib, `LinearAlgebra/Matrix/GeneralLinearGroup/Defs.lean` and
-  `LinearAlgebra/Matrix/SpecialLinearGroup.lean` (native SL and `toGL`),
-  `AlgebraicGeometry/Group/Affine.lean` (Hopf-Spec and convolution points), and
-  `AlgebraicGeometry/Morphisms/ClosedImmersion.lean`
-  (`IsClosedImmersion.spec_of_surjective`). The all-algebra equivalence here
-  uses the local GL evaluation and determinant-one Hopf quotient.
+* J. S. Milne, *Algebraic Groups* (2017), item 2.8.
+* Mathlib contributors, `Matrix.reindexRingEquiv` and `Matrix.det_reindex_self`.
+* Tau Ceti contributors, `SpecialLinear.Basic` and `SpecialLinear.Scheme`.
 -/
 
 @[expose] public section
-
 noncomputable section
 
-open CategoryTheory GeneralLinearCoordinateRing SpecialLinearCoordinateRing
-open scoped CategoryTheory.MonObj TensorProduct
+open CategoryTheory
+open scoped CategoryTheory.MonObj
 
-universe u
+namespace Matrix.SpecialLinearGroup
+variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
+  (R : Type*) [CommRing R]
+/-- Relabelling both matrix indices preserves the determinant-one group. -/
+def reindexMulEquiv (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
+  toFun g := ⟨Matrix.reindex e e g, by rw [Matrix.det_reindex_self]; exact g.property⟩
+  invFun g := ⟨Matrix.reindex e.symm e.symm g,
+    by rw [Matrix.det_reindex_self]; exact g.property⟩
+  left_inv g := by
+    apply Subtype.ext
+    ext i j
+    simp only [Matrix.reindex_apply, Matrix.submatrix_apply, Equiv.symm_symm,
+      Equiv.symm_apply_apply]
+  right_inv g := by
+    apply Subtype.ext
+    ext i j
+    simp only [Matrix.reindex_apply, Matrix.submatrix_apply, Equiv.symm_symm,
+      Equiv.apply_symm_apply]
+  map_mul' g h := by
+    apply Subtype.ext
+    exact (Matrix.reindexRingEquiv R e).map_mul g h
+end Matrix.SpecialLinearGroup
+
+namespace TauCeti.SpecialLinear
+
+universe u v w
+
+variable (K : Type u) [CommRing K] (n : Type v) [Fintype n] [DecidableEq n]
+
+/-- Native special-linear points with arbitrary finite matrix indices. -/
+def reindexedPointsMulEquiv (A : Type w) [CommRing A] [Algebra K A] :
+    WithConv (coordinateHopfAlgebra K (Fintype.card n) →ₐ[K] A) ≃*
+      Matrix.SpecialLinearGroup n A :=
+  (pointsMulEquiv (R := K) (A := A) (Fintype.card n)).trans
+    (Matrix.SpecialLinearGroup.reindexMulEquiv A (Fintype.equivFin n).symm)
+
+/-- A relabelled special-linear point evaluates the corresponding generic matrix entry. -/
+@[simp]
+theorem reindexedPointsMulEquiv_apply (A : Type w) [CommRing A] [Algebra K A]
+    (f : WithConv (coordinateHopfAlgebra K (Fintype.card n) →ₐ[K] A)) (i j : n) :
+    reindexedPointsMulEquiv K n A f i j =
+      f.ofConv ((coordinateMap K (Fintype.card n)).hom
+        (GeneralLinear.reindexedGenericMatrix K n i j)) := by
+  simp only [reindexedPointsMulEquiv, MulEquiv.trans_apply]
+  change (pointsMulEquiv (R := K) (A := A) (Fintype.card n) f)
+      (Fintype.equivFin n i) (Fintype.equivFin n j) = _
+  rw [coe_pointsMulEquiv_apply]
+  simp only [Matrix.map_apply, GeneralLinear.reindexedGenericMatrix,
+    Matrix.reindex_apply, Matrix.submatrix_apply, Equiv.symm_symm]
+
+/-- Evaluation of the inverse relabelled points equivalence reads the native matrix entry. -/
+@[simp]
+theorem reindexedPointsMulEquiv_symm_apply (A : Type w) [CommRing A] [Algebra K A]
+    (g : Matrix.SpecialLinearGroup n A) (i j : n) :
+    ((reindexedPointsMulEquiv K n A).symm g).ofConv
+      ((Ideal.Quotient.mk (definingHopfIdeal K (Fintype.card n)).toIdeal)
+        (GeneralLinear.reindexedGenericMatrix K n i j)) = g i j := by
+  have h := congrArg (fun q : Matrix.SpecialLinearGroup n A => q i j)
+    ((reindexedPointsMulEquiv K n A).apply_symm_apply g)
+  exact (reindexedPointsMulEquiv_apply K n A _ i j).symm.trans h
+
+/-- Relabelled special-linear points commute with extension of the value algebra. -/
+theorem reindexedPointsMulEquiv_mapValue
+    {A B : Type w} [CommRing A] [CommRing B] [Algebra K A] [Algebra K B]
+    (φ : A →ₐ[K] B) (f : WithConv (coordinateHopfAlgebra K (Fintype.card n) →ₐ[K] A)) :
+    reindexedPointsMulEquiv K n B (AlgHom.mapValue φ f) =
+      Matrix.SpecialLinearGroup.map φ.toRingHom (reindexedPointsMulEquiv K n A f) := by
+  apply Matrix.SpecialLinearGroup.ext
+  intro i j
+  rw [reindexedPointsMulEquiv_apply]
+  change _ = φ ((reindexedPointsMulEquiv K n A f) i j)
+  rw [reindexedPointsMulEquiv_apply, AlgHom.mapValue_apply]
+  rfl
+
+/-- The inverse relabelled special-linear equivalence is natural in the value algebra. -/
+theorem mapValue_reindexedPointsMulEquiv_symm_apply
+    {A B : Type w} [CommRing A] [CommRing B] [Algebra K A] [Algebra K B]
+    (φ : A →ₐ[K] B) (g : Matrix.SpecialLinearGroup n A) :
+    AlgHom.mapValue φ ((reindexedPointsMulEquiv K n A).symm g) =
+      (reindexedPointsMulEquiv K n B).symm (Matrix.SpecialLinearGroup.map φ.toRingHom g) := by
+  apply (reindexedPointsMulEquiv K n B).injective
+  rw [reindexedPointsMulEquiv_mapValue, MulEquiv.apply_symm_apply,
+    MulEquiv.apply_symm_apply]
+
+/-- A native SL point restricted along the canonical quotient is its native GL point. -/
+theorem reindexedPointsMulEquiv_symm_comp_coordinateMap
+    (A : Type w) [CommRing A] [Algebra K A] (g : Matrix.SpecialLinearGroup n A) :
+    ((reindexedPointsMulEquiv K n A).symm g).ofConv.comp
+      (coordinateMap K (Fintype.card n)).hom.toAlgHom =
+        ((GeneralLinear.reindexedPointsMulEquiv K n A).symm
+          (Matrix.SpecialLinearGroup.toGL g)).ofConv := by
+  apply GeneralLinear.reindexedGenericMatrix_algHom_ext K n
+  intro i j
+  rw [AlgHom.comp_apply]
+  erw [reindexedPointsMulEquiv_symm_apply,
+    GeneralLinear.reindexedPointsMulEquiv_symm_apply]
+  rfl
+
+/-- The inverse determinant evaluates to one on every relabelled special-linear point. -/
+theorem reindexedPointsMulEquiv_symm_apply_ringInverse_det
+    (A : Type w) [CommRing A] [Algebra K A] (g : Matrix.SpecialLinearGroup n A) :
+    ((reindexedPointsMulEquiv K n A).symm g).ofConv
+      ((coordinateMap K (Fintype.card n)).hom.toAlgHom
+        (Ring.inverse (GeneralLinear.reindexedGenericMatrix K n).det)) = 1 := by
+  have h := congrArg (fun f =>
+    f (Ring.inverse (GeneralLinear.reindexedGenericMatrix K n).det))
+      (reindexedPointsMulEquiv_symm_comp_coordinateMap K n A g)
+  rw [AlgHom.comp_apply,
+    GeneralLinear.reindexedPointsMulEquiv_symm_apply_ringInverse_det] at h
+  have hdet : Matrix.GeneralLinearGroup.det (Matrix.SpecialLinearGroup.toGL g) = 1 := by
+    apply Units.ext
+    simpa only [Matrix.GeneralLinearGroup.val_det_apply,
+      Matrix.SpecialLinearGroup.coe_GL_coe_matrix, Units.val_one] using g.property
+  simpa only [hdet, inv_one, Units.val_one] using h
+
+/-- The canonical special-linear inclusion sends every relabelled point to its
+native general-linear inclusion. -/
+theorem reindexedSchemePoint_comp_groupSchemeι
+    (A : Type u) [CommRing A] [Algebra K A] (g : Matrix.SpecialLinearGroup n A) :
+    groupSchemePointMulEquiv (Fintype.card n) A
+        ((reindexedPointsMulEquiv K n A).symm g) ≫
+      (groupSchemeι K (Fintype.card n)).hom.hom =
+    GeneralLinear.groupSchemePointMulEquiv (Fintype.card n) A
+      ((GeneralLinear.reindexedPointsMulEquiv K n A).symm
+        (Matrix.SpecialLinearGroup.toGL g)) := by
+  apply (GeneralLinear.schemePointsMulEquiv (Fintype.card n) A).injective
+  rw [schemePointsMulEquiv_comp_groupSchemeι,
+    schemePointsMulEquiv_groupSchemePointMulEquiv,
+    GeneralLinear.schemePointsMulEquiv_groupSchemePointMulEquiv]
+  have hq : CommHopfAlgCat.quotientPointsHom
+      (GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))
+      (definingHopfIdeal K (Fintype.card n)) (CommAlgCat.of K A)
+      ((reindexedPointsMulEquiv K n A).symm g) =
+        (GeneralLinear.reindexedPointsMulEquiv K n A).symm
+          (Matrix.SpecialLinearGroup.toGL g) := by
+    apply WithConv.ofConv_injective
+    apply AlgHom.ext
+    intro x
+    rw [CommHopfAlgCat.quotientPointsHom_apply_apply]
+    exact AlgHom.congr_fun (reindexedPointsMulEquiv_symm_comp_coordinateMap K n A g) x
+  have h := pointsMulEquiv_toGL K (Fintype.card n)
+    ((reindexedPointsMulEquiv K n A).symm g)
+  rw [hq] at h
+  exact h.symm
+
+end TauCeti.SpecialLinear
+
+
 
 namespace AlgebraicGeometry
 
+universe u
+
 variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
 
-/-- The affine scheme of the determinant-one Hopf quotient over `Spec K`. -/
-abbrev specialLinearGroupUnderlyingScheme : Over (Spec (.of K)) :=
-  (Spec (.of (SpecialLinearCoordinateRing.CoordinateRing K n))).asOver (Spec (.of K))
-
-/-- The group object carried by the determinant-one Hopf quotient. -/
-abbrev specialLinearGroupScheme : Grp (Over (Spec (.of K))) :=
-  ⟨specialLinearGroupUnderlyingScheme K n⟩
-
-/-- The quotient map as a morphism of the actual GL and SL bialgebras. -/
-def specialLinearQuotientBialgHom :
-    GeneralLinearCoordinateRing.CoordinateRing K n →ₐc[K]
-      SpecialLinearCoordinateRing.CoordinateRing K n :=
-  Bialgebra.Quotient.mkBialgHom (determinantOneIdeal K n)
-
-/-- The native group-scheme inclusion induced by the determinant-one Hopf quotient. -/
-def specialLinearInclusion : specialLinearGroupScheme K n ⟶ generalLinearGroupScheme K n :=
-  (hopfSpec (.of K)).map
-    (Opposite.op (CommHopfAlgCat.ofHom (specialLinearQuotientBialgHom K n)))
-
-theorem specialLinearInclusion_left : (specialLinearInclusion K n).hom.hom.left =
-    Spec.map (CommRingCat.ofHom (quotient K n).toRingHom) := rfl
-
-/-- The inclusion is a closed immersion by Mathlib's
-`IsClosedImmersion.spec_of_surjective` applied to the coordinate quotient,
-including over zero rings; compare Milne, *Basic Theory of Affine Group Schemes*,
-VII §4, Example 4.3 in the field case. -/
-theorem specialLinearInclusion_isClosedImmersion :
-    IsClosedImmersion (specialLinearInclusion K n).hom.hom.left := by
-  rw [specialLinearInclusion_left]
-  exact IsClosedImmersion.spec_of_surjective _ Ideal.Quotient.mk_surjective
-
-variable (R : Type u) [CommRing R] [Algebra K R]
-
-/-- Read a point of the determinant-one quotient as a native SL matrix. -/
-def specialLinearToSL (f : SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K] R) :
-    Matrix.SpecialLinearGroup n R :=
-  ⟨(toGL (f.comp (quotient K n)) : Matrix n n R), by
-    calc
-      (toGL (f.comp (quotient K n)) : Matrix n n R).det =
-          (f.comp (quotient K n)) (matrix K n).det := by
-            rw [AlgHom.map_det]
-            congr 1
-      _ = 1 := by rw [AlgHom.comp_apply, quotient_det, map_one]⟩
-
-/-- The inclusion on quotient points is exactly native `SpecialLinearGroup.toGL`. -/
-theorem specialLinearToSL_toGL
-    (f : SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K] R) :
-    Matrix.SpecialLinearGroup.toGL (specialLinearToSL K n R f) =
-      toGL (f.comp (quotient K n)) := by
-  apply Matrix.GeneralLinearGroup.ext
-  intro i j
-  rfl
-
-/-- Native SL matrices evaluate the universal GL matrix through the Hopf quotient. -/
-def specialLinearFromSL (s : Matrix.SpecialLinearGroup n R) :
-    SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K] R :=
-  Ideal.Quotient.liftₐ (determinantOneIdeal K n)
-    (evaluate (K := K) (Matrix.SpecialLinearGroup.toGL s)) (by
-      intro element membership
-      obtain ⟨multiplier, hmultiplier⟩ := Ideal.mem_span_singleton'.mp membership
-      rw [← hmultiplier, map_mul, map_sub, map_one, evaluate_det]
-      have hdet : (Matrix.SpecialLinearGroup.toGL s : Matrix n n R).det = 1 :=
-        s.property
-      rw [hdet, sub_self, mul_zero])
-
-theorem specialLinearFromSL_comp_quotient (s : Matrix.SpecialLinearGroup n R) :
-    (specialLinearFromSL K n R s).comp (quotient K n) =
-      evaluate (K := K) (Matrix.SpecialLinearGroup.toGL s) := by
-  exact Ideal.Quotient.liftₐ_comp _ _ _
-
-theorem specialLinearToSL_fromSL (s : Matrix.SpecialLinearGroup n R) :
-    specialLinearToSL K n R (specialLinearFromSL K n R s) = s := by
-  apply Matrix.SpecialLinearGroup.toGL_injective
-  rw [specialLinearToSL_toGL, specialLinearFromSL_comp_quotient, toGL_evaluate]
-
-theorem specialLinearFromSL_toSL
-    (f : SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K] R) :
-    specialLinearFromSL K n R (specialLinearToSL K n R f) = f := by
-  apply Ideal.Quotient.algHom_ext K
-  change (specialLinearFromSL K n R (specialLinearToSL K n R f)).comp
-      (quotient K n) = f.comp (quotient K n)
-  rw [specialLinearFromSL_comp_quotient, specialLinearToSL_toGL, evaluate_toGL]
-
-/-- All coefficient-algebra points are naturally Mathlib's matrix special linear
-group, with multiplication given by quotient convolution; the comparison uses
-`Matrix.SpecialLinearGroup.toGL` and the local GL point equivalence. -/
-def specialLinearGroupMulEquivAlgHom :
-    Matrix.SpecialLinearGroup n R ≃*
-      WithConv (SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K] R) where
-  toFun s := WithConv.toConv (specialLinearFromSL K n R s)
-  invFun φ := specialLinearToSL K n R φ.ofConv
-  left_inv s := specialLinearToSL_fromSL K n R s
-  right_inv φ := by
-    apply WithConv.ofConv_injective
-    exact specialLinearFromSL_toSL K n R φ.ofConv
-  map_mul' s t := by
-    apply WithConv.ofConv_injective
-    apply Ideal.Quotient.algHom_ext K
-    change (specialLinearFromSL K n R (s * t)).comp (quotient K n) =
-      ((WithConv.toConv (specialLinearFromSL K n R s) *
-        WithConv.toConv (specialLinearFromSL K n R t)).ofConv).comp
-          (specialLinearQuotientBialgHom K n).toAlgHom
-    rw [AlgHom.convMul_comp_bialgHom_distrib]
-    rw [specialLinearFromSL_comp_quotient]
-    change (generalLinearGroupMulEquivAlgHom K n R
-        (Matrix.SpecialLinearGroup.toGL (s * t))).ofConv =
-      (WithConv.toConv ((specialLinearFromSL K n R s).comp (quotient K n)) *
-        WithConv.toConv ((specialLinearFromSL K n R t).comp (quotient K n))).ofConv
-    rw [specialLinearFromSL_comp_quotient, specialLinearFromSL_comp_quotient]
-    exact congrArg WithConv.ofConv
-      ((generalLinearGroupMulEquivAlgHom K n R).map_mul
-        (Matrix.SpecialLinearGroup.toGL s) (Matrix.SpecialLinearGroup.toGL t))
-
-/-- Entry readback for the native SL matrix. -/
-theorem specialLinearGroupMulEquivAlgHom_entry
-    (s : Matrix.SpecialLinearGroup n R) (i j : n) :
-    (specialLinearGroupMulEquivAlgHom K n R s).ofConv (entry K n i j) = s i j := by
-  change (specialLinearFromSL K n R s) (quotient K n (matrix K n i j)) = s i j
-  rw [← AlgHom.comp_apply, specialLinearFromSL_comp_quotient, evaluate_matrix]
-  rfl
-
-/-- Inverse determinant evaluates to one on every SL point. -/
-theorem specialLinearGroupMulEquivAlgHom_detInverse
-    (s : Matrix.SpecialLinearGroup n R) :
-    (specialLinearGroupMulEquivAlgHom K n R s).ofConv
-      (quotient K n (detInverse K n)) = 1 := by
-  rw [quotient_detInverse, map_one]
-
-/-- The corresponding affine `Spec` point, preserving group multiplication. -/
-def specialLinearGroupMulEquivPoints :
-    Matrix.SpecialLinearGroup n R ≃*
-      ((Spec (.of R)).asOver (Spec (.of K)) ⟶ specialLinearGroupUnderlyingScheme K n) :=
-  (specialLinearGroupMulEquivAlgHom K n R).trans
-    (Spec.mapMulEquiv (R := K) (S := SpecialLinearCoordinateRing.CoordinateRing K n)
-      (T := R))
-
-theorem specialLinearGroupMulEquivPoints_apply_left
-    (s : Matrix.SpecialLinearGroup n R) :
-    (specialLinearGroupMulEquivPoints K n R s).left =
-      Spec.map (CommRingCat.ofHom (specialLinearFromSL K n R s).toRingHom) := rfl
-
-/-- The universal SL entry pulls back to the corresponding native matrix entry. -/
-theorem specialLinearGroupPoint_preimage_entry
-    (s : Matrix.SpecialLinearGroup n R) (i j : n) :
-    (Spec.preimage (specialLinearGroupMulEquivPoints K n R s).left).hom
-      (entry K n i j) = s i j := by
-  rw [specialLinearGroupMulEquivPoints_apply_left, Spec.preimage_map]
-  exact specialLinearGroupMulEquivAlgHom_entry K n R s i j
-
-theorem specialLinearGroupPoint_preimage_detInverse
-    (s : Matrix.SpecialLinearGroup n R) :
-    (Spec.preimage (specialLinearGroupMulEquivPoints K n R s).left).hom
-      (quotient K n (detInverse K n)) = 1 := by
-  rw [specialLinearGroupMulEquivPoints_apply_left, Spec.preimage_map]
-  exact specialLinearGroupMulEquivAlgHom_detInverse K n R s
-
-/-- The actual inclusion of SL affine points is the native `toGL` embedding. -/
-theorem specialLinearInclusion_point (s : Matrix.SpecialLinearGroup n R) :
-    specialLinearGroupMulEquivPoints K n R s ≫ (specialLinearInclusion K n).hom.hom =
-      generalLinearGroupMulEquivPoints K n R (Matrix.SpecialLinearGroup.toGL s) := by
-  apply Over.OverMorphism.ext
-  rw [Over.comp_left, specialLinearGroupMulEquivPoints_apply_left,
-    specialLinearInclusion_left, generalLinearGroupMulEquivPoints_apply_left]
-  change Spec.map (CommRingCat.ofHom (specialLinearFromSL K n R s).toRingHom) ≫
-      Spec.map (CommRingCat.ofHom (quotient K n).toRingHom) =
-    Spec.map (CommRingCat.ofHom
-      (evaluate (K := K) (Matrix.SpecialLinearGroup.toGL s)).toRingHom)
-  rw [← Spec.map_comp]
-  exact congrArg (fun hom : GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[K] R ↦
-    Spec.map (CommRingCat.ofHom hom.toRingHom))
-      (specialLinearFromSL_comp_quotient K n R s)
-
-/-- Coefficient change commutes with the native determinant-one comparison. -/
-theorem specialLinearToSL_natural {S : Type u} [CommRing S] [Algebra K S]
-    (v : R →ₐ[K] S) (f : SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K] R) :
-    specialLinearToSL K n S (v.comp f) =
-      Matrix.SpecialLinearGroup.map v.toRingHom (specialLinearToSL K n R f) := by
-  apply Matrix.SpecialLinearGroup.ext
-  intro i j
-  rfl
-
-theorem specialLinearFromSL_natural {S : Type u} [CommRing S] [Algebra K S]
-    (v : R →ₐ[K] S) (s : Matrix.SpecialLinearGroup n R) :
-    specialLinearFromSL K n S (Matrix.SpecialLinearGroup.map v.toRingHom s) =
-      v.comp (specialLinearFromSL K n R s) := by
-  apply Ideal.Quotient.algHom_ext K
-  change (specialLinearFromSL K n S
-    (Matrix.SpecialLinearGroup.map v.toRingHom s)).comp (quotient K n) =
-      (v.comp (specialLinearFromSL K n R s)).comp (quotient K n)
-  rw [specialLinearFromSL_comp_quotient, AlgHom.comp_assoc,
-    specialLinearFromSL_comp_quotient]
-  have h : Matrix.SpecialLinearGroup.toGL
-        (Matrix.SpecialLinearGroup.map v.toRingHom s) =
-      Matrix.GeneralLinearGroup.map v.toRingHom
-        (Matrix.SpecialLinearGroup.toGL s) := by
-    apply Matrix.GeneralLinearGroup.ext
-    intro i j
-    rfl
-  rw [h]
-  exact evaluate_natural v (Matrix.SpecialLinearGroup.toGL s)
-
 /-- Native matrix SL as a functor on arbitrary commutative `K`-algebras. -/
-def specialLinearGroupFunctor : CommAlgCat K ⥤ GrpCat where
+def specialLinearIndexedFunctor : CommAlgCat K ⥤ GrpCat where
   obj R := GrpCat.of (Matrix.SpecialLinearGroup n R)
   map f := GrpCat.ofHom (Matrix.SpecialLinearGroup.map f.hom.toRingHom)
   map_id R := by
@@ -261,37 +202,39 @@ def specialLinearGroupFunctor : CommAlgCat K ⥤ GrpCat where
     intro i j
     rfl
 
-/-- Group-valued affine functor of points of the determinant-one group scheme. -/
-abbrev specialLinearGroupPointsFunctor : CommAlgCat K ⥤ GrpCat :=
-  (algSpec (.of K)).rightOp ⋙ yonedaGrp.obj (specialLinearGroupScheme K n)
 
-/-- The native finite special linear group is its represented functor of points;
-the field-base determinant-one coordinate description occurs in Milne,
-*Basic Theory of Affine Group Schemes*, VII §4, Example 4.3. The natural
-all-algebra group equivalence uses Mathlib's Hopf-Spec and native matrix SL. -/
-def specialLinearGroupPointsIso :
-    specialLinearGroupFunctor K n ≅ specialLinearGroupPointsFunctor K n :=
+/-- The native special linear functor with arbitrary finite indices is
+represented by the canonical coordinate Hopf algebra in the same rank. -/
+def specialLinearIndexedPointsIso :
+    specialLinearIndexedFunctor K n ≅
+      TauCeti.GroupScheme.algebraPointsFunctor K
+        (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)) :=
   NatIso.ofComponents
-    (fun R ↦ (specialLinearGroupMulEquivPoints K n R).toGrpIso)
-    (fun {R S} f ↦ by
+    (fun R => ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n R).symm.trans
+      (TauCeti.SpecialLinear.groupSchemePointMulEquiv
+        (R := K) (Fintype.card n) R)).toGrpIso)
+    (fun {R S} f => by
       ext s
       apply Over.OverMorphism.ext
-      change
-        (specialLinearGroupMulEquivPoints K n S
-          (Matrix.SpecialLinearGroup.map f.hom.toRingHom s)).left =
-            ((algSpec (.of K)).map f.op).left ≫
-              (specialLinearGroupMulEquivPoints K n R s).left
-      rw [specialLinearGroupMulEquivPoints_apply_left]
+      change ((TauCeti.SpecialLinear.groupSchemePointMulEquiv
+        (R := K) (Fintype.card n) S)
+          ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n S).symm
+            (Matrix.SpecialLinearGroup.map f.hom.toRingHom s))).left =
+        ((algSpec (.of K)).map f.op).left ≫
+          ((TauCeti.SpecialLinear.groupSchemePointMulEquiv
+            (R := K) (Fintype.card n) R)
+            ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n R).symm s)).left
+      rw [TauCeti.SpecialLinear.groupSchemePointMulEquiv_apply_left,
+        TauCeti.SpecialLinear.groupSchemePointMulEquiv_apply_left]
       change Spec.map (CommRingCat.ofHom
-        (specialLinearFromSL K n S
-          (Matrix.SpecialLinearGroup.map f.hom.toRingHom s)).toRingHom) =
-          Spec.map (CommRingCat.ofHom f.hom.toRingHom) ≫
-            Spec.map (CommRingCat.ofHom (specialLinearFromSL K n R s).toRingHom)
-      rw [← Spec.map_comp]
-      exact congrArg (fun h : SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K] S ↦
-        Spec.map (CommRingCat.ofHom h.toRingHom))
-          (specialLinearFromSL_natural K n R f.hom s))
+        ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n S).symm
+          (Matrix.SpecialLinearGroup.map f.hom.toRingHom s)).ofConv.toRingHom) ≫ _ =
+        Spec.map (CommRingCat.ofHom f.hom.toRingHom) ≫ _ ≫ _
+      rw [← Category.assoc, ← Spec.map_comp]
+      congr 2
+      have h :=
+        TauCeti.SpecialLinear.mapValue_reindexedPointsMulEquiv_symm_apply K n f.hom s
+      rw [AlgHom.mapValue_apply] at h
+      exact congrArg (fun q => CommRingCat.ofHom q.ofConv.toRingHom) h.symm)
 
 end AlgebraicGeometry
-
-#lint

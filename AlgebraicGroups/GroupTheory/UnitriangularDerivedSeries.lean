@@ -29,7 +29,7 @@ ring, including the zero ring.
 
 open scoped commutatorElement
 
-namespace Matrix.UnitriangularGroup
+namespace TauCeti.UpperUnitriangularGroup
 
 variable (n : ℕ) (R : Type) [CommRing R]
 
@@ -39,9 +39,9 @@ The reverse inclusion uses the elementary-unit relation from
 criterion, rather than a quotient of group schemes. -/
 theorem superdiagonalSubgroup_commutator_eq (r s : ℕ)
     (hr : 1 ≤ r) (hs : 1 ≤ s) :
-    ⁅superdiagonalSubgroup n R r, superdiagonalSubgroup n R s⁆ =
-      superdiagonalSubgroup n R (r + s) := by
-  apply le_antisymm (superdiagonalSubgroup_commutator n R r s)
+    ⁅superdiagonalSubgroup (n := n) (R := R) r, superdiagonalSubgroup (n := n) (R := R) s⁆ =
+      superdiagonalSubgroup (n := n) (R := R) (r + s) := by
+  apply le_antisymm (commutator_superdiagonalSubgroup_le (n := n) (R := R) r s)
   apply superdiagonalSubgroup_le_of_elementary_mem n R (r + s) (by omega)
   intro i j hij a hdist
   let k : Fin n := ⟨i.val + r, by have := j.isLt; omega⟩
@@ -56,20 +56,20 @@ theorem superdiagonalSubgroup_commutator_eq (r s : ℕ)
   simpa only [hroot, mul_one] using hcomm
 
 /-- The native derived series is the superdiagonal filtration at powers of two.
-This uses Mathlib's `derivedSeries` successor and the positive-stage
+This uses Mathlib's `Subgroup.derivedSeries` successor and the positive-stage
 commutator equality above. -/
 theorem derivedSeries_eq_superdiagonalSubgroup (t : ℕ) :
-    derivedSeries (Matrix.UnitriangularGroup (Fin n) R) t =
-      superdiagonalSubgroup n R (2 ^ t) := by
+    Subgroup.derivedSeries (TauCeti.upperUnitriangularGroup (Fin n) R) t =
+      superdiagonalSubgroup (n := n) (R := R) (2 ^ t) := by
   induction t with
   | zero =>
-      simpa only [derivedSeries_zero, pow_zero] using
-        (superdiagonalSubgroup_one n R).symm
+      simpa only [Subgroup.derivedSeries_zero, pow_zero] using
+        (superdiagonalSubgroup_one (n := n) (R := R)).symm
   | succ t ih =>
       have hpos : 1 ≤ (2 : ℕ) ^ t := by
         have : 0 < (2 : ℕ) ^ t := by positivity
         omega
-      rw [derivedSeries_succ, ih,
+      rw [Subgroup.derivedSeries_succ, ih,
         superdiagonalSubgroup_commutator_eq n R (2 ^ t) (2 ^ t)
           hpos hpos]
       simp only [pow_succ, mul_two]
@@ -77,11 +77,11 @@ theorem derivedSeries_eq_superdiagonalSubgroup (t : ℕ) :
 /-- Over a nontrivial ring, a positive stage is trivial exactly at or beyond
 the dimension. The numerical criterion does not extend to the zero ring. -/
 theorem superdiagonalSubgroup_eq_bot_iff [Nontrivial R] (d : ℕ) (hd : 1 ≤ d) :
-    superdiagonalSubgroup n R d = ⊥ ↔ n ≤ d := by
+    superdiagonalSubgroup (n := n) (R := R) d = ⊥ ↔ n ≤ d := by
   constructor
   · intro hbot
     have hseries :
-        (⊤ : Subgroup (Matrix.UnitriangularGroup (Fin n) R)).lowerCentralSeries
+        (⊤ : Subgroup (TauCeti.upperUnitriangularGroup (Fin n) R)).lowerCentralSeries
           (d - 1) = ⊥ := by
       rw [lowerCentralSeries_eq_superdiagonalSubgroup n R (d - 1),
         Nat.sub_add_cancel hd]
@@ -91,17 +91,17 @@ theorem superdiagonalSubgroup_eq_bot_iff [Nontrivial R] (d : ℕ) (hd : 1 ≤ d)
     omega
   · intro hle
     apply le_antisymm _ bot_le
-    rw [← superdiagonalSubgroup_end n R]
-    exact superdiagonalSubgroup_antitone n R hle
+    rw [← superdiagonalSubgroup_eq_bot_of_le (n := n) (R := R) le_rfl]
+    exact superdiagonalSubgroup_antitone (n := n) (R := R) hle
 
 /-- Over a nontrivial ring, the native derived series stops exactly when its
-superdiagonal stage reaches the dimension, using Mathlib's `derivedSeries`
+superdiagonal stage reaches the dimension, using Mathlib's `Subgroup.derivedSeries`
 and the preceding point-group class and lower-central-series criteria. -/
 theorem derivedSeries_eq_bot_iff [Nontrivial R] (t : ℕ) :
-    derivedSeries (Matrix.UnitriangularGroup (Fin n) R) t = ⊥ ↔ n ≤ 2 ^ t := by
+    Subgroup.derivedSeries (TauCeti.upperUnitriangularGroup (Fin n) R) t = ⊥ ↔ n ≤ 2 ^ t := by
   rw [derivedSeries_eq_superdiagonalSubgroup n R t]
   apply superdiagonalSubgroup_eq_bot_iff n R (2 ^ t)
   have : 0 < (2 : ℕ) ^ t := by positivity
   omega
 
-end Matrix.UnitriangularGroup
+end TauCeti.UpperUnitriangularGroup

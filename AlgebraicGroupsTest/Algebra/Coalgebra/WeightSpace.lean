@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightSpace
+public import TauCeti.Algebra.Coalgebra.Comodule.Trivial
 public import Mathlib.Algebra.Field.Rat
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 
@@ -20,9 +21,10 @@ monoid-algebra coalgebra, without any additional cyclic-group construction.
 @[expose] public noncomputable section
 
 open scoped TensorProduct
-open Coalgebra Coalgebra.RightComodule
+open TauCeti
+open Coalgebra TauCeti.Comodule
 
-namespace Coalgebra.RightComodule.WeightSpaceExamples
+namespace TauCeti.Comodule.WeightSpaceExamples
 
 /-- The unit weight of the regular monoid algebra of the infinite cyclic group. -/
 def unitWeight (R : Type*) [CommSemiring R] :
@@ -47,40 +49,42 @@ local notation "Aℕ" => MonoidAlgebra ℕ (Multiplicative ℤ)
 local notation "Aℚ" => MonoidAlgebra ℚ (Multiplicative ℤ)
 
 example :
-    (unitWeight ℕ).val ∈ (regular ℕ Aℕ).weightSpace (unitWeight ℕ).val ∧
-    (generatorWeight ℕ).val ∈ (regular ℕ Aℕ).weightSpace (generatorWeight ℕ).val ∧
+    (unitWeight ℕ).val ∈ (Comodule.instSelf ℕ Aℕ).elementWeightSpace (unitWeight ℕ).val ∧
+    (generatorWeight ℕ).val ∈ (Comodule.instSelf ℕ Aℕ).elementWeightSpace (generatorWeight ℕ).val ∧
     (unitWeight ℕ).val ≠ 0 ∧ (generatorWeight ℕ).val ≠ 0 ∧
     unitWeight ℕ ≠ generatorWeight ℕ := by
   refine ⟨?_, ?_, ?_, ?_, unitWeight_ne_generatorWeight ℕ⟩
-  · exact (mem_weightSpace _ _).mpr (unitWeight ℕ).isGroupLikeElem_val.comul_eq_tmul_self
-  · exact (mem_weightSpace _ _).mpr (generatorWeight ℕ).isGroupLikeElem_val.comul_eq_tmul_self
+  · exact (mem_elementWeightSpace _ _).mpr (unitWeight ℕ).isGroupLikeElem_val.comul_eq_tmul_self
+  · exact (mem_elementWeightSpace _ _).mpr (generatorWeight
+      ℕ).isGroupLikeElem_val.comul_eq_tmul_self
   · exact MonoidAlgebra.single_ne_zero.mpr one_ne_zero
   · exact MonoidAlgebra.single_ne_zero.mpr one_ne_zero
 
-example (v : (regular ℕ Aℕ).weightSpace (generatorWeight ℕ).val) :
+example (v : (Comodule.instSelf ℕ Aℕ).elementWeightSpace (generatorWeight ℕ).val) :
     (v : Aℕ) = MonoidAlgebra.single (Multiplicative.ofAdd (1 : ℤ))
       (counit (R := ℕ) (v : Aℕ)) := by
   calc
     (v : Aℕ) = (counit (R := ℕ) (v : Aℕ)) • (generatorWeight ℕ).val :=
-      ((regular_weightSpace_inverse (generatorWeight ℕ)).2 v).symm
+      ((regular_elementWeightSpace_inverse (generatorWeight ℕ)).2 v).symm
     _ = _ := by simp only [generatorWeight, MonoidAlgebra.smul_single', mul_one]
 
 example : Disjoint
-    ((regular ℚ Aℚ).weightSpace (unitWeight ℚ).val)
-    ((regular ℚ Aℚ).weightSpace (generatorWeight ℚ).val) :=
-  (iSupIndep_weightSpace (regular ℚ Aℚ)).pairwiseDisjoint
+    (GroupLike.weightSpace (M := Aℚ) (unitWeight ℚ))
+    (GroupLike.weightSpace (M := Aℚ) (generatorWeight ℚ)) :=
+  (iSupIndep_groupLikeWeightSpace (k := ℚ) (C := Aℚ) (M := Aℚ)).pairwiseDisjoint
     (unitWeight_ne_generatorWeight ℚ)
 
 example :
-    (generatorWeight ℚ).val ∈ (regular ℚ Aℚ).weightSpace (generatorWeight ℚ).val ∧
+    (generatorWeight ℚ).val ∈ (Comodule.instSelf ℚ Aℚ).elementWeightSpace (generatorWeight ℚ).val ∧
     (generatorWeight ℚ).val ≠ 0 := by
-  exact ⟨(mem_weightSpace _ _).mpr (generatorWeight ℚ).isGroupLikeElem_val.comul_eq_tmul_self,
+  exact ⟨(mem_elementWeightSpace _ _).mpr (generatorWeight
+      ℚ).isGroupLikeElem_val.comul_eq_tmul_self,
     MonoidAlgebra.single_ne_zero.mpr one_ne_zero⟩
 
-example : (scalar ℕ (Fin 0 → ℕ)).weightSpace (1 : ℕ) = ⊥ :=
+example : (Comodule.trivial (R := ℕ) (C := ℕ) (M := Fin 0 → ℕ)).elementWeightSpace (1 : ℕ) = ⊥ :=
   Subsingleton.elim _ _
 
-example (v : PUnit) : v ∈ (regular PUnit PUnit).weightSpace (0 : PUnit) :=
-  (mem_weightSpace _ _).mpr (Subsingleton.elim _ _)
+example (v : PUnit) : v ∈ (Comodule.instSelf PUnit PUnit).elementWeightSpace (0 : PUnit) :=
+  (mem_elementWeightSpace _ _).mpr (Subsingleton.elim _ _)
 
-end Coalgebra.RightComodule.WeightSpaceExamples
+end TauCeti.Comodule.WeightSpaceExamples

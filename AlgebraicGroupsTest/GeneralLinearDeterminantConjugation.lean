@@ -27,19 +27,25 @@ open scoped CategoryTheory.MonObj
 
 namespace AlgebraicGroupsTest.GeneralLinearDeterminantConjugation
 
-open AlgebraicGeometry
+open AlgebraicGeometry TauCeti.DiagonalizableGroup
 
+/-- The unit two modulo five, with inverse three. -/
 def unitTwo : (ZMod 5)ˣ := ⟨2, 3, by decide, by decide⟩
 
+/-- A determinant-one upper shear over the field with five elements. -/
 def upperUnipotent : Matrix.SpecialLinearGroup (Fin 2) (ZMod 5) :=
   Matrix.SpecialLinearGroup.transvection (show (0 : Fin 2) ≠ 1 by decide) 1
 
 example :
-    lift (multiplicativeGroupMulEquivPoints (ZMod 5) (ZMod 5) unitTwo)
-      (specialLinearGroupMulEquivPoints (ZMod 5) (Fin 2) (ZMod 5) upperUnipotent) ≫
+    lift ((multiplicativeGroupSchemePointsMulEquiv
+        (R := ZMod 5) (A := ZMod 5)).symm unitTwo)
+      (TauCeti.SpecialLinear.groupSchemePointMulEquiv (Fintype.card (Fin 2)) (ZMod 5)
+        ((TauCeti.SpecialLinear.reindexedPointsMulEquiv (ZMod 5) (Fin 2) (ZMod 5)).symm
+          upperUnipotent)) ≫
         generalLinearDeterminantConj (ZMod 5) (Fin 2) 1 =
-      specialLinearGroupMulEquivPoints (ZMod 5) (Fin 2) (ZMod 5)
-        (generalLinearDiagonalConjSL (Fin 2) 1 unitTwo upperUnipotent) :=
+      TauCeti.SpecialLinear.groupSchemePointMulEquiv (Fintype.card (Fin 2)) (ZMod 5)
+        ((TauCeti.SpecialLinear.reindexedPointsMulEquiv (ZMod 5) (Fin 2) (ZMod 5)).symm
+          (generalLinearDiagonalConjSL (Fin 2) 1 unitTwo upperUnipotent)) :=
   generalLinearDeterminantConj_point (ZMod 5) (Fin 2) 1 unitTwo upperUnipotent
 
 theorem columnPivotUpperEntry :

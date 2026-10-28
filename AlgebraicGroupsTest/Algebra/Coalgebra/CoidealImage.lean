@@ -247,7 +247,7 @@ theorem mapDomainBialgHom_double_fst_mapQ :
   refine ⟨hrep, ?_⟩
   have hΔ := CoalgHomClass.map_comp_comul_apply g (I.mkQ (single (1, 0) 1))
   rw [hrep] at hΔ
-  simpa only [CoalgHom.toLinearMap_eq_coe, Submodule.mkQ_apply,
+  simpa only [CoalgHom.toLinearMap_eq_ofClass, Submodule.mkQ_apply,
     Coalgebra.Quotient.comul_mk,
     (isGroupLikeElem_single_one (R := ℤ) (A := ℤ) (0 : ℤ)).comul_eq_tmul_self,
     TensorProduct.map_tmul] using hΔ

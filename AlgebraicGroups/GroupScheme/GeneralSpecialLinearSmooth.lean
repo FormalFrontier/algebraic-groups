@@ -7,6 +7,8 @@ module
 public import AlgebraicGroups.GroupScheme.SpecialLinear
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantSection
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+public import TauCeti.Algebra.AlgebraicGroup.GeneralLinear.SmoothConnected
+public import TauCeti.Algebra.AlgebraicGroup.SpecialLinear.Smooth
 
 /-!
 # Smoothness of finite general and special linear group schemes
@@ -41,7 +43,7 @@ rank hypothesis is needed for either result.
 
 noncomputable section
 
-open CategoryTheory GeneralLinearCoordinateRing SpecialLinearCoordinateRing
+open CategoryTheory TauCeti.GeneralLinear SpecialLinearCoordinateRing
 
 universe u
 
@@ -49,167 +51,143 @@ namespace AlgebraicGeometry
 
 variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
 
-/-- The finite general linear coordinate algebra is smooth over any commutative
-base, by mathlib's formally smooth polynomial/localization and finite-presentation
-instances. Compare the determinant localization in Stacks, Tag 022W. -/
-instance generalLinearCoordinateRing_smooth :
-    Algebra.Smooth K (GeneralLinearCoordinateRing.CoordinateRing K n) where
-  formallySmooth := inferInstance
-  finitePresentation := GeneralLinearCoordinateRing.finitePresentation K n
-
-/-- The determinant-one quotient has a finite presentation, including in rank
-zero, using mathlib's finite-presentation theorem for a surjective algebra map
-with finitely generated kernel. -/
-instance specialLinearCoordinateRing_finitePresentation :
-    Algebra.FinitePresentation K (SpecialLinearCoordinateRing.CoordinateRing K n) :=
-  Algebra.FinitePresentation.of_surjective
-    (f := SpecialLinearCoordinateRing.quotient K n)
-    Ideal.Quotient.mk_surjective (by
-      rw [show (SpecialLinearCoordinateRing.quotient K n).toRingHom =
-        Ideal.Quotient.mkₐ K (SpecialLinearCoordinateRing.determinantOneIdeal K n) from rfl,
-        Ideal.Quotient.mkₐ_ker]
-      exact Submodule.fg_span_singleton _)
-
-/-- A retract of a formally smooth algebra is formally smooth, by transporting
-mathlib's square-zero-ideal lifting criterion along the algebra section. -/
-private theorem formallySmooth_of_retract {A B : Type u} [CommRing A] [Algebra K A]
-    [CommRing B] [Algebra K B] [Algebra.FormallySmooth K A]
-    (quotient : A →ₐ[K] B) (split : B →ₐ[K] A)
-    (split_quotient : quotient.comp split = AlgHom.id K B) :
-    Algebra.FormallySmooth K B := by
-  refine Algebra.FormallySmooth.of_comp_surjective fun C _ _ I hI f ↦ ?_
-  obtain ⟨lift, lift_eq⟩ :=
-    Algebra.FormallySmooth.comp_surjective K A I hI (f.comp quotient)
-  refine ⟨lift.comp split, ?_⟩
-  calc
-    (Ideal.Quotient.mkₐ K I).comp (lift.comp split) =
-        ((Ideal.Quotient.mkₐ K I).comp lift).comp split := (AlgHom.comp_assoc ..).symm
-    _ = (f.comp quotient).comp split := by rw [lift_eq]
-    _ = f := by rw [AlgHom.comp_assoc, split_quotient, AlgHom.comp_id]
-
 /-- Normalize the universal GL matrix to determinant one by left multiplication
 with the chosen one-pivot diagonal matrix. The diagonal construction follows
 mathlib's `Matrix.GeneralLinearGroup.det_surjective`; compare Milne,
 *Basic Theory of Affine Group Schemes*, XIII §3, item 3.14, which gives a
 right-diagonal section. -/
 def specialLinearNormalization (pivot : n) :
-    Matrix.SpecialLinearGroup n (GeneralLinearCoordinateRing.CoordinateRing K n) :=
+    Matrix.SpecialLinearGroup n ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)))
+      :=
   ⟨(generalLinearDiagonalHom n pivot
-      (Matrix.GeneralLinearGroup.det (universal K n))⁻¹ * universal K n :
-      Matrix.GeneralLinearGroup n (GeneralLinearCoordinateRing.CoordinateRing K n)), by
+      (Matrix.GeneralLinearGroup.det ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _)))))⁻¹ * (TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _))) :
+      Matrix.GeneralLinearGroup n ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card
+        n)))), by
     change ((Matrix.GeneralLinearGroup.det
       (generalLinearDiagonalHom n pivot
-        (Matrix.GeneralLinearGroup.det (universal K n))⁻¹ * universal K n)) :
-        GeneralLinearCoordinateRing.CoordinateRing K n) = 1
+        (Matrix.GeneralLinearGroup.det ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _)))))⁻¹ * (TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _))))) :
+        (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) = 1
     simp⟩
 
 /-- The normalization defines an algebra map out of the native SL quotient. -/
 def specialLinearNormalizationSection (pivot : n) :
-    SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K]
-      GeneralLinearCoordinateRing.CoordinateRing K n :=
-  specialLinearFromSL K n _ (specialLinearNormalization K n pivot)
+    (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)) →ₐ[K]
+      (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)) :=
+  ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n _).symm
+    (specialLinearNormalization K n pivot)).ofConv
 
 /-- On a universal SL entry, the section evaluates the normalized GL matrix. -/
 theorem specialLinearNormalizationSection_entry (pivot i j : n) :
-    specialLinearNormalizationSection K n pivot (SpecialLinearCoordinateRing.entry K n i j) =
+    specialLinearNormalizationSection K n pivot (((TauCeti.SpecialLinear.coordinateMap K
+      (Fintype.card n)).hom (TauCeti.GeneralLinear.reindexedGenericMatrix K n i j))) =
       (specialLinearNormalization K n pivot : Matrix n n
-        (GeneralLinearCoordinateRing.CoordinateRing K n)) i j := by
-  change (specialLinearFromSL K n _ (specialLinearNormalization K n pivot))
-    ((SpecialLinearCoordinateRing.quotient K n) (matrix K n i j)) = _
-  rw [← AlgHom.comp_apply, specialLinearFromSL_comp_quotient, evaluate_matrix]
-  rfl
+        ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)))) i j := by
+  exact TauCeti.SpecialLinear.reindexedPointsMulEquiv_symm_apply K n _
+    (specialLinearNormalization K n pivot) i j
 
 /-- After imposing determinant one, normalization fixes every matrix entry. -/
 theorem specialLinearNormalizationSection_comp_quotient (pivot : n) :
-    (SpecialLinearCoordinateRing.quotient K n).comp
+    ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom).comp
       (specialLinearNormalizationSection K n pivot) =
-      AlgHom.id K (SpecialLinearCoordinateRing.CoordinateRing K n) := by
-  apply Ideal.Quotient.algHom_ext K
-  change (SpecialLinearCoordinateRing.quotient K n).comp
-    ((specialLinearFromSL K n _ (specialLinearNormalization K n pivot)).comp
-      (SpecialLinearCoordinateRing.quotient K n)) =
-    (AlgHom.id K _).comp (SpecialLinearCoordinateRing.quotient K n)
-  rw [specialLinearFromSL_comp_quotient, AlgHom.id_comp]
-  apply GeneralLinearCoordinateRing.hom_ext
+      AlgHom.id K ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) := by
+  apply (AlgHom.cancel_right (CommHopfAlgCat.mkQuotient_surjective
+    (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))
+    (TauCeti.SpecialLinear.definingHopfIdeal K (Fintype.card n)))).mp
+  rw [AlgHom.comp_assoc]
+  change (TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom.comp
+      (((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n _).symm
+        (specialLinearNormalization K n pivot)).ofConv.comp
+          (TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom) = _
+  rw [TauCeti.SpecialLinear.reindexedPointsMulEquiv_symm_comp_coordinateMap]
+  apply TauCeti.GeneralLinear.reindexedGenericMatrix_algHom_ext K n
   intro i j
-  rw [AlgHom.comp_apply, evaluate_matrix]
-  change (SpecialLinearCoordinateRing.quotient K n)
+  rw [AlgHom.comp_apply, TauCeti.GeneralLinear.reindexedPointsMulEquiv_symm_apply]
+  change ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom)
     ((generalLinearDiagonalHom n pivot
-      (Matrix.GeneralLinearGroup.det (universal K n))⁻¹ * universal K n :
-        Matrix.GeneralLinearGroup n (GeneralLinearCoordinateRing.CoordinateRing K n)) i j) =
-      (SpecialLinearCoordinateRing.quotient K n) (matrix K n i j)
+      (Matrix.GeneralLinearGroup.det
+        (TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+          (WithConv.toConv (AlgHom.id K _))))⁻¹ *
+        TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+          (WithConv.toConv (AlgHom.id K _)) : Matrix.GeneralLinearGroup n
+            (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) i j) = _
   have determinant_quotient :
-      Units.map (SpecialLinearCoordinateRing.quotient K n).toRingHom.toMonoidHom
-        (Matrix.GeneralLinearGroup.det (universal K n)) = 1 := by
+      Units.map ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card
+        n)).hom.toAlgHom).toRingHom.toMonoidHom
+        (Matrix.GeneralLinearGroup.det ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _))))) = 1 := by
     apply Units.ext
-    change (SpecialLinearCoordinateRing.quotient K n) (matrix K n).det = 1
-    exact SpecialLinearCoordinateRing.quotient_det K n
+    change ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom)
+      ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+        (WithConv.toConv (AlgHom.id K _)) : Matrix.GeneralLinearGroup n
+          (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) :
+            Matrix n n _).det = 1
+    have hm : ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+        (WithConv.toConv (AlgHom.id K _)) : Matrix.GeneralLinearGroup n
+          (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) :
+            Matrix n n _) = TauCeti.GeneralLinear.reindexedGenericMatrix K n := by
+      ext a b
+      rw [TauCeti.GeneralLinear.reindexedPointsMulEquiv_apply]
+      rfl
+    rw [hm, generalLinearReindexedGenericMatrix_det]
+    exact TauCeti.SpecialLinear.coordinateMap_determinantGroupLike K (Fintype.card n)
   have normalized_quotient :
-      Matrix.GeneralLinearGroup.map (SpecialLinearCoordinateRing.quotient K n).toRingHom
+      Matrix.GeneralLinearGroup.map ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card
+        n)).hom.toAlgHom).toRingHom
         (generalLinearDiagonalHom n pivot
-          (Matrix.GeneralLinearGroup.det (universal K n))⁻¹ * universal K n) =
-      Matrix.GeneralLinearGroup.map (SpecialLinearCoordinateRing.quotient K n).toRingHom
-        (universal K n) := by
+          (Matrix.GeneralLinearGroup.det ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _)))))⁻¹ * (TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _)))) =
+      Matrix.GeneralLinearGroup.map ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card
+        n)).hom.toAlgHom).toRingHom
+        ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _)))) := by
     have inverse_quotient :
-        Units.map (SpecialLinearCoordinateRing.quotient K n).toRingHom.toMonoidHom
-          (Matrix.GeneralLinearGroup.det (universal K n))⁻¹ = 1 := by
+        Units.map ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card
+          n)).hom.toAlgHom).toRingHom.toMonoidHom
+          (Matrix.GeneralLinearGroup.det ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _)))))⁻¹ = 1 := by
       rw [map_inv, determinant_quotient, inv_one]
     rw [map_mul, generalLinearDiagonalHom_natural]
     calc
       generalLinearDiagonalHom n pivot _ * _ =
           generalLinearDiagonalHom n pivot 1 * _ :=
-        congrArg (fun unit : (SpecialLinearCoordinateRing.CoordinateRing K n)ˣ ↦
+        congrArg (fun unit : ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)))ˣ ↦
           generalLinearDiagonalHom n pivot unit *
-            Matrix.GeneralLinearGroup.map (SpecialLinearCoordinateRing.quotient K n).toRingHom
-              (universal K n)) inverse_quotient
+            Matrix.GeneralLinearGroup.map ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card
+              n)).hom.toAlgHom).toRingHom
+              ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n _
+      (WithConv.toConv (AlgHom.id K _))))) inverse_quotient
       _ = _ := by simp
-  exact congrArg (fun g : Matrix.GeneralLinearGroup n
-      (SpecialLinearCoordinateRing.CoordinateRing K n) ↦ g i j) normalized_quotient
+  have hentry := congrArg (fun g : Matrix.GeneralLinearGroup n
+      ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) ↦ g i j)
+    normalized_quotient
+  simp only [Matrix.GeneralLinearGroup.map_apply,
+    TauCeti.GeneralLinear.reindexedPointsMulEquiv_apply,
+    AlgHom.id_apply] at hentry
+  convert hentry using 1
+  simp only [AlgHom.comp_apply, AlgHom.id_apply]
+  exact (TauCeti.SpecialLinear.coordinateMap_apply K (Fintype.card n) _).symm
 
-
-/-- The finite special linear coordinate algebra is smooth over any commutative
-base. For a nonempty index its quotient splits as an algebra map via left
-normalization (compare Milne, *Basic Theory of Affine Group Schemes*, XIII §3,
-item 3.14); mathlib's square-zero lifting criterion proves formal
-smoothness of this retract. Empty indices reduce to the GL algebra. -/
-instance specialLinearCoordinateRing_smooth :
-    Algebra.Smooth K (SpecialLinearCoordinateRing.CoordinateRing K n) where
-  formallySmooth := by
-    classical
-    cases isEmpty_or_nonempty n with
-    | inl emptyIndex =>
-      let : IsEmpty n := emptyIndex
-      have determinant_one : (matrix K n).det = 1 := by
-        exact Matrix.det_isEmpty
-      have ideal_bot : SpecialLinearCoordinateRing.determinantOneIdeal K n = ⊥ := by
-        simp [SpecialLinearCoordinateRing.determinantOneIdeal, determinant_one]
-      exact Algebra.FormallySmooth.of_equiv
-        ((AlgEquiv.quotientBot K (GeneralLinearCoordinateRing.CoordinateRing K n)).symm.trans
-          (Ideal.quotientEquivAlgOfEq K ideal_bot.symm))
-    | inr nonemptyIndex =>
-      exact formallySmooth_of_retract K
-        (SpecialLinearCoordinateRing.quotient K n)
-        (specialLinearNormalizationSection K n (Classical.choice nonemptyIndex))
-        (specialLinearNormalizationSection_comp_quotient K n _)
-  finitePresentation := inferInstance
-
-set_option linter.style.haveILetI true
 
 /-- The finite GL structure morphism is smooth via mathlib's affine `Spec`
 smoothness criterion and the smooth coordinate algebra. -/
 instance generalLinearGroupUnderlyingScheme_smooth :
-    Smooth (generalLinearGroupUnderlyingScheme K n).hom := by
+    Smooth ((TauCeti.GeneralLinear.groupScheme K (Fintype.card n)).X).hom := by
   change Smooth (Spec.map (CommRingCat.ofHom
-    (algebraMap K (GeneralLinearCoordinateRing.CoordinateRing K n))))
+    (algebraMap K ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))))))
   rw [HasRingHomProperty.Spec_iff (P := @Smooth)]
   exact RingHom.smooth_algebraMap.mpr inferInstance
 
 /-- The finite SL structure morphism is smooth via mathlib's affine `Spec`
 smoothness criterion and the smooth coordinate algebra. -/
 instance specialLinearGroupUnderlyingScheme_smooth :
-    Smooth (specialLinearGroupUnderlyingScheme K n).hom := by
+    Smooth ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X).hom := by
   change Smooth (Spec.map (CommRingCat.ofHom
-    (algebraMap K (SpecialLinearCoordinateRing.CoordinateRing K n))))
+    (algebraMap K ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))))))
   rw [HasRingHomProperty.Spec_iff (P := @Smooth)]
   exact RingHom.smooth_algebraMap.mpr inferInstance
 

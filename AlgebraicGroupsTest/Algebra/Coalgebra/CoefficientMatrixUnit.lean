@@ -191,7 +191,7 @@ theorem integerWeightMatrixUnit_map_double :
         (MonoidAlgebra.mapDomainBialgHom ℕ (powMonoidHom (α := Multiplicative ℤ) 2))
   · rw [Units.coe_map]
     simp only [integerWeightMatrixUnit, coe_coefficientMatrixUnit,
-      RingHom.toMonoidHom_eq_coe, MonoidHom.coe_coe, RingHom.mapMatrix_apply,
+      RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, RingHom.mapMatrix_apply,
       AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, BialgHom.coe_toAlgHom]
     rw [integerWeightMatrix, Matrix.diagonal_map (map_zero _)]
     apply congrArg Matrix.diagonal
@@ -199,7 +199,7 @@ theorem integerWeightMatrixUnit_map_double :
     rw [doubleWeight_single]
     fin_cases i <;> rfl
   · rw [Units.coe_map_inv, integerWeightMatrixUnit_inv_eq]
-    simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_coe, RingHom.mapMatrix_apply,
+    simp only [RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass, RingHom.mapMatrix_apply,
       AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, BialgHom.coe_toAlgHom]
     rw [Matrix.diagonal_map (map_zero _)]
     apply congrArg Matrix.diagonal
@@ -410,7 +410,7 @@ theorem integerWeightMatrixUnit_map_counit :
     have hU : Units.map (RingHom.mapMatrix (m := Fin 2)
         f.toAlgHom.toRingHom).toMonoidHom integerWeightMatrixUnit = 1 := by
       apply Units.ext
-      simpa only [Units.coe_map, RingHom.toMonoidHom_eq_coe, MonoidHom.coe_coe,
+      simpa only [Units.coe_map, RingHom.toMonoidHom_eq_coe, MonoidHom.coe_ofClass,
         RingHom.mapMatrix_apply, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom,
         BialgHom.coe_toAlgHom, integerWeightMatrixUnit, coe_coefficientMatrixUnit,
         Units.val_one] using hM

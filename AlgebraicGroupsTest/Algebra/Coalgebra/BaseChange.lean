@@ -70,7 +70,8 @@ theorem three_idempotent : IsIdempotentElem (3 : ZMod 6) := by
   change (3 : ZMod 6) * 3 = 3
   decide
 
-noncomputable local instance :
+/-- The idempotent principal ideal coalgebra used in the scalar-extension examples. -/
+noncomputable local instance baseChangeThreeIdealCoalgebra :
     Coalgebra (ZMod 6) (Ideal.span ({3} : Set (ZMod 6))) := three_idempotent.coalgebraSpan
 
 /-- The counit ideal of the idempotent principal ideal coalgebra on `(3)` is `(3)`. -/
@@ -100,7 +101,8 @@ theorem three_counit_range_proper :
 
 section ModThree
 
-local instance : Algebra (ZMod 6) (ZMod 3) :=
+/-- Reduction modulo three, regarded as the coefficient algebra for base change. -/
+local instance baseChangeModThreeAlgebra : Algebra (ZMod 6) (ZMod 3) :=
   (ZMod.castHom (by decide : 3 ∣ 6) (ZMod 3)).toAlgebra
 
 /-- The projection to `ZMod 3` kills the counit ideal of the coalgebra on `(3)`. -/
@@ -118,7 +120,8 @@ end ModThree
 
 section ModTwo
 
-local instance : Algebra (ZMod 6) (ZMod 2) :=
+/-- Reduction modulo two, regarded as the coefficient algebra for base change. -/
+local instance baseChangeModTwoAlgebra : Algebra (ZMod 6) (ZMod 2) :=
   (ZMod.castHom (by decide : 2 ∣ 6) (ZMod 2)).toAlgebra
 
 /-- The projection to `ZMod 2` sends the counit ideal of the coalgebra on `(3)`

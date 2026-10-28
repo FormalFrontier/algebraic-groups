@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.PolynomialRationalPointHeight
+public import TauCeti.RingTheory.KrullDimension.FiniteType
 public import Mathlib.RingTheory.KrullDimension.Regular
 public import Mathlib.Data.ENat.Monoid
 public import AlgebraicGroups.GroupScheme.GeneralLinear
@@ -38,104 +38,66 @@ set_option warningAsError true
 
 noncomputable section
 
-open GeneralLinearCoordinateRing
+open TauCeti.GeneralLinear
 
 universe u
 
 namespace AlgebraicGeometry
 
-variable (K : Type u) [Field K] (n : Type u) [Fintype n] [DecidableEq n]
+variable (K : Type u) [Field K] (n : Type u) [Fintype n]
 
-omit [DecidableEq n] in
 private theorem dimension_polynomialRing :
-    ringKrullDim (GeneralLinearCoordinateRing.PolynomialRing K n) =
+    ringKrullDim ((TauCeti.MatrixMonoid.CoordinateRing K (Fintype.card n))) =
       ((Fintype.card n ^ 2 : ℕ) : WithBot ℕ∞) := by
   rw [MvPolynomial.ringKrullDim_of_isNoetherianRing_of_finite,
     ringKrullDim_eq_zero_of_field]
   simp [Nat.card_eq_fintype_card, Fintype.card_prod, pow_two]
 
 private theorem dimension_gl :
-    ringKrullDim (GeneralLinearCoordinateRing.CoordinateRing K n) =
+    ringKrullDim ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) =
       ((Fintype.card n ^ 2 : ℕ) : WithBot ℕ∞) := by
-  let R := GeneralLinearCoordinateRing.PolynomialRing K n
-  let determinant := GeneralLinearCoordinateRing.determinant K n
-  let identity : n × n → K := fun index => (1 : Matrix n n K) index.1 index.2
-  let q : Polynomial R := Polynomial.C determinant * Polynomial.X - 1
-  let evaluation := Polynomial.eval₂RingHom (MvPolynomial.eval identity) (1 : K)
-  let prime := RingHom.ker evaluation
-  have hmax : prime.IsMaximal :=
-    RingHom.ker_isMaximal_of_surjective _
-      (fun k => ⟨Polynomial.C (MvPolynomial.C k), by simp [evaluation]⟩)
-  have hover : prime.LiesOver (RingHom.ker (MvPolynomial.eval identity)) := by
-    constructor
-    ext p
-    simp [prime, evaluation, Ideal.under_def, Ideal.mem_comap, RingHom.mem_ker]
-  have hheight : (prime.height : WithBot ℕ∞) = ringKrullDim (Polynomial R) := by
-    have h : prime.height =
-        (RingHom.ker (MvPolynomial.eval identity)).height + 1 :=
-      @Polynomial.height_eq_height_add_one _ _ _ _ _ hmax hover
-    rw [h, MvPolynomial.height_ker_eval, Polynomial.ringKrullDim_of_isNoetherianRing,
-      dimension_polynomialRing]
-    simp [Fintype.card_prod, pow_two]
-  have det_identity : MvPolynomial.eval identity determinant = 1 := by
-    change (MvPolynomial.eval identity) ((Matrix.mvPolynomialX n n K).det) = 1
-    rw [Matrix.eval_det_mvPolynomialX]
-    change (1 : Matrix n n K).det = 1
-    exact Matrix.det_one
-  have hmem : q ∈ prime := by
-    change evaluation q = 0
-    simp [q, evaluation, det_identity]
-  have hne : q ≠ 0 := by
-    intro h
-    have hh := congrArg (Polynomial.eval₂ (MvPolynomial.eval identity) (0 : K)) h
-    simp [q, Polynomial.eval₂_sub] at hh
-  have hreg : q ∈ nonZeroDivisors (Polynomial R) :=
-    mem_nonZeroDivisors_iff_ne_zero.mpr hne
-  have hquot : ringKrullDim (Polynomial R ⧸ Ideal.span {q}) + 1 =
-      ringKrullDim (Polynomial R) := by
-    exact @Module.ringKrullDim_quotient_add_one_of_mem_nonZeroDivisors
-      _ _ _ _ hreg _ hmax.isPrime hheight hmem
-  have hdim : ringKrullDim (Polynomial R ⧸ Ideal.span {q}) =
-      ((Fintype.card n ^ 2 : ℕ) : WithBot ℕ∞) := by
-    apply (ENat.WithBot.add_one_cancel).mp
-    rw [hquot, Polynomial.ringKrullDim_of_isNoetherianRing, dimension_polynomialRing]
-  calc
-    ringKrullDim (GeneralLinearCoordinateRing.CoordinateRing K n) =
-        ringKrullDim (AdjoinRoot q) :=
-      ringKrullDim_eq_of_ringEquiv (GeneralLinearCoordinateRing.quotientEquiv K n).toRingEquiv
-    _ = ringKrullDim (Polynomial R ⧸ Ideal.span {q}) := rfl
-    _ = _ := hdim
+  rw [← ringKrullDim_eq_of_ringEquiv
+    (TauCeti.GeneralLinear.coordinateHopfAlgebraAlgEquiv K (Fintype.card n)).toRingEquiv]
+  change ringKrullDim (Localization.Away (Matrix.det
+    (Matrix.mvPolynomialX (Fin (Fintype.card n)) (Fin (Fintype.card n)) K))) = _
+  rw [TauCeti.ringKrullDim_localization_away K
+    (Matrix.det_mvPolynomialX_ne_zero (Fin (Fintype.card n)) K)]
+  exact dimension_polynomialRing K n
 
 private theorem dimension_sl_positive (hpos : 0 < Fintype.card n) :
-    ringKrullDim (SpecialLinearCoordinateRing.CoordinateRing K n) =
+    ringKrullDim ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) =
       ((Fintype.card n ^ 2 - 1 : ℕ) : WithBot ℕ∞) := by
-  let R := GeneralLinearCoordinateRing.PolynomialRing K n
-  let determinant := GeneralLinearCoordinateRing.determinant K n
-  let identity : n × n → K := fun index => (1 : Matrix n n K) index.1 index.2
+  let R := (TauCeti.MatrixMonoid.CoordinateRing K (Fintype.card n))
+  let determinant := (Matrix.mvPolynomialX (Fin (Fintype.card n)) (Fin (Fintype.card n)) K).det
+  let identity : Fin (Fintype.card n) × Fin (Fintype.card n) → K :=
+    fun index => (1 : Matrix (Fin (Fintype.card n)) (Fin (Fintype.card n)) K) index.1 index.2
   let relation : R := determinant - 1
   let prime := RingHom.ker (MvPolynomial.eval identity)
   have hmax : prime.IsMaximal := RingHom.ker_isMaximal_of_surjective _
     (fun k => ⟨MvPolynomial.C k, MvPolynomial.eval_C k⟩)
   have hheight : (prime.height : WithBot ℕ∞) = ringKrullDim R := by
-    rw [MvPolynomial.height_ker_eval, dimension_polynomialRing]
+    have := hmax
+    rw [MvPolynomial.height_eq_natCard_of_isMaximal prime, dimension_polynomialRing]
     simp [Fintype.card_prod, pow_two]
   have det_identity : MvPolynomial.eval identity determinant = 1 := by
-    change (MvPolynomial.eval identity) ((Matrix.mvPolynomialX n n K).det) = 1
+    change (MvPolynomial.eval identity)
+      ((Matrix.mvPolynomialX (Fin (Fintype.card n)) (Fin (Fintype.card n)) K).det) = 1
     rw [Matrix.eval_det_mvPolynomialX]
-    change (1 : Matrix n n K).det = 1
+    change (1 : Matrix (Fin (Fintype.card n)) (Fin (Fintype.card n)) K).det = 1
     exact Matrix.det_one
   have hmem : relation ∈ prime := by
     change MvPolynomial.eval identity relation = 0
     simp [relation, det_identity]
   have hne : relation ≠ 0 := by
-    have hn : Nonempty n := Fintype.card_pos_iff.mp hpos
+    have hn : Nonempty (Fin (Fintype.card n)) := Fin.pos_iff_nonempty.mp hpos
     intro h
     have hh := congrArg (MvPolynomial.eval (fun _ => (0 : K))) h
-    have det_zero : MvPolynomial.eval (fun _ : n × n => (0 : K)) determinant = 0 := by
-      change (MvPolynomial.eval (fun _ : n × n => (0 : K)))
-        ((Matrix.mvPolynomialX n n K).det) = 0
+    have det_zero : MvPolynomial.eval
+        (fun _ : Fin (Fintype.card n) × Fin (Fintype.card n) => (0 : K)) determinant = 0 := by
+      change (MvPolynomial.eval (fun _ : Fin (Fintype.card n) × Fin (Fintype.card n) => (0 : K)))
+        ((Matrix.mvPolynomialX (Fin (Fintype.card n)) (Fin (Fintype.card n)) K).det) = 0
       rw [Matrix.eval_det_mvPolynomialX]
-      change (0 : Matrix n n K).det = 0
+      change (0 : Matrix (Fin (Fintype.card n)) (Fin (Fintype.card n)) K).det = 0
       exact Matrix.det_zero
     have hzeroCoeff : MvPolynomial.constantCoeff determinant = 0 := by
       simpa only [MvPolynomial.eval_zero'] using det_zero
@@ -159,7 +121,7 @@ private theorem dimension_sl_positive (hpos : 0 < Fintype.card n) :
       _ = ((Fintype.card n ^ 2 - 1 : ℕ) : WithBot ℕ∞) + 1 := by
         simp only [Nat.cast_add, Nat.cast_one]
   calc
-    ringKrullDim (SpecialLinearCoordinateRing.CoordinateRing K n) =
+    ringKrullDim ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) =
         ringKrullDim (SpecialLinearCoordinateRing.PolynomialCoordinateRing K n) :=
       (ringKrullDim_eq_of_ringEquiv
         (SpecialLinearCoordinateRing.polynomialEquiv K n).toRingEquiv).symm
@@ -167,16 +129,17 @@ private theorem dimension_sl_positive (hpos : 0 < Fintype.card n) :
     _ = _ := hdim
 
 private theorem dimension_sl_empty (hzero : Fintype.card n = 0) :
-    ringKrullDim (SpecialLinearCoordinateRing.CoordinateRing K n) =
+    ringKrullDim ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) =
       ((Fintype.card n ^ 2 - 1 : ℕ) : WithBot ℕ∞) := by
-  have hn : IsEmpty n := Fintype.card_eq_zero_iff.mp hzero
-  let R := GeneralLinearCoordinateRing.PolynomialRing K n
-  have hdet : GeneralLinearCoordinateRing.determinant K n - 1 = 0 := by
-    simp [GeneralLinearCoordinateRing.determinant, Matrix.det_isEmpty]
+  have hn : IsEmpty (Fin (Fintype.card n)) := by rw [hzero]; infer_instance
+  let R := (TauCeti.MatrixMonoid.CoordinateRing K (Fintype.card n))
+  have hdet : (Matrix.mvPolynomialX (Fin (Fintype.card n)) (Fin (Fintype.card n)) K).det - 1 = 0 :=
+      by
+    simp [Matrix.det_isEmpty]
   have hideal : SpecialLinearCoordinateRing.polynomialIdeal K n = ⊥ := by
-    simp [SpecialLinearCoordinateRing.polynomialIdeal, hdet]
+    simp [SpecialLinearCoordinateRing.polynomialIdeal]
   calc
-    ringKrullDim (SpecialLinearCoordinateRing.CoordinateRing K n) =
+    ringKrullDim ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) =
         ringKrullDim (SpecialLinearCoordinateRing.PolynomialCoordinateRing K n) :=
       (ringKrullDim_eq_of_ringEquiv
         (SpecialLinearCoordinateRing.polynomialEquiv K n).toRingEquiv).symm
@@ -193,7 +156,7 @@ field, including finite fields and rank zero. This extends the finite `GL`
 presentation in Milne, *Algebraic Groups*, §2.8; the proof uses mathlib's
 polynomial evaluation heights and a regular-hypersurface quotient. -/
 theorem generalLinearCoordinateRing_ringKrullDim :
-    ringKrullDim (GeneralLinearCoordinateRing.CoordinateRing K n) =
+    ringKrullDim ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) =
       ((Fintype.card n ^ 2 : ℕ) : WithBot ℕ∞) :=
   dimension_gl K n
 
@@ -203,7 +166,7 @@ of Affine Group Schemes*, XI §16, Example 16.3 gives the positive-rank field
 dimension; the proof here uses mathlib's hypersurface theorem and treats rank
 zero separately. -/
 theorem specialLinearCoordinateRing_ringKrullDim :
-    ringKrullDim (SpecialLinearCoordinateRing.CoordinateRing K n) =
+    ringKrullDim ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) =
       ((Fintype.card n ^ 2 - 1 : ℕ) : WithBot ℕ∞) := by
   by_cases hzero : Fintype.card n = 0
   · exact dimension_sl_empty K n hzero
@@ -212,9 +175,11 @@ theorem specialLinearCoordinateRing_ringKrullDim :
 /-- The underlying affine scheme of `GL(n)` has dimension `card(n)²`, by the
 coordinate-ring calculation and mathlib's prime-spectrum dimension bridge. -/
 theorem generalLinearGroupUnderlyingScheme_topologicalKrullDim :
-    topologicalKrullDim (generalLinearGroupUnderlyingScheme K n).left =
+    topologicalKrullDim ((TauCeti.GeneralLinear.groupScheme K (Fintype.card n)).X).left =
       ((Fintype.card n ^ 2 : ℕ) : WithBot ℕ∞) := by
-  change topologicalKrullDim (PrimeSpectrum (GeneralLinearCoordinateRing.CoordinateRing K n)) = _
+  rw [TauCeti.GeneralLinear.groupScheme_X_left]
+  change topologicalKrullDim
+    (PrimeSpectrum ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)))) = _
   rw [PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim]
   exact generalLinearCoordinateRing_ringKrullDim K n
 
@@ -222,9 +187,11 @@ theorem generalLinearGroupUnderlyingScheme_topologicalKrullDim :
 with natural subtraction, by the coordinate-ring calculation and mathlib's
 prime-spectrum dimension bridge. -/
 theorem specialLinearGroupUnderlyingScheme_topologicalKrullDim :
-    topologicalKrullDim (specialLinearGroupUnderlyingScheme K n).left =
+    topologicalKrullDim ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X).left =
       ((Fintype.card n ^ 2 - 1 : ℕ) : WithBot ℕ∞) := by
-  change topologicalKrullDim (PrimeSpectrum (SpecialLinearCoordinateRing.CoordinateRing K n)) = _
+  rw [TauCeti.SpecialLinear.groupScheme_X_left]
+  change topologicalKrullDim
+    (PrimeSpectrum ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)))) = _
   rw [PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim]
   exact specialLinearCoordinateRing_ringKrullDim K n
 

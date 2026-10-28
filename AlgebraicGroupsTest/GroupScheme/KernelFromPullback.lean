@@ -275,22 +275,21 @@ example (H : Over S) [MonObj H] {N : Scheme.{u}} (p i : N ⟶ S)
 
 section IntegerDiagonal
 
+open TauCeti.SplitTorus
+
 private abbrev integerKernelBase : Scheme := Spec (.of ℤ)
 private abbrev integerKernelDomain : Over integerKernelBase :=
   integerKernelBase.asOver integerKernelBase
-private abbrev integerKernelSource := diagonalGroupScheme ℤ (Fin 2)
-private abbrev integerKernelTarget := (multiplicativeGroupScheme ℤ).toMon
+private abbrev integerKernelSource := groupScheme ℤ (Fin 2)
+private abbrev integerKernelTarget :=
+  (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).toMon
 
-local instance : GrpObj (diagonalGroupScheme ℤ (Fin 2)).X :=
-  (diagonalGroupScheme ℤ (Fin 2)).grp
-local instance : MonObj (multiplicativeGroupScheme ℤ).toMon.X :=
-  (multiplicativeGroupScheme ℤ).toMon.mon
 
 private abbrev integerKernelMap : integerKernelSource.X ⟶ integerKernelTarget.X :=
-  (diagonalGroupProjection ℤ (Fin 2) (0 : Fin 2)).hom.hom
+  (characterGroupSchemeMap (R := ℤ) (Finsupp.single (0 : Fin 2) 1)).hom.hom
 
 private theorem integerKernelMap_isMonHom : IsMonHom integerKernelMap :=
-  (diagonalGroupProjection ℤ (Fin 2) (0 : Fin 2)).hom.isMonHom_hom
+  (characterGroupSchemeMap (R := ℤ) (Finsupp.single (0 : Fin 2) 1)).hom.isMonHom_hom
 
 attribute [local instance] integerKernelMap_isMonHom
 
@@ -324,27 +323,27 @@ attribute [local instance] integerKernelInclusion_isMonHom
 private abbrev integerKernelPositive : integerKernelDomain ⟶ integerKernelOver :=
   Over.homMk
     (pullback.lift
-      (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1)).left
+      ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1)).left
       (𝟙 _) diagonalGroup_integerPoints_squares.1)
     (by exact (pullback.lift_snd _ _ _).trans integerSpec_asOver_hom.symm)
 
 private abbrev integerKernelNegative : integerKernelDomain ⟶ integerKernelOver :=
   Over.homMk
     (pullback.lift
-      (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+      ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
         (fun k => if k = 0 then 1 else -1)).left
       (𝟙 _) diagonalGroup_integerPoints_squares.2)
     (by exact (pullback.lift_snd _ _ _).trans integerSpec_asOver_hom.symm)
 
 private lemma integerKernelPositive_comp :
     integerKernelPositive ≫ integerKernelInclusion =
-      diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1) := by
+      (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1) := by
   apply Over.OverMorphism.ext
   exact pullback.lift_fst _ _ _
 
 private lemma integerKernelNegative_comp :
     integerKernelNegative ≫ integerKernelInclusion =
-      diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+      (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
         (fun k => if k = 0 then 1 else -1) := by
   apply Over.OverMorphism.ext
   exact pullback.lift_fst _ _ _
@@ -373,14 +372,14 @@ example : integerKernelPositive ≠ integerKernelNegative ∧
 
 -- Multiplication uses the stored monoid and its original monoid-hom projection.
 example : (integerKernelPositive * integerKernelNegative) ≫ integerKernelInclusion =
-    (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1)) *
-      (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+    ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1)) *
+      ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
         (fun k => if k = 0 then 1 else -1)) := by
   rw [MonObj.mul_comp, integerKernelPositive_comp, integerKernelNegative_comp]
 
 -- The produced inverse is consumed on the negative integer point, not assumed on the apex.
 example : integerKernelNegative⁻¹ ≫ integerKernelInclusion =
-    (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+    ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
       (fun k => if k = 0 then 1 else -1))⁻¹ := by
   calc
     integerKernelNegative⁻¹ ≫ integerKernelInclusion =
@@ -390,7 +389,7 @@ example : integerKernelNegative⁻¹ ≫ integerKernelInclusion =
       rw [Hom.inv_def, Category.assoc]
     _ = integerKernelNegative ≫ (integerKernelInclusion ≫ ι[integerKernelSource.X]) := by
       rw [kernel_inverse_comp]
-    _ = (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+    _ = ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
         (fun k => if k = 0 then 1 else -1))⁻¹ := by
       rw [← Category.assoc, integerKernelNegative_comp, Hom.inv_def]
 

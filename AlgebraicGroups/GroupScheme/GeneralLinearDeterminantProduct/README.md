@@ -5,8 +5,8 @@ For any commutative ring `K`, finite decidable index type `n`, and explicit
 isomorphism in `Over (Spec (.of K))`:
 
 ```
-specialLinearGroupUnderlyingScheme K n ⊗ multiplicativeGroupUnderlyingScheme K
-  ≅ generalLinearGroupUnderlyingScheme K n
+(TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X ⊗ (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X
+  ≅ (TauCeti.GeneralLinear.groupScheme K (Fintype.card n)).X
 ```
 
 Its forward map is `(s,t) ↦ diagonalSection(t) * inclusion(s)`. Its inverse is

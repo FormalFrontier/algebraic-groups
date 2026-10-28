@@ -22,11 +22,12 @@ variable (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
   (ι : Type u) [Fintype ι] [LinearOrder ι]
 
 example : baseChange R R ι =
-    Algebra.TensorProduct.lid R (CoordinateRing R ι) :=
+    Algebra.TensorProduct.lid R (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι) :=
   baseChange_self R ι
 
 example :
-    (Algebra.TensorProduct.cancelBaseChange R S T T (CoordinateRing R ι)).trans
+    (Algebra.TensorProduct.cancelBaseChange R S T T
+      (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)).trans
         (baseChange R T ι) =
       (Algebra.TensorProduct.congr
           (AlgEquiv.refl : T ≃ₐ[T] T)
@@ -36,16 +37,16 @@ example :
 
 example : baseChange (ZMod 1) (ZMod 1) (Fin 0) =
     Algebra.TensorProduct.lid (ZMod 1)
-      (CoordinateRing (ZMod 1) (Fin 0)) :=
+      (TauCeti.UpperUnitriangular.coordinateHopfAlgebra (ZMod 1) (Fin 0)) :=
   baseChange_self (ZMod 1) (Fin 0)
 
 example : baseChange ℤ ℤ (Fin 1) =
-    Algebra.TensorProduct.lid ℤ (CoordinateRing ℤ (Fin 1)) :=
+    Algebra.TensorProduct.lid ℤ (TauCeti.UpperUnitriangular.coordinateHopfAlgebra ℤ (Fin 1)) :=
   baseChange_self ℤ (Fin 1)
 
 example :
     (Algebra.TensorProduct.cancelBaseChange ℤ (ZMod 1) (ZMod 1)
-      (ZMod 1) (CoordinateRing ℤ (Fin 1))).trans
+      (ZMod 1) (TauCeti.UpperUnitriangular.coordinateHopfAlgebra ℤ (Fin 1))).trans
         (baseChange ℤ (ZMod 1) (Fin 1)) =
       (Algebra.TensorProduct.congr
           (AlgEquiv.refl : ZMod 1 ≃ₐ[ZMod 1] ZMod 1)
@@ -55,7 +56,7 @@ example :
 
 example :
     (Algebra.TensorProduct.cancelBaseChange ℤ ℚ ℚ ℚ
-      (CoordinateRing ℤ (Fin 2))).trans
+      (TauCeti.UpperUnitriangular.coordinateHopfAlgebra ℤ (Fin 2))).trans
         (baseChange ℤ ℚ (Fin 2)) =
       (Algebra.TensorProduct.congr
           (AlgEquiv.refl : ℚ ≃ₐ[ℚ] ℚ)

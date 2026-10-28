@@ -28,7 +28,7 @@ example (s : SurvivingPair n r) :
       quotient K n r (entry K n s.1.1.1 s.1.1.2) :=
   polynomialEquiv_symm_X K n r s
 
-example (p : UnitriangularCoordinateRing.StrictUpperPair (Fin n))
+example (p : TauCeti.UpperUnitriangular.Index (Fin n))
     (hgap : p.1.2.val < p.1.1.val + r) :
     polynomialEquiv K n r
       (quotient K n r (entry K n p.1.1 p.1.2)) = 0 :=

@@ -159,7 +159,7 @@ a supplied lift already have points, nor supply the scalar-extension or
 existence arguments of that proposition. -/
 theorem isPullback_kernel_mulRight [MonObj Q] (i : N ⟶ G) (q : G ⟶ Q) [IsMonHom q]
     (hN : IsPullback i (toUnit N) q η[Q]) (g : 𝟙_ C ⟶ G) :
-    IsPullback (i ≫ (GrpObj.mulRight g).hom) (toUnit N) q (g ≫ q) := by
+    IsPullback (i ≫ (TauCeti.rightTranslation g).hom) (toUnit N) q (g ≫ q) := by
   have hdiff (s : PullbackCone q (g ≫ q)) :
       (s.fst * (s.snd ≫ g)⁻¹) ≫ q = toUnit s.pt ≫ η[Q] := by
     calc
@@ -178,10 +178,10 @@ theorem isPullback_kernel_mulRight [MonObj Q] (i : N ⟶ G) (q : G ⟶ Q) [IsMon
   refine
     { w := ?_
       isLimit' := ⟨PullbackCone.IsLimit.mk _ kernelLift ?_ ?_ ?_⟩ }
-  · rw [comp_mulRight_hom, MonObj.mul_comp, hN.w]
+  · rw [TauCeti.comp_rightTranslation_hom, MonObj.mul_comp, hN.w]
     simp only [← Hom.one_def, _root_.one_mul, Category.assoc]
   · intro s
-    rw [← Category.assoc, comp_mulRight_hom, kernelLift_i,
+    rw [← Category.assoc, TauCeti.comp_rightTranslation_hom, kernelLift_i,
       toUnit_unique (toUnit s.pt) s.snd]
     exact inv_mul_cancel_right _ _
   · intro s
@@ -189,7 +189,7 @@ theorem isPullback_kernel_mulRight [MonObj Q] (i : N ⟶ G) (q : G ⟶ Q) [IsMon
   · intro s m hm₁ hm₂
     apply hN.hom_ext
     · rw [kernelLift_i]
-      rw [← Category.assoc, comp_mulRight_hom,
+      rw [← Category.assoc, TauCeti.comp_rightTranslation_hom,
         toUnit_unique (toUnit s.pt) s.snd] at hm₁
       exact (eq_mul_inv_iff_mul_eq).2 hm₁
     · rw [hm₂]

@@ -35,6 +35,8 @@ examples reuse the public idempotent-ideal and group-like equivalence APIs.
 
 @[expose] public section
 
+
+
 open scoped TensorProduct
 
 universe u v
@@ -182,7 +184,7 @@ theorem zero_comul_identity (e : B →ₗ[R] R) (he : Function.Injective e) :
     CoalgHomClass.injective_of_counit_injective (R := R) g hε
   have hbot : LinearMap.ker e = ⊥ := by
     rw [← hker]
-    simp only [g, CoalgHom.toLinearMap_eq_coe, CoalgHom.id_toLinearMap, LinearMap.ker_id]
+    simp only [g, CoalgHom.toLinearMap_eq_ofClass, CoalgHom.id_toLinearMap, LinearMap.ker_id]
   exact ⟨hker, hbot, hg, hiff⟩
 
 /-- The chosen zero-comultiplication data fail the left counit law on a
@@ -203,9 +205,7 @@ end ZeroComultiplication
 
 section IdempotentIdeal
 
-noncomputable local instance :
-    Coalgebra (ZMod 6) (Ideal.span ({(3 : ZMod 6)} : Set (ZMod 6))) :=
-  CoalgebraExamples.zmodSixIdealCoalgebra
+attribute [local instance] CoalgebraExamples.zmodSixIdealCoalgebra
 
 /-- The identity on the projective, nonfree idempotent ideal `(3)` in `ZMod 6`
 is injective. Its counit is injective with zero kernel but has proper image. -/

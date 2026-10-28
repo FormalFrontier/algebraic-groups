@@ -4,7 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.GroupScheme.Unitriangular
+public import TauCeti.Algebra.AlgebraicGroup.UpperUnitriangular.Scheme
+public import TauCeti.Algebra.AlgebraicGroup.CommHopfAlgCat.SchemePoints
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.GroupTheory.Exponent
@@ -13,7 +14,7 @@ public import Mathlib.GroupTheory.Exponent
 # Prime-power exponents of upper-unitriangular matrix groups
 
 The exponent bound and its sharpness concern the native group
-`Matrix.UnitriangularGroup (Fin n) R`, over a commutative ring.
+`TauCeti.upperUnitriangularGroup (Fin n) R`, over a commutative ring.
 The bound uses Cayley–Hamilton for strictly upper-triangular matrices and a
 commuting prime-power identity; sharpness uses a consecutive superdiagonal
 shift. Neither conclusion is a group-scheme exponent statement.
@@ -46,7 +47,9 @@ theorem pow_card_eq_zero_of_upperTriangular_diag_zero
     simp [hdiag]
   simpa [hpoly] using N.aeval_self_charpoly
 
-namespace UnitriangularGroup
+end Matrix
+
+namespace TauCeti.UpperUnitriangularGroup
 
 /-- The consecutive superdiagonal shift, used for the sharpness witness. -/
 private def shift (n : ℕ) (R : Type) [CommRing R] :
@@ -101,12 +104,12 @@ bounded by the first power of `p` at least its dimension. The proof combines
 Cayley–Hamilton with Mathlib's `Commute.add_pow_prime_pow_eq'`. -/
 theorem pow_prime_pow_eq_one {n p t : ℕ} {R : Type} [CommRing R]
     (hp : Nat.Prime p) (hchar : (p : R) = 0) (hn : n ≤ p ^ t)
-    (g : Matrix.UnitriangularGroup (Fin n) R) : g ^ (p ^ t) = 1 := by
+    (g : TauCeti.upperUnitriangularGroup (Fin n) R) : g ^ (p ^ t) = 1 := by
   classical
   let A : Matrix (Fin n) (Fin n) R := g.1
   let N : Matrix (Fin n) (Fin n) R := A - 1
-  have hupper : A.IsUpperTriangular := g.2.1
-  have hdiag : ∀ i, A i i = 1 := g.2.2
+  have hupper : A.IsUpperTriangular := isUpperTriangular g
+  have hdiag : ∀ i, A i i = 1 := apply_diag g
   have hNupper : N.IsUpperTriangular := hupper.sub Matrix.blockTriangular_one
   have hNdiag : ∀ i, N i i = 0 := by
     intro i
@@ -129,7 +132,7 @@ theorem pow_prime_pow_eq_one {n p t : ℕ} {R : Type} [CommRing R]
 upper-unitriangular matrix has a nontrivial power of that length. -/
 theorem exists_pow_ne_one_of_pos_lt {n : ℕ} {R : Type} [CommRing R] [Nontrivial R]
     {q : ℕ} (hq : 0 < q) (hqn : q < n) :
-    ∃ g : Matrix.UnitriangularGroup (Fin n) R, g ^ q ≠ 1 := by
+    ∃ g : TauCeti.upperUnitriangularGroup (Fin n) R, g ^ q ≠ 1 := by
   classical
   let J := shift n R
   let U : Matrix (Fin n) (Fin n) R := 1 + J
@@ -147,8 +150,9 @@ theorem exists_pow_ne_one_of_pos_lt {n : ℕ} {R : Type} [CommRing R] [Nontrivia
   have hdet : IsUnit U.det := by
     rw [Matrix.det_of_isUpperTriangular hUupper]
     simp [hUdiag]
-  let g : Matrix.UnitriangularGroup (Fin n) R :=
+  let g : TauCeti.upperUnitriangularGroup (Fin n) R :=
     ⟨Matrix.GeneralLinearGroup.mk'' U hdet, by
+      rw [mem_iff, Matrix.isUpperUnitriangular_def]
       exact ⟨hUupper, hUdiag⟩⟩
   let first : Fin n := ⟨0, by omega⟩
   let last : Fin n := ⟨q, hqn⟩
@@ -169,7 +173,7 @@ theorem exists_pow_ne_one_of_pos_lt {n : ℕ} {R : Type} [CommRing R] [Nontrivia
   have hmatrix : (g.1 : Matrix (Fin n) (Fin n) R) = U := by simp [g]
   have hpower : ((g.1 : Matrix (Fin n) (Fin n) R) ^ q) first last =
       (1 : Matrix (Fin n) (Fin n) R) first last := by
-    have heq := congrArg (fun x : Matrix.UnitriangularGroup (Fin n) R =>
+    have heq := congrArg (fun x : TauCeti.upperUnitriangularGroup (Fin n) R =>
       ((x.1 : Matrix (Fin n) (Fin n) R) first last)) hg
     simpa only [Subgroup.coe_pow, Subgroup.coe_one, Units.val_pow_eq_pow_val,
       Matrix.GeneralLinearGroup.coe_one] using heq
@@ -188,7 +192,7 @@ commutative coefficient rings. The consecutive-superdiagonal shift gives a
 witness to nontriviality below the dimension threshold. -/
 theorem forall_pow_prime_pow_eq_one_iff {n p t : ℕ} {R : Type}
     [CommRing R] [Nontrivial R] (hp : Nat.Prime p) (hchar : (p : R) = 0) :
-    (∀ g : Matrix.UnitriangularGroup (Fin n) R, g ^ (p ^ t) = 1) ↔ n ≤ p ^ t := by
+    (∀ g : TauCeti.upperUnitriangularGroup (Fin n) R, g ^ (p ^ t) = 1) ↔ n ≤ p ^ t := by
   constructor
   · intro hall
     by_contra hn
@@ -203,10 +207,8 @@ dimension threshold (with exponent `1` for the trivial group). This uses
 Mathlib's `Monoid.exponent_dvd_iff_forall_pow_eq_one`. -/
 theorem exponent_dvd_prime_pow_iff {n p t : ℕ} {R : Type}
     [CommRing R] [Nontrivial R] (hp : Nat.Prime p) (hchar : (p : R) = 0) :
-    (Monoid.exponent (Matrix.UnitriangularGroup (Fin n) R) ∣ p ^ t) ↔ n ≤ p ^ t := by
+    (Monoid.exponent (TauCeti.upperUnitriangularGroup (Fin n) R) ∣ p ^ t) ↔ n ≤ p ^ t := by
   exact (Monoid.exponent_dvd_iff_forall_pow_eq_one).trans
     (forall_pow_prime_pow_eq_one_iff hp hchar)
 
-end UnitriangularGroup
-
-end Matrix
+end TauCeti.UpperUnitriangularGroup

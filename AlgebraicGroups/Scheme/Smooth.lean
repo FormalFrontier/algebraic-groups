@@ -4,9 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.Smooth
+public import TauCeti.RingTheory.Smooth.GeometricallyReduced
 public import Mathlib.AlgebraicGeometry.Geometrically.Reduced
-public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
+public import TauCeti.AlgebraicGeometry.Morphisms.Smooth.GeometricallyReduced
 
 /-!
 # Geometric reducedness of smooth morphisms
@@ -56,19 +56,8 @@ theorem Smooth.isReduced_of_isDomain
   have hSmooth : @Algebra.Smooth R _ Γ(X.affineCover.X i, ⊤) _ φ.toAlgebra :=
     hφ.toAlgebra
   have hReduced : _root_.IsReduced Γ(X.affineCover.X i, ⊤) :=
-    @Algebra.Smooth.isReduced_of_isDomain R Γ(X.affineCover.X i, ⊤)
+    @TauCeti.isReduced_of_smooth R Γ(X.affineCover.X i, ⊤)
       _ _ _ φ.toAlgebra hSmooth
   exact @isReduced_of_isAffine_isReduced _ inferInstance hReduced
-
-/-- Every smooth morphism of schemes is geometrically reduced. In particular, this supplies
-the smooth-to-geometrically-reduced implication for the algebraic groups in Milne,
-*Algebraic Groups*, Proposition 1.26; the theorem applies to arbitrary base schemes. -/
-instance (priority := low) Smooth.geometricallyReduced {X Y : Scheme.{u}} (f : X ⟶ Y)
-    [Smooth f] : GeometricallyReduced f := by
-  constructor
-  intro K _ y Z fst snd h
-  have hsnd : Smooth snd :=
-    MorphismProperty.IsStableUnderBaseChange.of_isPullback h inferInstance
-  exact @Smooth.isReduced_of_isDomain _ _ _ snd hsnd
 
 end AlgebraicGeometry

@@ -62,11 +62,11 @@ implementation.
 
 ## Focused reproduction
 
-With the repository-pinned Lean `v4.34.0-rc2` and mathlib
+With the repository-pinned Lean `v4.36.0-rc1` and mathlib
 `83abb3e776bdefcbc447a1e44d0debe4010039e5`:
 
 ```sh
-elan toolchain install leanprover/lean4:v4.34.0-rc2
+elan toolchain install leanprover/lean4:v4.36.0-rc1
 lake exe cache get
 lake build AlgebraicGroups.GroupObject.SplitKernelProduct AlgebraicGroupsTest.SplitKernelProduct
 ```

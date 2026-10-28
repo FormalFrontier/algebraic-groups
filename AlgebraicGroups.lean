@@ -4,6 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import TauCeti.Algebra.AlgebraicGroup.SplitTorus.Scheme
+public import TauCeti.Algebra.AlgebraicGroup.GeneralLinear.UpperTriangular.Basic
+
 public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
 public import AlgebraicGroups.Algebra.Bialgebra.GroupLikeTensorProduct
 public import AlgebraicGroups.Algebra.Bialgebra.MonoidAlgebra
@@ -27,7 +30,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCardinality
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoefficients
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoordinates
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
-public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
+public import TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike
 public import AlgebraicGroups.Algebra.Coalgebra.IdempotentIdeal
 public import AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Coalgebra.Quotient
@@ -40,18 +43,18 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport
 public import AlgebraicGroups.Algebra.Coalgebra.SkewPrimitive
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProduct
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
-public import AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension
+public import TauCeti.RingTheory.KrullDimension.FiniteType
 public import AlgebraicGroups.Algebra.GeneralLinearCoordinateRing.Dimension
 public import AlgebraicGroups.Algebra.TensorProduct.Pi
 public import AlgebraicGroups.Algebra.TensorProduct.Split
-public import AlgebraicGroups.Algebra.Smooth
-public import AlgebraicGroups.Algebra.SymmetricAlgebra
-public import AlgebraicGroups.Algebra.SymmetricAlgebraPoints
+public import TauCeti.RingTheory.Smooth.GeometricallyReduced
+public import TauCeti.Algebra.HopfAlgebra.SymmetricAlgebra.Basic
+public import TauCeti.Algebra.AlgebraicGroup.AdditiveGroup.Basic
 public import AlgebraicGroups.Algebra.HopfAlgebra.Hom
 public import AlgebraicGroups.Algebra.HopfAlgebra.Ideal
 public import AlgebraicGroups.Algebra.PrimitivePowerHopfIdeal
 public import AlgebraicGroups.Algebra.SpecialLinearCoordinateRing
-public import AlgebraicGroups.Algebra.UnitriangularCoordinateRing
+public import TauCeti.Algebra.AlgebraicGroup.UpperUnitriangular.Coordinate.HopfAlgebra
 public import AlgebraicGroups.Algebra.UnitriangularStageCoordinateRing
 public import AlgebraicGroups.Algebra.UnitriangularStagePolynomial
 public import AlgebraicGroups.Algebra.UnitriangularBaseChange
@@ -106,10 +109,9 @@ public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLine
 public import AlgebraicGroups.GroupScheme.FrobeniusTwistedLineBaseChange
 public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import AlgebraicGroups.GroupScheme.GeometricallyIntegral
-public import AlgebraicGroups.GroupScheme.Diagonal
 public import AlgebraicGroups.GroupScheme.DiagonalDimension
 public import AlgebraicGroups.GroupScheme.DiagonalProduct
-public import AlgebraicGroups.GroupScheme.Unitriangular
+public import TauCeti.Algebra.AlgebraicGroup.UpperUnitriangular.Scheme
 public import AlgebraicGroups.GroupScheme.UnitriangularGeometry
 public import AlgebraicGroups.GroupScheme.UnitriangularStages
 public import AlgebraicGroups.GroupScheme.UnitriangularStageAffineSpace
@@ -122,7 +124,6 @@ public import AlgebraicGroups.GroupScheme.UnitriangularStageProjectionBridge
 public import AlgebraicGroups.GroupScheme.UnitriangularBaseChange
 public import AlgebraicGroups.GroupScheme.UnitriangularBaseChangeCoherence
 public import AlgebraicGroups.GroupTheory.UpperTriangular
-public import AlgebraicGroups.GroupScheme.UpperTriangular
 public import AlgebraicGroups.GroupScheme.UpperTriangularDimension
 public import AlgebraicGroups.GroupScheme.UpperTriangularSplitKernel
 public import AlgebraicGroups.GroupScheme.UpperTriangularSchemeProduct
@@ -182,7 +183,7 @@ public import AlgebraicGroups.Scheme.Smooth
 public import AlgebraicGroups.Topology.KrullDimension
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map
-public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finite
+public import TauCeti.Algebra.Coalgebra.Subcoalgebra.Finite
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Equiv
 public import AlgebraicGroups.Algebra.Coalgebra.Surjective
 

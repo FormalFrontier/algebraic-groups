@@ -11,6 +11,8 @@ import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Logic.Equiv.Bool
 
+open TauCeti
+
 /-!
 # Group-like coordinates over semirings
 

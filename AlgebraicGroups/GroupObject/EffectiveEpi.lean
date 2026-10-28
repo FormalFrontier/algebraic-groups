@@ -6,7 +6,7 @@ module
 
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
 public import Mathlib.CategoryTheory.Limits.Over
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
+public import TauCeti.CategoryTheory.Monoidal.Grp.Subobject
 
 /-!
 # Group structures on effective-epimorphic subobjects
@@ -103,55 +103,7 @@ noncomputable def ofEffectiveEpi (i : H ⟶ G) [Mono i]
       toUnit H ≫ (one ≫ i) = (toUnit H ≫ one) ≫ i := Category.assoc _ _ _ |>.symm
       _ = localOne ≫ i := by rw [EffectiveEpi.fac]
       _ = toUnit H ≫ η[G] := localOne_i
-  letI : MonObj H :=
-    { one := one
-      mul := mul
-      one_mul := by
-        apply (cancel_mono i).1
-        rw [Category.assoc, mul_i, ← tensorHom_id, tensorHom_comp_tensorHom_assoc,
-          Category.id_comp, one_i]
-        rw [← Category.id_comp η[G], ← Category.comp_id i]
-        rw [← tensorHom_comp_tensorHom_assoc (𝟙 (𝟙_ C)) i η[G] (𝟙 G) μ[G]]
-        simp
-      mul_one := by
-        apply (cancel_mono i).1
-        rw [Category.assoc, mul_i, ← id_tensorHom, tensorHom_comp_tensorHom_assoc,
-          Category.id_comp, one_i]
-        rw [← Category.comp_id i, ← Category.id_comp η[G]]
-        rw [← tensorHom_comp_tensorHom_assoc i (𝟙 (𝟙_ C)) (𝟙 G) η[G] μ[G]]
-        simp
-      mul_assoc := by
-        apply (cancel_mono i).1
-        simp only [Category.assoc, mul_i]
-        calc
-          mul ▷ H ≫ (i ⊗ₘ i) ≫ μ[G] =
-              ((i ⊗ₘ i) ⊗ₘ i) ≫ (μ[G] ▷ G) ≫ μ[G] := by
-            rw [← tensorHom_id, tensorHom_comp_tensorHom_assoc, Category.id_comp, mul_i]
-            simpa only [Category.comp_id, tensorHom_id, Category.assoc] using
-              (tensorHom_comp_tensorHom_assoc (i ⊗ₘ i) i μ[G] (𝟙 G) μ[G]).symm
-          _ = ((i ⊗ₘ i) ⊗ₘ i) ≫ (α_ G G G).hom ≫ (G ◁ μ[G]) ≫ μ[G] := by
-            rw [MonObj.mul_assoc]
-          _ = (α_ H H H).hom ≫ (i ⊗ₘ (i ⊗ₘ i)) ≫ (G ◁ μ[G]) ≫ μ[G] := by
-            rw [associator_naturality_assoc]
-          _ = (α_ H H H).hom ≫ H ◁ mul ≫ (i ⊗ₘ i) ≫ μ[G] := by
-            have hright : H ◁ mul ≫ (i ⊗ₘ i) ≫ μ[G] =
-                (i ⊗ₘ (i ⊗ₘ i)) ≫ (G ◁ μ[G]) ≫ μ[G] := by
-              rw [← id_tensorHom, tensorHom_comp_tensorHom_assoc, Category.id_comp, mul_i]
-              simpa only [Category.comp_id, id_tensorHom, Category.assoc] using
-                (tensorHom_comp_tensorHom_assoc i (i ⊗ₘ i) (𝟙 G) μ[G] μ[G]).symm
-            simp only [hright] }
-  exact
-    { inv := inv
-      left_inv := by
-        apply (cancel_mono i).1
-        change (lift inv (𝟙 H) ≫ mul) ≫ i = (toUnit H ≫ one) ≫ i
-        rw [Category.assoc, mul_i, ← Category.assoc, lift_map]
-        simp [inv_i, one_i]
-      right_inv := by
-        apply (cancel_mono i).1
-        change (lift (𝟙 H) inv ≫ mul) ≫ i = (toUnit H ≫ one) ≫ i
-        rw [Category.assoc, mul_i, ← Category.assoc, lift_map]
-        simp [inv_i, one_i] }
+  exact TauCeti.grpObjOfMono i one mul inv one_i mul_i inv_i
 
 end GrpObj
 

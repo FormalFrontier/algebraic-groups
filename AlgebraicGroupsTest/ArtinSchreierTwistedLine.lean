@@ -90,14 +90,14 @@ private theorem testComulY (R : Type*) [CommRing R] {p : ℕ} [Fact p.Prime] [Ch
         Algebra.TensorProduct.includeRight (R := R) (y R p t) := by
   simp only [comul, testLiftY]
 
-private def testCounit (R : Type*) [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p]
+private def testCounit (R : Type*) [CommRing R] {p : ℕ} [Fact p.Prime]
     (t : R) : CoordinateRing R p t →ₐ[R] R := counit R t
 
-private theorem testCounitX (R : Type*) [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p]
+private theorem testCounitX (R : Type*) [CommRing R] {p : ℕ} [Fact p.Prime]
     (t : R) : counit R t (x R p t) = 0 := by
   simp only [counit, testLiftX]
 
-private theorem testCounitY (R : Type*) [CommRing R] {p : ℕ} [Fact p.Prime] [CharP R p]
+private theorem testCounitY (R : Type*) [CommRing R] {p : ℕ} [Fact p.Prime]
     (t : R) : counit R t (y R p t) = 0 := by
   simp only [counit, testLiftY]
 
@@ -191,9 +191,9 @@ private theorem testConnected (K : Type*) [Field K] {p : ℕ} (hp : p.Prime)
     [CharP K p] {t : K} (ht : t ≠ 0) :
     ConnectedSpace (scheme K p t).left := scheme_connectedSpace_of_ne_zero K hp ht
 
-/-- Over a field of prime characteristic, the zero-twist Artin--Schreier scheme is
+/-- Over a field, the zero-twist Artin--Schreier scheme at any prime exponent is
 not connected. This is the boundary case for connectedness at nonzero twist. -/
 public theorem ArtinSchreierTwistedLine.zero_twist_not_connected
-    (K : Type*) [Field K] {p : ℕ} (hp : p.Prime)
-    [CharP K p] : ¬ ConnectedSpace (scheme K p 0).left :=
+    (K : Type*) [Field K] {p : ℕ} (hp : p.Prime) :
+    ¬ ConnectedSpace (scheme K p 0).left :=
   not_scheme_connectedSpace_zero K hp

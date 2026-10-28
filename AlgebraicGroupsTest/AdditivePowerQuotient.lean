@@ -26,7 +26,7 @@ theorem additivePower_generic_presentation_test (K : Type u) [CommRing K] (N : �
   ⟨additivePowerCoordinateAlgEquiv K N⟩
 
 theorem additivePower_generic_mk_test (K : Type u) [CommRing K] (N : ℕ)
-    (a : additiveGroupCoordinateRing K) :
+    (a : (SymmetricAlgebra K K)) :
     additivePowerCoordinateAlgEquiv K N (Ideal.Quotient.mk (additivePowerIdeal K N) a) =
       AdjoinRoot.mk ((Polynomial.X : Polynomial K) ^ N)
         (additiveGroupCoordinateAlgEquiv K a) :=
@@ -57,9 +57,9 @@ theorem additivePower_zero_exponent_one_eq_zero_test (K : Type u) [CommRing K] :
 theorem additivePower_first_exponent_test (K : Type u) [CommRing K] :
     additivePowerCoordinate K 1 = 0 := by
   apply Ideal.Quotient.eq_zero_iff_mem.mpr
-  change additiveGroupCoordinate K ∈ Ideal.span {(additiveGroupCoordinate K) ^ 1}
+  change (SymmetricAlgebra.ι K K 1) ∈ Ideal.span {((SymmetricAlgebra.ι K K 1)) ^ 1}
   simpa only [pow_one] using
-    (Ideal.mem_span_singleton_self (additiveGroupCoordinate K))
+    (Ideal.mem_span_singleton_self ((SymmetricAlgebra.ι K K 1)))
 
 theorem additivePower_subsingleton_base_test (K : Type u) [CommRing K]
     [Subsingleton K] (N : ℕ) : additivePowerCoordinate K N = 0 := by

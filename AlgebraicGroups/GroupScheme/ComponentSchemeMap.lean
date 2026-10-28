@@ -55,8 +55,7 @@ section
 variable {K : Type u} [Field K] [IsAlgClosed K] {G : Scheme.{u}}
 variable (f : G ⟶ Spec (.of K)) [GrpObj (Over.mk f)] [LocallyConnectedSpace G]
 
-local instance componentMapOverMkLocallyConnected : LocallyConnectedSpace (Over.mk f).left :=
-  inferInstanceAs (LocallyConnectedSpace G)
+attribute [local instance] overMkLocallyConnected
 
 variable [ConnectedSpace ((Scheme.identityComponentOver (Over.mk f) ⊗
   Scheme.identityComponentOver (Over.mk f)).left)]
@@ -71,28 +70,28 @@ noncomputable local instance componentMapFintype :
 /-- The underlying scheme morphism labelling every connected component by its
 class in the rational component group. -/
 noncomputable def componentSchemeMapLeft
-    : G ⟶ (finiteConstantGroupScheme K (rationalComponentGroup f)).X.left :=
+    : G ⟶ (TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X.left :=
   G.connectedComponentSigmaIso.inv ≫
     Sigma.desc (fun c : ConnectedComponents G ↦
       (G.connectedComponentOpen c).ι ≫ f ≫
         Spec.map (CommRingCat.ofHom
-          (FiniteGroupFunctions.evalAlgHom K (rationalComponentGroup f)
-            ((rationalComponentGroupEquivConnectedComponents f).symm c))))
+          (TauCeti.ConstantGroup.eval K (rationalComponentGroup f)
+            ((rationalComponentGroupEquivConnectedComponents f).symm c)).toRingHom))
 
 @[reassoc]
 lemma connectedComponentOpen_ι_componentSchemeMapLeft (c : ConnectedComponents G) :
     (G.connectedComponentOpen c).ι ≫ componentSchemeMapLeft f =
       (G.connectedComponentOpen c).ι ≫ f ≫
         Spec.map (CommRingCat.ofHom
-          (FiniteGroupFunctions.evalAlgHom K (rationalComponentGroup f)
-            ((rationalComponentGroupEquivConnectedComponents f).symm c))) := by
+          (TauCeti.ConstantGroup.eval K (rationalComponentGroup f)
+            ((rationalComponentGroupEquivConnectedComponents f).symm c)).toRingHom) := by
   rw [← G.connectedComponentSigmaIso_hom_ι c]
-  simp only [componentSchemeMapLeft, Category.assoc, Iso.hom_inv_id_assoc, Sigma.ι_desc]
+  simp only [componentSchemeMapLeft, Category.assoc, Iso.hom_inv_id_assoc, Sigma.ι_comp_desc]
   rw [G.connectedComponentSigmaIso_hom_ι_assoc c]
   rfl
 
 lemma componentSchemeMapLeft_over : componentSchemeMapLeft f ≫
-    (finiteConstantGroupScheme K (rationalComponentGroup f)).X.hom = f := by
+    (TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X.hom = f := by
   rw [← cancel_epi G.connectedComponentSigmaIso.hom]
   apply Sigma.hom_ext
   intro c
@@ -101,20 +100,21 @@ lemma componentSchemeMapLeft_over : componentSchemeMapLeft f ≫
   rw [G.connectedComponentSigmaIso_hom_ι_assoc]
   have hEval :
       Spec.map (CommRingCat.ofHom
-          (FiniteGroupFunctions.evalAlgHom K (rationalComponentGroup f)
-            ((rationalComponentGroupEquivConnectedComponents f).symm c))) ≫
+          (TauCeti.ConstantGroup.eval K (rationalComponentGroup f)
+            ((rationalComponentGroupEquivConnectedComponents f).symm c)).toRingHom) ≫
         Spec.map (CommRingCat.ofHom
-          (algebraMap K (FiniteGroupFunctions K (rationalComponentGroup f)))) =
+          (algebraMap K (TauCeti.ConstantGroup.coordinateRing K (rationalComponentGroup f)))) =
       𝟙 (Spec (.of K)) := by
     rw [← Spec.map_comp, Spec.map_eq_id]
     ext x
-    rfl
+    exact (TauCeti.ConstantGroup.eval K (rationalComponentGroup f)
+      ((rationalComponentGroupEquivConnectedComponents f).symm c)).commutes x
   change ((G.connectedComponentOpen c).ι ≫ f ≫
       Spec.map (CommRingCat.ofHom
-        (FiniteGroupFunctions.evalAlgHom K (rationalComponentGroup f)
-          ((rationalComponentGroupEquivConnectedComponents f).symm c)))) ≫
+        (TauCeti.ConstantGroup.eval K (rationalComponentGroup f)
+          ((rationalComponentGroupEquivConnectedComponents f).symm c)).toRingHom)) ≫
     Spec.map (CommRingCat.ofHom
-      (algebraMap K (FiniteGroupFunctions K (rationalComponentGroup f)))) = _
+      (algebraMap K (TauCeti.ConstantGroup.coordinateRing K (rationalComponentGroup f)))) = _
   rw [Category.assoc, Category.assoc, hEval, Category.comp_id]
 
 /-- The component-labelled morphism from a group scheme to the finite constant
@@ -123,7 +123,7 @@ closed-field instance of the component homomorphism in Milne,
 *Algebraic Groups*, §2g and Proposition 2.37(b); its construction uses the
 clopen-component coproduct rather than only a map on rational points. -/
 noncomputable def componentSchemeMap :
-    Over.mk f ⟶ (finiteConstantGroupScheme K (rationalComponentGroup f)).X :=
+    Over.mk f ⟶ (TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X :=
   Over.homMk (componentSchemeMapLeft f) (componentSchemeMapLeft_over f)
 
 /-- Under the connected-component and finite-constant coproduct
@@ -143,7 +143,7 @@ lemma componentSchemeMapLeft_sigma :
     Scheme.connectedComponentSigmaIso_hom_ι_assoc,
     connectedComponentOpen_ι_componentSchemeMapLeft,
     Sigma.ι_map_assoc, finiteConstantSigmaIso_hom_ι]
-  rw [Equiv.symm_apply_apply]
+  rw [Equiv.symm_apply_apply, TauCeti.ConstantGroup.unitPointHom_apply_left]
   rfl
 
 /-- The component-labelled morphism to the finite constant component group is
@@ -237,7 +237,7 @@ instance componentSchemeMap_quasiCompact : QuasiCompact (componentSchemeMap f).l
 locally of finite presentation. -/
 instance componentSchemeMap_locallyOfFinitePresentation :
     LocallyOfFinitePresentation (componentSchemeMap f).left := by
-  let Q := finiteConstantGroupScheme K (rationalComponentGroup f)
+  let Q := TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)
   let _ : IsLocallyNoetherian Q.X.left :=
     LocallyOfFiniteType.isLocallyNoetherian Q.X.hom
   let _ : LocallyOfFiniteType ((componentSchemeMap f).left ≫ Q.X.hom) := by
@@ -259,11 +259,11 @@ lemma rationalComponentGroupEquivConnectedComponents_symm_point
 
 lemma groupSchemePoint_comp_componentSchemeMap (x : groupSchemePoints f) :
     x ≫ componentSchemeMap f =
-      finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+      TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
         (Quotient.mk'' x) := by
   ext
   change x.left ≫ componentSchemeMapLeft f =
-    (finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+    (TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
       (Quotient.mk'' x)).left
   let c := groupSchemePointComponent f x
   have hRange : Set.range x.left ⊆ (G.connectedComponentOpen c : Set G) := by
@@ -283,13 +283,13 @@ lemma groupSchemePoint_comp_componentSchemeMap (x : groupSchemePoints f) :
   rw [← hFac]
   rw [Category.assoc]
   rw [connectedComponentOpen_ι_componentSchemeMapLeft f c]
-  dsimp only [finiteConstantGroupSchemePoint]
+  rw [TauCeti.ConstantGroup.unitPointHom_apply_left]
   change xOpen ≫ ((G.connectedComponentOpen c).ι ≫ f) ≫
       Spec.map (CommRingCat.ofHom
-        (FiniteGroupFunctions.evalAlgHom K (rationalComponentGroup f)
+        (TauCeti.ConstantGroup.eval K (rationalComponentGroup f)
           ((rationalComponentGroupEquivConnectedComponents f).symm c)).toRingHom) =
     Spec.map (CommRingCat.ofHom
-      (FiniteGroupFunctions.evalAlgHom K (rationalComponentGroup f)
+      (TauCeti.ConstantGroup.eval K (rationalComponentGroup f)
         (Quotient.mk'' x)).toRingHom)
   rw [← Category.assoc, ← Category.assoc, hFac]
   rw [hxw]
@@ -305,22 +305,22 @@ omit [IsAlgClosed K]
 the translating rational point as its range. -/
 lemma identityComponentι_mulLeft_range (a : groupSchemePoints f) :
     Set.range ((Scheme.identityComponentι (Over.mk f) ≫
-      (CategoryTheory.GrpObj.mulLeft a).hom).left) =
+      (TauCeti.leftTranslation a).hom).left) =
       Set.range (G.connectedComponentOpen
         (groupSchemePointComponent f a)).ι := by
   let eScheme := (Over.forget (Spec (.of K))).mapIso
-    (CategoryTheory.GrpObj.mulLeft a)
+    (TauCeti.leftTranslation a)
   let e := eScheme.schemeIsoToHomeo
   change Set.range ((Scheme.identityComponent (Over.mk f)).ι ≫
-      (CategoryTheory.GrpObj.mulLeft a).hom.left) = _
+      (TauCeti.leftTranslation a).hom.left) = _
   rw [show ⇑((Scheme.identityComponent (Over.mk f)).ι ≫
-      (CategoryTheory.GrpObj.mulLeft a).hom.left) =
-        (CategoryTheory.GrpObj.mulLeft a).hom.left ∘
+      (TauCeti.leftTranslation a).hom.left) =
+        (TauCeti.leftTranslation a).hom.left ∘
           (Scheme.identityComponent (Over.mk f)).ι from rfl]
   rw [Set.range_comp, Scheme.Opens.range_ι, Scheme.Opens.range_ι]
   rw [groupSchemePointComponent_eq_mk]
   rw [G.connectedComponentOpen_mk]
-  change (CategoryTheory.GrpObj.mulLeft a).hom.left ''
+  change (TauCeti.leftTranslation a).hom.left ''
       connectedComponent (η[Over.mk f].left
         (Classical.choice (inferInstance : Nonempty (Spec (.of K))))) =
     connectedComponent (groupSchemePointValue f a)
@@ -345,9 +345,9 @@ lemma identityComponentι_mulLeft_range (a : groupSchemePoints f) :
   change eScheme.hom
       (η[Over.mk f].left
         (Classical.choice (inferInstance : Nonempty (Spec (.of K))))) = _
-  change (η[Over.mk f] ≫ (CategoryTheory.GrpObj.mulLeft a).hom).left
+  change (η[Over.mk f] ≫ (TauCeti.leftTranslation a).hom).left
       (Classical.choice (inferInstance : Nonempty (Spec (.of K)))) = _
-  rw [CategoryTheory.GrpObj.unit_comp_mulLeft_hom]
+  rw [TauCeti.unit_comp_leftTranslation_hom]
   rw [Subsingleton.elim (Classical.choice
     (inferInstance : Nonempty (Spec (.of K)))) (IsLocalRing.closedPoint K)]
 
@@ -363,7 +363,7 @@ noncomputable def identityComponentIsoConnectedComponent
     (Scheme.identityComponentOver (Over.mk f)).left ≅
       (G.connectedComponentOpen (groupSchemePointComponent f a)).toScheme := by
   let e := (Over.forget (Spec (.of K))).mapIso
-    (CategoryTheory.GrpObj.mulLeft a)
+    (TauCeti.leftTranslation a)
   refine IsOpenImmersion.isoOfRangeEq
     ((Scheme.identityComponentι (Over.mk f)).left ≫ e.hom)
     (G.connectedComponentOpen (groupSchemePointComponent f a)).ι ?_
@@ -380,11 +380,11 @@ lemma identityComponentIsoConnectedComponent_hom_ι
     (identityComponentIsoConnectedComponent f a).hom ≫
       (G.connectedComponentOpen (groupSchemePointComponent f a)).ι =
         (Scheme.identityComponentι (Over.mk f)).left ≫
-          (CategoryTheory.GrpObj.mulLeft a).hom.left := by
+          (TauCeti.leftTranslation a).hom.left := by
   exact IsOpenImmersion.isoOfRangeEq_hom_fac
     ((Scheme.identityComponentι (Over.mk f)).left ≫
       ((Over.forget (Spec (.of K))).mapIso
-        (CategoryTheory.GrpObj.mulLeft a)).hom)
+        (TauCeti.leftTranslation a)).hom)
     (G.connectedComponentOpen (groupSchemePointComponent f a)).ι
     (identityComponentι_mulLeft_range f a)
 
@@ -406,11 +406,11 @@ lemma connectedComponentOpen_geometricallyConnected
     rw [← Category.assoc, identityComponentIsoConnectedComponent_hom_ι]
     rw [Category.assoc]
     change (Scheme.identityComponentι (Over.mk f)).left ≫
-      ((CategoryTheory.GrpObj.mulLeft a).hom.left ≫ f) = _
-    have hmul : (CategoryTheory.GrpObj.mulLeft a).hom.left ≫ f = f := by
-      change (CategoryTheory.GrpObj.mulLeft a).hom.left ≫
+      ((TauCeti.leftTranslation a).hom.left ≫ f) = _
+    have hmul : (TauCeti.leftTranslation a).hom.left ≫ f = f := by
+      change (TauCeti.leftTranslation a).hom.left ≫
         (Over.mk f).hom = (Over.mk f).hom
-      exact (CategoryTheory.GrpObj.mulLeft a).hom.w
+      exact (TauCeti.leftTranslation a).hom.w
     rw [hmul]
     rfl
   let _ : MorphismProperty.RespectsIso @GeometricallyConnected :=
@@ -444,11 +444,11 @@ noncomputable def identityComponentOverIsoConnectedComponentOver
     rw [← Category.assoc, identityComponentIsoConnectedComponent_hom_ι]
     rw [Category.assoc]
     change (Scheme.identityComponentι (Over.mk f)).left ≫
-      ((CategoryTheory.GrpObj.mulLeft a).hom.left ≫ f) = _
-    have hmul : (CategoryTheory.GrpObj.mulLeft a).hom.left ≫ f = f := by
-      change (CategoryTheory.GrpObj.mulLeft a).hom.left ≫
+      ((TauCeti.leftTranslation a).hom.left ≫ f) = _
+    have hmul : (TauCeti.leftTranslation a).hom.left ≫ f = f := by
+      change (TauCeti.leftTranslation a).hom.left ≫
         (Over.mk f).hom = (Over.mk f).hom
-      exact (CategoryTheory.GrpObj.mulLeft a).hom.w
+      exact (TauCeti.leftTranslation a).hom.w
     rw [hmul]
     rfl
 
@@ -486,27 +486,28 @@ lemma connectedComponentOpenPoint_comp_ι (a : groupSchemePoints f) :
   have he : (identityComponentOverIsoConnectedComponentOver f a).hom ≫
       connectedComponentOpenιOver f a =
         Scheme.identityComponentι (Over.mk f) ≫
-          (CategoryTheory.GrpObj.mulLeft a).hom := by
+          (TauCeti.leftTranslation a).hom := by
     ext
     exact identityComponentIsoConnectedComponent_hom_ι f a
   rw [he]
   rw [← Category.assoc, Scheme.identityComponentOne_comp_ι]
-  exact CategoryTheory.GrpObj.unit_comp_mulLeft_hom a
+  exact TauCeti.unit_comp_leftTranslation_hom a
 
 @[reassoc]
 lemma connectedComponentOpenι_comp_componentSchemeMap
     (a : groupSchemePoints f) :
     connectedComponentOpenιOver f a ≫ componentSchemeMap f =
       toUnit (connectedComponentOpenOver f a) ≫
-        finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+        TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
           (Quotient.mk'' a) := by
   ext
+  simp only [Over.comp_left, TauCeti.ConstantGroup.unitPointHom_apply_left]
   change (G.connectedComponentOpen (groupSchemePointComponent f a)).ι ≫
       componentSchemeMapLeft f =
     (G.connectedComponentOpen (groupSchemePointComponent f a)).ι ≫ f ≫
       Spec.map (CommRingCat.ofHom
-        (FiniteGroupFunctions.evalAlgHom K (rationalComponentGroup f)
-          (Quotient.mk'' a)))
+        (TauCeti.ConstantGroup.eval K (rationalComponentGroup f)
+          (Quotient.mk'' a)).toRingHom)
   rw [connectedComponentOpen_ι_componentSchemeMapLeft]
   rw [rationalComponentGroupEquivConnectedComponents_symm_point f a]
 
@@ -517,7 +518,7 @@ lemma connected_comp_componentSchemeMap {H : Over (Spec (.of K))}
     [ConnectedSpace H.left] (x : 𝟙_ (Over (Spec (.of K))) ⟶ H)
     (g : H ⟶ Over.mk f) :
     g ≫ componentSchemeMap f =
-      toUnit H ≫ finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+      toUnit H ≫ TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
         (Quotient.mk'' (x ≫ g)) := by
   let a : groupSchemePoints f := x ≫ g
   have hRange : Set.range g.left ⊆
@@ -550,7 +551,7 @@ lemma connected_comp_componentSchemeMap {H : Over (Spec (.of K))}
     ext
     exact gLeft'_fac
   change g ≫ componentSchemeMap f =
-    toUnit H ≫ finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+    toUnit H ≫ TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
       (Quotient.mk'' a)
   rw [← hfac, Category.assoc,
     connectedComponentOpenι_comp_componentSchemeMap]
@@ -565,7 +566,7 @@ does not assert the square's pullback universal property. -/
 lemma identityComponentι_comp_componentSchemeMap :
     Scheme.identityComponentι (Over.mk f) ≫ componentSchemeMap f =
       toUnit (Scheme.identityComponentOver (Over.mk f)) ≫
-        η[(finiteConstantGroupScheme K (rationalComponentGroup f)).X] := by
+        η[(TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X] := by
   have h := connected_comp_componentSchemeMap f
     (Scheme.identityComponentOne (Over.mk f))
     (Scheme.identityComponentι (Over.mk f))
@@ -575,10 +576,9 @@ lemma identityComponentι_comp_componentSchemeMap :
   have hQ : (Quotient.mk'' (1 : groupSchemePoints f) : rationalComponentGroup f) =
       (One.one : rationalComponentGroup f) := rfl
   rw [hQ] at h
-  have hOne : finiteConstantGroupSchemePoint K (rationalComponentGroup f) One.one =
-      η[(finiteConstantGroupScheme K (rationalComponentGroup f)).X] := by
-    change (finiteConstantGroupSchemePointHom K (rationalComponentGroup f)) One.one = _
-    exact map_one _
+  have hOne : TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f) One.one =
+      η[(TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X] := by
+    exact TauCeti.ConstantGroup.unitPointHom_one K (rationalComponentGroup f)
   rw [hOne] at h
   exact h
 
@@ -593,7 +593,7 @@ lemma isPullback_identityComponentι_componentSchemeMap :
       (Scheme.identityComponentι (Over.mk f))
       (toUnit (Scheme.identityComponentOver (Over.mk f)))
       (componentSchemeMap f)
-      η[(finiteConstantGroupScheme K (rationalComponentGroup f)).X] := by
+      η[(TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X] := by
   apply IsPullback.of_map_of_faithful (Over.forget (Spec (.of K)))
   have hQ : (Quotient.mk'' (1 : groupSchemePoints f) :
       rationalComponentGroup f) =
@@ -613,7 +613,7 @@ lemma isPullback_identityComponentι_componentSchemeMap :
   let eX : (∐ X) ≅ G := G.connectedComponentSigmaIso
   let eY : Y c₀ ≅ Spec (.of K) := Iso.refl _
   let eZ : (∐ Y) ≅
-      (finiteConstantGroupScheme K (rationalComponentGroup f)).X.left :=
+      (TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X.left :=
     (Sigma.reindex (rationalComponentGroupEquivConnectedComponents f) Y).symm ≪≫
       finiteConstantSigmaIso K (rationalComponentGroup f)
   apply h.of_iso eP eX eY eZ
@@ -623,8 +623,8 @@ lemma isPullback_identityComponentι_componentSchemeMap :
     simp only [Iso.symm_hom, Iso.hom_inv_id_assoc]
     rw [identityComponentIsoConnectedComponent_hom_ι]
     change (Scheme.identityComponentι (Over.mk f)).left ≫
-      (CategoryTheory.GrpObj.mulLeft η[Over.mk f]).hom.left = _
-    rw [CategoryTheory.GrpObj.mulLeft_one]
+      (TauCeti.leftTranslation η[Over.mk f]).hom.left = _
+    rw [TauCeti.leftTranslation_one]
     rfl
   · dsimp only [eP, eY, F, X, Y, c₀]
     simp only [Iso.symm_hom]
@@ -656,11 +656,11 @@ lemma isPullback_identityComponentι_componentSchemeMap :
       (Quotient.mk'' (1 : groupSchemePoints f)) ≫
         (finiteConstantSigmaIso K (rationalComponentGroup f)).hom = _
     rw [finiteConstantSigmaIso_hom_ι]
-    change (finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+    change (TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
       (Quotient.mk'' (1 : groupSchemePoints f))).left = _
     rw [hQ]
     exact congrArg Over.Hom.left
-      (map_one (finiteConstantGroupSchemePointHom K (rationalComponentGroup f)))
+      (TauCeti.ConstantGroup.unitPointHom_one K (rationalComponentGroup f))
 
 /-- The products of rationally labelled component opens cover the product of
 the group scheme with itself over the base. -/
@@ -746,10 +746,10 @@ lemma componentProductOpen_comp_componentSchemeMap_tensor_mul
     (a b : groupSchemePoints f) :
     (connectedComponentOpenιOver f a ⊗ₘ connectedComponentOpenιOver f b) ≫
       (componentSchemeMap f ⊗ₘ componentSchemeMap f) ≫
-        μ[(finiteConstantGroupScheme K (rationalComponentGroup f)).X] =
+        μ[(TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X] =
     toUnit (connectedComponentOpenOver f a ⊗
       connectedComponentOpenOver f b) ≫
-      finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+      TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
         (HMul.hMul (α := rationalComponentGroup f)
           (β := rationalComponentGroup f) (γ := rationalComponentGroup f)
           (Quotient.mk'' a) (Quotient.mk'' b)) := by
@@ -758,17 +758,17 @@ lemma componentProductOpen_comp_componentSchemeMap_tensor_mul
     connectedComponentOpenι_comp_componentSchemeMap]
   have hpair :
       (toUnit (connectedComponentOpenOver f a) ≫
-          finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+          TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
             (Quotient.mk'' a) ⊗ₘ
         toUnit (connectedComponentOpenOver f b) ≫
-          finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+          TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
             (Quotient.mk'' b)) =
       toUnit (connectedComponentOpenOver f a ⊗
           connectedComponentOpenOver f b) ≫
         lift
-          (finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+          (TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
             (Quotient.mk'' a))
-          (finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+          (TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
             (Quotient.mk'' b)) := by
     apply CartesianMonoidalCategory.hom_ext
     · simp
@@ -776,11 +776,11 @@ lemma componentProductOpen_comp_componentSchemeMap_tensor_mul
   rw [hpair, Category.assoc]
   change toUnit (connectedComponentOpenOver f a ⊗
       connectedComponentOpenOver f b) ≫
-    (finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+    (TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
       (Quotient.mk'' a) *
-    finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+    TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
       (Quotient.mk'' b)) = _
-  rw [finiteConstantGroupSchemePoint_mul]
+  rw [← map_mul]
 
 /-- The component-labelled morphism respects multiplication. This is the
 group-homomorphism assertion in Milne, *Algebraic Groups*, §2g, proved
@@ -788,7 +788,7 @@ here on an open cover by products of translated connected components. -/
 lemma componentSchemeMap_mul_hom :
     μ[Over.mk f] ≫ componentSchemeMap f =
       (componentSchemeMap f ⊗ₘ componentSchemeMap f) ≫
-        μ[(finiteConstantGroupScheme K (rationalComponentGroup f)).X] := by
+        μ[(TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X] := by
   ext
   apply (componentProductOpenCover f).hom_ext
   rintro ⟨a, b⟩
@@ -799,7 +799,7 @@ lemma componentSchemeMap_mul_hom :
   have hleft : j ≫ μ[Over.mk f] ≫ componentSchemeMap f =
       toUnit (connectedComponentOpenOver f a ⊗
         connectedComponentOpenOver f b) ≫
-      finiteConstantGroupSchemePoint K (rationalComponentGroup f)
+      TauCeti.ConstantGroup.unitPointHom K (rationalComponentGroup f)
         (Quotient.mk'' (a * b)) := by
     have h := connected_comp_componentSchemeMap f
       (componentProductPoint f a b) (j ≫ μ[Over.mk f])
@@ -807,7 +807,7 @@ lemma componentSchemeMap_mul_hom :
     exact h
   change (j ≫ μ[Over.mk f] ≫ componentSchemeMap f).left =
     (j ≫ (componentSchemeMap f ⊗ₘ componentSchemeMap f) ≫
-      μ[(finiteConstantGroupScheme K (rationalComponentGroup f)).X]).left
+      μ[(TauCeti.ConstantGroup.groupScheme K (rationalComponentGroup f)).X]).left
   apply congrArg Over.Hom.left
   rw [hleft, componentProductOpen_comp_componentSchemeMap_tensor_mul]
   rfl

@@ -6,11 +6,11 @@ Let `K` be any commutative ring, `n r : ℕ` and **`hr : 1 ≤ r`**. Import
 `AlgebraicGroups.GroupScheme.UnitriangularStageCoordinates` for the actual
 group-scheme morphism in `Grp (Over (Spec (.of K)))`:
 
-```lean
+```text
 unitriangularStageCoordinateMap K n r hr :
   unitriangularStageScheme K n r ⟶
-    (∏ᶜ fun _ : Matrix.UnitriangularGroup.superdiagonalIndex n r =>
-      additiveGroupScheme K)
+    (∏ᶜ fun _ : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r =>
+      TauCeti.AdditiveGroup.groupScheme K)
 ```
 
 Milne's one-entry additive-group quotients over a field provide antecedents

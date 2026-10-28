@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import TauCeti.LinearAlgebra.Matrix.GeneralLinearGroup.Diagonal.Basic
 public import Mathlib.Algebra.Group.Pi.Units
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
@@ -37,16 +37,6 @@ namespace Matrix
 
 variable (ι : Type u) [Fintype ι] [DecidableEq ι] (R : Type u) [CommRing R]
 
-/-- The native invertible diagonal matrix associated to a tuple of units. -/
-def diagonalUnitsHom : (ι → Rˣ) →* GeneralLinearGroup ι R :=
-  (Units.map (diagonalRingHom ι R).toMonoidHom).comp
-    (MulEquiv.piUnits (M := fun _ : ι => R)).symm.toMonoidHom
-
-@[simp] theorem diagonalUnitsHom_apply (d : ι → Rˣ) (i j : ι) :
-    diagonalUnitsHom ι R d i j = if i = j then (d i : R) else 0 := by
-  change (diagonal fun k => (d k : R)) i j = _
-  exact diagonal_apply _ _ _
-
 /-- Invertible matrices whose off-diagonal entries vanish, generalizing Milne's
 `D_n` over a field (*Algebraic Groups*, §2.9) to commutative rings. -/
 def diagonalSubgroup : Subgroup (GeneralLinearGroup ι R) where
@@ -76,18 +66,19 @@ def diagonalSubgroup : Subgroup (GeneralLinearGroup ι R) where
       rw [← det_diagonal, ← hmatrix]
       exact isUnits_det_units g
     let d : ι → Rˣ := fun i => ((IsUnit.prod_univ_iff.mp hdet) i).unit
-    have heq : diagonalUnitsHom ι R d = g := by
+    have heq : TauCeti.diagGL (ι := ι) (k := R) d = g := by
       apply Units.ext
       ext i j
       by_cases hij : i = j
       · subst j
-        simp [diagonalUnitsHom_apply, d]
-      · simpa [diagonalUnitsHom_apply, hij] using (hg i j hij).symm
+        simp [TauCeti.diagGL_apply, d]
+      · simpa [TauCeti.diagGL_apply, hij] using (hg i j hij).symm
     rw [← heq]
     intro i j hij
-    have hinv : (diagonalUnitsHom ι R d)⁻¹ = diagonalUnitsHom ι R (d⁻¹) := by
-      exact (map_inv (diagonalUnitsHom ι R) d).symm
-    rw [hinv, diagonalUnitsHom_apply, ite_eq_right hij]
+    have hinv : (TauCeti.diagGL (ι := ι) (k := R) d)⁻¹ = TauCeti.diagGL (ι := ι) (k := R) (d⁻¹) :=
+      by
+      exact (map_inv (TauCeti.diagGL (ι := ι) (k := R)) d).symm
+    rw [hinv, TauCeti.diagGL_apply, ite_eq_right hij]
 
 /-- The native diagonal general linear group, including empty indices and zero rings. -/
 abbrev DiagonalGroup := diagonalSubgroup ι R
@@ -113,36 +104,27 @@ def inclusion : DiagonalGroup ι R →* GeneralLinearGroup ι R :=
 
 /-- The diagonal entry of a native invertible diagonal matrix is a unit. -/
 theorem isUnit_entry (g : DiagonalGroup ι R) (i : ι) : IsUnit (g.1 i i) := by
-  have hmatrix : (g.1 : Matrix ι ι R) = diagonal (fun j => g.1 j j) := by
-    ext a b
-    by_cases hab : a = b
-    · subst b
-      simp
-    · simp [g.2 a b hab, diagonal_apply_ne _ hab]
-  have hdet : IsUnit (∏ j, g.1 j j) := by
-    rw [← det_diagonal, ← hmatrix]
-    exact isUnits_det_units g.1
-  exact (IsUnit.prod_univ_iff.mp hdet) i
+  exact TauCeti.isUnit_apply_of_isDiag g.2 i
 
 /-- The diagonal subgroup is multiplicatively equivalent to tuples of scalar units;
 compare Milne, *Algebraic Groups* (2017), §12.d (p. 234). -/
 def unitsEquiv : DiagonalGroup ι R ≃* (ι → Rˣ) where
   toFun g i := (isUnit_entry g i).unit
-  invFun d := ⟨diagonalUnitsHom ι R d, by
+  invFun d := ⟨TauCeti.diagGL (ι := ι) (k := R) d, by
     intro i j hij
-    simp [diagonalUnitsHom_apply, hij]⟩
+    simp [TauCeti.diagGL_apply, hij]⟩
   left_inv g := by
     apply Subtype.ext
     apply Units.ext
     ext i j
     by_cases hij : i = j
     · subst j
-      simp [diagonalUnitsHom_apply]
-    · simpa [diagonalUnitsHom_apply, hij] using (g.2 i j hij).symm
+      simp [TauCeti.diagGL_apply]
+    · simpa [TauCeti.diagGL_apply, hij] using (g.2 i j hij).symm
   right_inv d := by
     funext i
     apply Units.ext
-    simp [diagonalUnitsHom_apply]
+    simp [TauCeti.diagGL_apply]
   map_mul' g h := by
     funext i
     apply Units.ext
@@ -160,7 +142,7 @@ def unitsEquiv : DiagonalGroup ι R ≃* (ι → Rˣ) where
 
 @[simp] theorem unitsEquiv_symm_apply (d : ι → Rˣ) (i j : ι) :
     ((unitsEquiv (R := R)).symm d).1 i j = if i = j then (d i : R) else 0 :=
-  diagonalUnitsHom_apply ι R d i j
+  TauCeti.diagGL_apply d i j
 
 /-- Entrywise coefficient change of native diagonal matrix units. -/
 def map (f : R →+* S) : DiagonalGroup ι R →* DiagonalGroup ι S where

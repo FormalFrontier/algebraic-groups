@@ -9,7 +9,7 @@ public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
-import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
+import TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike
 import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
@@ -37,6 +37,9 @@ Mathlib's `Coalgebra.TensorProduct.lid`.
 
 @[expose] public section
 
+open TauCeti
+
+
 noncomputable section
 
 universe u
@@ -50,19 +53,19 @@ variable (K : Type u) [Field K]
 /-- The span of the coordinate vectors indexed by `s`, with the inherited coalgebra. -/
 private def coordinateSubcoalgebra (s : Set ℕ) :
     Subcoalgebra K (AddMonoidAlgebra K ℕ) :=
-  Subcoalgebra.mk'
-    (Submodule.span K ((fun n : ℕ ↦ AddMonoidAlgebra.single n (1 : K)) '' s))
-    (fun {x} hx ↦ comul_mem_range_mapIncl_span_of_isGroupLikeElem
-      (by
-        rintro _ ⟨n, _hn, rfl⟩
-        exact AddMonoidAlgebra.isGroupLikeElem_single_one n) hx)
+  Subcoalgebra.groupLikeSetSpan ((fun n : ℕ =>
+    (⟨AddMonoidAlgebra.single n 1, AddMonoidAlgebra.isGroupLikeElem_single_one n⟩ :
+      GroupLike K (AddMonoidAlgebra K ℕ))) '' s)
 
 private lemma coordinateSubcoalgebra_carrier (s : Set ℕ) :
     (coordinateSubcoalgebra K s).toSubmodule = AddMonoidAlgebra.supported K K s := by
-  exact (AddMonoidAlgebra.supported_eq_span_single (R := K) (s := s)).symm
+  rw [coordinateSubcoalgebra, Subcoalgebra.groupLikeSetSpan_toSubmodule,
+    AddMonoidAlgebra.supported_eq_span_single, Set.image_image]
 
 private lemma single_mem_coordinateSubcoalgebra (s : Set ℕ) (n : ℕ) :
     AddMonoidAlgebra.single n (1 : K) ∈ coordinateSubcoalgebra K s ↔ n ∈ s := by
+  rw [← Subcoalgebra.mem_toSubmodule, coordinateSubcoalgebra_carrier]
+  rw [AddMonoidAlgebra.supported_eq_span_single]
   exact AddMonoidAlgebra.single_mem_span_single
 
 private abbrev doubling : AddMonoidAlgebra K ℕ →ₗc[K] AddMonoidAlgebra K ℕ :=
@@ -101,11 +104,14 @@ private lemma doubling_map_pair :
     Subcoalgebra.map (doubling K) (coordinateSubcoalgebra K ({0, 1} : Set ℕ)) =
       coordinateSubcoalgebra K ({0, 2} : Set ℕ) := by
   apply Subcoalgebra.toSubmodule_injective
+  rw [Subcoalgebra.map_toSubmodule, coordinateSubcoalgebra_carrier,
+    coordinateSubcoalgebra_carrier, AddMonoidAlgebra.supported_eq_span_single,
+    AddMonoidAlgebra.supported_eq_span_single]
   change Submodule.map (doubling K).toLinearMap
       (Submodule.span K ((fun n : ℕ ↦ AddMonoidAlgebra.single n (1 : K)) '' {0, 1})) =
     Submodule.span K ((fun n : ℕ ↦ AddMonoidAlgebra.single n (1 : K)) '' {0, 2})
   rw [Set.image_pair, Set.image_pair, Submodule.map_span, Set.image_pair]
-  simp only [CoalgHom.toLinearMap_eq_coe, CoalgHom.coe_toLinearMap, doubling_single]
+  simp only [CoalgHom.toLinearMap_eq_ofClass, CoalgHom.coe_linearMapOfClass, doubling_single]
 
 /-- Doubling indices identifies the finite proper subcoalgebra supported on `{0, 1}`
 with the finite proper image supported on `{0, 2}`. The ambient coalgebra is infinite
@@ -122,17 +128,19 @@ theorem doubling_supported_pair_image :
         (Subcoalgebra.map f D).toSubmodule =
           AddMonoidAlgebra.supported K K ({0, 2} : Set ℕ) ∧
         (Subcoalgebra.map f D).toSubmodule ≠ ⊤ ∧
-        Module.Finite K D ∧ Module.Finite K (Subcoalgebra.map f D) ∧
+        Module.Finite K D.toSubmodule ∧ Module.Finite K (Subcoalgebra.map f D).toSubmodule ∧
         ∃ hf : Set.InjOn f (D : Set (AddMonoidAlgebra K ℕ)),
-          ∃ x : D,
+          ∃ x : D.toSubmodule,
             (x : AddMonoidAlgebra K ℕ) = AddMonoidAlgebra.single 1 (1 : K) ∧
             (Subcoalgebra.equivMapOfInjOn f D hf x : AddMonoidAlgebra K ℕ) =
               AddMonoidAlgebra.single 2 (1 : K) ∧
             (Subcoalgebra.equivMapOfInjOn f D hf).symm
               (Subcoalgebra.equivMapOfInjOn f D hf x) = x := by
   let D := coordinateSubcoalgebra K ({0, 1} : Set ℕ)
-  have hDfg : D.toSubmodule.FG :=
-    Submodule.fg_span ((by simp : ({0, 1} : Set ℕ).Finite).image _)
+  have hDfg : D.toSubmodule.FG := by
+    rw [show D.toSubmodule = AddMonoidAlgebra.supported K K ({0, 1} : Set ℕ) from
+      coordinateSubcoalgebra_carrier K _, AddMonoidAlgebra.supported_eq_span_single]
+    exact Submodule.fg_span ((by simp : ({0, 1} : Set ℕ).Finite).image _)
   have hDbot : D.toSubmodule ≠ ⊥ := by
     intro h
     have hx : AddMonoidAlgebra.single 0 (1 : K) ∈ D.toSubmodule :=
@@ -162,7 +170,7 @@ theorem doubling_supported_pair_image :
   · rw [doubling_map_pair, coordinateSubcoalgebra_carrier]
   · exact (Subcoalgebra.finite_map_iff_of_injOn (doubling K) D
       (doubling_injective K).injOn).mpr (Module.Finite.iff_fg.mpr hDfg)
-  · let x : D := ⟨AddMonoidAlgebra.single 1 (1 : K),
+  · let x : D.toSubmodule := ⟨AddMonoidAlgebra.single 1 (1 : K),
       (single_mem_coordinateSubcoalgebra K _ 1).mpr (by simp)⟩
     refine ⟨x, rfl, ?_, CoalgEquiv.symm_apply_apply _ x⟩
     rw [Subcoalgebra.coe_equivMapOfInjOn_apply]
@@ -180,8 +188,8 @@ private lemma collapse_single (n : ℕ) (r : K) :
 
 private lemma collapse_fix_singleton {x : AddMonoidAlgebra K ℕ}
     (hx : x ∈ coordinateSubcoalgebra K ({0} : Set ℕ)) : collapse K x = x := by
-  change x ∈ Submodule.span K
-    ((fun n : ℕ ↦ AddMonoidAlgebra.single n (1 : K)) '' ({0} : Set ℕ)) at hx
+  rw [← Subcoalgebra.mem_toSubmodule, coordinateSubcoalgebra_carrier,
+    AddMonoidAlgebra.supported_eq_span_single] at hx
   rw [Set.image_singleton] at hx
   obtain ⟨r, rfl⟩ := Submodule.mem_span_singleton.mp hx
   rw [map_smul, collapse_single]
@@ -202,10 +210,10 @@ theorem collapse_singleton_image_equiv :
       ∃ D : Subcoalgebra K (AddMonoidAlgebra K ℕ),
         D.toSubmodule = AddMonoidAlgebra.supported K K ({0} : Set ℕ) ∧
         D.toSubmodule ≠ ⊥ ∧ D.toSubmodule ≠ ⊤ ∧ D.toSubmodule.FG ∧
-        Subcoalgebra.map f D = D ∧ Module.Finite K D ∧
-        Module.Finite K (Subcoalgebra.map f D) ∧
+        Subcoalgebra.map f D = D ∧ Module.Finite K D.toSubmodule ∧
+        Module.Finite K (Subcoalgebra.map f D).toSubmodule ∧
         ∃ hf : Set.InjOn f (D : Set (AddMonoidAlgebra K ℕ)),
-          ∀ x : D, (Subcoalgebra.equivMapOfInjOn f D hf x : AddMonoidAlgebra K ℕ) =
+          ∀ x : D.toSubmodule, (Subcoalgebra.equivMapOfInjOn f D hf x : AddMonoidAlgebra K ℕ) =
             (x : AddMonoidAlgebra K ℕ) := by
   let D := coordinateSubcoalgebra K ({0} : Set ℕ)
   have hnotinj : ¬ Function.Injective (collapse K) := by
@@ -213,8 +221,10 @@ theorem collapse_singleton_image_equiv :
     have heq := h ((collapse_single K 0 1).trans (collapse_single K 1 1).symm)
     have hcoeff := congrArg (fun x : AddMonoidAlgebra K ℕ ↦ x.coeff 0) heq
     simp at hcoeff
-  have hDfg : D.toSubmodule.FG :=
-    Submodule.fg_span ((Set.finite_singleton (0 : ℕ)).image _)
+  have hDfg : D.toSubmodule.FG := by
+    rw [show D.toSubmodule = AddMonoidAlgebra.supported K K ({0} : Set ℕ) from
+      coordinateSubcoalgebra_carrier K _, AddMonoidAlgebra.supported_eq_span_single]
+    exact Submodule.fg_span ((Set.finite_singleton (0 : ℕ)).image _)
   have hDbot : D.toSubmodule ≠ ⊥ := by
     intro h
     have hx : AddMonoidAlgebra.single 0 (1 : K) ∈ D.toSubmodule :=
@@ -256,8 +266,8 @@ theorem tensor_lid_supported_pair_transport :
     ∃ (D : Subcoalgebra K (AddMonoidAlgebra K ℕ))
       (E : Subcoalgebra K (K ⊗[K] AddMonoidAlgebra K ℕ)),
       D.toSubmodule = AddMonoidAlgebra.supported K K ({0, 1} : Set ℕ) ∧
-      Module.Finite K D ∧ E = e.symm.subcoalgebraCongr D ∧
-      e.subcoalgebraCongr E = D ∧ Module.Finite K E ∧
+      Module.Finite K D.toSubmodule ∧ E = e.symm.subcoalgebraCongr D ∧
+      e.subcoalgebraCongr E = D ∧ Module.Finite K E.toSubmodule ∧
       E.toSubmodule ≠ ⊥ ∧ E.toSubmodule ≠ ⊤ ∧
       (1 : K) ⊗ₜ[K] AddMonoidAlgebra.single 0 (1 : K) ∈ E ∧
       (1 : K) ⊗ₜ[K] AddMonoidAlgebra.single 1 (1 : K) ∈ E ∧
@@ -265,9 +275,11 @@ theorem tensor_lid_supported_pair_transport :
   let e := Coalgebra.TensorProduct.lid K (AddMonoidAlgebra K ℕ)
   let D := coordinateSubcoalgebra K ({0, 1} : Set ℕ)
   let E := e.subcoalgebraCongr.symm D
-  have hDfg : D.toSubmodule.FG :=
-    Submodule.fg_span ((by simp : ({0, 1} : Set ℕ).Finite).image _)
-  have hfinite : Module.Finite K D := Module.Finite.iff_fg.mpr hDfg
+  have hDfg : D.toSubmodule.FG := by
+    rw [show D.toSubmodule = AddMonoidAlgebra.supported K K ({0, 1} : Set ℕ) from
+      coordinateSubcoalgebra_carrier K _, AddMonoidAlgebra.supported_eq_span_single]
+    exact Submodule.fg_span ((by simp : ({0, 1} : Set ℕ).Finite).image _)
+  have hfinite : Module.Finite K D.toSubmodule := Module.Finite.iff_fg.mpr hDfg
   have hEeq : E = e.symm.subcoalgebraCongr D := by
     change e.subcoalgebraCongr.symm D = e.symm.subcoalgebraCongr D
     rw [CoalgEquiv.subcoalgebraCongr_symm]
@@ -293,7 +305,7 @@ theorem tensor_lid_supported_pair_transport :
   · exact (CoalgEquiv.finite_subcoalgebraCongr_iff e E).mp (by rwa [hback])
   · intro h
     have hx := (hmem 0).mpr (by simp)
-    rw [Subcoalgebra.mem_iff, h, Submodule.mem_bot] at hx
+    rw [← Subcoalgebra.mem_toSubmodule, h, Submodule.mem_bot] at hx
     exact hnonzero hx
   · intro h
     have hx : (1 : K) ⊗ₜ[K] AddMonoidAlgebra.single 2 (1 : K) ∈ E.toSubmodule := by

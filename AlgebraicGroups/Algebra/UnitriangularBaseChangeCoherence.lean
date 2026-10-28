@@ -39,6 +39,8 @@ noncomputable section
 
 open scoped TensorProduct
 
+open TauCeti.UpperUnitriangular
+
 universe u
 
 namespace UnitriangularCoordinateRing
@@ -48,17 +50,15 @@ namespace UnitriangularCoordinateRing
 theorem baseChange_self (R : Type u) [CommRing R]
     (ι : Type u) [Fintype ι] [LinearOrder ι] :
     baseChange R R ι =
-      Algebra.TensorProduct.lid R (CoordinateRing R ι) := by
+      Algebra.TensorProduct.lid R (coordinateHopfAlgebra R ι) := by
   have hmaps : (baseChange R R ι).toAlgHom =
-      (Algebra.TensorProduct.lid R (CoordinateRing R ι)).toAlgHom := by
-    apply tensor_algHom_ext_entries R R ι (CoordinateRing R ι)
+      (Algebra.TensorProduct.lid R (coordinateHopfAlgebra R ι)).toAlgHom := by
+    apply tensor_algHom_ext_entries R R ι (coordinateHopfAlgebra R ι)
     intro p
     change baseChange R R ι
-        (1 ⊗ₜ[R] quotient R ι
-          (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)) =
-      Algebra.TensorProduct.lid R (CoordinateRing R ι)
-        (1 ⊗ₜ[R] quotient R ι
-          (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2))
+        (1 ⊗ₜ[R] (coordinateHopfAlgebraAlgEquiv R ι (genericMatrix R ι p.1.1 p.1.2))) =
+      Algebra.TensorProduct.lid R (coordinateHopfAlgebra R ι)
+        (1 ⊗ₜ[R] (coordinateHopfAlgebraAlgEquiv R ι (genericMatrix R ι p.1.1 p.1.2)))
     rw [baseChange_tmul_entry, Algebra.TensorProduct.lid_tmul]
     simp only [map_one, one_mul, one_smul]
   exact AlgEquiv.ext (fun x => congrArg (fun φ => φ x) hmaps)
@@ -70,46 +70,43 @@ theorem baseChange_tower (R S T : Type u)
     [Algebra R S] [Algebra S T] [Algebra R T]
     [IsScalarTower R S T]
     (ι : Type u) [Fintype ι] [LinearOrder ι] :
-    (Algebra.TensorProduct.cancelBaseChange R S T T (CoordinateRing R ι)).trans
+    (Algebra.TensorProduct.cancelBaseChange R S T T (coordinateHopfAlgebra R ι)).trans
         (baseChange R T ι) =
       (Algebra.TensorProduct.congr
           (AlgEquiv.refl : T ≃ₐ[T] T)
           (baseChange R S ι)).trans
         (baseChange S T ι) := by
-  let : Algebra S (CoordinateRing T ι) :=
-    Algebra.compHom (CoordinateRing T ι) (algebraMap S T)
-  let : IsScalarTower S T (CoordinateRing T ι) :=
-    inferInstance
+  let : Algebra S (coordinateHopfAlgebra T ι) :=
+    Algebra.compHom (coordinateHopfAlgebra T ι) (algebraMap S T)
+  let : IsScalarTower S T (coordinateHopfAlgebra T ι) :=
+    IsScalarTower.of_algebraMap_eq fun _ => rfl
   -- Restricting algebra homomorphisms uses the algebra-induced scalar actions.
   let := IsScalarTower.of_algebraMap_eq
-    (R := S) (S := T) (A := CoordinateRing T ι) (fun _ => rfl)
+    (R := S) (S := T) (A := coordinateHopfAlgebra T ι) (fun _ => rfl)
   have hmaps :
-      ((Algebra.TensorProduct.cancelBaseChange R S T T (CoordinateRing R ι)).trans
+      ((Algebra.TensorProduct.cancelBaseChange R S T T (coordinateHopfAlgebra R ι)).trans
         (baseChange R T ι)).toAlgHom =
       ((Algebra.TensorProduct.congr
         (AlgEquiv.refl : T ≃ₐ[T] T) (baseChange R S ι)).trans
           (baseChange S T ι)).toAlgHom := by
     apply Algebra.TensorProduct.ext_ring
-    apply tensor_algHom_ext_entries R S ι (CoordinateRing T ι)
+    apply tensor_algHom_ext_entries R S ι (coordinateHopfAlgebra T ι)
     intro p
     change baseChange R T ι
-        (Algebra.TensorProduct.cancelBaseChange R S T T (CoordinateRing R ι)
-          (1 ⊗ₜ[S] (1 ⊗ₜ[R] quotient R ι
-            (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)))) =
+        (Algebra.TensorProduct.cancelBaseChange R S T T (coordinateHopfAlgebra R ι)
+          (1 ⊗ₜ[S] (1 ⊗ₜ[R] (coordinateHopfAlgebraAlgEquiv R ι (genericMatrix R ι p.1.1 p.1.2))))) =
       baseChange S T ι
         (Algebra.TensorProduct.congr
           (AlgEquiv.refl : T ≃ₐ[T] T) (baseChange R S ι)
-          (1 ⊗ₜ[S] (1 ⊗ₜ[R] quotient R ι
-            (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2))))
+          (1 ⊗ₜ[S] (1 ⊗ₜ[R] (coordinateHopfAlgebraAlgEquiv R ι (genericMatrix R ι p.1.1 p.1.2)))))
     rw [Algebra.TensorProduct.cancelBaseChange_tmul,
       Algebra.TensorProduct.congr_apply, Algebra.TensorProduct.map_tmul]
     change baseChange R T ι
-        (((1 : S) • (1 : T)) ⊗ₜ[R] quotient R ι
-          (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)) =
+        (((1 : S) • (1 : T)) ⊗ₜ[R] (coordinateHopfAlgebraAlgEquiv R ι (genericMatrix R ι p.1.1
+          p.1.2))) =
       baseChange S T ι
         ((1 : T) ⊗ₜ[S] baseChange R S ι
-          ((1 : S) ⊗ₜ[R] quotient R ι
-            (GeneralLinearCoordinateRing.matrix R ι p.1.1 p.1.2)))
+          ((1 : S) ⊗ₜ[R] (coordinateHopfAlgebraAlgEquiv R ι (genericMatrix R ι p.1.1 p.1.2))))
     simp only [one_smul, baseChange_tmul_entry, map_one, one_mul]
   exact AlgEquiv.ext (fun x => congrArg (fun φ => φ x) hmaps)
 

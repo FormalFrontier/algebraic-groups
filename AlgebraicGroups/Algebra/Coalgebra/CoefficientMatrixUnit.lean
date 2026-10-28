@@ -72,7 +72,7 @@ theorem coefficientMatrix_comul_map [Fintype ι]
       (CoalgHomClass.map_comp_comul_apply f (M i j)).symm
     _ = ∑ k, f (M i k) ⊗ₜ[R] f (M k j) := by
       simp only [hΔ i j, map_sum, _root_.TensorProduct.map_tmul,
-        CoalgHom.toLinearMap_eq_coe, CoalgHom.coe_toLinearMap]
+        CoalgHom.toLinearMap_eq_ofClass, CoalgHom.coe_linearMapOfClass]
 
 /-- A coalgebra homomorphism preserves the counit law of a coefficient matrix. -/
 theorem coefficientMatrix_counit_map [DecidableEq ι]
@@ -218,7 +218,7 @@ theorem coefficientMatrixUnit_map
       (Coalgebra.coefficientMatrix_counit_map M hε f.toCoalgHom) := by
   apply Units.ext
   simp only [Units.coe_map, coe_coefficientMatrixUnit, RingHom.toMonoidHom_eq_coe,
-    MonoidHom.coe_coe, RingHom.mapMatrix_apply, AlgHom.toRingHom_eq_coe,
+    MonoidHom.coe_ofClass, RingHom.mapMatrix_apply, AlgHom.toRingHom_eq_coe,
     AlgHom.coe_toRingHom, BialgHom.coe_toAlgHom]
 
 end CoefficientMatrixMap
@@ -243,7 +243,7 @@ theorem coefficientMatrixUnit_reindex
       (Coalgebra.coefficientMatrix_counit_reindex M hε e) := by
   apply Units.ext
   simp only [Units.coe_map, coe_coefficientMatrixUnit, RingHom.toMonoidHom_eq_coe,
-    MonoidHom.coe_coe, RingEquiv.toRingHom_eq_coe, RingEquiv.coe_toRingHom,
+    MonoidHom.coe_ofClass, RingEquiv.toRingHom_eq_coe, RingEquiv.coe_toRingHom,
     Matrix.coe_reindexRingEquiv]
 
 end CoefficientMatrixReindex

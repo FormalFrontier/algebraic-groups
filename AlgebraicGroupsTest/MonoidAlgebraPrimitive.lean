@@ -115,17 +115,17 @@ statement. The result also covers `n = 0` and the zero ring; it uses the
 canonical bialgebra structure rather than an algebra-only quotient
 presentation. -/
 theorem rootsOfUnityCoordinateRing_primitive_iff_zero (R : Type*) [CommRing R]
-    (n : ℕ) (x : AlgebraicGeometry.rootsOfUnityCoordinateRing R n) :
+    (n : ℕ) (x : MonoidAlgebra R (TauCeti.RootsOfUnityGroup.characterGroup n)) :
     Bialgebra.IsPrimitiveElem R x ↔ x = 0 :=
-  additiveMonoidAlgebraPrimitive_iff_zero x
+  MonoidAlgebra.isPrimitiveElem_iff_eq_zero x
 
 private theorem persistentTestMonoidAlgebraPrimitive006
-    (x : AlgebraicGeometry.rootsOfUnityCoordinateRing (ZMod 1) 1) :
+    (x : MonoidAlgebra (ZMod 1) (TauCeti.RootsOfUnityGroup.characterGroup 1)) :
     Bialgebra.IsPrimitiveElem (ZMod 1) x ↔ x = 0 :=
   rootsOfUnityCoordinateRing_primitive_iff_zero (ZMod 1) 1 x
 
 private theorem persistentTestMonoidAlgebraPrimitive007 (R : Type*) [CommRing R]
-    (x : AlgebraicGeometry.rootsOfUnityCoordinateRing R 1) :
+    (x : MonoidAlgebra R (TauCeti.RootsOfUnityGroup.characterGroup 1)) :
     Bialgebra.IsPrimitiveElem R x ↔ x = 0 :=
   rootsOfUnityCoordinateRing_primitive_iff_zero R 1 x
 

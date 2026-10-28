@@ -27,8 +27,8 @@ or monoid dictionary on the kernel scheme.
 
 * J. S. Milne, *Algebraic Groups* (2017), §2.2 and §2.9, for the
   multiplicative and diagonal groups; §12.d for the diagonal product.
-* AlgebraicGroups, `GroupScheme.Diagonal`, `GroupScheme.Multiplicative`
-  and `GroupScheme.DiagonalProduct`, for the coordinate rings, group
+* Tau Ceti, `SplitTorus.Scheme`, and AlgebraicGroups,
+  `GroupScheme.Multiplicative` and `GroupScheme.DiagonalProduct`, for the group
   objects, point equivalences and projection calculation.
 * Mathlib, `AlgebraicGeometry.Group.Affine`, for affine group points;
   `CategoryTheory.Monoidal.Cartesian.Over` and the pullback API.
@@ -41,36 +41,33 @@ AlgebraicGroups and Mathlib formalizations.
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits CartesianMonoidalCategory
+open CategoryTheory CategoryTheory.Limits CartesianMonoidalCategory TauCeti.SplitTorus
 open scoped CategoryTheory.MonObj
 
 namespace AlgebraicGeometry
 
 private abbrev integerBase : Scheme := Spec (.of ℤ)
 
-local instance : CartesianMonoidalCategory (Over (Spec (.of ℤ))) :=
-  Over.cartesianMonoidalCategory (Spec (.of ℤ))
+attribute [local instance] Over.cartesianMonoidalCategory
 
 private abbrev integerDomain : Over integerBase := integerBase.asOver integerBase
-private abbrev integerDiagonal := diagonalGroupScheme ℤ (Fin 2)
-private abbrev integerMultiplicative := (multiplicativeGroupScheme ℤ).toMon
+private abbrev integerDiagonal := groupScheme ℤ (Fin 2)
+private abbrev integerMultiplicative :=
+  (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).toMon
 
-local instance : GrpObj (diagonalGroupScheme ℤ (Fin 2)).X :=
-  (diagonalGroupScheme ℤ (Fin 2)).grp
-local instance : MonObj (multiplicativeGroupScheme ℤ).toMon.X :=
-  (multiplicativeGroupScheme ℤ).toMon.mon
 
 private abbrev integerProjection : integerDiagonal.X ⟶ integerMultiplicative.X :=
-  (diagonalGroupProjection ℤ (Fin 2) (0 : Fin 2)).hom.hom
+  (characterGroupSchemeMap (R := ℤ) (Finsupp.single (0 : Fin 2) 1)).hom.hom
 
-local instance : IsMonHom (diagonalGroupProjection ℤ (Fin 2) (0 : Fin 2)).hom.hom :=
-  (diagonalGroupProjection ℤ (Fin 2) (0 : Fin 2)).hom.isMonHom_hom
+local instance : IsMonHom
+    (characterGroupSchemeMap (R := ℤ) (Finsupp.single (0 : Fin 2) 1)).hom.hom :=
+  (characterGroupSchemeMap (R := ℤ) (Finsupp.single (0 : Fin 2) 1)).hom.isMonHom_hom
 
 private abbrev positivePoint : integerDomain ⟶ integerDiagonal.X :=
-  diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1)
+  (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1)
 
 private abbrev negativePoint : integerDomain ⟶ integerDiagonal.X :=
-  diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun k => if k = 0 then 1 else -1)
+  (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun k => if k = 0 then 1 else -1)
 
 /-- The structure map of the self-algebra test scheme is the identity. -/
 theorem integerSpec_asOver_hom :
@@ -80,30 +77,26 @@ theorem integerSpec_asOver_hom :
   exact Spec.map_id _
 
 private theorem integerPoint_projection (v : Fin 2 → ℤˣ) :
-    diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ v ≫ integerProjection =
-      multiplicativeGroupMulEquivPoints ℤ ℤ (v 0) := by
-  change diagonalGroupMulEquivPoints ℤ (Fin 2) ℤ
-    ((Matrix.DiagonalGroup.unitsEquiv :
-      Matrix.DiagonalGroup (Fin 2) ℤ ≃* (Fin 2 → ℤˣ)).symm v) ≫
-        integerProjection = _
-  simpa only [MulEquiv.apply_symm_apply] using
-    diagonalGroupProjection_point ℤ (Fin 2) ℤ
-      ((Matrix.DiagonalGroup.unitsEquiv :
-        Matrix.DiagonalGroup (Fin 2) ℤ ≃* (Fin 2 → ℤˣ)).symm v) (0 : Fin 2)
+    (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm v ≫ integerProjection =
+      (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℤ) (A := ℤ)).symm (v 0) := by
+  apply (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+    (R := ℤ) (A := ℤ)).injective
+  simp [integerProjection]
 
 /-- The all-one tuple is the hom-unit, with its original test-scheme domain. -/
 theorem diagonalGroup_integerPoint_one :
-    diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1) =
+    (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1) =
       toUnit ((Spec (.of ℤ)).asOver (Spec (.of ℤ))) ≫
-        η[(diagonalGroupScheme ℤ (Fin 2)).X] := by
-  change (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ)
+        η[(groupScheme ℤ (Fin 2)).X] := by
+  change ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm)
     (1 : Fin 2 → ℤˣ) = _
   rw [map_one, Hom.one_def]
 
 /-- On the original scheme `Spec ℤ`, the all-one point is the unit section. -/
 theorem diagonalGroup_integerPoint_one_left :
-    (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1)).left =
-      (η[(diagonalGroupScheme ℤ (Fin 2)).X]).left := by
+    ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1)).left =
+      (η[(groupScheme ℤ (Fin 2)).X]).left := by
   have h := congrArg (fun q : integerDomain ⟶ integerDiagonal.X => q.left)
     diagonalGroup_integerPoint_one
   calc
@@ -120,16 +113,17 @@ private theorem negativePoint_projection :
     negativePoint ≫ integerProjection = toUnit integerDomain ≫ η[integerMultiplicative.X] := by
   have h := integerPoint_projection (fun k => if k = 0 then 1 else -1)
   change negativePoint ≫ integerProjection =
-    multiplicativeGroupMulEquivPoints ℤ ℤ (1 : ℤˣ) at h
+    (TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv
+        (R := ℤ) (A := ℤ)).symm (1 : ℤˣ) at h
   simpa only [map_one, Hom.one_def] using h
 
 /-- Both specified integer points give commutative squares of original scheme maps. -/
 theorem diagonalGroup_integerPoints_squares :
-    let qPos := diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1)
-    let qNeg := diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+    let qPos := (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1)
+    let qNeg := (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
       (fun k => if k = 0 then 1 else -1)
-    let f := (diagonalGroupProjection ℤ (Fin 2) (0 : Fin 2)).hom.hom.left
-    let e := (η[(multiplicativeGroupScheme ℤ).toMon.X]).left
+    let f := (characterGroupSchemeMap (R := ℤ) (Finsupp.single (0 : Fin 2) 1)).hom.hom.left
+    let e := (η[(TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).toMon.X]).left
     qPos.left ≫ f = (𝟙 (Spec (.of ℤ))) ≫ e ∧
       qNeg.left ≫ f = (𝟙 (Spec (.of ℤ))) ≫ e := by
   constructor
@@ -154,34 +148,36 @@ theorem diagonalGroup_integerPoints_squares :
 
 /-- The source unit gives the unit square for the integer diagonal projection. -/
 theorem diagonalGroup_integerPoint_unit_square :
-    (η[(diagonalGroupScheme ℤ (Fin 2)).X]).left ≫
-        (diagonalGroupProjection ℤ (Fin 2) (0 : Fin 2)).hom.hom.left =
-      (𝟙 (Spec (.of ℤ))) ≫ (η[(multiplicativeGroupScheme ℤ).toMon.X]).left := by
+    (η[(groupScheme ℤ (Fin 2)).X]).left ≫
+        (characterGroupSchemeMap (R := ℤ) (Finsupp.single (0 : Fin 2) 1)).hom.hom.left =
+      (𝟙 (Spec (.of ℤ))) ≫
+        (η[(TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).toMon.X]).left := by
   rw [← diagonalGroup_integerPoint_one_left]
   exact diagonalGroup_integerPoints_squares.1
 
 private theorem integerPoint_section (v : Fin 2 → ℤˣ) :
-    (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ v).left ≫ integerDiagonal.X.hom =
+    ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm v).left ≫
+      integerDiagonal.X.hom =
       𝟙 integerBase := by
   rw [Over.w, integerSpec_asOver_hom]
 
 /-- Both specified points are sections over the original integer base scheme. -/
 theorem diagonalGroup_integerPoints_sections :
-    let qPos := diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1)
-    let qNeg := diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+    let qPos := (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1)
+    let qNeg := (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
       (fun k => if k = 0 then 1 else -1)
-    let g := (diagonalGroupScheme ℤ (Fin 2)).X.hom
+    let g := (groupScheme ℤ (Fin 2)).X.hom
     qPos.left ≫ g = 𝟙 (Spec (.of ℤ)) ∧ qNeg.left ≫ g = 𝟙 (Spec (.of ℤ)) :=
   ⟨integerPoint_section _, integerPoint_section _⟩
 
 /-- The two original scheme maps are different, already in their second unit coordinate. -/
 theorem diagonalGroup_integerPoints_ne :
-    (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1)).left ≠
-      (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+    ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1)).left ≠
+      ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
         (fun k => if k = 0 then 1 else -1)).left := by
   intro h
   have hq : positivePoint = negativePoint := Over.OverMorphism.ext h
-  have hv := (diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ).injective hq
+  have hv := ((schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm).injective hq
   have hz := congrArg (fun v : Fin 2 → ℤˣ => ((v (1 : Fin 2) : ℤˣ) : ℤ)) hv
   norm_num at hz
 
@@ -192,14 +188,14 @@ assumed. Their slice morphisms have the same underlying maps. The positive lift
 is the lift of the source unit, by pullback uniqueness.
 -/
 theorem diagonalKernel_integerPoints
-    (N : Scheme) (i : N ⟶ (diagonalGroupScheme ℤ (Fin 2)).X.left)
+    (N : Scheme) (i : N ⟶ (groupScheme ℤ (Fin 2)).X.left)
     (p : N ⟶ Spec (.of ℤ))
     (hPB : IsPullback i p
-      (diagonalGroupProjection ℤ (Fin 2) (0 : Fin 2)).hom.hom.left
-      (η[(multiplicativeGroupScheme ℤ).toMon.X]).left) :
+      (characterGroupSchemeMap (R := ℤ) (Finsupp.single (0 : Fin 2) 1)).hom.hom.left
+      (η[(TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).toMon.X]).left) :
     let A := (Spec (.of ℤ)).asOver (Spec (.of ℤ))
-    let qPos := diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1)
-    let qNeg := diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+    let qPos := (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1)
+    let qNeg := (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
       (fun k => if k = 0 then 1 else -1)
     let kPos := hPB.lift qPos.left (𝟙 _) diagonalGroup_integerPoints_squares.1
     let kNeg := hPB.lift qNeg.left (𝟙 _) diagonalGroup_integerPoints_squares.2
@@ -212,7 +208,7 @@ theorem diagonalKernel_integerPoints
     kPos ≫ i = qPos.left ∧ kNeg ≫ i = qNeg.left ∧
       kPos ≫ p = 𝟙 _ ∧ kNeg ≫ p = 𝟙 _ ∧ kPos ≠ kNeg ∧
       lPos.left = kPos ∧ lNeg.left = kNeg ∧ lPos ≠ lNeg ∧
-      kPos = hPB.lift (η[(diagonalGroupScheme ℤ (Fin 2)).X]).left
+      kPos = hPB.lift (η[(groupScheme ℤ (Fin 2)).X]).left
         (𝟙 _) diagonalGroup_integerPoint_unit_square := by
   dsimp only
   have hne :
@@ -238,10 +234,10 @@ uniqueness, keeping the two APIs distinct.
 -/
 theorem diagonalKernel_integerPoints_pullback :
     let S := Spec (.of ℤ)
-    let f := (diagonalGroupProjection ℤ (Fin 2) (0 : Fin 2)).hom.hom.left
-    let e := (η[(multiplicativeGroupScheme ℤ).toMon.X]).left
-    let qPos := diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ (fun _ => 1)
-    let qNeg := diagonalGroupUnitsEquivPoints ℤ (Fin 2) ℤ
+    let f := (characterGroupSchemeMap (R := ℤ) (Finsupp.single (0 : Fin 2) 1)).hom.hom.left
+    let e := (η[(TauCeti.DiagonalizableGroup.multiplicativeGroupScheme ℤ).toMon.X]).left
+    let qPos := (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm (fun _ => 1)
+    let qNeg := (schemePointsMulEquiv (R := ℤ) (A := ℤ) (sigma := Fin 2)).symm
       (fun k => if k = 0 then 1 else -1)
     let kPos := pullback.lift qPos.left (𝟙 S) diagonalGroup_integerPoints_squares.1
     let kNeg := pullback.lift qNeg.left (𝟙 S) diagonalGroup_integerPoints_squares.2

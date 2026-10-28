@@ -40,7 +40,7 @@ private def schemePoint (k : ℤ) :
 private abbrev Φ :
     (base ⟶ (Spec (.of coordinateRing)).asOver (Spec (.of ℤ))) ≃*
       WithConv (coordinateRing →ₐ[ℤ] ((algΓ (.of ℤ)).obj base).unop) :=
-  affineSpecHomOverMulEquiv ℤ base coordinateRing
+  TauCeti.CommHopfAlgCat.schemePointsAlgΓMulEquiv (R := ℤ) coordinateRing base
 
 -- Pointwise multiplication of the points with generator values `2` and `3` is convolution.
 private theorem point_map_mul : Φ (schemePoint 2 * schemePoint 3) =
@@ -51,7 +51,7 @@ private theorem point_map_mul : Φ (schemePoint 2 * schemePoint 3) =
 private theorem point_toRingHom :
     (Scheme.ΓSpecIso (.of ℤ)).hom.hom.comp (Φ (schemePoint 2)).ofConv.toRingHom =
       (integerPoint 2).ofConv.toRingHom := by
-  exact (affineSpecHomOverMulEquiv_spec ℤ coordinateRing ℤ (schemePoint 2)).trans
+  exact (schemePointsAlgΓMulEquiv_spec ℤ coordinateRing ℤ (schemePoint 2)).trans
     (congrArg (fun q : WithConv (coordinateRing →ₐ[ℤ] ℤ) ↦ q.ofConv.toRingHom)
       ((Spec.mapMulEquiv (R := ℤ) (S := coordinateRing) (T := ℤ)).symm_apply_apply
         (integerPoint 2)))

@@ -52,14 +52,14 @@ namespace AlgebraicGeometry
 variable (K : Type u) [CommRing K] (p : ℕ) [Fact p.Prime] [CharP K p] (m : ℕ)
 
 /-- The characteristic-power ideal in the additive coordinate Hopf algebra. -/
-abbrev infinitesimalAdditiveIdeal : Ideal (additiveGroupCoordinateRing K) :=
-  Ideal.span {(additiveGroupCoordinate K) ^ (p ^ m)}
+abbrev infinitesimalAdditiveIdeal : Ideal ((SymmetricAlgebra K K)) :=
+  Ideal.span {((SymmetricAlgebra.ι K K 1)) ^ (p ^ m)}
 
 private theorem infinitesimalAdditive_primitive :
-    Bialgebra.IsPrimitiveElem K (additiveGroupCoordinate K) := by
+    Bialgebra.IsPrimitiveElem K ((SymmetricAlgebra.ι K K 1)) := by
   constructor
   · simp
-  · simpa only [add_comm] using additiveGroupCoordinate_comul K
+  · simpa only [add_comm] using SymmetricAlgebra.comul_ι K K 1
 
 instance infinitesimalAdditiveIdeal_isHopfIdeal :
     Ideal.IsHopfIdeal K (infinitesimalAdditiveIdeal K p m) :=
@@ -69,18 +69,18 @@ instance infinitesimalAdditiveIdeal_isHopfIdeal :
 additive group in Milne's *Algebraic Groups*, item 2.5, extended from fields
 to commutative bases of prime characteristic. -/
 abbrev infinitesimalAdditiveCoordinateRing :=
-  additiveGroupCoordinateRing K ⧸ infinitesimalAdditiveIdeal K p m
+  (SymmetricAlgebra K K) ⧸ infinitesimalAdditiveIdeal K p m
 
 /-- The image of the additive coordinate in the quotient Hopf algebra. -/
 @[expose] def infinitesimalAdditiveCoordinate : infinitesimalAdditiveCoordinateRing K p m :=
-  (Ideal.Quotient.mkₐ K (infinitesimalAdditiveIdeal K p m)) (additiveGroupCoordinate K)
+  (Ideal.Quotient.mkₐ K (infinitesimalAdditiveIdeal K p m)) ((SymmetricAlgebra.ι K K 1))
 
 omit [Fact p.Prime] [CharP K p] in
 @[simp]
 theorem infinitesimalAdditiveCoordinate_pow :
     infinitesimalAdditiveCoordinate K p m ^ (p ^ m) = 0 := by
   change (Ideal.Quotient.mk (infinitesimalAdditiveIdeal K p m)
-    (additiveGroupCoordinate K)) ^ (p ^ m) = 0
+    ((SymmetricAlgebra.ι K K 1))) ^ (p ^ m) = 0
   rw [← map_pow]
   exact Ideal.Quotient.eq_zero_iff_mem.mpr (Ideal.mem_span_singleton_self _)
 
@@ -90,22 +90,22 @@ theorem infinitesimalAdditiveCoordinate_comul :
       infinitesimalAdditiveCoordinate K p m ⊗ₜ[K] 1 +
         1 ⊗ₜ[K] infinitesimalAdditiveCoordinate K p m := by
   rw [show infinitesimalAdditiveCoordinate K p m =
-      Ideal.Quotient.mk (infinitesimalAdditiveIdeal K p m) (additiveGroupCoordinate K) from rfl,
-    Bialgebra.Quotient.comul_mk, additiveGroupCoordinate_comul]
+      Ideal.Quotient.mk (infinitesimalAdditiveIdeal K p m) ((SymmetricAlgebra.ι K K 1)) from rfl,
+    Bialgebra.Quotient.comul_mk, SymmetricAlgebra.comul_ι]
   simp
 
 @[simp]
 theorem infinitesimalAdditiveCoordinate_counit :
     CoalgebraStruct.counit (R := K) (infinitesimalAdditiveCoordinate K p m) = 0 := by
-  exact additiveGroupCoordinate_counit K
+  exact SymmetricAlgebra.counit_ι K K 1
 
 @[simp]
 theorem infinitesimalAdditiveCoordinate_antipode :
     (HopfAlgebraStruct.antipode K) (infinitesimalAdditiveCoordinate K p m) =
       -infinitesimalAdditiveCoordinate K p m := by
   rw [show infinitesimalAdditiveCoordinate K p m =
-      Ideal.Quotient.mk (infinitesimalAdditiveIdeal K p m) (additiveGroupCoordinate K) from rfl,
-    HopfAlgebra.Quotient.antipode_mk, additiveGroupCoordinate_antipode]
+      Ideal.Quotient.mk (infinitesimalAdditiveIdeal K p m) ((SymmetricAlgebra.ι K K 1)) from rfl,
+    HopfAlgebra.Quotient.antipode_mk, TauCeti.SymmetricAlgebra.antipode_ι]
   rfl
 
 instance infinitesimalAdditiveCoordinateRing_finiteType :
@@ -217,22 +217,23 @@ private def infinitesimalAdditiveLift
     (r : infinitesimalAdditiveSubgroup K p m R) :
     infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R :=
   Ideal.Quotient.liftₐ (infinitesimalAdditiveIdeal K p m)
-    (additiveGroupMulEquivAlgHom K R (.ofAdd r.val)).ofConv (by
+    ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm (.ofAdd r.val)).ofConv (by
       intro x hx
       obtain ⟨b, hb⟩ := Ideal.mem_span_singleton'.mp hx
-      rw [← hb, map_mul, map_pow, additiveGroupMulEquivAlgHom_coordinate,
+      rw [← hb, map_mul, map_pow, TauCeti.AdditiveGroup.gaPointsMulEquiv_symm_apply_ι, toAdd_ofAdd,
         r.property, mul_zero])
 
 private theorem infinitesimalAdditiveLift_coordinate
     (r : infinitesimalAdditiveSubgroup K p m R) :
     infinitesimalAdditiveLift K p m R r (infinitesimalAdditiveCoordinate K p m) = r.val := by
-  exact additiveGroupMulEquivAlgHom_coordinate K R r.val
+  exact TauCeti.AdditiveGroup.gaPointsMulEquiv_symm_apply_ι (.ofAdd r.val)
 
 private theorem infinitesimalAdditiveLift_comp_mk
     (r : infinitesimalAdditiveSubgroup K p m R) :
     (infinitesimalAdditiveLift K p m R r).comp
       (Ideal.Quotient.mkₐ K (infinitesimalAdditiveIdeal K p m)) =
-        (additiveGroupMulEquivAlgHom K R (.ofAdd r.val)).ofConv := by
+        ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm (.ofAdd r.val)).ofConv
+            := by
   exact Ideal.Quotient.liftₐ_comp _ _ _
 
 /-- Evaluation at the quotient coordinate identifies convolution homomorphisms
@@ -241,10 +242,11 @@ with characteristic-power nilpotent elements, including for zero test algebras. 
     Multiplicative (infinitesimalAdditiveSubgroup K p m R) ≃*
       WithConv (infinitesimalAdditiveCoordinateRing K p m →ₐ[K] R) where
   toFun r := WithConv.toConv (Ideal.Quotient.liftₐ (infinitesimalAdditiveIdeal K p m)
-    (additiveGroupMulEquivAlgHom K R (.ofAdd r.toAdd.val)).ofConv (by
+    ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm (.ofAdd
+        r.toAdd.val)).ofConv (by
       intro x hx
       obtain ⟨b, hb⟩ := Ideal.mem_span_singleton'.mp hx
-      rw [← hb, map_mul, map_pow, additiveGroupMulEquivAlgHom_coordinate,
+      rw [← hb, map_mul, map_pow, TauCeti.AdditiveGroup.gaPointsMulEquiv_symm_apply_ι, toAdd_ofAdd,
         r.toAdd.property, mul_zero]))
   invFun f := Multiplicative.ofAdd ⟨f.ofConv (infinitesimalAdditiveCoordinate K p m), by
     change (f.ofConv (infinitesimalAdditiveCoordinate K p m)) ^ (p ^ m) = 0
@@ -266,8 +268,8 @@ with characteristic-power nilpotent elements, including for zero test algebras. 
     rw [infinitesimalAdditiveLift_comp_mk]
     apply SymmetricAlgebra.algHom_ext
     ext
-    exact additiveGroupMulEquivAlgHom_coordinate K R
-      (f.ofConv (infinitesimalAdditiveCoordinate K p m))
+    exact TauCeti.AdditiveGroup.gaPointsMulEquiv_symm_apply_ι
+      (.ofAdd (f.ofConv (infinitesimalAdditiveCoordinate K p m)))
   map_mul' r s := by
     apply WithConv.ofConv_injective
     apply Ideal.Quotient.algHom_ext
@@ -281,14 +283,16 @@ with characteristic-power nilpotent elements, including for zero test algebras. 
       (WithConv.toConv (infinitesimalAdditiveLift K p m R s.toAdd))
       (Bialgebra.Quotient.mkBialgHom (infinitesimalAdditiveIdeal K p m))]
     rw [infinitesimalAdditiveLift_comp_mk]
-    change ((additiveGroupMulEquivAlgHom K R) (.ofAdd (r.toAdd.val + s.toAdd.val))).ofConv =
+    change (((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm) (.ofAdd
+        (r.toAdd.val + s.toAdd.val))).ofConv =
       (WithConv.toConv ((infinitesimalAdditiveLift K p m R r.toAdd).comp
         (Ideal.Quotient.mkₐ K (infinitesimalAdditiveIdeal K p m))) *
        WithConv.toConv ((infinitesimalAdditiveLift K p m R s.toAdd).comp
          (Ideal.Quotient.mkₐ K (infinitesimalAdditiveIdeal K p m)))).ofConv
     rw [infinitesimalAdditiveLift_comp_mk, infinitesimalAdditiveLift_comp_mk]
     exact congrArg WithConv.ofConv
-      ((additiveGroupMulEquivAlgHom K R).map_mul (.ofAdd r.toAdd.val) (.ofAdd s.toAdd.val))
+      (((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := R)).symm).map_mul (.ofAdd
+          r.toAdd.val) (.ofAdd s.toAdd.val))
 
 @[simp]
 theorem infinitesimalAdditiveMulEquivAlgHom_coordinate
@@ -336,7 +340,13 @@ theorem infinitesimalAdditiveMulEquivAlgHom_naturality
       (Ideal.Quotient.mkₐ K (infinitesimalAdditiveIdeal K p m))
   rw [AlgHom.comp_assoc, infinitesimalAdditiveLift_comp_mk,
     infinitesimalAdditiveLift_comp_mk]
-  exact additiveGroupMulEquivAlgHom_naturality K R f r.val
+  apply AlgHom.ext
+  intro x
+  change ((TauCeti.AdditiveGroup.gaPointsMulEquiv (R := K) (A := S)).symm
+    (.ofAdd (f r.val))).ofConv x = _
+  have h := congrArg (fun q : WithConv (SymmetricAlgebra K K →ₐ[K] S) => q.ofConv x)
+    (TauCeti.AdditiveGroup.mapValue_gaPointsMulEquiv_symm_apply f (.ofAdd r.val))
+  simpa only [AlgHom.mapValue_apply, toAdd_ofAdd, infinitesimalAdditiveMap] using h.symm
 
 /-- Affine points of the quotient group scheme are exactly nilpotent elements,
 with their additive group law. -/

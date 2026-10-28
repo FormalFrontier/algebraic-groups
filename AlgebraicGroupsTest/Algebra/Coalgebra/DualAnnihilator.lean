@@ -50,11 +50,12 @@ local notation "ε" => (Coalgebra.counit (R := K) (A := C))
 local notation "I" => LinearMap.ker ε
 
 omit [Nontrivial K] in
-private theorem counit_surjective [Nontrivial K] : Function.Surjective ε := by
+private theorem counit_surjective : Function.Surjective ε := by
   intro r
   refine ⟨r • MonoidAlgebra.single 0 (1 : K), ?_⟩
   simp
 
+omit [Nontrivial K] in
 private theorem augmentation_isCoideal : (I).IsCoideal := by
   let hflat : Module.Flat K (C ⧸ I) :=
     Module.Flat.of_linearEquiv ((ε).quotKerEquivOfSurjective counit_surjective)
@@ -70,7 +71,7 @@ local notation "A" =>
   Submodule.IsCoideal.dualAnnihilatorSubalgebra (augmentation_isCoideal (K := K))
 
 omit [Nontrivial K] in
-private theorem difference_mem_augmentation [Nontrivial K] :
+private theorem difference_mem_augmentation :
     (MonoidAlgebra.single 1 1 - MonoidAlgebra.single 0 1 : C) ∈ I := by
   rw [LinearMap.mem_ker]
   simp

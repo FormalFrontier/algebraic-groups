@@ -27,41 +27,38 @@ example (R S T U : Type)
     [CommRing R] [CommRing S] [CommRing T] [CommRing U]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
     [Algebra T U]
-    (a : Matrix.UnitriangularGroup (Fin 2) U)
+    (a : TauCeti.upperUnitriangularGroup (Fin 2) U)
     (p : (Spec (.of U)).asOver (Spec (.of T)) ⟶
       ((Over.pullback (unitriangularBaseMap R T)).mapGrp.obj
-        (unitriangularGroupScheme R (Fin 2))).X)
+        ((TauCeti.UpperUnitriangular.groupScheme R (Fin 2)))).X)
     (hp : p ≫ (unitriangularGroupSchemeBaseChangeIso R T (Fin 2)).hom.hom.hom =
-      unitriangularGroupMulEquivPoints T (Fin 2) U a) :
+      (TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := T) (A := U) (Fin 2)).symm a) :
     (Spec.preimage (((p⁻¹) ≫
       (unitriangularGroupSchemeBaseChangeIso R T (Fin 2)).hom.hom.hom).left)).hom
-        (quotient T (Fin 2) (GeneralLinearCoordinateRing.matrix T (Fin 2) 0 1)) =
+        (TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv T (Fin 2)
+          (TauCeti.UpperUnitriangular.genericMatrix T (Fin 2) 0 1)) =
       (Spec.preimage (((p⁻¹) ≫
         (unitriangularGroupSchemeBaseChangeTowerIso R S T (Fin 2)).hom.hom.hom ≫
         ((Over.pullback (unitriangularBaseMap S T)).mapGrp.map
           (unitriangularGroupSchemeBaseChangeIso R S (Fin 2)).hom).hom.hom ≫
         (unitriangularGroupSchemeBaseChangeIso S T (Fin 2)).hom.hom.hom).left)).hom
-          (quotient T (Fin 2) (GeneralLinearCoordinateRing.matrix T (Fin 2) 0 1)) := by
+          (TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv T (Fin 2)
+          (TauCeti.UpperUnitriangular.genericMatrix T (Fin 2) 0 1)) := by
   have hInverse :
       (p⁻¹) ≫ (unitriangularGroupSchemeBaseChangeIso R T (Fin 2)).hom.hom.hom =
-        unitriangularGroupMulEquivPoints T (Fin 2) U (a⁻¹) := by
-    rw [GrpObj.inv_comp, hp, map_inv]
-  have hDirect :
-      (Spec.preimage (((p⁻¹) ≫
-        (unitriangularGroupSchemeBaseChangeIso R T (Fin 2)).hom.hom.hom).left)).hom
-          (quotient T (Fin 2) (GeneralLinearCoordinateRing.matrix T (Fin 2) 0 1)) =
-        (a⁻¹).1 0 1 := by
-    rw [hInverse, unitriangularGroupPoint_preimage_entry]
+        (TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := T) (A := U) (Fin 2)).symm
+            (a⁻¹) := by
+    erw [GrpObj.inv_comp, hp, map_inv]
   have hIterated :
       (p⁻¹) ≫ (unitriangularGroupSchemeBaseChangeTowerIso R S T (Fin 2)).hom.hom.hom ≫
         ((Over.pullback (unitriangularBaseMap S T)).mapGrp.map
           (unitriangularGroupSchemeBaseChangeIso R S (Fin 2)).hom).hom.hom ≫
         (unitriangularGroupSchemeBaseChangeIso S T (Fin 2)).hom.hom.hom =
-          unitriangularGroupMulEquivPoints T (Fin 2) U (a⁻¹) := by
+          (TauCeti.UpperUnitriangular.schemePointsMulEquiv (R := T) (A := U) (Fin 2)).symm
+            (a⁻¹) := by
     rw [unitriangularGroupSchemeBaseChangeIso_tower R S T (Fin 2)] at hInverse
     simpa only [Grp.comp_hom_hom, Over.comp_left, Category.assoc] using hInverse
-  rw [hIterated, unitriangularGroupPoint_preimage_entry]
-  exact hDirect
+  rw [hIterated, hInverse]
 
 example (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]

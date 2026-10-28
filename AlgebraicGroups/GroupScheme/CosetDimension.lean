@@ -60,8 +60,8 @@ private lemma cosetTranslate_comp
     (i : H ⟶ G) (q : G ⟶ Q)
     (h : IsPullback (fst G H) ((𝟙 G ⊗ₘ i) ≫ μ[G]) q q)
     (a : 𝟙_ (Over (Spec (.of K))) ⟶ G) :
-    (i ≫ (GrpObj.mulLeft a).hom) ≫ q = (toUnit H ≫ a) ≫ q := by
-  rw [GrpObj.comp_mulLeft_hom_eq_mul, CategoryTheory.Hom.mul_def]
+    (i ≫ (TauCeti.leftTranslation a).hom) ≫ q = (toUnit H ≫ a) ≫ q := by
+  rw [TauCeti.comp_leftTranslation_hom, CategoryTheory.Hom.mul_def]
   have hmap :
       lift (toUnit H ≫ a) i =
         lift (toUnit H ≫ a) (𝟙 H) ≫ (𝟙 G ⊗ₘ i) := by
@@ -110,7 +110,7 @@ theorem topologicalKrullDim_le_zero_of_isPullback_of_isOpen_range
         (hy.preimage q.left.continuous).isLocallyClosed
       let a : 𝟙_ (Over (Spec (.of K))) ⟶ G :=
         (groupSchemePointEquivClosedPoint G.hom).symm ⟨g, hgclosed⟩
-      let t : H ⟶ G := i ≫ (GrpObj.mulLeft a).hom
+      let t : H ⟶ G := i ≫ (TauCeti.leftTranslation a).hom
       have hag : a.left (IsLocalRing.closedPoint K) = g := by
         exact groupSchemePointEquivClosedPoint_symm_apply_value G.hom ⟨g, hgclosed⟩
       have haq : q.left (a.left (IsLocalRing.closedPoint K)) = y := by
@@ -127,11 +127,11 @@ theorem topologicalKrullDim_le_zero_of_isPullback_of_isOpen_range
           Subsingleton.elim _ _]
         exact haq
       have htopen : IsOpen (Set.range t.left) := by
-        change IsOpen (Set.range ((i ≫ (GrpObj.mulLeft a).hom).left))
-        rw [show ⇑((i ≫ (GrpObj.mulLeft a).hom).left) =
-          (GrpObj.mulLeft a).hom.left ∘ i.left from rfl, Set.range_comp]
+        change IsOpen (Set.range ((i ≫ (TauCeti.leftTranslation a).hom).left))
+        rw [show ⇑((i ≫ (TauCeti.leftTranslation a).hom).left) =
+          (TauCeti.leftTranslation a).hom.left ∘ i.left from rfl, Set.range_comp]
         exact (((Over.forget (Spec (.of K))).mapIso
-          (GrpObj.mulLeft a)).schemeIsoToHomeo.isOpen_image).mpr hi
+          (TauCeti.leftTranslation a)).schemeIsoToHomeo.isOpen_image).mpr hi
       have himage : q.left '' Set.range t.left = {y} := by
         apply Set.Subset.antisymm
         · rintro _ ⟨_, ⟨z, rfl⟩, rfl⟩

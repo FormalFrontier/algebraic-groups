@@ -10,6 +10,9 @@ import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Equiv
 
 @[expose] public section
 
+open TauCeti
+
+
 universe u v w w₁
 
 section
@@ -42,7 +45,7 @@ example (f : C →ₗc[K] C') (D : Subcoalgebra K C)
 
 example (f : C →ₗc[K] C') (D : Subcoalgebra K C)
     (hf : Set.InjOn f (D : Set C)) (q : C' →ₗc[K] C'')
-    (y : Subcoalgebra.map f D) :
+    (y : (Subcoalgebra.map f D).toSubmodule) :
     (q.comp (f.comp D.subtype))
         ((Subcoalgebra.equivMapOfInjOn f D hf).symm y) =
       q (y : C') := by
@@ -50,10 +53,14 @@ example (f : C →ₗc[K] C') (D : Subcoalgebra K C)
       ((Subcoalgebra.map f D).subtype.comp
         (Subcoalgebra.equivMapOfInjOn f D hf).toCoalgHom)
         ((Subcoalgebra.equivMapOfInjOn f D hf).symm y) = (y : C') := by
-    simp
+    change (Subcoalgebra.map f D).subtype
+      ((Subcoalgebra.equivMapOfInjOn f D hf)
+        ((Subcoalgebra.equivMapOfInjOn f D hf).symm y)) = (y : C')
+    rw [CoalgEquiv.apply_symm_apply]
+    rfl
   have heval :=
     congrArg
-      (fun g : D →ₗc[K] C' ↦
+      (fun g : D.toSubmodule →ₗc[K] C' ↦
         g ((Subcoalgebra.equivMapOfInjOn f D hf).symm y))
       (Subcoalgebra.subtype_comp_equivMapOfInjOn f D hf)
   have h' :

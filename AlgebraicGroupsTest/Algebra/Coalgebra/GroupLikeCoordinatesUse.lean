@@ -7,6 +7,8 @@ module
 public import AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinatesModels
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoordinates
 
+open TauCeti
+
 /-!
 # Coalgebra evaluation and span coordinates on an infinite diagonal example
 
@@ -35,7 +37,7 @@ open scoped MonoidAlgebra TensorProduct
 namespace Coalgebra.FinsuppCoordinates
 
 local notation "C∞" => ℤ →₀ ℚ
-local notation "S∞" => Subcoalgebra.groupLikeSpan ℚ C∞
+local notation "S∞" => Subcoalgebra.groupLikeSetSpan (R := ℚ) (C := C∞) Set.univ
 local notation "δ₀" => GroupLike.val (point 0)
 local notation "δ₁" => GroupLike.val (point 1)
 
@@ -65,15 +67,15 @@ theorem point_family_recovered :
     MonoidAlgebra.liftGroupLikeCoalgHom_single, one_smul]
 
 /-- The two-coordinate vector as a member of the canonical group-like subcoalgebra. -/
-def spanVector : S∞ :=
+def spanVector : (S∞).toSubmodule :=
   ⟨vector, by
     apply Subcoalgebra.mem_toSubmodule.mp
     simpa only [vector] using
       (S∞).toSubmodule.add_mem
         ((S∞).toSubmodule.smul_mem (2 : ℚ)
-          (Subcoalgebra.groupLike_mem_groupLikeSpan (point 0)))
+          (Subcoalgebra.groupLike_mem_groupLikeSetSpan (Set.mem_univ (point 0))))
         ((S∞).toSubmodule.smul_mem (3 : ℚ)
-          (Subcoalgebra.groupLike_mem_groupLikeSpan (point 1)))⟩
+          (Subcoalgebra.groupLike_mem_groupLikeSetSpan (Set.mem_univ (point 1))))⟩
 
 /-- Inclusion of the span vector recovers the original ambient vector. -/
 @[simp] theorem spanVector_coe : (spanVector : C∞) = vector := rfl
@@ -85,9 +87,9 @@ theorem spanVector_coordinates :
         (3 : ℚ) • MonoidAlgebra.single (point 1) 1 := by
   apply EquivLike.injective (GroupLike.spanCoalgebraEquiv (K := ℚ) (C := C∞))
   rw [CoalgEquiv.apply_symm_apply]
-  apply Subcoalgebra.coe_injective
+  apply Subtype.ext
   simp only [map_add, map_smul, GroupLike.spanCoalgebraEquiv_single, one_smul,
-    Subcoalgebra.coe_add, Subcoalgebra.coe_smul, spanVector_coe, vector]
+    Submodule.coe_add, Submodule.coe_smul, spanVector_coe, vector]
 
 /-- The characteristic ambient evaluation of these span coordinates reconstructs the vector. -/
 theorem spanVector_reconstruction :
@@ -116,7 +118,8 @@ theorem spanVector_coefficients_at_points :
   have h01 : point 0 ≠ point 1 := by
     intro h
     exact point_zero_val_ne_point_one_val (congrArg GroupLike.val h)
-  simp [spanVector_coefficients, h01, Ne.symm h01]
+  rw [spanVector_coefficients]
+  simp [h01, Ne.symm h01]
 
 /-- The ambient span-coordinate formula gives the two diagonal comultiplication terms. -/
 theorem spanVector_comul :

@@ -1,63 +1,21 @@
-# Native upper-triangular coordinates and dimension
+# Dimension of canonical upper-triangular groups
 
-Import `AlgebraicGroups.GroupScheme.UpperTriangularDimension`. For
-`[CommRing K] [Fintype ι] [LinearOrder ι]`, the native
-`UpperTriangularCoordinateRing.CoordinateRing K ι` is the quotient of the
-**actual** determinant-localized general-linear coordinate ring by the
-native ideal with generators `if j < i then matrix K ι i j else 0`.
-`UpperTriangularCoordinateRing.retainedIndices ι` consists of pairs `(i, j)`
-with `¬ j < i`; `ideal_eq_localizedCoordinateIdeal` proves *both inclusions*
-between that native ideal and the generic erased-variable ideal.
+Import `AlgebraicGroups.GroupScheme.UpperTriangularDimension`. The statements concern
+`TauCeti.GeneralLinear.UpperTriangular` at numerical rank `N`. The retained
+polynomial-localization presentation and coordinate formulas identify the canonical Hopf algebra
+with polynomial coordinates on the retained upper entries and invertible diagonal product. Over
+any field the ring and underlying-scheme dimension is `N + N.choose 2`, including rank zero.
+Algebra presentations allow arbitrary commutative bases and zero rings.
 
-`UpperTriangularCoordinateRing.localizedPolynomialEquiv` presents the native
-quotient as a localization of the polynomial ring on its retained entries:
+See the [migration guide](../../../docs/TAUCETIFY.md) for canonical foundations and the [build
+guide](../../../docs/BUILDING.md) for the pinned environment.
 
-```lean
-UpperTriangularCoordinateRing.CoordinateRing K ι ≃ₐ[K]
-  Localization.Away (MvPolynomial.eraseCoordinates K
-    (UpperTriangularCoordinateRing.retainedIndices ι)
-    (GeneralLinearCoordinateRing.determinant K ι))
-```
+## Historical methods and credits
 
-The `[simp]` lemmas `localizedPolynomialEquiv_entry` and
-`localizedPolynomialEquiv_symm_entry` identify the native quotient of each
-retained GL entry and its localized polynomial variable in **both** directions.
-This presentation needs no field, nonzero determinant image, or positive rank:
-zero rings and empty indices are included. It specializes this library's
-existing generic coordinate-elimination result rather than redefining it.
-
-`erasedDeterminant_eval_one` evaluates retained diagonal entries at one and
-strictly upper entries at zero, producing the identity matrix and determinant
-value one. Over a field, this is a *supplied nonvanishing evaluation point*;
-the existing finite polynomial-localization theorem then gives
-`AlgebraicGeometry.upperTriangularCoordinateRing_ringKrullDim` and
-`AlgebraicGeometry.upperTriangularGroupUnderlyingScheme_topologicalKrullDim`:
-
-```lean
-((Fintype.card ι + (Fintype.card ι).choose 2 : ℕ) : WithBot ℕ∞)
-```
-
-The latter is the dimension of the native affine `Spec`, for **every field**
-(including finite fields) and finite ordered `ι` (including `Fin 0`). No
-arbitrary-base dimension, generic product-dimension formula or identity-stalk
-theorem is asserted. The [producer](../UpperTriangularDimension.lean) and
-[ordinary-import client](../../../AlgebraicGroupsTest/GroupScheme/UpperTriangularDimension.lean)
-exercise zero/empty coordinates and finite- and infinite-field dimensions.
-The [index module](../../LinearAlgebra/Matrix/UpperTriangularIndices/README.md)
-is separately importable and supplies only its index equivalences and counts.
-
-From this repository's root, install the pinned toolchain and successfully
-fetch its matching mathlib cache before the focused build:
-
-```sh
-elan toolchain install leanprover/lean4:v4.34.0-rc2
-lake exe cache get
-lake build AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices \
-  AlgebraicGroups.GroupScheme.UpperTriangularDimension \
-  AlgebraicGroupsTest.GroupScheme.UpperTriangularDimension
-```
-
-## References
+The original method and source-credit paragraphs below describe the
+pre-refactor implementation; their old API names are historical. The
+[complete original guide](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/AlgebraicGroups/GroupScheme/UpperTriangularDimension/README.md) preserves the full context.
+Current APIs are described above.
 
 - J. S. Milne, *Algebraic Groups* (2017), items 2.9 and 2.40: triangular
   matrices and their coordinate algebra over a field. The ideal equality over
@@ -71,4 +29,4 @@ lake build AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices \
   `AlgebraicGroups.LinearAlgebra.Matrix.UpperTriangularIndices` modules supply
   the elimination equivalence, supplied-point dimension theorem and count.
 - Contributor and third-party credit appears in the repository's
-  [CREDITS](../../../CREDITS.md).
+  [CREDITS](https://github.com/FormalFrontier/algebraic-groups/blob/91a72166fbd0703b83831f490c4f0d9c18bfc4b7/CREDITS.md).

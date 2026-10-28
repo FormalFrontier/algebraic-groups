@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.SymmetricAlgebraPoints
+public import TauCeti.Algebra.AlgebraicGroup.AdditiveGroup.Basic
 public import Mathlib.AlgebraicGeometry.Group.Affine
 public import Mathlib.AlgebraicGeometry.Morphisms.Affine
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -189,7 +189,8 @@ dual symmetric algebra. -/
     Multiplicative (V ⊗[K] R) ≃*
       WithConv (vectorGroupCoordinateRing K V →ₐ[K] R) :=
   (vectorGroupTensorDualEquiv K V R).toAddEquiv.toMultiplicative.trans
-    (SymmetricAlgebra.linearMapMulEquivAlgHom K (Module.Dual K V) R)
+    (TauCeti.AdditiveGroup.pointsMulEquiv
+      (R := K) (M := Module.Dual K V) (A := R)).symm
 
 @[simp]
 theorem vectorGroupMulEquivAlgHom_ι (x : V ⊗[K] R)

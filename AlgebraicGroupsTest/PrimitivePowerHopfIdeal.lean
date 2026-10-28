@@ -90,37 +90,38 @@ namespace AlgebraicGeometry
 variable (K : Type*) [CommRing K]
 
 private lemma primitive_additiveGroupCoordinate :
-    Bialgebra.IsPrimitiveElem K (additiveGroupCoordinate K) := by
+    Bialgebra.IsPrimitiveElem K ((SymmetricAlgebra.ι K K 1)) := by
   constructor
   · simp
-  · simpa only [add_comm] using (additiveGroupCoordinate_comul K)
+  · simpa only [add_comm] using (SymmetricAlgebra.comul_ι K K 1)
 
 #print axioms primitive_additiveGroupCoordinate
 
 private theorem persistentTestPrimitivePowerHopfIdeal011 [Fact (Nat.Prime 2)] [CharP K 2] :
-    Ideal.IsHopfIdeal K (Ideal.span {(additiveGroupCoordinate K) ^ (2 ^ 0)}) :=
+    Ideal.IsHopfIdeal K (Ideal.span {((SymmetricAlgebra.ι K K 1)) ^ (2 ^ 0)}) :=
   (primitive_additiveGroupCoordinate K).isHopfIdeal_span_pow_char_pow 0
 
 private theorem persistentTestPrimitivePowerHopfIdeal012 [Fact (Nat.Prime 2)] [CharP K 2] :
-    Ideal.IsHopfIdeal K (Ideal.span {(additiveGroupCoordinate K) ^ (2 ^ 1)}) :=
+    Ideal.IsHopfIdeal K (Ideal.span {((SymmetricAlgebra.ι K K 1)) ^ (2 ^ 1)}) :=
   (primitive_additiveGroupCoordinate K).isHopfIdeal_span_pow_char_pow 1
 
 private theorem persistentTestPrimitivePowerHopfIdeal013 [Fact (Nat.Prime 3)] [CharP K 3] :
-    Ideal.IsHopfIdeal K (Ideal.span {(additiveGroupCoordinate K) ^ (3 ^ 2)}) :=
+    Ideal.IsHopfIdeal K (Ideal.span {((SymmetricAlgebra.ι K K 1)) ^ (3 ^ 2)}) :=
   (primitive_additiveGroupCoordinate K).isHopfIdeal_span_pow_char_pow 2
 
 /-- The fourth power of the additive coordinate over `(ZMod 2)[X]` generates a Hopf ideal. -/
 public theorem additiveGroupCoordinate_polynomial_zmod_two_pow_isHopfIdeal :
     Ideal.IsHopfIdeal (Polynomial (ZMod 2))
-      (Ideal.span {(additiveGroupCoordinate (Polynomial (ZMod 2))) ^ (2 ^ 2)}) :=
+      (Ideal.span
+        {((SymmetricAlgebra.ι (Polynomial (ZMod 2)) (Polynomial (ZMod 2)) 1)) ^ (2 ^ 2)}) :=
   (primitive_additiveGroupCoordinate (Polynomial (ZMod 2))).isHopfIdeal_span_pow_char_pow 2
 
 @[instance_reducible] private noncomputable def persistentTestPrimitivePowerHopfIdeal015 :
     HopfAlgebra (ZMod 3)
-      (additiveGroupCoordinateRing (ZMod 3) ⧸
-        Ideal.span {(additiveGroupCoordinate (ZMod 3)) ^ (3 ^ 2)}) := by
+      ((SymmetricAlgebra (ZMod 3) (ZMod 3)) ⧸
+        Ideal.span {((SymmetricAlgebra.ι (ZMod 3) (ZMod 3) 1)) ^ (3 ^ 2)}) := by
   letI : Ideal.IsHopfIdeal (ZMod 3)
-      (Ideal.span {(additiveGroupCoordinate (ZMod 3)) ^ (3 ^ 2)}) :=
+      (Ideal.span {((SymmetricAlgebra.ι (ZMod 3) (ZMod 3) 1)) ^ (3 ^ 2)}) :=
     (primitive_additiveGroupCoordinate (ZMod 3)).isHopfIdeal_span_pow_char_pow 2
   infer_instance
 
@@ -131,8 +132,8 @@ end AlgebraicGeometry
 #print axioms HopfAlgebra.antipodeAlgHom
 #print axioms Commute.add_pow_prime_pow_eq'
 #print axioms CharP.cast_eq_zero
-#print axioms AlgebraicGeometry.additiveGroupCoordinate_comul
-#print axioms AlgebraicGeometry.additiveGroupCoordinate_counit
+#print axioms SymmetricAlgebra.comul_ι
+#print axioms SymmetricAlgebra.counit_ι
 #print axioms SymmetricAlgebra.comul_ι
 #print axioms SymmetricAlgebra.counit_ι
 #print axioms HopfAlgebra.Quotient.instQuotientIdeal

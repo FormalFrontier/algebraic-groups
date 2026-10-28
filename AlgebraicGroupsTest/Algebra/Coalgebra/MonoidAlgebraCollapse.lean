@@ -50,6 +50,9 @@ The subcoalgebra range and unique factorization use
 
 @[expose] public section
 
+open TauCeti
+
+
 noncomputable section
 
 universe u
@@ -252,21 +255,21 @@ theorem mapDomainBialgHom_zero_subcoalgebra_range :
       f.range.toSubmodule ≠ ⊤ ∧
       single 0 (1 : K) ∈ f.range ∧
       single 1 (1 : K) ∉ f.range ∧
-      Module.Finite K f.range ∧
+      Module.Finite K f.range.toSubmodule ∧
       ¬ Module.Finite K (AddMonoidAlgebra K ℕ) := by
   dsimp only
   rcases mapDomainBialgHom_zero_range_finite K with
     ⟨hrange, hbot, htop, hzero, hone, hfg, _, hinfinite⟩
   refine ⟨?_, ?_, ?_, ?_, ?_, ?_, hinfinite⟩
-  · simpa only [CoalgHom.range_toSubmodule] using hrange
-  · simpa only [CoalgHom.range_toSubmodule] using hbot
-  · simpa only [CoalgHom.range_toSubmodule] using htop
+  · simpa only [CoalgHom.range_toSubmodule, CoalgHom.toLinearMap_eq_ofClass] using hrange
+  · simpa only [CoalgHom.range_toSubmodule, CoalgHom.toLinearMap_eq_ofClass] using hbot
+  · simpa only [CoalgHom.range_toSubmodule, CoalgHom.toLinearMap_eq_ofClass] using htop
   · exact CoalgHom.mem_range.mpr (LinearMap.mem_range.mp hzero)
   · intro hx
     exact hone (LinearMap.mem_range.mpr (CoalgHom.mem_range.mp hx))
   · change Module.Finite K ((collapse K).range.toSubmodule)
     apply Module.Finite.iff_fg.mpr
-    simpa only [CoalgHom.range_toSubmodule] using hfg
+    simpa only [CoalgHom.range_toSubmodule, CoalgHom.toLinearMap_eq_ofClass] using hfg
 
 /-- The index-collapse morphism factors through its coalgebra range by a surjection and an
 injection. The factor has unchanged ambient values and is the unique factor through this
@@ -277,7 +280,7 @@ theorem mapDomainBialgHom_zero_range_factorization :
       f.range.subtype.comp f.rangeRestrict = f ∧
       Function.Surjective f.rangeRestrict ∧
       Function.Injective f.range.subtype ∧
-      (∀ g : AddMonoidAlgebra K ℕ →ₗc[K] f.range,
+      (∀ g : AddMonoidAlgebra K ℕ →ₗc[K] f.range.toSubmodule,
         f.range.subtype.comp g = f → g = f.rangeRestrict) ∧
       (single 0 (1 : K) - single 1 (1 : K) : AddMonoidAlgebra K ℕ) ≠ 0 ∧
       f (single 0 (1 : K) - single 1 (1 : K)) = 0 := by

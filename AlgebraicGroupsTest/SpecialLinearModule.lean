@@ -25,11 +25,13 @@ open scoped CategoryTheory.MonObj TensorProduct Matrix
 namespace AlgebraicGroupsTest.SpecialLinearModule
 
 example : specialLinearModuleFunctor ℤ (Fin 0 → ℤ) ≅
-    specialLinearGroupPointsFunctor ℤ (Fin 0) :=
+    TauCeti.GroupScheme.algebraPointsFunctor ℤ (TauCeti.SpecialLinear.groupScheme ℤ
+        (Fintype.card (Fin 0))) :=
   specialLinearModulePointsIso ℤ (Fin 0 → ℤ) (Fin 0) (Pi.basisFun ℤ (Fin 0))
 
 example : specialLinearModuleFunctor ℤ (Fin 1 → ℤ) ≅
-    specialLinearGroupPointsFunctor ℤ (Fin 1) :=
+    TauCeti.GroupScheme.algebraPointsFunctor ℤ (TauCeti.SpecialLinear.groupScheme ℤ
+        (Fintype.card (Fin 1))) :=
   specialLinearModulePointsIso ℤ (Fin 1 → ℤ) (Fin 1) (Pi.basisFun ℤ (Fin 1))
 
 example (f : SpecialLinearGroup (ZMod 5)
@@ -39,34 +41,40 @@ example (f : SpecialLinearGroup (ZMod 5)
   exact Subsingleton.elim _ _
 
 example : specialLinearModuleFunctor ℤ (Fin 2 → ℤ) ≅
-    specialLinearGroupPointsFunctor ℤ (Fin 2) :=
+    TauCeti.GroupScheme.algebraPointsFunctor ℤ (TauCeti.SpecialLinear.groupScheme ℤ
+        (Fintype.card (Fin 2))) :=
   specialLinearModulePointsIso ℤ (Fin 2 → ℤ) (Fin 2) (Pi.basisFun ℤ (Fin 2))
 
 example : SpecialLinearGroup (ZMod 1)
     (SourceOrderTensor ℤ (Fin 0 → ℤ) (ZMod 1)) := 1
 
 example : Matrix.det
-    (fun row column ↦ entry ℤ (Fin 0) row column :
-      Matrix (Fin 0) (Fin 0) (SpecialLinearCoordinateRing.CoordinateRing ℤ (Fin 0))) =
+    (fun row column ↦ (TauCeti.SpecialLinear.coordinateMap ℤ 0).hom
+      (TauCeti.GeneralLinear.reindexedGenericMatrix ℤ (Fin 0) row column) :
+      Matrix (Fin 0) (Fin 0) ((TauCeti.SpecialLinear.coordinateHopfAlgebra ℤ (Fintype.card (Fin
+          0))))) =
         1 :=
-  determinant_entry ℤ (Fin 0)
+by
+  exact Matrix.det_isEmpty
 
 example : (specialLinearModuleCoordinateEval ℤ (Fin 0 → ℤ) (Fin 0)
     (Pi.basisFun ℤ (Fin 0)) (ZMod 1) 1)
-    (quotient ℤ (Fin 0) (GeneralLinearCoordinateRing.detInverse ℤ (Fin 0))) = 1 :=
+    ((TauCeti.SpecialLinear.coordinateMap ℤ 0).hom ((Ring.inverse
+        (TauCeti.GeneralLinear.reindexedGenericMatrix ℤ (Fin 0)).det))) = 1 :=
   specialLinearModuleCoordinateEval_detInverse ℤ (Fin 0 → ℤ) (Fin 0)
     (Pi.basisFun ℤ (Fin 0)) (ZMod 1) 1
 
 example : (Spec.preimage
     ((specialLinearModulePointsIso ℤ (Fin 0 → ℤ) (Fin 0)
       (Pi.basisFun ℤ (Fin 0))).hom.app (CommAlgCat.of ℤ (ZMod 1)) 1).left).hom
-    (quotient ℤ (Fin 0) (GeneralLinearCoordinateRing.detInverse ℤ (Fin 0))) = 1 :=
+    ((TauCeti.SpecialLinear.coordinateMap ℤ 0).hom ((Ring.inverse
+        (TauCeti.GeneralLinear.reindexedGenericMatrix ℤ (Fin 0)).det))) = 1 :=
   specialLinearModulePoint_preimage_detInverse ℤ (Fin 0 → ℤ) (Fin 0)
     (Pi.basisFun ℤ (Fin 0)) (ZMod 1) 1
 
 example : (specialLinearModulePointsIso ℤ (Fin 0 → ℤ) (Fin 0)
     (Pi.basisFun ℤ (Fin 0))).hom.app (CommAlgCat.of ℤ (ZMod 1)) 1 ≫
-      (specialLinearInclusion ℤ (Fin 0)).hom.hom =
+      (TauCeti.SpecialLinear.groupSchemeι ℤ (Fintype.card (Fin 0))).hom.hom =
     (generalLinearModulePointsIso ℤ (Fin 0 → ℤ) (Fin 0)
       (Pi.basisFun ℤ (Fin 0))).hom.app (CommAlgCat.of ℤ (ZMod 1))
       (1 : SpecialLinearGroup (ZMod 1)
@@ -121,8 +129,9 @@ theorem integerShear_ne_one : integerShear ≠ 1 := by
   norm_num [integerShear, Matrix.SpecialLinearGroup.transvection_coe] at entryEquality
 
 example : (specialLinearModuleCoordinateEval ℤ (Fin 2 → ℤ) (Fin 2)
-    (Pi.basisFun ℤ (Fin 2)) ℤ integerShear) (entry ℤ (Fin 2) 0 1) = 1 := by
-  rw [specialLinearModuleCoordinateEval_entry]
+    (Pi.basisFun ℤ (Fin 2)) ℤ integerShear) ((TauCeti.SpecialLinear.coordinateMap ℤ 2).hom
+      (TauCeti.GeneralLinear.reindexedGenericMatrix ℤ (Fin 2) 0 1)) = 1 := by
+  erw [specialLinearModuleCoordinateEval_entry]
   rw [← specialLinearModuleMatrixEquiv_entry]
   norm_num [integerShear, Matrix.SpecialLinearGroup.transvection_coe]
 
@@ -201,7 +210,7 @@ example : specialLinearModuleChangeBasis ℤ (Fin 2 → ℤ) (Fin 2)
 
 example : (specialLinearModulePointsIso ℤ (Fin 2 → ℤ) (Fin 2)
     (Pi.basisFun ℤ (Fin 2))).hom.app (CommAlgCat.of ℤ ℤ) integerShear ≫
-      (specialLinearInclusion ℤ (Fin 2)).hom.hom =
+      (TauCeti.SpecialLinear.groupSchemeι ℤ (Fintype.card (Fin 2))).hom.hom =
     (generalLinearModulePointsIso ℤ (Fin 2 → ℤ) (Fin 2)
       (Pi.basisFun ℤ (Fin 2))).hom.app (CommAlgCat.of ℤ ℤ)
       integerShear.toGeneralLinearGroup :=

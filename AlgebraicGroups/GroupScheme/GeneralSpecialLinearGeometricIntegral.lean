@@ -10,6 +10,7 @@ public import Mathlib.AlgebraicGeometry.Pullbacks
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import TauCeti.Algebra.AlgebraicGroup.SpecialLinear.BaseChange
 
 /-!
 # Integral finite general and special linear schemes
@@ -43,40 +44,38 @@ set_option warningAsError true
 noncomputable section
 
 open CategoryTheory CategoryTheory.Limits
-open GeneralLinearCoordinateRing SpecialLinearCoordinateRing
+open TauCeti.GeneralLinear SpecialLinearCoordinateRing
 open scoped TensorProduct
 
 universe u
 
 namespace AlgebraicGeometry
 
-variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
-
-/-- The actual determinant-localized finite general linear coordinate ring is a domain
-over an integral domain, including for an empty index. This extends the
-field-base `GL` determinant localization in Milne, *Algebraic Groups*, §2.8, using
-mathlib's domain theorem for localization away from a nonzero element. -/
-instance generalLinearCoordinateRing_isDomain [IsDomain K] :
-    IsDomain (GeneralLinearCoordinateRing.CoordinateRing K n) :=
-  Localization.Away.isDomain (Matrix.det_mvPolynomialX_ne_zero n K)
+variable (K : Type u) [CommRing K] (n : Type u) [Fintype n]
 
 private def emptySpecialLinearEquiv [IsEmpty n] :
-    GeneralLinearCoordinateRing.CoordinateRing K n ≃ₐ[K]
-      SpecialLinearCoordinateRing.CoordinateRing K n := by
-  have determinant_one : (matrix K n).det = 1 := Matrix.det_isEmpty
-  have ideal_bot : SpecialLinearCoordinateRing.determinantOneIdeal K n = ⊥ := by
-    simp [SpecialLinearCoordinateRing.determinantOneIdeal, determinant_one]
-  exact (AlgEquiv.quotientBot K (GeneralLinearCoordinateRing.CoordinateRing K n)).symm.trans
+    (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)) ≃ₐ[K]
+      (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)) := by
+  classical
+  have determinant_one : (TauCeti.GeneralLinear.reindexedGenericMatrix K n).det = 1 :=
+    Matrix.det_isEmpty
+  have ideal_bot : (TauCeti.SpecialLinear.definingHopfIdeal K (Fintype.card n)).toIdeal = ⊥ := by
+    rw [TauCeti.SpecialLinear.definingHopfIdeal_toIdeal,
+      ← generalLinearReindexedGenericMatrix_det K n, determinant_one]
+    simp
+  exact (AlgEquiv.quotientBot K ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card
+    n)))).symm.trans
     (Ideal.quotientEquivAlgOfEq K ideal_bot.symm)
 
 private theorem emptySpecialLinearEquiv_quotient [IsEmpty n] :
-    (emptySpecialLinearEquiv K n).toAlgHom = SpecialLinearCoordinateRing.quotient K n := by
+    (emptySpecialLinearEquiv K n).toAlgHom = (TauCeti.SpecialLinear.coordinateMap K (Fintype.card
+      n)).hom.toAlgHom := by
   ext x
-  rfl
+  erw [TauCeti.SpecialLinear.coordinateMap_apply]
 
 private def specialLinearSection :
-    SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[K]
-      GeneralLinearCoordinateRing.CoordinateRing K n := by
+    (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)) →ₐ[K]
+      (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)) := by
   classical
   exact if nonemptyIndex : Nonempty n then
     specialLinearNormalizationSection K n (Classical.choice nonemptyIndex)
@@ -85,8 +84,9 @@ private def specialLinearSection :
     (emptySpecialLinearEquiv K n).symm.toAlgHom
 
 private theorem specialLinearSection_split :
-    (SpecialLinearCoordinateRing.quotient K n).comp (specialLinearSection K n) =
-      AlgHom.id K (SpecialLinearCoordinateRing.CoordinateRing K n) := by
+    ((TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom).comp
+      (specialLinearSection K n) =
+      AlgHom.id K ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) := by
   classical
   unfold specialLinearSection
   split_ifs with nonemptyIndex
@@ -100,83 +100,44 @@ including in rank zero. Compare the positive-rank field-base result in Milne,
 *Algebraic Groups*, §2.42: here the algebra section into the GL domain is
 injective, while rank zero uses the quotient-bottom equivalence. -/
 instance specialLinearCoordinateRing_isDomain [IsDomain K] :
-    IsDomain (SpecialLinearCoordinateRing.CoordinateRing K n) := by
-  have injective : Function.Injective (specialLinearSection K n) := by
-    intro x y h
-    have applied := congrArg (SpecialLinearCoordinateRing.quotient K n) h
-    simpa only [← AlgHom.comp_apply, specialLinearSection_split, AlgHom.id_apply] using applied
-  exact injective.isDomain (specialLinearSection K n)
+    IsDomain ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) := by
+  have hleft : Function.LeftInverse
+      (TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom
+      (specialLinearSection K n) := by
+    intro x
+    exact AlgHom.congr_fun (specialLinearSection_split K n) x
+  exact hleft.injective.isDomain (specialLinearSection K n)
 
 /-- The total space of finite `GL` is integral over any integral base, using
 mathlib's integral-affine-Spec instance for the GL coordinate domain. -/
 instance generalLinearGroupUnderlyingScheme_isIntegral [IsDomain K] :
-    IsIntegral (generalLinearGroupUnderlyingScheme K n).left := by
-  change IsIntegral (Spec (.of (GeneralLinearCoordinateRing.CoordinateRing K n)))
+    IsIntegral ((TauCeti.GeneralLinear.groupScheme K (Fintype.card n)).X).left := by
+  change IsIntegral (Spec (.of ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)))))
   infer_instance
 
 /-- The total space of finite `SL` is integral over any integral base, using
 mathlib's integral-affine-Spec instance for the SL coordinate domain. -/
 instance specialLinearGroupUnderlyingScheme_isIntegral [IsDomain K] :
-    IsIntegral (specialLinearGroupUnderlyingScheme K n).left := by
-  change IsIntegral (Spec (.of (SpecialLinearCoordinateRing.CoordinateRing K n)))
+    IsIntegral ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X).left := by
+  change IsIntegral (Spec (.of ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)))))
   infer_instance
 
-private theorem determinant_map (F : Type u) [CommRing F] [Algebra K F] :
-    MvPolynomial.map (algebraMap K F) (GeneralLinearCoordinateRing.determinant K n) =
-      GeneralLinearCoordinateRing.determinant F n := by
-  unfold GeneralLinearCoordinateRing.determinant
-  have mappedMatrix :
-      (MvPolynomial.map (algebraMap K F)).mapMatrix (Matrix.mvPolynomialX n n K) =
-        Matrix.mvPolynomialX n n F := by
-    ext i j
-    simp [Matrix.mvPolynomialX]
-  rw [RingHom.map_det, mappedMatrix]
-
 private theorem generalLinearTensor_isDomain (F : Type u) [Field F] [Algebra K F] :
-    IsDomain (F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n) := by
-  let polynomialEquiv := MvPolynomial.algebraTensorAlgEquiv (σ := n × n) K F
-  have : IsDomain (F ⊗[K] GeneralLinearCoordinateRing.PolynomialRing K n) :=
-    polynomialEquiv.injective.isDomain polynomialEquiv.toRingHom
-  have determinant_ne : (1 : F) ⊗ₜ[K] GeneralLinearCoordinateRing.determinant K n ≠ 0 := by
-    intro equalZero
-    have mapped := congrArg polynomialEquiv equalZero
-    have mappedDet : polynomialEquiv
-        ((1 : F) ⊗ₜ[K] GeneralLinearCoordinateRing.determinant K n) =
-        GeneralLinearCoordinateRing.determinant F n := by
-      simp only [polynomialEquiv, MvPolynomial.algebraTensorAlgEquiv_tmul,
-        one_smul, determinant_map K n F]
-    rw [mappedDet, map_zero] at mapped
-    exact (Matrix.det_mvPolynomialX_ne_zero n F) mapped
-  have : IsDomain (Localization.Away
-      ((1 : F) ⊗ₜ[K] GeneralLinearCoordinateRing.determinant K n)) :=
-    Localization.Away.isDomain determinant_ne
-  let localizationEquiv := IsLocalization.Away.tensorProductEquivTMulRight K F
-    (GeneralLinearCoordinateRing.determinant K n)
-    (GeneralLinearCoordinateRing.CoordinateRing K n)
-  exact localizationEquiv.injective.isDomain localizationEquiv.toRingHom
+    IsDomain (F ⊗[K] (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) := by
+  let e : F ⊗[K] TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n) ≃ₐ[F]
+      TauCeti.GeneralLinear.coordinateHopfAlgebra F (Fintype.card n) :=
+    (TauCeti.GeneralLinear.coordinateHopfAlgebraBaseChangeBialgEquiv K F
+      (Fintype.card n)).toAlgEquiv
+  exact e.injective.isDomain e.toRingHom
 
 private theorem specialLinearTensor_isDomain (F : Type u) [Field F] [Algebra K F] :
-    IsDomain (F ⊗[K] SpecialLinearCoordinateRing.CoordinateRing K n) := by
-  have : IsDomain (F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n) :=
-    generalLinearTensor_isDomain K n F
-  let quotientTensor :
-      F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n →ₐ[F]
-        F ⊗[K] SpecialLinearCoordinateRing.CoordinateRing K n :=
-    Algebra.TensorProduct.map (AlgHom.id F F) (SpecialLinearCoordinateRing.quotient K n)
-  let sectionTensor :
-      F ⊗[K] SpecialLinearCoordinateRing.CoordinateRing K n →ₐ[F]
-        F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n :=
-    Algebra.TensorProduct.map (AlgHom.id F F) (specialLinearSection K n)
-  have split : quotientTensor.comp sectionTensor =
-      AlgHom.id F (F ⊗[K] SpecialLinearCoordinateRing.CoordinateRing K n) := by
-    dsimp [quotientTensor, sectionTensor]
-    rw [← Algebra.TensorProduct.map_id_comp, specialLinearSection_split,
-      Algebra.TensorProduct.map_id]
-  have injective : Function.Injective sectionTensor := by
-    intro x y h
-    have applied := congrArg quotientTensor h
-    simpa only [← AlgHom.comp_apply, split, AlgHom.id_apply] using applied
-  exact injective.isDomain sectionTensor.toRingHom
+    IsDomain (F ⊗[K] (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) := by
+  let e : F ⊗[K] TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n) ≃ₐc[F]
+      TauCeti.SpecialLinear.coordinateHopfAlgebra F (Fintype.card n) :=
+    CommBialgCat.bialgEquivOfIso
+      ((forget₂ (CommHopfAlgCat F) (CommBialgCat F)).mapIso
+        (TauCeti.SpecialLinear.coordinateHopfAlgebraBaseChangeIso K F (Fintype.card n)))
+  exact e.injective.isDomain e.toAlgEquiv.toRingHom
 
 private theorem integral_closedUnderIsomorphisms :
     ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral := by
@@ -191,7 +152,7 @@ presentation follows Milne, *Algebraic Groups*, §2.8; the relative proof uses
 mathlib's polynomial-tensor and localization equivalences, geometric-fiber
 criterion and affine-Spec pullback isomorphism. -/
 instance generalLinearGroupUnderlyingScheme_geometricallyIntegral :
-    GeometricallyIntegral (generalLinearGroupUnderlyingScheme K n).hom := by
+    GeometricallyIntegral ((TauCeti.GeneralLinear.groupScheme K (Fintype.card n)).X).hom := by
   let : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
     integral_closedUnderIsomorphisms
   refine ⟨(geometrically_iff_of_commRing_of_isClosedUnderIsomorphisms
@@ -199,18 +160,18 @@ instance generalLinearGroupUnderlyingScheme_geometricallyIntegral :
   intro F _ _
   change IsIntegral (pullback
     (Spec.map (CommRingCat.ofHom
-      (algebraMap K (GeneralLinearCoordinateRing.CoordinateRing K n))))
+      (algebraMap K ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))))))
     (Spec.map (CommRingCat.ofHom (algebraMap K F))))
-  have : IsDomain (F ⊗[K] GeneralLinearCoordinateRing.CoordinateRing K n) :=
+  have : IsDomain (F ⊗[K] (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) :=
     generalLinearTensor_isDomain K n F
   have : IsDomain
-      (GeneralLinearCoordinateRing.CoordinateRing K n ⊗[K] F) :=
+      ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)) ⊗[K] F) :=
     (Algebra.TensorProduct.comm K
-      (GeneralLinearCoordinateRing.CoordinateRing K n) F).injective.isDomain
+      ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) F).injective.isDomain
         (Algebra.TensorProduct.comm K
-          (GeneralLinearCoordinateRing.CoordinateRing K n) F).toRingHom
+          ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) F).toRingHom
   exact IsIntegral.of_isIso
-    (pullbackSpecIso K (GeneralLinearCoordinateRing.CoordinateRing K n) F).inv
+    (pullbackSpecIso K ((TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) F).inv
 
 /-- Every geometric fiber of the genuine finite special linear structure morphism
 is integral, for every finite index and every commutative base. The field
@@ -218,7 +179,7 @@ case extends Milne, *Algebraic Groups*, §2.42; the relative proof tensors
 the explicit algebra-section identity and uses mathlib's geometric-fiber
 criterion and affine-Spec pullback isomorphism. -/
 instance specialLinearGroupUnderlyingScheme_geometricallyIntegral :
-    GeometricallyIntegral (specialLinearGroupUnderlyingScheme K n).hom := by
+    GeometricallyIntegral ((TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X).hom := by
   let : ObjectProperty.IsClosedUnderIsomorphisms (C := Scheme) IsIntegral :=
     integral_closedUnderIsomorphisms
   refine ⟨(geometrically_iff_of_commRing_of_isClosedUnderIsomorphisms
@@ -226,17 +187,17 @@ instance specialLinearGroupUnderlyingScheme_geometricallyIntegral :
   intro F _ _
   change IsIntegral (pullback
     (Spec.map (CommRingCat.ofHom
-      (algebraMap K (SpecialLinearCoordinateRing.CoordinateRing K n))))
+      (algebraMap K ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))))))
     (Spec.map (CommRingCat.ofHom (algebraMap K F))))
-  have : IsDomain (F ⊗[K] SpecialLinearCoordinateRing.CoordinateRing K n) :=
+  have : IsDomain (F ⊗[K] (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) :=
     specialLinearTensor_isDomain K n F
   have : IsDomain
-      (SpecialLinearCoordinateRing.CoordinateRing K n ⊗[K] F) :=
+      ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)) ⊗[K] F) :=
     (Algebra.TensorProduct.comm K
-      (SpecialLinearCoordinateRing.CoordinateRing K n) F).injective.isDomain
+      ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) F).injective.isDomain
         (Algebra.TensorProduct.comm K
-          (SpecialLinearCoordinateRing.CoordinateRing K n) F).toRingHom
+          ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) F).toRingHom
   exact IsIntegral.of_isIso
-    (pullbackSpecIso K (SpecialLinearCoordinateRing.CoordinateRing K n) F).inv
+    (pullbackSpecIso K ((TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n))) F).inv
 
 end AlgebraicGeometry

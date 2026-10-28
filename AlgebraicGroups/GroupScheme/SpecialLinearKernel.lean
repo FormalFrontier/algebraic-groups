@@ -5,215 +5,146 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.GroupScheme.SpecialLinear
-public import Mathlib.AlgebraicGeometry.Pullbacks
-public import Mathlib.CategoryTheory.Limits.Constructions.Over.Connected
+public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
+public import TauCeti.Algebra.AlgebraicGroup.HopfIdeal.Scheme.Kernel
+public import TauCeti.Algebra.AlgebraicGroup.HopfIdeal.Quotient.Kernel.Basic
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.GrpLimits
 
 /-!
-# The scheme-theoretic determinant-one kernel
+# The canonical special linear group is the determinant kernel
 
-The determinant-one affine scheme is the actual pullback of the finite GL
-determinant character along the unit of the multiplicative group scheme.
-The coordinate pushout and contravariant affine-Spec pullback give a kernel
-universal property for arbitrary test schemes, including nonreduced ones.
+Tau Ceti's general Hopf-kernel theorem supplies the pullback on arbitrary test
+schemes. Relabelling the infinite cyclic character group by its same-universe
+lift is surjective, so it preserves the determinant kernel Hopf ideal. The
+coordinate algebra and the special-linear inclusion are the canonical objects.
 
 ## References
 
-* J. S. Milne, *Basic Theory of Affine Group Schemes*, VII §4, Proposition 4.1
-  (generic field-base affine-group kernel quotient) and Example 4.3 (its
-  special-linear instance). The commutative-ring pushout and
-  all-schemes/group-objects kernel properties here use further categorical APIs.
-* Mathlib, `AlgebraicGeometry/Pullbacks.lean`
-  (`isPullback_SpecMap_of_isPushout`),
-  `CategoryTheory/Limits/Constructions/Over/Connected.lean` and
-  `CategoryTheory/Monoidal/Cartesian/GrpLimits.lean` (passing the genuine
-  pullback to schemes over the base and group objects). The quotient and
-  determinant-coordinate maps are supplied by the local GL/SL modules.
+* J. S. Milne, *Basic Theory of Affine Group Schemes*, VII §4, Example 4.3.
+* Tau Ceti contributors, `HopfIdeal.Scheme.Kernel` and
+  `CommHopfAlgCat.kernelHopfIdeal_comp_of_surjective`.
 -/
 
 @[expose] public section
-
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits CartesianMonoidalCategory GeneralLinearCoordinateRing
-  SpecialLinearCoordinateRing
-open scoped CategoryTheory.MonObj TensorProduct
+open CategoryTheory CategoryTheory.Limits CartesianMonoidalCategory MonoidalCategory
+open scoped CategoryTheory.MonObj
 
 universe u
 
 namespace AlgebraicGeometry
 
-variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
+variable (K : Type u) [CommRing K] (n : Type u) [Fintype n]
 
-private theorem laurentCoordinateHom_ext {R : Type u} [CommRing R] [Algebra K R]
-    {f g : multiplicativeGroupCoordinateRing K →ₐ[K] R}
-    (h : f (multiplicativeGroupCoordinate K) = g (multiplicativeGroupCoordinate K)) :
-    f = g := by
-  let equivalence := multiplicativeGroupMulEquivAlgHom K R
-  let unitF := equivalence.symm (WithConv.toConv f)
-  let unitG := equivalence.symm (WithConv.toConv g)
-  have hUnits : unitF = unitG := by
-    apply Units.ext
-    rw [← multiplicativeGroupMulEquivAlgHom_coordinate K R unitF,
-      ← multiplicativeGroupMulEquivAlgHom_coordinate K R unitG]
-    simpa [unitF, unitG, equivalence] using h
-  have := congrArg (fun unit : Rˣ ↦ (equivalence unit).ofConv) hUnits
-  simpa [unitF, unitG, equivalence] using this
+/-- The canonical same-universe determinant character has the defining SL Hopf ideal. -/
+theorem generalLinearDeterminantSchemeCoordinateMap_kernel :
+    TauCeti.CommHopfAlgCat.kernelHopfIdeal
+      (generalLinearDeterminantSchemeCoordinateMap K n) =
+        TauCeti.SpecialLinear.definingHopfIdeal K (Fintype.card n) := by
+  let e := MonoidAlgebra.domCongrBialgEquiv K K
+    (MulEquiv.ulift : ULift.{u} (Multiplicative ℤ) ≃* Multiplicative ℤ)
+  have he : Function.Surjective (CommHopfAlgCat.ofHom e.toBialgHom).hom := by
+    rw [CommHopfAlgCat.hom_ofHom]
+    exact e.surjective
+  have hmap : generalLinearDeterminantSchemeCoordinateMap K n =
+      CommHopfAlgCat.ofHom e.toBialgHom ≫
+        TauCeti.GeneralLinear.determinantCoordinateMap K (Fintype.card n) := by
+    apply CommHopfAlgCat.hom_ext
+    apply BialgHom.ext
+    intro x
+    rfl
+  rw [hmap, TauCeti.CommHopfAlgCat.kernelHopfIdeal_comp_of_surjective _ he]
 
-/-- The determinant coordinate character becomes the counit after the Hopf quotient. -/
-theorem specialLinearDeterminant_eq_unitCoordinate :
-    (quotient K n).comp (generalLinearDeterminantCoordinateMap K n) =
-      (Algebra.ofId K (SpecialLinearCoordinateRing.CoordinateRing K n)).comp
-        (Bialgebra.counitAlgHom K (multiplicativeGroupCoordinateRing K)) := by
-  apply laurentCoordinateHom_ext K
-  rw [AlgHom.comp_apply, generalLinearDeterminantCoordinateMap_coordinate, quotient_det]
-  change 1 = algebraMap K (SpecialLinearCoordinateRing.CoordinateRing K n)
-      (Coalgebra.counit (R := K) (multiplicativeGroupCoordinate K))
-  rw [multiplicativeGroupCoordinate_counit, map_one]
+/-- The special-linear square is the determinant kernel on group schemes. -/
+theorem specialLinearDeterminantSquare_isPullback_group :
+    IsPullback (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n))
+      (0 : TauCeti.SpecialLinear.groupScheme K (Fintype.card n) ⟶
+        Grp.trivial (Over (Spec (.of K))))
+      (generalLinearDeterminantSchemeHom K n)
+      (0 : Grp.trivial (Over (Spec (.of K))) ⟶
+        TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K) := by
+  let P (I : TauCeti.HopfIdeal K
+      (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n))) : Prop :=
+    IsPullback (TauCeti.CommHopfAlgCat.quotientSpecι
+      (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)) I)
+      (0 : TauCeti.CommHopfAlgCat.quotientSpec
+        (TauCeti.GeneralLinear.coordinateHopfAlgebra K (Fintype.card n)) I ⟶
+          Grp.trivial (Over (Spec (.of K))))
+      ((hopfSpec (.of K)).map (generalLinearDeterminantSchemeCoordinateMap K n).op)
+      (0 : Grp.trivial (Over (Spec (.of K))) ⟶
+        (hopfSpec (.of K)).obj (.op (CommHopfAlgCat.of K
+          (MonoidAlgebra K (ULift.{u} (Multiplicative ℤ))))))
+  have h : P (TauCeti.CommHopfAlgCat.kernelHopfIdeal
+      (generalLinearDeterminantSchemeCoordinateMap K n)) := by
+    simpa only [P, TauCeti.CommHopfAlgCat.kernelSpecι_def]
+      using TauCeti.CommHopfAlgCat.isPullback_kernelSpec
+        (generalLinearDeterminantSchemeCoordinateMap K n)
+  have hcanonical : P (TauCeti.SpecialLinear.definingHopfIdeal K (Fintype.card n)) :=
+    (congrArg P (generalLinearDeterminantSchemeCoordinateMap_kernel K n)).mp h
+  rw [TauCeti.SpecialLinear.groupSchemeι_def,
+    TauCeti.CommHopfAlgCat.kernelSpecι_def]
+  convert hcanonical using 1 <;> rfl
 
-/-- The square of the determinant coordinate map, unit counit, and determinant-one
-quotient commutes as a square of commutative rings. -/
-theorem specialLinearDeterminantSquare_commutes :
-    CommRingCat.ofHom (generalLinearDeterminantCoordinateMap K n).toRingHom ≫
-      CommRingCat.ofHom (quotient K n).toRingHom =
-      CommRingCat.ofHom
-        (Bialgebra.counitAlgHom K (multiplicativeGroupCoordinateRing K)).toRingHom ≫
-          CommRingCat.ofHom
-            (algebraMap K (SpecialLinearCoordinateRing.CoordinateRing K n)) := by
-  apply CommRingCat.hom_ext
-  change ((quotient K n).comp (generalLinearDeterminantCoordinateMap K n)).toRingHom =
-    ((Algebra.ofId K (SpecialLinearCoordinateRing.CoordinateRing K n)).comp
-      (Bialgebra.counitAlgHom K (multiplicativeGroupCoordinateRing K))).toRingHom
-  exact congrArg AlgHom.toRingHom (specialLinearDeterminant_eq_unitCoordinate K n)
+/-- Forgetting the group structure gives the kernel square on arbitrary base schemes. -/
+theorem specialLinearDeterminantSquare_isPullback_over :
+    IsPullback (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom
+      (toUnit (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X)
+      (generalLinearDeterminantSchemeHom K n).hom.hom
+      η[(TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X] := by
+  have h := (specialLinearDeterminantSquare_isPullback_group K n).map
+    (Grp.forget (Over (Spec (.of K))))
+  change IsPullback (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom
+    (toUnit (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X)
+    (generalLinearDeterminantSchemeHom K n).hom.hom
+    (toUnit (𝟙_ (Over (Spec (.of K)))) ≫
+      η[(TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X]) at h
+  simpa only [toUnit_unit, Category.id_comp] using h
 
-/-- The determinant-one quotient is the pushout of the determinant coordinate
-map along the multiplicative-group counit, by the quotient universal property
-for every commutative target ring; compare the field-base quotient in Milne,
-*Basic Theory of Affine Group Schemes*, VII §4, Example 4.3. -/
+/-- The determinant square is a pullback of underlying schemes over the base. -/
+theorem specialLinearDeterminantSquare_isPullback :
+    IsPullback (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom.left
+      (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X.hom
+      (generalLinearDeterminantSchemeHom K n).hom.hom.left
+      η[(TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X].left := by
+  simpa only [Over.forget_map, Over.toUnit_left] using
+    (specialLinearDeterminantSquare_isPullback_over K n).map
+      (Over.forget (Spec (.of K)))
+
+/-- The canonical determinant-one coordinate algebra is the ring pushout along
+its character counit, including for arbitrary commutative target rings. -/
 theorem specialLinearDeterminantSquare_isPushout :
     IsPushout
-      (CommRingCat.ofHom (generalLinearDeterminantCoordinateMap K n).toRingHom)
       (CommRingCat.ofHom
-        (Bialgebra.counitAlgHom K (multiplicativeGroupCoordinateRing K)).toRingHom)
-      (CommRingCat.ofHom (quotient K n).toRingHom)
+        (generalLinearDeterminantSchemeCoordinateMap K n).hom.toAlgHom.toRingHom)
+      (CommRingCat.ofHom (Bialgebra.counitAlgHom K
+        (MonoidAlgebra K (ULift.{u} (Multiplicative ℤ)))).toRingHom)
       (CommRingCat.ofHom
-        (algebraMap K (SpecialLinearCoordinateRing.CoordinateRing K n))) := by
-  refine IsPushout.mk' (specialLinearDeterminantSquare_commutes K n) ?_ ?_
-  · intro T phi psi hphi _
-    apply CommRingCat.hom_ext
-    apply RingHom.ext
-    intro x
-    obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective x
-    have h := congrArg (fun h : CommRingCat.of
-        (GeneralLinearCoordinateRing.CoordinateRing K n) ⟶ T ↦ h.hom y) hphi
-    exact h
-  · intro T a b hcompatible
-    have hdet : a.hom (matrix K n).det = 1 := by
-      have h := congrArg (fun hom : CommRingCat.of (multiplicativeGroupCoordinateRing K) ⟶ T ↦
-        hom.hom (multiplicativeGroupCoordinate K)) hcompatible
-      change a.hom ((generalLinearDeterminantCoordinateMap K n)
-        (multiplicativeGroupCoordinate K)) =
-        b.hom ((Bialgebra.counitAlgHom K (multiplicativeGroupCoordinateRing K))
-          (multiplicativeGroupCoordinate K)) at h
-      rw [generalLinearDeterminantCoordinateMap_coordinate,
-        Bialgebra.counitAlgHom_apply, multiplicativeGroupCoordinate_counit,
-        map_one] at h
-      exact h
-    have hbase (r : K) : a.hom (algebraMap K
-        (GeneralLinearCoordinateRing.CoordinateRing K n) r) = b.hom r := by
-      have h := congrArg (fun hom : CommRingCat.of (multiplicativeGroupCoordinateRing K) ⟶ T ↦
-        hom.hom (algebraMap K (multiplicativeGroupCoordinateRing K) r)) hcompatible
-      change a.hom ((generalLinearDeterminantCoordinateMap K n)
-        (algebraMap K (multiplicativeGroupCoordinateRing K) r)) =
-        b.hom ((Bialgebra.counitAlgHom K (multiplicativeGroupCoordinateRing K))
-          (algebraMap K (multiplicativeGroupCoordinateRing K) r)) at h
-      rw [AlgHom.commutes] at h
-      simpa only [LaurentPolynomial.C_eq_algebraMap, AlgHom.commutes,
-        Algebra.algebraMap_self, RingHom.id_apply] using h
-    let lift : SpecialLinearCoordinateRing.CoordinateRing K n →+* T :=
-      Ideal.Quotient.lift (determinantOneIdeal K n) a.hom (by
-        intro element membership
-        obtain ⟨multiplier, hmultiplier⟩ := Ideal.mem_span_singleton'.mp membership
-        rw [← hmultiplier, map_mul, map_sub, map_one, hdet, sub_self, mul_zero])
-    refine ⟨CommRingCat.ofHom lift, ?_, ?_⟩
-    · apply CommRingCat.hom_ext
-      apply RingHom.ext
-      intro element
-      rfl
-    · apply CommRingCat.hom_ext
-      apply RingHom.ext
-      intro r
-      change lift (algebraMap K (SpecialLinearCoordinateRing.CoordinateRing K n) r) = b.hom r
-      exact hbase r
-
-/-- Contravariant `Spec` turns the coordinate pushout into the scheme pullback
-of determinant along the multiplicative-group unit. Milne, *Basic Theory of
-Affine Group Schemes*, VII §4, Proposition 4.1 and Example 4.3 describe the
-field-base kernel; Mathlib's `isPullback_SpecMap_of_isPushout` gives this
-pullback in all schemes over any commutative base. -/
-theorem specialLinearDeterminantSquare_isPullback :
-    IsPullback (specialLinearInclusion K n).hom.hom.left
-      (specialLinearGroupUnderlyingScheme K n).hom
-      (generalLinearDeterminantSchemeHom K n).hom.hom.left
-      η[multiplicativeGroupUnderlyingScheme K].left := by
+        (TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom.toRingHom)
+      (CommRingCat.ofHom (algebraMap K
+        (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)))) := by
+  have h := specialLinearDeterminantSquare_isPullback K n
+  simp only [TauCeti.SpecialLinear.groupSchemeι_def,
+    TauCeti.CommHopfAlgCat.kernelSpecι_def, TauCeti.CommHopfAlgCat.quotientSpecι_def] at h
   change IsPullback
-    (Spec.map (CommRingCat.ofHom (quotient K n).toRingHom))
     (Spec.map (CommRingCat.ofHom
-      (algebraMap K (SpecialLinearCoordinateRing.CoordinateRing K n))))
+      (TauCeti.SpecialLinear.coordinateMap K (Fintype.card n)).hom.toAlgHom.toRingHom))
+    (Spec.map (CommRingCat.ofHom (algebraMap K
+      (TauCeti.SpecialLinear.coordinateHopfAlgebra K (Fintype.card n)))))
     (Spec.map (CommRingCat.ofHom
-      (generalLinearDeterminantCoordinateMap K n).toRingHom))
-    (Spec.map (CommRingCat.ofHom
-      (Bialgebra.counitAlgHom K (multiplicativeGroupCoordinateRing K)).toRingHom))
-  exact isPullback_SpecMap_of_isPushout _ _ _ _
-    (specialLinearDeterminantSquare_isPushout K n)
+      (generalLinearDeterminantSchemeCoordinateMap K n).hom.toAlgHom.toRingHom))
+    (Spec.map (CommRingCat.ofHom (Bialgebra.counitAlgHom K
+      (MonoidAlgebra K (ULift.{u} (Multiplicative ℤ)))).toRingHom)) at h
+  exact (IsPullback.of_map_of_faithful Scheme.Spec h).unop.flip
 
-/-- The determinant-one square is a pullback over the base, not merely a
-pointwise kernel on affine test rings. -/
-theorem specialLinearDeterminantSquare_isPullback_over :
-    IsPullback (specialLinearInclusion K n).hom.hom
-      (toUnit (specialLinearGroupScheme K n).toMon.X)
-      (generalLinearDeterminantSchemeHom K n).hom.hom
-      η[(multiplicativeGroupScheme K).toMon.X] := by
-  exact IsPullback.of_map_of_faithful (F := Over.forget (Spec (.of K)))
-    (specialLinearDeterminantSquare_isPullback K n)
-
-/-- The unique group-scheme morphism to the trivial group scheme over `Spec K`. -/
-def specialLinearToTrivialGroupHom :
-    specialLinearGroupScheme K n ⟶ Grp.trivial (Over (Spec (.of K))) :=
-  Grp.homMk' (default : (specialLinearGroupScheme K n).toMon ⟶
-    Mon.trivial (Over (Spec (.of K))))
-
-/-- The unit of `Gₘ` as an actual morphism from the trivial group scheme. -/
-def multiplicativeUnitGroupHom :
-    Grp.trivial (Over (Spec (.of K))) ⟶ multiplicativeGroupScheme K :=
-  Grp.homMk' (0 : Mon.trivial (Over (Spec (.of K))) ⟶
-    (multiplicativeGroupScheme K).toMon)
-
-/-- The determinant-one group scheme is the categorical kernel square of the
-determinant character for arbitrary test group schemes. Mathlib's
-`GrpLimits` limit-creation instance and `IsPullback.of_map_of_faithful`
-lift the underlying `Over` pullback to group objects. -/
-theorem specialLinearDeterminantSquare_isPullback_group :
-    IsPullback (specialLinearInclusion K n) (specialLinearToTrivialGroupHom K n)
-      (generalLinearDeterminantSchemeHom K n) (multiplicativeUnitGroupHom K) := by
-  apply IsPullback.of_map_of_faithful (Grp.forget (Over (Spec (.of K))))
-  change IsPullback (specialLinearInclusion K n).hom.hom
-    (toUnit (specialLinearGroupScheme K n).toMon.X)
-    (generalLinearDeterminantSchemeHom K n).hom.hom
-    (toUnit (MonoidalCategoryStruct.tensorUnit (Over (Spec (.of K)))) ≫
-      η[(multiplicativeGroupScheme K).toMon.X])
-  simpa only [toUnit_unit, Category.id_comp]
-    using specialLinearDeterminantSquare_isPullback_over K n
-
-/-- The pullback represents the determinant-one condition on *every* scheme
-over `Spec K`, with no affineness or reducedness hypothesis on the test scheme. -/
+/-- The kernel condition has a unique lift on every test scheme over the base. -/
 theorem specialLinearSchemeKernel_universal
     (T : Over (Spec (.of K)))
-    (f : T ⟶ generalLinearGroupUnderlyingScheme K n)
+    (f : T ⟶ (TauCeti.GeneralLinear.groupScheme K (Fintype.card n)).X)
     (hf : f ≫ (generalLinearDeterminantSchemeHom K n).hom.hom =
-      toUnit T ≫ η[(multiplicativeGroupScheme K).toMon.X]) :
-    ∃! lift : T ⟶ specialLinearGroupUnderlyingScheme K n,
-      lift ≫ (specialLinearInclusion K n).hom.hom = f := by
+      toUnit T ≫ η[(TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X]) :
+    ∃! lift : T ⟶ (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X,
+      lift ≫ (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom = f := by
   let square := specialLinearDeterminantSquare_isPullback_over K n
   refine ⟨square.lift f (toUnit T) hf, square.lift_fst _ _ _, ?_⟩
   intro candidate hcandidate
@@ -221,17 +152,15 @@ theorem specialLinearSchemeKernel_universal
   · exact hcandidate.trans (square.lift_fst _ _ _).symm
   · exact toUnit_unique _ _
 
-/-- Universal property of the determinant kernel for arbitrary `K`-group
-schemes: the lift is itself a group-scheme map, not merely a scheme map.
-Compare the field-base affine kernel in Milne, *Basic Theory of Affine Group
-Schemes*, VII §4, Proposition 4.1 and Example 4.3. -/
+/-- The kernel lift preserves group structure for every test group scheme. -/
 theorem specialLinearGroupKernel_universal
     (H : Grp (Over (Spec (.of K))))
-    (f : H ⟶ generalLinearGroupScheme K n)
+    (f : H ⟶ TauCeti.GeneralLinear.groupScheme K (Fintype.card n))
     (hf : f ≫ generalLinearDeterminantSchemeHom K n =
-      toUnit H ≫ multiplicativeUnitGroupHom K) :
-    ∃! lift : H ⟶ specialLinearGroupScheme K n,
-      lift ≫ specialLinearInclusion K n = f := by
+      toUnit H ≫ (0 : Grp.trivial (Over (Spec (.of K))) ⟶
+        TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K)) :
+    ∃! lift : H ⟶ TauCeti.SpecialLinear.groupScheme K (Fintype.card n),
+      lift ≫ TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n) = f := by
   let square := specialLinearDeterminantSquare_isPullback_group K n
   refine ⟨square.lift f (toUnit H) hf, square.lift_fst _ _ _, ?_⟩
   intro candidate hcandidate
@@ -240,5 +169,3 @@ theorem specialLinearGroupKernel_universal
   · exact toUnit_unique _ _
 
 end AlgebraicGeometry
-
-#lint

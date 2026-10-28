@@ -52,6 +52,9 @@ and quotient nonvanishing route use
 
 @[expose] public section
 
+open TauCeti
+
+
 set_option autoImplicit false
 set_option relaxedAutoImplicit false
 
@@ -159,7 +162,7 @@ example :
   · intro x y hxy
     apply Subtype.ext
     simpa only [Coalgebra.counitCoalgHom_apply, hc, Submodule.subtype_apply] using hxy
-  · rw [CoalgHom.toLinearMap_eq_coe, Coalgebra.counitCoalgHom_toLinearMap]
+  · rw [CoalgHom.toLinearMap_eq_ofClass, Coalgebra.counitCoalgHom_toLinearMap]
     exact hc
   · exact LinearMap.ext fun r => CommSemiring.counit_apply (ZMod 6) r
   · exact fun r => ⟨r, CommSemiring.counit_apply (ZMod 6) r⟩
@@ -189,8 +192,8 @@ section AdditivePowerQuotients
 open AlgebraicGeometry
 
 local notation "K₂" => Polynomial (ZMod 2)
-local notation "C₂" => additiveGroupCoordinateRing K₂
-local notation "a" => additiveGroupCoordinate K₂
+local notation "C₂" => (SymmetricAlgebra K₂ K₂)
+local notation "a" => (SymmetricAlgebra.ι K₂ K₂ 1)
 local notation "I₄" => Submodule.restrictScalars K₂ (infinitesimalAdditiveIdeal K₂ 2 2)
 local notation "I₂" => Submodule.restrictScalars K₂ (infinitesimalAdditiveIdeal K₂ 2 1)
 local notation "q₄" => Coalgebra.Quotient.mkQCoalgHom (R := K₂) I₄

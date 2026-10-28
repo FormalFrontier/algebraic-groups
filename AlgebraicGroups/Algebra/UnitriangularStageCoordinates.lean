@@ -34,7 +34,7 @@ the entire-superdiagonal primitive-coordinate construction is proved here.
 
 noncomputable section
 
-open GeneralLinearCoordinateRing UnitriangularCoordinateRing
+open TauCeti.GeneralLinear
 open scoped TensorProduct
 
 namespace UnitriangularStageCoordinateRing
@@ -55,45 +55,42 @@ noncomputable local instance : CoalgebraStruct K (CoordinateRing K n r) :=
 /-- The universal entry on the `r`-th superdiagonal of the stage algebra.
 Milne, *Algebraic Groups* (2017), §6.49 uses one-entry additive
 coordinates in the finer field-case filtration. -/
-def coordinate (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+def coordinate (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     CoordinateRing K n r :=
   quotient K n r (entry K n ij.1.1 ij.1.2)
 
 private theorem quotient_diag (i : Fin n) :
     quotient K n r (entry K n i i) = 1 := by
-  change quotient K n r (UnitriangularCoordinateRing.quotient K (Fin n)
-    (GeneralLinearCoordinateRing.matrix K (Fin n) i i)) = 1
-  rw [UnitriangularCoordinateRing.quotient_diag, map_one]
+  change quotient K n r ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin n)
+    (TauCeti.UpperUnitriangular.genericMatrix K (Fin n) i i))) = 1
+  rw [TauCeti.UpperUnitriangular.genericMatrix_apply_diag, map_one, map_one]
 
 private theorem quotient_lower (i j : Fin n) (hji : j < i) :
     quotient K n r (entry K n i j) = 0 := by
-  change quotient K n r (UnitriangularCoordinateRing.quotient K (Fin n)
-    (GeneralLinearCoordinateRing.matrix K (Fin n) i j)) = 0
-  rw [UnitriangularCoordinateRing.quotient_lower K (Fin n) i j hji, map_zero]
+  change quotient K n r ((TauCeti.UpperUnitriangular.coordinateHopfAlgebraAlgEquiv K (Fin n)
+    (TauCeti.UpperUnitriangular.genericMatrix K (Fin n) i j))) = 0
+  rw [TauCeti.UpperUnitriangular.genericMatrix_apply_eq_zero_of_gt K (Fin n) hji,
+    map_zero, map_zero]
 
 /-- The positive-stage coordinate has zero counit. -/
 theorem coordinate_counit (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     Coalgebra.counit (R := K) (coordinate K n r ij) = 0 := by
   have h := BialgHom.counitAlgHom_comp (quotientBialgHom K n r)
   have hentry := congrArg (fun f : Ambient K n →ₐ[K] K => f (entry K n ij.1.1 ij.1.2)) h
   change Coalgebra.counit (R := K) (coordinate K n r ij) =
     Coalgebra.counit (R := K) (entry K n ij.1.1 ij.1.2) at hentry
   rw [hentry]
-  change Coalgebra.counit (R := K)
-    (Ideal.Quotient.mk (UnitriangularCoordinateRing.ideal K (Fin n))
-      (GeneralLinearCoordinateRing.matrix K (Fin n) ij.1.1 ij.1.2)) = 0
-  rw [Bialgebra.Quotient.counit_mk, GeneralLinearCoordinateRing.native_counit_matrix]
   have hij : ij.1.1 ≠ ij.1.2 := by
     intro heq
     have := ij.2
     rw [heq] at this
     omega
-  simp [hij]
+  simp [entry, TauCeti.UpperUnitriangular.coordinateHopfAlgebra_counit_genericMatrix_apply, hij]
 
 /-- All interior coproduct terms vanish in the positive-stage quotient. -/
 theorem coordinate_comul (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     Coalgebra.comul (R := K) (coordinate K n r ij) =
       coordinate K n r ij ⊗ₜ[K] 1 + 1 ⊗ₜ[K] coordinate K n r ij := by
   let : AddCommMonoid (CoordinateRing K n r) :=
@@ -141,8 +138,8 @@ theorem coordinate_comul (hr : 1 ≤ r)
 /-- The rank-one symmetric-algebra map classifying an entry.
 Milne, *Algebraic Groups* (2017), item 2.1 describes the additive
 group's primitive polynomial coordinate. -/
-def coordinateAlgHom (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
-    AlgebraicGeometry.additiveGroupCoordinateRing K →ₐ[K] CoordinateRing K n r := by
+def coordinateAlgHom (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
+    (SymmetricAlgebra K K) →ₐ[K] CoordinateRing K n r := by
   letI : AddCommMonoid (CoordinateRing K n r) :=
     (inferInstance : CommRing (CoordinateRing K n r)).toCommSemiring.toAddCommMonoid
   letI : Module K (CoordinateRing K n r) := Algebra.toModule
@@ -151,18 +148,18 @@ def coordinateAlgHom (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
       (coordinate K n r ij))
 
 @[simp] theorem coordinateAlgHom_coordinate
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
-    coordinateAlgHom K n r ij (AlgebraicGeometry.additiveGroupCoordinate K) =
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
+    coordinateAlgHom K n r ij ((SymmetricAlgebra.ι K K 1)) =
       coordinate K n r ij := by
-  simp [coordinateAlgHom, AlgebraicGeometry.additiveGroupCoordinate]
+  simp [coordinateAlgHom]
 
 /-- A positive-stage primitive coordinate defines a bialgebra homomorphism.
 Milne, *Algebraic Groups* (2017), §6.49 identifies one-entry additive
 quotients over a field; the whole-superdiagonal construction here works
 over arbitrary commutative rings. -/
 def coordinateBialgHom (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
-    AlgebraicGeometry.additiveGroupCoordinateRing K →ₐc[K] CoordinateRing K n r := by
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
+    (SymmetricAlgebra K K) →ₐc[K] CoordinateRing K n r := by
   letI : AddCommMonoid (CoordinateRing K n r) :=
     (inferInstance : CommRing (CoordinateRing K n r)).toCommSemiring.toAddCommMonoid
   letI : Module K (CoordinateRing K n r) := Algebra.toModule
@@ -172,28 +169,34 @@ def coordinateBialgHom (hr : 1 ≤ r)
       apply SymmetricAlgebra.algHom_ext
       ext
       change Coalgebra.counit (R := K)
-        (coordinateAlgHom K n r ij (AlgebraicGeometry.additiveGroupCoordinate K)) =
-        Coalgebra.counit (R := K) (AlgebraicGeometry.additiveGroupCoordinate K)
+        (coordinateAlgHom K n r ij ((SymmetricAlgebra.ι K K 1))) =
+        Coalgebra.counit (R := K) ((SymmetricAlgebra.ι K K 1))
       rw [coordinateAlgHom_coordinate, coordinate_counit K n r hr ij,
-        AlgebraicGeometry.additiveGroupCoordinate_counit])
+        SymmetricAlgebra.counit_ι])
     (by
       apply SymmetricAlgebra.algHom_ext
       ext
       change ((Algebra.TensorProduct.map (coordinateAlgHom K n r ij)
           (coordinateAlgHom K n r ij)).comp
-            (Bialgebra.comulAlgHom K (AlgebraicGeometry.additiveGroupCoordinateRing K)))
-          (AlgebraicGeometry.additiveGroupCoordinate K) =
+            (Bialgebra.comulAlgHom K ((SymmetricAlgebra K K))))
+          ((SymmetricAlgebra.ι K K 1)) =
         ((Bialgebra.comulAlgHom K (CoordinateRing K n r)).comp
-          (coordinateAlgHom K n r ij)) (AlgebraicGeometry.additiveGroupCoordinate K)
+          (coordinateAlgHom K n r ij)) ((SymmetricAlgebra.ι K K 1))
       rw [AlgHom.comp_apply, AlgHom.comp_apply]
-      simp only [Bialgebra.comulAlgHom_apply,
-        AlgebraicGeometry.additiveGroupCoordinate_comul, map_add,
-        Algebra.TensorProduct.map_tmul, map_one, coordinateAlgHom_coordinate,
+      rw [Bialgebra.comulAlgHom_apply, SymmetricAlgebra.comul_ι K K 1]
+      erw [(Algebra.TensorProduct.map (coordinateAlgHom K n r ij)
+        (coordinateAlgHom K n r ij)).map_add]
+      change (Algebra.TensorProduct.map (coordinateAlgHom K n r ij)
+          (coordinateAlgHom K n r ij)) ((SymmetricAlgebra.ι K K 1) ⊗ₜ[K] 1) +
+        (Algebra.TensorProduct.map (coordinateAlgHom K n r ij)
+          (coordinateAlgHom K n r ij)) (1 ⊗ₜ[K] (SymmetricAlgebra.ι K K 1)) = _
+      simp only [Algebra.TensorProduct.map_tmul, map_one,
+        coordinateAlgHom_coordinate, Bialgebra.comulAlgHom_apply,
         coordinate_comul K n r hr ij])
 
 /-- A successor stage has zero `r`-th coordinate. -/
 theorem successor_coordinate (hr : 1 ≤ r)
-    (ij : Matrix.UnitriangularGroup.superdiagonalIndex n r) :
+    (ij : TauCeti.UpperUnitriangularGroup.superdiagonalIndex n r) :
     (successor K n r) (coordinate K n r ij) = 0 := by
   have hij : ij.1.1 < ij.1.2 := by omega
   have hgap : ij.1.2.val < ij.1.1.val + (r + 1) := by omega

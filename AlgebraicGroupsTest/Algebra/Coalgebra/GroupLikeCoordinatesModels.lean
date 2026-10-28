@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Tactic.NormNum
 
+
 /-!
 # Coordinates in an infinite-dimensional diagonal coalgebra
 
@@ -57,11 +58,11 @@ def point (i : ℤ) : GroupLike ℚ C∞ where
 @[simp] theorem point_val (i : ℤ) : (point i).val = Finsupp.single i 1 := rfl
 
 /-- Every coordinate point has counit one. -/
-@[simp] theorem point_counit (i : ℤ) : counit (R := ℚ) (point i).val = 1 :=
+theorem point_counit (i : ℤ) : counit (R := ℚ) (point i).val = 1 :=
   (point i).isGroupLikeElem_val.counit_eq_one
 
 /-- Comultiplication is diagonal on each coordinate point. -/
-@[simp] theorem point_comul (i : ℤ) :
+theorem point_comul (i : ℤ) :
     comul (R := ℚ) (point i).val = (point i).val ⊗ₜ[ℚ] (point i).val :=
   (point i).isGroupLikeElem_val.comul_eq_tmul_self
 

@@ -51,9 +51,10 @@ variable (K : Type u) [CommRing K] (n : Type u) [Fintype n] [DecidableEq n]
 /-- The actual morphism over `Spec K` restricting conjugation by the determinant
 section to its categorical determinant-one kernel. -/
 def generalLinearDeterminantConj (pivot : n) :
-    multiplicativeGroupUnderlyingScheme K ⊗ specialLinearGroupUnderlyingScheme K n ⟶
-      specialLinearGroupUnderlyingScheme K n :=
-  splitKernelConj (specialLinearInclusion K n).hom.hom
+    (TauCeti.DiagonalizableGroup.multiplicativeGroupScheme K).X ⊗
+      (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X ⟶
+      (TauCeti.SpecialLinear.groupScheme K (Fintype.card n)).X :=
+  splitKernelConj (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom
     (generalLinearDeterminantSchemeHom K n).hom.hom
     (generalLinearDeterminantSectionSchemeHom K n pivot).hom.hom
     (specialLinearDeterminantSquare_isPullback_over K n)
@@ -88,33 +89,47 @@ def generalLinearDiagonalConjSL (pivot : n) (unit : Rˣ)
 diagonal conjugation, rather than merely agreeing on global `K`-points. -/
 theorem generalLinearDeterminantConj_point [Algebra K R] (pivot : n) (unit : Rˣ)
     (matrix : Matrix.SpecialLinearGroup n R) :
-    lift (multiplicativeGroupMulEquivPoints K R unit)
-      (specialLinearGroupMulEquivPoints K n R matrix) ≫
+    lift ((TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := K) (A :=
+      R)).symm unit)
+      (((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n R).symm.trans
+        (TauCeti.SpecialLinear.groupSchemePointMulEquiv (R := K) (Fintype.card n) R)) matrix) ≫
         generalLinearDeterminantConj K n pivot =
-      specialLinearGroupMulEquivPoints K n R
+      ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n R).symm.trans
+        (TauCeti.SpecialLinear.groupSchemePointMulEquiv (R := K) (Fintype.card n) R))
         (generalLinearDiagonalConjSL n pivot unit matrix) := by
   apply (specialLinearDeterminantSquare_isPullback_over K n).hom_ext
   · calc
-      (lift (multiplicativeGroupMulEquivPoints K R unit)
-          (specialLinearGroupMulEquivPoints K n R matrix) ≫
+      (lift ((TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := K) (A :=
+        R)).symm unit)
+          (((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n R).symm.trans
+            (TauCeti.SpecialLinear.groupSchemePointMulEquiv (R := K) (Fintype.card n) R)) matrix) ≫
           generalLinearDeterminantConj K n pivot) ≫
-          (specialLinearInclusion K n).hom.hom =
-        (multiplicativeGroupMulEquivPoints K R unit ≫
+          (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom =
+        ((TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := K) (A :=
+          R)).symm unit ≫
             (generalLinearDeterminantSectionSchemeHom K n pivot).hom.hom) *
-          (specialLinearGroupMulEquivPoints K n R matrix ≫
-            (specialLinearInclusion K n).hom.hom) *
-          (multiplicativeGroupMulEquivPoints K R unit ≫
+          (((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n R).symm.trans
+            (TauCeti.SpecialLinear.groupSchemePointMulEquiv (R := K) (Fintype.card n) R)) matrix ≫
+            (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom) *
+          ((TauCeti.DiagonalizableGroup.multiplicativeGroupSchemePointsMulEquiv (R := K) (A :=
+            R)).symm unit ≫
             (generalLinearDeterminantSectionSchemeHom K n pivot).hom.hom)⁻¹ := by
               exact splitKernelConj_lift_comp_i _ _ _ _ _ _ _
-      _ = generalLinearGroupMulEquivPoints K n R
+      _ = ((TauCeti.GeneralLinear.reindexedPointsMulEquiv K n R).symm.trans
+        (TauCeti.GeneralLinear.groupSchemePointMulEquiv (R := K) (Fintype.card n) R))
             (generalLinearDiagonalHom n pivot unit * Matrix.SpecialLinearGroup.toGL matrix *
               (generalLinearDiagonalHom n pivot unit)⁻¹) := by
-              rw [generalLinearDeterminantSection_point, specialLinearInclusion_point]
+              rw [generalLinearDeterminantSection_point]
+              simp only [MulEquiv.trans_apply]
+              rw [TauCeti.SpecialLinear.reindexedSchemePoint_comp_groupSchemeι]
               simp
-      _ = specialLinearGroupMulEquivPoints K n R
+      _ = ((TauCeti.SpecialLinear.reindexedPointsMulEquiv K n R).symm.trans
+        (TauCeti.SpecialLinear.groupSchemePointMulEquiv (R := K) (Fintype.card n) R))
             (generalLinearDiagonalConjSL n pivot unit matrix) ≫
-            (specialLinearInclusion K n).hom.hom := by
-              rw [specialLinearInclusion_point, generalLinearDiagonalConjSL_toGL]
+            (TauCeti.SpecialLinear.groupSchemeι K (Fintype.card n)).hom.hom := by
+              simp only [MulEquiv.trans_apply]
+              rw [TauCeti.SpecialLinear.reindexedSchemePoint_comp_groupSchemeι,
+                generalLinearDiagonalConjSL_toGL]
   · simp
 
 /-- For any coefficient ring, diagonal conjugation scales entry `(row,col)`

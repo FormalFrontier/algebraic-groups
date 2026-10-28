@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan
+public import TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
 public import AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
@@ -34,7 +34,7 @@ No finite-dimensionality or nonempty group-like family is required.
 Mathlib supplies `linearIndep_groupLikeVal`,
 `LinearIndependent.linearCombinationEquiv`, `LinearIndependent.repr` and
 `MonoidAlgebra.coeffLinearEquiv`. The subcoalgebra assembles the span-closure
-result in `AlgebraicGroups.Algebra.Coalgebra.GroupLikeSpan` with the constructor
+result in `TauCeti.Algebra.Coalgebra.Subcoalgebra.GroupLike` with the constructor
 and restricted coalgebra in the subcoalgebra modules.
 The equivalences use the existing `MonoidAlgebra.liftGroupLikeCoalgHom` and
 `MonoidAlgebra.liftGroupLikeCoalgHomEquiv`. The field-span construction is
@@ -42,6 +42,9 @@ identified with the given-basis construction on its canonical span basis.
 -/
 
 @[expose] public section
+
+open TauCeti
+
 
 universe uR uC uD uI uE uK
 
@@ -128,7 +131,8 @@ noncomputable def groupLikeCoalgHomEquiv : (C →ₗc[R] D) ≃ (I → GroupLike
         (F.comp (b.groupLikeCoalgebraEquiv hb).toCoalgHom))
       ((b.groupLikeCoalgebraEquiv hb).symm x)
     simpa only [MonoidAlgebra.liftGroupLikeCoalgHomEquiv_apply, CoalgHom.comp_apply,
-      CoalgEquiv.toCoalgHom_eq_coe, CoalgEquiv.coe_coe, CoalgEquiv.apply_symm_apply] using h
+      CoalgEquiv.toCoalgHom_eq_ofClass, CoalgEquiv.coe_coalgHomOfClass,
+          CoalgEquiv.apply_symm_apply] using h
   right_inv := by
     intro f
     have h : ((MonoidAlgebra.liftGroupLikeCoalgHom f).comp
@@ -137,7 +141,8 @@ noncomputable def groupLikeCoalgHomEquiv : (C →ₗc[R] D) ≃ (I → GroupLike
         MonoidAlgebra.liftGroupLikeCoalgHom f := by
       apply CoalgHom.ext
       intro x
-      simp only [CoalgHom.comp_apply, CoalgEquiv.toCoalgHom_eq_coe, CoalgEquiv.coe_coe,
+      simp only [CoalgHom.comp_apply, CoalgEquiv.toCoalgHom_eq_ofClass,
+          CoalgEquiv.coe_coalgHomOfClass,
         CoalgEquiv.symm_apply_apply]
     change MonoidAlgebra.liftGroupLikeCoalgHomEquiv.symm
       (((MonoidAlgebra.liftGroupLikeCoalgHom f).comp
@@ -154,7 +159,7 @@ theorem groupLikeCoalgHomEquiv_apply (F : C →ₗc[R] D) (i : I) :
   change ((MonoidAlgebra.liftGroupLikeCoalgHomEquiv.symm
     (F.comp (b.groupLikeCoalgebraEquiv hb).toCoalgHom)) i).val = _
   rw [MonoidAlgebra.liftGroupLikeCoalgHomEquiv_symm_apply_val]
-  simp only [CoalgHom.comp_apply, CoalgEquiv.toCoalgHom_eq_coe, CoalgEquiv.coe_coe,
+  simp only [CoalgHom.comp_apply, CoalgEquiv.toCoalgHom_eq_ofClass, CoalgEquiv.coe_coalgHomOfClass,
     groupLikeCoalgebraEquiv_single, one_smul, GroupLike.map_val]
 
 /-- Extension is the existing diagonal-coalgebra lift transported through basis coordinates. -/
@@ -169,13 +174,13 @@ theorem groupLikeCoalgHomEquiv_symm_apply (f : I → GroupLike R D) :
 theorem groupLikeCoalgHomEquiv_symm_apply_basis (f : I → GroupLike R D) (i : I) :
     (b.groupLikeCoalgHomEquiv hb).symm f (b i) = (f i).val := by
   rw [groupLikeCoalgHomEquiv_symm_apply]
-  simp only [CoalgHom.comp_apply, CoalgEquiv.toCoalgHom_eq_coe, CoalgEquiv.coe_coe,
+  simp only [CoalgHom.comp_apply, CoalgEquiv.toCoalgHom_eq_ofClass, CoalgEquiv.coe_coalgHomOfClass,
     groupLikeCoalgebraEquiv_symm_basis, MonoidAlgebra.liftGroupLikeCoalgHom_single,
     one_smul]
 
 /-- Coalgebra maps agreeing on a basis are equal. -/
 theorem coalgHom_ext {F H : C →ₗc[R] D} (h : ∀ i, F (b i) = H (b i)) : F = H := by
-  apply CoalgHom.coe_linearMap_injective
+  apply CoalgHom.linearMapOfClass_injective
   exact b.ext h
 
 variable {E : Type uE} [AddCommMonoid E] [Module R E] [Coalgebra R E]
@@ -204,69 +209,22 @@ section Field
 variable {K : Type uK} {C : Type uC}
 variable [Field K] [AddCommGroup C] [Module K C] [Coalgebra K C]
 
-namespace Subcoalgebra
-
-variable (K C) in
-/-- The subcoalgebra spanned by all group-like elements of a coalgebra over a field. -/
-def groupLikeSpan : Subcoalgebra K C :=
-  Subcoalgebra.mk' (Submodule.span K (Set.range (GroupLike.val (R := K) (A := C))))
-    (fun {x} => Coalgebra.comul_mem_range_mapIncl_span_of_isGroupLikeElem
-      (R := K) (C := C) (s := Set.range (GroupLike.val (R := K) (A := C)))
-      (x := x) (by
-        rintro _ ⟨g, rfl⟩
-        exact g.isGroupLikeElem_val))
-
-/-- The underlying subspace of the group-like subcoalgebra is the canonical linear span. -/
-@[simp]
-theorem groupLikeSpan_toSubmodule :
-    (groupLikeSpan K C).toSubmodule =
-      Submodule.span K (Set.range (GroupLike.val (R := K) (A := C))) :=
-  rfl
-
-/-- Membership in the group-like subcoalgebra is membership in the linear span. -/
-@[simp]
-theorem mem_groupLikeSpan_iff {x : C} :
-    x ∈ groupLikeSpan K C ↔
-      x ∈ Submodule.span K (Set.range (GroupLike.val (R := K) (A := C))) := by
-  rw [← mem_toSubmodule, groupLikeSpan_toSubmodule]
-
-/-- Every group-like element belongs to the group-like subcoalgebra. -/
-theorem groupLike_mem_groupLikeSpan (g : GroupLike K C) :
-    g.val ∈ groupLikeSpan K C := by
-  exact mem_groupLikeSpan_iff.mpr (Submodule.subset_span ⟨g, rfl⟩)
-
-/-- The group-like subcoalgebra is the least subcoalgebra containing every group-like element. -/
-theorem groupLikeSpan_le_iff (D : Subcoalgebra K C) :
-    (groupLikeSpan K C).toSubmodule ≤ D.toSubmodule ↔
-      ∀ g : GroupLike K C, g.val ∈ D := by
-  rw [groupLikeSpan_toSubmodule, Submodule.span_le]
-  constructor
-  · intro h g
-    exact h ⟨g, rfl⟩
-  · rintro h _ ⟨g, rfl⟩
-    exact h g
-
-/-- With no group-like elements, the group-like subcoalgebra has zero underlying subspace. -/
-theorem groupLikeSpan_eq_bot_of_isEmpty [IsEmpty (GroupLike K C)] :
-    (groupLikeSpan K C).toSubmodule = ⊥ := by
-  rw [groupLikeSpan_toSubmodule, Set.range_eq_empty, Submodule.span_empty]
-
-end Subcoalgebra
-
 namespace GroupLike
 
 /-- The canonical basis of the span of all group-like elements over a field. -/
 noncomputable def spanBasis :
-    Module.Basis (GroupLike K C) K (Subcoalgebra.groupLikeSpan K C) :=
-  Module.Basis.ofRepr (linearIndep_groupLikeVal (R := K) (A := C)).linearCombinationEquiv.symm
+    Module.Basis (GroupLike K C) K
+      (Subcoalgebra.groupLikeSetSpan (R := K) (C := C) Set.univ).toSubmodule :=
+  Module.Basis.ofRepr ((LinearEquiv.ofEq _ _ (by
+    rw [Subcoalgebra.groupLikeSetSpan_toSubmodule, Set.image_univ])).trans
+      (linearIndep_groupLikeVal (R := K) (A := C)).linearCombinationEquiv.symm)
 
 /-- The canonical span basis consists of the ambient group-like elements. -/
-@[simp]
 theorem spanBasis_apply (g : GroupLike K C) :
     spanBasis (K := K) (C := C) g =
-      (⟨g.val, Subcoalgebra.groupLike_mem_groupLikeSpan g⟩ :
-        Subcoalgebra.groupLikeSpan K C) := by
-  apply Subcoalgebra.coe_injective
+      (⟨g.val, Subcoalgebra.groupLike_mem_groupLikeSetSpan (Set.mem_univ g)⟩ :
+        (Subcoalgebra.groupLikeSetSpan (R := K) (C := C) Set.univ).toSubmodule) := by
+  apply Subtype.val_injective
   change ((linearIndep_groupLikeVal (R := K) (A := C)).linearCombinationEquiv
     (Finsupp.single g 1) : C) = g.val
   rw [LinearIndependent.linearCombinationEquiv_apply_coe,
@@ -276,19 +234,21 @@ theorem spanBasis_apply (g : GroupLike K C) :
 theorem isGroupLikeElem_spanBasis (g : GroupLike K C) :
     IsGroupLikeElem K (spanBasis (K := K) (C := C) g) := by
   constructor
-  · simpa only [Subcoalgebra.coalgebra_counit_apply, spanBasis_apply] using
+  · simpa only [Subcoalgebra.counit_apply, spanBasis_apply] using
       g.isGroupLikeElem_val.counit_eq_one
   · apply Module.Flat.tensorProduct_mapIncl_injective_of_right
-      (Subcoalgebra.groupLikeSpan K C).toSubmodule
-      (Subcoalgebra.groupLikeSpan K C).toSubmodule
-    rw [Subcoalgebra.mapIncl_coalgebra_comul, TensorProduct.map_tmul]
+      (Subcoalgebra.groupLikeSetSpan (R := K) (C := C) Set.univ).toSubmodule
+      (Subcoalgebra.groupLikeSetSpan (R := K) (C := C) Set.univ).toSubmodule
+    rw [TensorProduct.mapIncl, Subcoalgebra.comul_apply,
+      Subcoalgebra.map_subtype_comulLinearMap, TensorProduct.map_tmul]
     simpa only [spanBasis_apply, Submodule.subtype_apply] using
       g.isGroupLikeElem_val.comul_eq_tmul_self
 
 /-- Canonical evaluation is a coalgebra equivalence from the free diagonal coalgebra
 onto the group-like span, with its existing restricted coalgebra structure. -/
 noncomputable def spanCoalgebraEquiv :
-    K[GroupLike K C] ≃ₗc[K] Subcoalgebra.groupLikeSpan K C :=
+    K[GroupLike K C] ≃ₗc[K] (Subcoalgebra.groupLikeSetSpan (R := K) (C := C)
+      Set.univ).toSubmodule :=
   (spanBasis (K := K) (C := C)).groupLikeCoalgebraEquiv
     (isGroupLikeElem_spanBasis (K := K) (C := C))
 
@@ -302,20 +262,20 @@ theorem spanCoalgebraEquiv_eq_groupLikeCoalgebraEquiv :
 /-- Inclusion after the equivalence is coalgebra evaluation on the identity family. -/
 @[simp]
 theorem subtype_comp_spanCoalgebraEquiv :
-    (Subcoalgebra.groupLikeSpan K C).subtype.comp
+    (Subcoalgebra.groupLikeSetSpan (R := K) (C := C) Set.univ).subtype.comp
         (spanCoalgebraEquiv (K := K) (C := C) :
-          K[GroupLike K C] →ₗc[K] Subcoalgebra.groupLikeSpan K C) =
+          K[GroupLike K C] →ₗc[K] (Subcoalgebra.groupLikeSetSpan (R := K) (C := C)
+            Set.univ).toSubmodule) =
       MonoidAlgebra.liftGroupLikeCoalgHom
         (id : GroupLike K C → GroupLike K C) := by
   rw [spanCoalgebraEquiv_eq_groupLikeCoalgebraEquiv]
   apply MonoidAlgebra.coalgHom_ext
   intro g
-  simp only [CoalgHom.comp_apply, CoalgEquiv.toCoalgHom_eq_coe, CoalgEquiv.coe_coe,
+  simp only [CoalgHom.comp_apply, CoalgEquiv.coe_coalgHomOfClass,
     Module.Basis.groupLikeCoalgebraEquiv_single, one_smul, spanBasis_apply,
     Subcoalgebra.subtype_apply, MonoidAlgebra.liftGroupLikeCoalgHom_single, id_eq]
 
 /-- The ambient value of the equivalence is evaluation of the same coefficients. -/
-@[simp]
 theorem spanCoalgebraEquiv_apply_coe (x : K[GroupLike K C]) :
     (spanCoalgebraEquiv x : C) = MonoidAlgebra.liftGroupLikeCoalgHom
       (id : GroupLike K C → GroupLike K C) x := by
@@ -325,40 +285,41 @@ theorem spanCoalgebraEquiv_apply_coe (x : K[GroupLike K C]) :
 theorem spanCoalgebraEquiv_toLinearEquiv :
     (spanCoalgebraEquiv (K := K) (C := C)).toLinearEquiv =
       (MonoidAlgebra.coeffLinearEquiv K).trans
-        (linearIndep_groupLikeVal (R := K) (A := C)).linearCombinationEquiv := by
+        (spanBasis (K := K) (C := C)).repr.symm := by
   exact (spanBasis (K := K) (C := C)).groupLikeCoalgebraEquiv_toLinearEquiv
     (isGroupLikeElem_spanBasis (K := K) (C := C))
 
 /-- The equivalence sends a monomial to the corresponding multiple of its group-like element. -/
-@[simp]
 theorem spanCoalgebraEquiv_single (g : GroupLike K C) (r : K) :
     spanCoalgebraEquiv (MonoidAlgebra.single g r) =
-      r • (⟨g.val, Subcoalgebra.groupLike_mem_groupLikeSpan g⟩ :
-        Subcoalgebra.groupLikeSpan K C) := by
-  apply Subcoalgebra.coe_injective
+      r • (⟨g.val, Subcoalgebra.groupLike_mem_groupLikeSetSpan (Set.mem_univ g)⟩ :
+        (Subcoalgebra.groupLikeSetSpan (R := K) (C := C) Set.univ).toSubmodule) := by
+  apply Subtype.val_injective
   simp only [spanCoalgebraEquiv_apply_coe, MonoidAlgebra.liftGroupLikeCoalgHom_single,
-    id_eq, Subcoalgebra.coe_smul]
+    id_eq, Submodule.coe_smul]
 
 /-- Inverse coefficients are exactly the stock coordinates of the independent group-like family. -/
-theorem spanCoalgebraEquiv_symm_coeff (x : Subcoalgebra.groupLikeSpan K C) :
+theorem spanCoalgebraEquiv_symm_coeff (x : (Subcoalgebra.groupLikeSetSpan (R := K) (C := C)
+  Set.univ).toSubmodule) :
     ((spanCoalgebraEquiv (K := K) (C := C)).symm x).coeff =
-      (linearIndep_groupLikeVal (R := K) (A := C)).repr x := by
+      (spanBasis (K := K) (C := C)).repr x := by
   have h := congrArg
-    (fun e : K[GroupLike K C] ≃ₗ[K] Subcoalgebra.groupLikeSpan K C => e.symm x)
+    (fun e : K[GroupLike K C] ≃ₗ[K] (Subcoalgebra.groupLikeSetSpan (R := K) (C := C)
+      Set.univ).toSubmodule => e.symm x)
     (spanCoalgebraEquiv_toLinearEquiv (K := K) (C := C))
   exact congrArg (fun y : K[GroupLike K C] => y.coeff) h
 
 /-- A group-like generator has singleton inverse coordinates. -/
-@[simp]
 theorem spanCoalgebraEquiv_symm_groupLike (g : GroupLike K C) :
     (spanCoalgebraEquiv (K := K) (C := C)).symm
-        ⟨g.val, Subcoalgebra.groupLike_mem_groupLikeSpan g⟩ =
+        ⟨g.val, Subcoalgebra.groupLike_mem_groupLikeSetSpan (Set.mem_univ g)⟩ =
       MonoidAlgebra.single g 1 := by
   apply EquivLike.injective (spanCoalgebraEquiv (K := K) (C := C))
   simp only [CoalgEquiv.apply_symm_apply, spanCoalgebraEquiv_single, one_smul]
 
 /-- Ambient comultiplication is diagonal in the inverse coalgebra coordinates. -/
-theorem comul_eq_sum_spanCoefficients (x : Subcoalgebra.groupLikeSpan K C) :
+theorem comul_eq_sum_spanCoefficients (x : (Subcoalgebra.groupLikeSetSpan (R := K) (C := C)
+  Set.univ).toSubmodule) :
     Coalgebra.comul (R := K) (x : C) =
       ((spanCoalgebraEquiv (K := K) (C := C)).symm x).coeff.sum
         (fun g r => r • (g.val ⊗ₜ[K] g.val)) := by
@@ -373,11 +334,12 @@ theorem comul_eq_sum_spanCoefficients (x : Subcoalgebra.groupLikeSpan K C) :
       (CoalgHomClass.map_comp_comul_apply f y).symm
     _ = _ := by
       rw [MonoidAlgebra.comul_eq_sum_coeff, map_finsuppSum]
-      simp only [map_smul, TensorProduct.map_tmul, f, y, CoalgHom.toLinearMap_eq_coe,
-        CoalgHom.coe_toLinearMap, MonoidAlgebra.liftGroupLikeCoalgHom_single, id_eq, one_smul]
+      simp only [map_smul, TensorProduct.map_tmul, f, y, CoalgHom.toLinearMap_eq_ofClass,
+        CoalgHom.coe_linearMapOfClass, MonoidAlgebra.liftGroupLikeCoalgHom_single, id_eq, one_smul]
 
 /-- The ambient counit is the sum of the inverse coalgebra coordinates. -/
-theorem counit_eq_sum_spanCoefficients (x : Subcoalgebra.groupLikeSpan K C) :
+theorem counit_eq_sum_spanCoefficients (x : (Subcoalgebra.groupLikeSetSpan (R := K) (C := C)
+  Set.univ).toSubmodule) :
     Coalgebra.counit (R := K) (x : C) =
       ((spanCoalgebraEquiv (K := K) (C := C)).symm x).coeff.sum (fun _ r => r) := by
   let f := MonoidAlgebra.liftGroupLikeCoalgHom

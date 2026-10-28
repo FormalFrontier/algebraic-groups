@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Ring.PUnit
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Finiteness.Cardinality
 
+
 /-!
 # Finite right coideals and subcoalgebras in infinite ambient modules
 
@@ -36,6 +37,8 @@ functions on the empty type, and a trivial scalar semiring.
 -/
 
 @[expose] public section
+
+
 
 open scoped TensorProduct
 

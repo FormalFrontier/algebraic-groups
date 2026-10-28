@@ -144,7 +144,8 @@ private theorem doubling_groupLike_extension :
       ((liftGroupLikeBialgHom (R := ℕ) (A := ℕ[Multiplicative ℤ])).comp
         (mapDomainBialgHom ℕ (squarePointHom ℕ))).comp (mapDomainBialgHom ℕ doubling) ∧
     (liftGroupLikeBialgHom (R := ℕ) (A := ℕ[Multiplicative ℤ])).comp
-        (mapDomainBialgHom ℕ ((doublingBialgHom ℕ).groupLikeMap.comp (squarePointHom ℕ))) =
+        (mapDomainBialgHom ℕ
+          ((TauCeti.GroupLike.map (doublingBialgHom ℕ)).comp (squarePointHom ℕ))) =
       (doublingBialgHom ℕ).comp
         ((liftGroupLikeBialgHom (R := ℕ) (A := ℕ[Multiplicative ℤ])).comp
           (mapDomainBialgHom ℕ (squarePointHom ℕ))) ∧

@@ -24,7 +24,7 @@ require a bundled subcoalgebra image construction or its laws.
 
 ## References
 
-The zero subcoalgebra uses `Subcoalgebra.mk'`, and its restricted coalgebra and inclusion
+The zero subcoalgebra uses `Subcoalgebra.ofSubmodule`, and its restricted coalgebra and inclusion
 use `AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom`. Carrier calculations reuse
 `Submodule.map_bot`, `Submodule.map_id`, and `Submodule.map_comp` from
 `Mathlib.Algebra.Module.Submodule.Map`. Finiteness of the zero subtype uses
@@ -33,18 +33,21 @@ use `AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom`. Carrier calculations r
 
 @[expose] public section
 
+open TauCeti
+
+
 noncomputable section
 
 universe u v w z
 
-namespace Subcoalgebra
+namespace TauCeti.Subcoalgebra
 
 variable (K : Type u) (C : Type v)
 variable [Field K] [AddCommGroup C] [Module K C] [Coalgebra K C]
 
 /-- The zero submodule, equipped with its comultiplication closure proof. -/
 private abbrev zeroSubcoalgebra : Subcoalgebra K C :=
-  Subcoalgebra.mk' (⊥ : Submodule K C) <| by
+  Subcoalgebra.ofSubmodule (⊥ : Submodule K C) <| by
     intro x hx
     rw [Submodule.mem_bot] at hx
     subst x
@@ -53,13 +56,14 @@ private abbrev zeroSubcoalgebra : Subcoalgebra K C :=
 
 private lemma zeroSubcoalgebra_toSubmodule :
     (zeroSubcoalgebra K C).toSubmodule = ⊥ :=
-  Subcoalgebra.toSubmodule_mk' _ _
+  Subcoalgebra.ofSubmodule_carrier _ _
 
 private lemma mem_zeroSubcoalgebra (x : C) :
     x ∈ zeroSubcoalgebra K C ↔ x = 0 := by
-  rw [Subcoalgebra.mem_iff, zeroSubcoalgebra_toSubmodule, Submodule.mem_bot]
+  change x ∈ (zeroSubcoalgebra K C).toSubmodule ↔ x = 0
+  rw [zeroSubcoalgebra_toSubmodule, Submodule.mem_bot]
 
-private lemma coe_zeroSubcoalgebra (x : zeroSubcoalgebra K C) : (x : C) = 0 :=
+private lemma coe_zeroSubcoalgebra (x : (zeroSubcoalgebra K C).toSubmodule) : (x : C) = 0 :=
   (mem_zeroSubcoalgebra K C (x : C)).mp x.property
 
 private lemma zeroSubcoalgebra_subtype_toLinearMap :
@@ -70,19 +74,19 @@ private lemma zeroSubcoalgebra_subtype_toLinearMap :
     (coe_zeroSubcoalgebra K C x)
 
 private lemma zeroSubcoalgebra_counit_eq_zero :
-    Coalgebra.counit (R := K) (A := zeroSubcoalgebra K C) = 0 := by
+    Coalgebra.counit (R := K) (A := (zeroSubcoalgebra K C).toSubmodule) = 0 := by
   apply LinearMap.ext
   intro x
-  simp only [Subcoalgebra.coalgebra_counit_apply, coe_zeroSubcoalgebra, map_zero,
+  simp only [Subcoalgebra.counit_apply, coe_zeroSubcoalgebra, map_zero,
     LinearMap.zero_apply]
 
 /-- Every coalgebra over a field has a finite zero subcoalgebra whose canonical counit
 is not surjective. Its canonical inclusion has zero underlying linear map. -/
 theorem exists_subcoalgebra_bot_counit_not_surjective :
     ∃ D : Subcoalgebra K C,
-      D.toSubmodule = ⊥ ∧ Module.Finite K D ∧ D.subtype.toLinearMap = 0 ∧
-      Coalgebra.counit (R := K) (A := D) = 0 ∧
-      ¬ Function.Surjective (Coalgebra.counit (R := K) (A := D)) := by
+      D.toSubmodule = ⊥ ∧ Module.Finite K D.toSubmodule ∧ D.subtype.toLinearMap = 0 ∧
+      Coalgebra.counit (R := K) (A := D.toSubmodule) = 0 ∧
+      ¬ Function.Surjective (Coalgebra.counit (R := K) (A := D.toSubmodule)) := by
   refine ⟨zeroSubcoalgebra K C, zeroSubcoalgebra_toSubmodule K C, ?_,
     zeroSubcoalgebra_subtype_toLinearMap K C, zeroSubcoalgebra_counit_eq_zero K C, ?_⟩
   · have hfg : (zeroSubcoalgebra K C).toSubmodule.FG := by
@@ -124,4 +128,4 @@ theorem exists_subcoalgebra_bot_carrier_maps (f : C →ₗc[K] E) (g : E →ₗc
   · exact Submodule.map_comp f.toLinearMap g.toLinearMap _
   · rw [zeroSubcoalgebra_carrier_map K C f, Submodule.map_bot]
 
-end Subcoalgebra
+end TauCeti.Subcoalgebra

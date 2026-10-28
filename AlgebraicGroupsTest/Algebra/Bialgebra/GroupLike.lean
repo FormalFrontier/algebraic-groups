@@ -4,7 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.Bialgebra.GroupLike
+public import TauCeti.Algebra.Bialgebra.GroupLike.Map
+public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 public import Mathlib.Data.ZMod.Basic
 
@@ -14,7 +15,7 @@ public import Mathlib.Data.ZMod.Basic
 In the monoid algebra on `Multiplicative ℕ` over `ZMod 6`, the normalized
 basis point of weight `1` is group-like. Mathlib's `liftGroupLikeBialgHom`
 evaluates the monoid algebra on the group-like elements at their values.
-The induced `BialgHom.groupLikeMap` sends the basis point indexed by the
+The induced `(TauCeti.GroupLike.map BialgHom)` sends the basis point indexed by the
 weight-`1` point to that point, and its square to the basis point of weight `2`.
 Coefficient calculations separate the weight-`1` point from its square and
 from the constant point.
@@ -77,15 +78,15 @@ private theorem evaluation_single_weightOne (r : R₆) :
 
 /-- The induced monoid map evaluates the source point to the weight-`1` basis vector. -/
 theorem groupLikeMap_evaluationPoint_val :
-    ((liftGroupLikeBialgHom (R := R₆) (A := A₆)).groupLikeMap evaluationPoint).val =
+    ((TauCeti.GroupLike.map (liftGroupLikeBialgHom (R := R₆) (A := A₆))) evaluationPoint).val =
       single (Multiplicative.ofAdd 1) 1 := by
-  rw [BialgHom.groupLikeMap_val, evaluationPoint_val]
+  rw [TauCeti.GroupLike.val_map, evaluationPoint_val]
   exact evaluation_single_weightOne 1
 
 /-- The induced monoid map sends the source point to `weightOne`. -/
 @[simp]
 theorem groupLikeMap_evaluationPoint :
-    (liftGroupLikeBialgHom (R := R₆) (A := A₆)).groupLikeMap evaluationPoint =
+    (TauCeti.GroupLike.map (liftGroupLikeBialgHom (R := R₆) (A := A₆))) evaluationPoint =
       weightOne := by
   apply GroupLike.val_injective
   rw [groupLikeMap_evaluationPoint_val, weightOne_val]
@@ -98,10 +99,10 @@ theorem weightOne_mul_weightOne_val :
 
 /-- The induced monoid map sends the square of the source point to weight `2`. -/
 theorem groupLikeMap_evaluationPoint_mul_val :
-    ((liftGroupLikeBialgHom (R := R₆) (A := A₆)).groupLikeMap
+    ((TauCeti.GroupLike.map (liftGroupLikeBialgHom (R := R₆) (A := A₆)))
       (evaluationPoint * evaluationPoint)).val = single (Multiplicative.ofAdd 2) 1 := by
   rw [map_mul]
-  simp only [GroupLike.val_mul, BialgHom.groupLikeMap_val, evaluationPoint_val,
+  simp only [GroupLike.val_mul, TauCeti.GroupLike.val_map, evaluationPoint_val,
     evaluation_single_weightOne, single_mul_single, mul_one]
   rfl
 

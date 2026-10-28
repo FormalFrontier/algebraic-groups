@@ -12,7 +12,8 @@ public import AlgebraicGroups.Algebra.UnitriangularBaseChangeCoherence
 
 The canonical pullback unit and compositor come from Mathlib's pullback
 formalization. Their agreement with the unitriangular group-scheme comparison
-uses the quotient's tensor unit and tower laws, built from Christian Merten's
+uses the tensor unit and tower laws for the canonical coordinate algebra, built from
+Christian Merten's
 polynomial scalar-extension equivalence (now implemented using Yaël Dillies's
 monoid-algebra equivalence). Antoine Chambert-Loir's earlier polynomial
 scalar-extension equivalence is a related antecedent. The affine pullbacks use
@@ -76,32 +77,56 @@ theorem unitriangularBaseMap_self (R : Type u) [CommRing R] :
 
 /-- The canonical group-object compositor for pullback over a scalar tower,
 assembled from Mathlib's `Over.pullbackComp` and its group-object functor. -/
-def unitriangularGroupSchemeBaseChangeTowerIso
+private def pullbackGroupTowerIso
     (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
-    (ι : Type u) [Fintype ι] [LinearOrder ι] :
-    (Over.pullback (unitriangularBaseMap R T)).mapGrp.obj (unitriangularGroupScheme R ι) ≅
+    (G : Grp (Over (Spec (.of R)))) :
+    (Over.pullback (unitriangularBaseMap R T)).mapGrp.obj G ≅
       (Over.pullback (unitriangularBaseMap S T)).mapGrp.obj
-        ((Over.pullback (unitriangularBaseMap R S)).mapGrp.obj (unitriangularGroupScheme R ι)) :=
-  (eqToIso (congrArg (fun f => (Over.pullback f).mapGrp.obj (unitriangularGroupScheme R ι))
-      (unitriangularBaseMap_comp R S T).symm)).trans
+        ((Over.pullback (unitriangularBaseMap R S)).mapGrp.obj G) :=
+  (eqToIso (show
+      (Over.pullback (unitriangularBaseMap R T)).mapGrp.obj
+        G =
+      (Over.pullback (unitriangularBaseMap S T ≫ unitriangularBaseMap R S)).mapGrp.obj
+        G from by
+          rw [unitriangularBaseMap_comp])).trans
     (((Functor.mapGrpNatIso (Over.pullbackComp (unitriangularBaseMap S T)
-      (unitriangularBaseMap R S))).app (unitriangularGroupScheme R ι)).trans
-    (Functor.mapGrpCompIso.app (unitriangularGroupScheme R ι))
+      (unitriangularBaseMap R S))).app G).trans
+    ((Functor.mapGrpCompIso
+      (F := Over.pullback (unitriangularBaseMap R S))
+      (G := Over.pullback (unitriangularBaseMap S T))).app
+        G)
     )
 
 /-- The canonical group-object unit for pullback along the identity of the base,
 assembled from Mathlib's `Over.pullbackId` and its group-object functor. -/
-def unitriangularGroupSchemeBaseChangeSelfIso
+private def pullbackGroupSelfIso
     (R : Type u) [CommRing R]
-    (ι : Type u) [Fintype ι] [LinearOrder ι] :
-    (Over.pullback (unitriangularBaseMap R R)).mapGrp.obj (unitriangularGroupScheme R ι) ≅
-      unitriangularGroupScheme R ι :=
-  (eqToIso (congrArg (fun f => (Over.pullback f).mapGrp.obj (unitriangularGroupScheme R ι))
-      (unitriangularBaseMap_self R))).trans
+    (G : Grp (Over (Spec (.of R)))) :
+    (Over.pullback (unitriangularBaseMap R R)).mapGrp.obj G ≅
+      G :=
+  (eqToIso (show
+      (Over.pullback (unitriangularBaseMap R R)).mapGrp.obj
+        G =
+      (Over.pullback (𝟙 (Spec (.of R)))).mapGrp.obj
+        G from by
+          rw [unitriangularBaseMap_self])).trans
     (((Functor.mapGrpNatIso (Over.pullbackId (X := Spec (.of R)))).app
-      (unitriangularGroupScheme R ι)).trans
-    (Functor.mapGrpIdIso.app (unitriangularGroupScheme R ι)))
+      G).trans
+    ((Functor.mapGrpIdIso (C := Over (Spec (.of R)))).app
+      G))
+
+/-- The pullback compositor at the canonical unitriangular group scheme. -/
+@[no_expose] def unitriangularGroupSchemeBaseChangeTowerIso
+    (R S T : Type u) [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+    (ι : Type u) [Fintype ι] [LinearOrder ι] :=
+  pullbackGroupTowerIso R S T (TauCeti.UpperUnitriangular.groupScheme R ι)
+
+/-- The pullback unit at the canonical unitriangular group scheme. -/
+@[no_expose] def unitriangularGroupSchemeBaseChangeSelfIso
+    (R : Type u) [CommRing R] (ι : Type u) [Fintype ι] [LinearOrder ι] :=
+  pullbackGroupSelfIso R (TauCeti.UpperUnitriangular.groupScheme R ι)
 
 private theorem pullbackId_left (R : Type u) [CommRing R]
     (g : Over (Spec (.of R))) :
@@ -116,14 +141,7 @@ private theorem pullbackComp_left_fst (R S T : Type u)
     ((Over.pullbackComp (unitriangularBaseMap S T)
       (unitriangularBaseMap R S)).hom.app g).left ≫
         pullback.fst _ _ ≫ pullback.fst _ _ = pullback.fst _ _ := by
-  have h := CategoryTheory.conjugateEquiv_counit
-    (Over.mapPullbackAdj (unitriangularBaseMap S T ≫ unitriangularBaseMap R S))
-    ((Over.mapPullbackAdj (unitriangularBaseMap S T)).comp
-      (Over.mapPullbackAdj (unitriangularBaseMap R S)))
-    (Over.mapComp (unitriangularBaseMap S T) (unitriangularBaseMap R S)).symm.hom g
-  have hleft := congrArg Over.Hom.left h
-  simpa [Over.pullbackComp, CategoryTheory.conjugateIsoEquiv,
-    Adjunction.comp_counit_app, Over.mapComp] using hleft
+  simp [Over.pullbackComp, CategoryTheory.conjugateIsoEquiv, Over.mapComp]
 
 private theorem pullbackComp_left_snd (R S T : Type u)
     [CommRing R] [CommRing S] [CommRing T]
@@ -355,11 +373,54 @@ private theorem affineCancel_fst_snd (R S T A : Type u)
   rw [Algebra.TensorProduct.cancelBaseChange_tmul]
   simp [Algebra.smul_def]
 
+private theorem compose_four_of_squares {C : Type*} [Category C]
+    {P Q V X T S : C} (a : P ⟶ Q) (b : Q ⟶ V) (c : V ⟶ X) (d : X ⟶ S)
+    (e : V ⟶ T) (f : T ⟶ S) (g : Q ⟶ T) (h : P ⟶ T)
+    (hc : c ≫ d = e ≫ f) (hb : b ≫ e = g) (ha : a ≫ g = h) :
+    a ≫ b ≫ c ≫ d = h ≫ f := by
+  rw [hc, ← Category.assoc b e, hb, ← Category.assoc a g, ha]
+
+private theorem pullbackTower_snd (R S T : Type u)
+    [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+    (G : Over (Spec (.of R))) :
+  (eqToIso (congrArg (fun f => (Over.pullback f).obj
+    G)
+    (unitriangularBaseMap_comp R S T).symm)).hom.left ≫
+    ((Over.pullbackComp (unitriangularBaseMap S T)
+      (unitriangularBaseMap R S)).hom.app
+        G).left ≫
+    pullback.fst
+        ((Over.pullback (unitriangularBaseMap R S)).obj
+          G).hom
+        (unitriangularBaseMap S T) ≫
+    pullback.snd G.hom
+      (unitriangularBaseMap R S) =
+    pullback.snd G.hom
+      (unitriangularBaseMap R T) ≫ unitriangularBaseMap S T := by
+  have hCondition :
+      pullback.fst
+          ((Over.pullback (unitriangularBaseMap R S)).obj
+            G).hom
+          (unitriangularBaseMap S T) ≫
+        pullback.snd G.hom
+          (unitriangularBaseMap R S) =
+        pullback.snd
+            ((Over.pullback (unitriangularBaseMap R S)).obj
+              G).hom
+            (unitriangularBaseMap S T) ≫ unitriangularBaseMap S T := by
+    exact pullback.condition
+  have hMate := pullbackComp_left_snd R S T
+    G
+  have hTransport := pullbackTransportOver_snd R T
+    G
+    (unitriangularBaseMap R T)
+    (unitriangularBaseMap S T ≫ unitriangularBaseMap R S)
+    (unitriangularBaseMap_comp R S T).symm
+  exact compose_four_of_squares _ _ _ _ _ _ _ _ hCondition hMate hTransport
+
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 1000000 in
--- Kernel comparison of the nested affine pullback and tensor-cancellation morphisms
--- in this compositor identity needs extra heartbeats.
 private theorem affineComp (R S T A : Type u)
     [CommRing R] [CommRing S] [CommRing T] [CommRing A]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
@@ -375,149 +436,99 @@ private theorem affineComp (R S T A : Type u)
       ((Over.pullback (unitriangularBaseMap S T)).map
         (affineAsOverIso R S A).hom).left ≫
       (affineBaseChangeIso S T (S ⊗[R] A)).hom := by
+  -- Separate the projection proofs so the kernel checks each composition independently.
   apply affineHom_ext S T (S ⊗[R] A)
   · simp only [Category.assoc, affineBaseChangeIso_hom_fst, Over.pullback_map_left,
       Over.pullback_obj_left, affineAsOver_hom]
     rw [pullback.lift_fst]
     rw [affineAsOverIso_hom_left]
     apply affineHom_ext R S A
-    · have hCancel := congrArg (fun f => (affineBaseChangeIso R T A).hom ≫ f)
-        (affineCancel_fst_fst R S T A)
-      have hMate := pullbackComp_left_fst R S T
-        ((Spec (.of A)).asOver (Spec (.of R)))
-      have hTransport := pullbackTransportOver_fst R T
+    · as_aux_lemma =>
+        have hCancel := congrArg (fun f => (affineBaseChangeIso R T A).hom ≫ f)
+          (affineCancel_fst_fst R S T A)
+        have hMate := pullbackComp_left_fst R S T
+          ((Spec (.of A)).asOver (Spec (.of R)))
+        have hTransport := pullbackTransportOver_fst R T
+          ((Spec (.of A)).asOver (Spec (.of R)))
+          (unitriangularBaseMap R T)
+          (unitriangularBaseMap S T ≫ unitriangularBaseMap R S)
+          (unitriangularBaseMap_comp R S T).symm
+        have hComposed := congrArg
+          (fun f => (eqToIso (congrArg (fun k => (Over.pullback k).obj
+            ((Spec (.of A)).asOver (Spec (.of R))))
+            (unitriangularBaseMap_comp R S T).symm)).hom.left ≫ f) hMate
+        calc
+          _ = (affineBaseChangeIso R T A).hom ≫ Spec.map
+              (CommRingCat.ofHom (RingHomClass.toRingHom
+                (Algebra.TensorProduct.includeRight : A →ₐ[R] T ⊗[R] A))) := by
+                simpa only [Category.assoc] using hCancel
+          _ = pullback.fst _ _ := affineBaseChangeIso_hom_fst R T A
+          _ = _ := by
+            as_aux_lemma =>
+              simpa only [Category.assoc, affineBaseChangeIso_hom_fst,
+                affineAsOver_hom] using (hComposed.trans hTransport).symm
+    · as_aux_lemma =>
+        have hCancel := congrArg (fun f => (affineBaseChangeIso R T A).hom ≫ f)
+          (affineCancel_fst_snd R S T A)
+        calc
+          _ = (affineBaseChangeIso R T A).hom ≫
+              Spec.map (CommRingCat.ofHom
+                (Algebra.TensorProduct.includeLeftRingHom : T →+* T ⊗[R] A)) ≫
+                unitriangularBaseMap S T := by
+                  as_aux_lemma =>
+                    simpa only [Category.assoc] using hCancel
+          _ = pullback.snd _ _ ≫ unitriangularBaseMap S T := by
+            as_aux_lemma =>
+              rw [← Category.assoc, affineBaseChangeIso_hom_snd R T A]
+          _ = _ := by
+            as_aux_lemma =>
+              have hTotal := pullbackTower_snd R S T
+                ((Spec (.of A)).asOver (Spec (.of R)))
+              simpa only [Category.assoc, affineBaseChangeIso_hom_snd,
+                affineAsOver_hom, Over.pullback_obj_hom] using hTotal.symm
+  · as_aux_lemma =>
+      simp only [Category.assoc, affineBaseChangeIso_hom_snd, Over.pullback_map_left,
+        Over.pullback_obj_left, affineAsOver_hom]
+      rw [pullback.lift_snd]
+      simp only [← Category.assoc, pullbackComp_left_snd]
+      rw [pullbackTransportOver_snd R T
         ((Spec (.of A)).asOver (Spec (.of R)))
         (unitriangularBaseMap R T)
         (unitriangularBaseMap S T ≫ unitriangularBaseMap R S)
-        (unitriangularBaseMap_comp R S T).symm
-      have hComposed := congrArg
-        (fun f => (eqToIso (congrArg (fun k => (Over.pullback k).obj
-          ((Spec (.of A)).asOver (Spec (.of R))))
-          (unitriangularBaseMap_comp R S T).symm)).hom.left ≫ f) hMate
-      calc
-        _ = (affineBaseChangeIso R T A).hom ≫ Spec.map
-            (CommRingCat.ofHom (RingHomClass.toRingHom
-              (Algebra.TensorProduct.includeRight : A →ₐ[R] T ⊗[R] A))) := by
-              simpa only [Category.assoc] using hCancel
-        _ = pullback.fst _ _ := affineBaseChangeIso_hom_fst R T A
-        _ = _ := by
-          simpa only [Category.assoc, affineBaseChangeIso_hom_fst,
-            affineAsOver_hom] using (hComposed.trans hTransport).symm
-    · have hCancel := congrArg (fun f => (affineBaseChangeIso R T A).hom ≫ f)
-        (affineCancel_fst_snd R S T A)
-      calc
-        _ = (affineBaseChangeIso R T A).hom ≫
-            Spec.map (CommRingCat.ofHom
-              (Algebra.TensorProduct.includeLeftRingHom : T →+* T ⊗[R] A)) ≫
-              unitriangularBaseMap S T := by
-                simpa only [Category.assoc] using hCancel
-        _ = pullback.snd _ _ ≫ unitriangularBaseMap S T := by
-          rw [← Category.assoc, affineBaseChangeIso_hom_snd R T A]
-        _ = _ := by
-          have hCondition :
-              pullback.fst
-                  ((Over.pullback (unitriangularBaseMap R S)).obj
-                    ((Spec (.of A)).asOver (Spec (.of R)))).hom
-                  (unitriangularBaseMap S T) ≫
-                pullback.snd ((Spec (.of A)).asOver (Spec (.of R))).hom
-                  (unitriangularBaseMap R S) =
-                pullback.snd
-                    ((Over.pullback (unitriangularBaseMap R S)).obj
-                      ((Spec (.of A)).asOver (Spec (.of R)))).hom
-                    (unitriangularBaseMap S T) ≫ unitriangularBaseMap S T := by
-            exact pullback.condition
-          have hMate := pullbackComp_left_snd R S T
-            ((Spec (.of A)).asOver (Spec (.of R)))
-          have hTransport := pullbackTransportOver_snd R T
-            ((Spec (.of A)).asOver (Spec (.of R)))
-            (unitriangularBaseMap R T)
-            (unitriangularBaseMap S T ≫ unitriangularBaseMap R S)
-            (unitriangularBaseMap_comp R S T).symm
-          have hTotal :
-              (eqToIso (congrArg (fun f => (Over.pullback f).obj
-                ((Spec (.of A)).asOver (Spec (.of R))))
-                (unitriangularBaseMap_comp R S T).symm)).hom.left ≫
-                ((Over.pullbackComp (unitriangularBaseMap S T)
-                  (unitriangularBaseMap R S)).hom.app
-                    ((Spec (.of A)).asOver (Spec (.of R)))).left ≫
-                pullback.fst
-                    ((Over.pullback (unitriangularBaseMap R S)).obj
-                      ((Spec (.of A)).asOver (Spec (.of R)))).hom
-                    (unitriangularBaseMap S T) ≫
-                pullback.snd ((Spec (.of A)).asOver (Spec (.of R))).hom
-                  (unitriangularBaseMap R S) =
-                pullback.snd ((Spec (.of A)).asOver (Spec (.of R))).hom
-                  (unitriangularBaseMap R T) ≫ unitriangularBaseMap S T := by
-            calc
-              _ = (eqToIso (congrArg (fun f => (Over.pullback f).obj
-                    ((Spec (.of A)).asOver (Spec (.of R))))
-                    (unitriangularBaseMap_comp R S T).symm)).hom.left ≫
-                  ((Over.pullbackComp (unitriangularBaseMap S T)
-                    (unitriangularBaseMap R S)).hom.app
-                      ((Spec (.of A)).asOver (Spec (.of R)))).left ≫
-                  pullback.snd
-                    ((Over.pullback (unitriangularBaseMap R S)).obj
-                      ((Spec (.of A)).asOver (Spec (.of R)))).hom
-                    (unitriangularBaseMap S T) ≫ unitriangularBaseMap S T := by
-                simpa only [Category.assoc] using congrArg (fun f =>
-                  (eqToIso (congrArg (fun k => (Over.pullback k).obj
-                    ((Spec (.of A)).asOver (Spec (.of R))))
-                    (unitriangularBaseMap_comp R S T).symm)).hom.left ≫
-                    ((Over.pullbackComp (unitriangularBaseMap S T)
-                      (unitriangularBaseMap R S)).hom.app
-                        ((Spec (.of A)).asOver (Spec (.of R)))).left ≫ f) hCondition
-              _ = _ := by
-                simpa only [Category.assoc] using
-                  ((congrArg (fun f =>
-                    (eqToIso (congrArg (fun k => (Over.pullback k).obj
-                      ((Spec (.of A)).asOver (Spec (.of R))))
-                      (unitriangularBaseMap_comp R S T).symm)).hom.left ≫
-                      f ≫ unitriangularBaseMap S T) hMate).trans
-                    (congrArg (fun f => f ≫ unitriangularBaseMap S T) hTransport))
-          simpa only [Category.assoc, affineBaseChangeIso_hom_snd,
-            affineAsOver_hom, Over.pullback_obj_hom] using hTotal.symm
-  · simp only [Category.assoc, affineBaseChangeIso_hom_snd, Over.pullback_map_left,
-      Over.pullback_obj_left, affineAsOver_hom]
-    rw [pullback.lift_snd]
-    simp only [← Category.assoc, pullbackComp_left_snd]
-    rw [pullbackTransportOver_snd R T
-      ((Spec (.of A)).asOver (Spec (.of R)))
-      (unitriangularBaseMap R T)
-      (unitriangularBaseMap S T ≫ unitriangularBaseMap R S)
-      (unitriangularBaseMap_comp R S T).symm]
-    have hAlgebra :
-        (Algebra.TensorProduct.cancelBaseChange R S T T A).toAlgHom.toRingHom.comp
-            (Algebra.TensorProduct.includeLeftRingHom :
-              T →+* T ⊗[S] (S ⊗[R] A)) =
-          (Algebra.TensorProduct.includeLeftRingHom : T →+* T ⊗[R] A) := by
-      apply RingHom.ext
-      intro t
-      exact (Algebra.TensorProduct.cancelBaseChange R S T T A).commutes t
-    rw [Category.assoc, ← Spec.map_comp, ← CommRingCat.ofHom_comp, hAlgebra]
-    exact affineBaseChangeIso_hom_snd R T A
+        (unitriangularBaseMap_comp R S T).symm]
+      have hAlgebra :
+          (Algebra.TensorProduct.cancelBaseChange R S T T A).toAlgHom.toRingHom.comp
+              (Algebra.TensorProduct.includeLeftRingHom :
+                T →+* T ⊗[S] (S ⊗[R] A)) =
+            (Algebra.TensorProduct.includeLeftRingHom : T →+* T ⊗[R] A) := by
+        apply RingHom.ext
+        intro t
+        exact (Algebra.TensorProduct.cancelBaseChange R S T T A).commutes t
+      rw [Category.assoc, ← Spec.map_comp, ← CommRingCat.ofHom_comp, hAlgebra]
+      exact affineBaseChangeIso_hom_snd R T A
+
 
 set_option maxHeartbeats 1000000 in
--- Kernel comparison of the group-object pullback compositor with its underlying
--- scheme morphism needs extra heartbeats.
+-- Normalizing the pullback compositor through the group-object functor needs this budget.
 private theorem towerIso_left (R S T : Type u)
     [CommRing R] [CommRing S] [CommRing T]
     [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
-    (ι : Type u) [Fintype ι] [LinearOrder ι] :
-    (unitriangularGroupSchemeBaseChangeTowerIso R S T ι).hom.hom.hom.left =
+    (G : Grp (Over (Spec (.of R)))) :
+    (pullbackGroupTowerIso R S T G).hom.hom.hom.left =
       (eqToIso (congrArg (fun f => (Over.pullback f).obj
-        (unitriangularGroupScheme R ι).X)
+        G.X)
         (unitriangularBaseMap_comp R S T).symm)).hom.left ≫
       ((Over.pullbackComp (unitriangularBaseMap S T)
         (unitriangularBaseMap R S)).hom.app
-          (unitriangularGroupScheme R ι).X).left := by
-  simp only [unitriangularGroupSchemeBaseChangeTowerIso, Iso.trans_hom,
+          G.X).left := by
+  simp only [pullbackGroupTowerIso, Iso.trans_hom,
     Grp.comp_hom_hom, Over.comp_left]
-  rw [pullbackGrpTransport_left_eq R T (unitriangularGroupScheme R ι)
+  rw [pullbackGrpTransport_left_eq R T G
     (unitriangularBaseMap R T)
     (unitriangularBaseMap S T ≫ unitriangularBaseMap R S)
     (unitriangularBaseMap_comp R S T).symm]
   change _ ≫ ((Over.pullbackComp (unitriangularBaseMap S T)
-    (unitriangularBaseMap R S)).hom.app (unitriangularGroupScheme R ι).X).left ≫
+    (unitriangularBaseMap R S)).hom.app G.X).left ≫
     𝟙 _ = _
   simp only [Category.comp_id]
   rfl
@@ -529,13 +540,14 @@ theorem unitriangularGroupSchemeBaseChangeIso_self
     (ι : Type u) [Fintype ι] [LinearOrder ι] :
     (unitriangularGroupSchemeBaseChangeIso R R ι).hom =
       (unitriangularGroupSchemeBaseChangeSelfIso R ι).hom := by
-  apply identityComparison_ext R (unitriangularGroupScheme R ι)
+  apply identityComparison_ext R ((TauCeti.UpperUnitriangular.groupScheme R ι))
     (unitriangularBaseMap R R) (unitriangularBaseMap_self R)
   rw [unitriangularGroupSchemeBaseChangeIso_hom_left]
   have hRing :
       (baseChangeBialgEquiv R R ι).symm.toBialgHom.toAlgHom.toRingHom =
         (Algebra.TensorProduct.includeRight :
-          CoordinateRing R ι →ₐ[R] R ⊗[R] CoordinateRing R ι).toRingHom := by
+          (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι) →ₐ[R]
+            R ⊗[R] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)).toRingHom := by
     apply RingHom.ext
     intro a
     change (baseChange R R ι).symm a = (1 : R) ⊗ₜ[R] a
@@ -543,14 +555,17 @@ theorem unitriangularGroupSchemeBaseChangeIso_self
     exact Algebra.TensorProduct.lid_symm_apply R a
   rw [hRing]
   change (pullbackSymmetry
-      (Spec.map (CommRingCat.ofHom (algebraMap R (CoordinateRing R ι))))
+      (Spec.map (CommRingCat.ofHom
+        (algebraMap R (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))))
       (unitriangularBaseMap R R) ≪≫
-      pullbackSpecIso R R (CoordinateRing R ι)).hom ≫
+      pullbackSpecIso R R ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))).hom ≫
         Spec.map (CommRingCat.ofHom (RingHomClass.toRingHom
           (Algebra.TensorProduct.includeRight :
-            CoordinateRing R ι →ₐ[R] R ⊗[R] CoordinateRing R ι))) =
+            (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι) →ₐ[R]
+            R ⊗[R] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)))) =
       pullback.fst (Spec.map (CommRingCat.ofHom
-        (algebraMap R (CoordinateRing R ι)))) (unitriangularBaseMap R R)
+        (algebraMap R (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))))
+          (unitriangularBaseMap R R)
   rw [Iso.trans_hom, Category.assoc]
   rw [pullbackSpecIso_hom_snd]
   exact pullbackSymmetry_hom_comp_snd _ _
@@ -572,14 +587,15 @@ theorem unitriangularGroupSchemeBaseChangeIso_tower
         (Over.pullback (unitriangularBaseMap S T)).mapGrp.map
           (unitriangularGroupSchemeBaseChangeIso R S ι).hom ≫
         (unitriangularGroupSchemeBaseChangeIso S T ι).hom := by
-  let : HopfAlgebra S (S ⊗[R] CoordinateRing R ι) := inferInstance
-  let : CommRing (S ⊗[R] CoordinateRing R ι) := inferInstance
-  let : Algebra S (S ⊗[R] CoordinateRing R ι) := inferInstance
-  let : CommRing (T ⊗[S] CoordinateRing S ι) := inferInstance
-  let : Algebra T (T ⊗[S] CoordinateRing S ι) := inferInstance
+  let : HopfAlgebra S (S ⊗[R] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)) :=
+    inferInstance
+  let : CommRing (S ⊗[R] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)) := inferInstance
+  let : Algebra S (S ⊗[R] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)) := inferInstance
+  let : CommRing (T ⊗[S] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra S ι)) := inferInstance
+  let : Algebra T (T ⊗[S] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra S ι)) := inferInstance
   have hFactor :
       (unitriangularGroupSchemeBaseChangeIso R S ι).hom.hom.hom =
-        (affineAsOverIso R S (CoordinateRing R ι)).hom ≫
+        (affineAsOverIso R S ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))).hom ≫
           (algSpec (.of S)).map (.op (CommAlgCat.ofHom
             (baseChange R S ι).symm.toAlgHom)) := by
     apply Over.OverMorphism.ext
@@ -594,29 +610,35 @@ theorem unitriangularGroupSchemeBaseChangeIso_tower
       (unitriangularGroupSchemeBaseChangeIso S T ι).hom.hom.hom.left
   rw [unitriangularGroupSchemeBaseChangeIso_hom_left]
   rw [hFactor, Functor.map_comp, Over.comp_left]
-  have hComp := affineComp R S T (CoordinateRing R ι)
+  have hComp := affineComp R S T ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))
   have hPulled := affinePullbackMap S T
-    (S ⊗[R] CoordinateRing R ι) (CoordinateRing S ι)
+    (S ⊗[R] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))
+    (TauCeti.UpperUnitriangular.coordinateHopfAlgebra S ι)
     (baseChange R S ι).symm
-  have hTowerIso := towerIso_left R S T ι
-  rw [unitriangularGroupSchemeBaseChangeIso_hom_left S T ι, hTowerIso]
+  have hTowerIso := towerIso_left R S T (TauCeti.UpperUnitriangular.groupScheme R ι)
+  rw [unitriangularGroupSchemeBaseChangeIso_hom_left S T ι,
+    unitriangularGroupSchemeBaseChangeTowerIso, hTowerIso]
   have hComposition :
       ((eqToIso (congrArg (fun f => (Over.pullback f).obj
-          ((Spec (.of (CoordinateRing R ι))).asOver (Spec (.of R))))
+          ((Spec (.of (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))).asOver
+            (Spec (.of R))))
         (unitriangularBaseMap_comp R S T).symm)).hom.left ≫
         ((Over.pullbackComp (unitriangularBaseMap S T)
           (unitriangularBaseMap R S)).hom.app
-            ((Spec (.of (CoordinateRing R ι))).asOver (Spec (.of R)))).left) ≫
+            ((Spec (.of (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))).asOver
+            (Spec (.of R)))).left) ≫
         ((Over.pullback (unitriangularBaseMap S T)).map
-          (affineAsOverIso R S (CoordinateRing R ι)).hom).left ≫
-        (affineBaseChangeIso S T (S ⊗[R] CoordinateRing R ι)).hom =
-      (affineBaseChangeIso R T (CoordinateRing R ι)).hom ≫
+          (affineAsOverIso R S ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))).hom).left ≫
+        (affineBaseChangeIso S T
+          (S ⊗[R] (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))).hom =
+      (affineBaseChangeIso R T ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))).hom ≫
         Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.cancelBaseChange
-          R S T T (CoordinateRing R ι)).toAlgHom.toRingHom) := by
+          R S T T (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)).toAlgHom.toRingHom) := by
     simpa only [Category.assoc] using hComp.symm
-  have hBase (a : CoordinateRing T ι) :
+  have hBase (a : (TauCeti.UpperUnitriangular.coordinateHopfAlgebra T ι)) :
       (baseChange R T ι).symm a =
-        (Algebra.TensorProduct.cancelBaseChange R S T T (CoordinateRing R ι))
+        (Algebra.TensorProduct.cancelBaseChange R S T T
+          (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))
           ((Algebra.TensorProduct.congr (AlgEquiv.refl : T ≃ₐ[T] T)
             (baseChange R S ι)).symm ((baseChange S T ι).symm a)) := by
     apply (baseChange R T ι).injective
@@ -629,7 +651,7 @@ theorem unitriangularGroupSchemeBaseChangeIso_tower
       Spec.map (CommRingCat.ofHom
         (baseChangeBialgEquiv R T ι).symm.toBialgHom.toAlgHom.toRingHom) =
         Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.cancelBaseChange
-          R S T T (CoordinateRing R ι)).toAlgHom.toRingHom) ≫
+          R S T T ((TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι))).toAlgHom.toRingHom) ≫
         Spec.map (CommRingCat.ofHom (Algebra.TensorProduct.congr
           (AlgEquiv.refl : T ≃ₐ[T] T)
           (baseChange R S ι).symm).toAlgHom.toRingHom) ≫
@@ -641,7 +663,8 @@ theorem unitriangularGroupSchemeBaseChangeIso_tower
     intro a
     exact hBase a
   rw [hAlgebraMaps]
-  change (affineBaseChangeIso R T (CoordinateRing R ι)).hom ≫ _ = _
+  change (affineBaseChangeIso R T
+    (TauCeti.UpperUnitriangular.coordinateHopfAlgebra R ι)).hom ≫ _ = _
   simp only [← Category.assoc]
   rw [← hComposition]
   rw [← hPulled]

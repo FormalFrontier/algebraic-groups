@@ -38,6 +38,9 @@ maps use `Mathlib.RingTheory.Coalgebra.Hom`, and restriction and factorization u
 
 @[expose] public section
 
+open TauCeti
+
+
 noncomputable section
 
 universe u v w w₁
@@ -55,30 +58,30 @@ private def supportedPart : Subcoalgebra K (ℕ →₀ K) :=
 private lemma supportedPart_spec :
     (supportedPart K).toSubmodule = Finsupp.supported K K ({0, 1} : Set ℕ) ∧
       (supportedPart K).toSubmodule ≠ ⊥ ∧ (supportedPart K).toSubmodule ≠ ⊤ ∧
-      (supportedPart K).toSubmodule.FG ∧ Module.Finite K (supportedPart K) ∧
+      (supportedPart K).toSubmodule.FG ∧ Module.Finite K (supportedPart K).toSubmodule ∧
       ¬ Module.Finite K (ℕ →₀ K) ∧
       Finsupp.single 0 (1 : K) ∈ supportedPart K ∧
       Finsupp.single 1 (1 : K) ∈ supportedPart K :=
   (exists_finite_proper_subcoalgebra_finsupp_nat K).choose_spec
 
 /-- The module on which the second coordinate is ignored by the structure maps. -/
-private def projectedSource (D : Subcoalgebra K (ℕ →₀ K)) : Type u := D × K
+private def projectedSource (D : Subcoalgebra K (ℕ →₀ K)) : Type u := D.toSubmodule × K
 
 private instance projectedSourceAddCommMonoid (D : Subcoalgebra K (ℕ →₀ K)) :
     AddCommMonoid (projectedSource K D) :=
-  inferInstanceAs (AddCommMonoid (D × K))
+  inferInstanceAs (AddCommMonoid (D.toSubmodule × K))
 
 private instance projectedSourceModule (D : Subcoalgebra K (ℕ →₀ K)) :
     Module K (projectedSource K D) :=
-  inferInstanceAs (Module K (D × K))
+  inferInstanceAs (Module K (D.toSubmodule × K))
 
 private def firstProjection (D : Subcoalgebra K (ℕ →₀ K)) :
-    projectedSource K D →ₗ[K] D :=
-  LinearMap.fst K D K
+    projectedSource K D →ₗ[K] D.toSubmodule :=
+  LinearMap.fst K D.toSubmodule K
 
 private def firstInclusion (D : Subcoalgebra K (ℕ →₀ K)) :
-    D →ₗ[K] projectedSource K D :=
-  LinearMap.inl K D K
+    D.toSubmodule →ₗ[K] projectedSource K D :=
+  LinearMap.inl K D.toSubmodule K
 
 private lemma firstProjection_comp_firstInclusion (D : Subcoalgebra K (ℕ →₀ K)) :
     firstProjection K D ∘ₗ firstInclusion K D = LinearMap.id :=
@@ -87,12 +90,12 @@ private lemma firstProjection_comp_firstInclusion (D : Subcoalgebra K (ℕ →�
 private instance projectedSourceCoalgebraStruct (D : Subcoalgebra K (ℕ →₀ K)) :
     CoalgebraStruct K (projectedSource K D) where
   comul := TensorProduct.map (firstInclusion K D) (firstInclusion K D) ∘ₗ
-    comul (R := K) (A := D) ∘ₗ firstProjection K D
-  counit := counit (R := K) (A := D) ∘ₗ firstProjection K D
+    comul (R := K) (A := D.toSubmodule) ∘ₗ firstProjection K D
+  counit := counit (R := K) (A := D.toSubmodule) ∘ₗ firstProjection K D
 
 /-- Projection preserves the specified comultiplication and counit. -/
 private def firstProjectionHom (D : Subcoalgebra K (ℕ →₀ K)) :
-    projectedSource K D →ₗc[K] D where
+    projectedSource K D →ₗc[K] D.toSubmodule where
   toLinearMap := firstProjection K D
   counit_comp := rfl
   map_comp_comul := by
@@ -100,13 +103,13 @@ private def firstProjectionHom (D : Subcoalgebra K (ℕ →₀ K)) :
     intro x
     change TensorProduct.map (firstProjection K D) (firstProjection K D)
         (TensorProduct.map (firstInclusion K D) (firstInclusion K D)
-          (comul (R := K) (A := D) (firstProjection K D x))) =
-      comul (R := K) (A := D) (firstProjection K D x)
+          (comul (R := K) (A := D.toSubmodule) (firstProjection K D x))) =
+      comul (R := K) (A := D.toSubmodule) (firstProjection K D x)
     rw [TensorProduct.map_map, firstProjection_comp_firstInclusion,
       TensorProduct.map_id, LinearMap.id_apply]
 
 private def firstInclusionHom (D : Subcoalgebra K (ℕ →₀ K)) :
-    D →ₗc[K] projectedSource K D where
+    D.toSubmodule →ₗc[K] projectedSource K D where
   toLinearMap := firstInclusion K D
   counit_comp := rfl
   map_comp_comul := rfl
@@ -123,15 +126,15 @@ private def ambientProjection (D : Subcoalgebra K (ℕ →₀ K)) :
 
 private lemma ambientProjection_mem (D : Subcoalgebra K (ℕ →₀ K))
     (x : projectedSource K D) : ambientProjection K D x ∈ D :=
-  Subcoalgebra.coe_mem (firstProjectionHom K D x)
+  (Subcoalgebra.mem_toSubmodule).mp (firstProjectionHom K D x).property
 
 private lemma ambientProjection_range (D : Subcoalgebra K (ℕ →₀ K)) :
     LinearMap.range (ambientProjection K D).toLinearMap = D.toSubmodule := by
   apply le_antisymm
   · rintro y ⟨x, rfl⟩
-    exact (Subcoalgebra.mem_iff D).mp (ambientProjection_mem K D x)
+    exact (Subcoalgebra.mem_toSubmodule (D := D)).mpr (ambientProjection_mem K D x)
   · intro y hy
-    exact ⟨(⟨y, (Subcoalgebra.mem_iff D).mpr hy⟩, 0), rfl⟩
+    exact ⟨(⟨y, (Subcoalgebra.mem_toSubmodule (D := D)).mpr hy⟩, 0), rfl⟩
 
 private lemma ambientProjection_ne_zero :
     (ambientProjection K (supportedPart K)).toLinearMap ≠ 0 := by
@@ -159,7 +162,7 @@ private lemma kernelVector_ne_zero (D : Subcoalgebra K (ℕ →₀ K)) :
     kernelVector K D ≠ 0 := by
   intro h
   exact (one_ne_zero : (1 : K) ≠ 0)
-    (congrArg (fun x : projectedSource K D => (x : D × K).2) h)
+    (congrArg (fun x : projectedSource K D => (x : D.toSubmodule × K).2) h)
 
 private lemma ambientProjection_kernelVector (D : Subcoalgebra K (ℕ →₀ K)) :
     ambientProjection K D (kernelVector K D) = 0 :=
@@ -192,7 +195,7 @@ private lemma projectedSource_left_counit_failure (D : Subcoalgebra K (ℕ →�
       (1 : K) ⊗ₜ[K] kernelVector K D := by
   have hc : comul (R := K) (A := projectedSource K D) (kernelVector K D) = 0 := by
     change TensorProduct.map (firstInclusion K D) (firstInclusion K D)
-      (comul (R := K) (A := D) 0) = 0
+      (comul (R := K) (A := D.toSubmodule) 0) = 0
     rw [map_zero, map_zero]
   intro h
   rw [hc, map_zero] at h
@@ -203,7 +206,7 @@ private lemma projectedSource_left_counit_failure (D : Subcoalgebra K (ℕ →�
 
 end Coalgebra
 
-namespace Subcoalgebra
+namespace TauCeti.Subcoalgebra
 
 variable {K : Type u} {C : Type v} {A : Type w}
 variable [Field K] [AddCommGroup C] [Module K C] [Coalgebra K C]
@@ -225,9 +228,9 @@ private lemma restrictionClient (f : A →ₗc[K] C) (D : Subcoalgebra K C)
 -- The laws of `coalgHom_ext`, `subtype_comp_injective`, and `subtype_comp_inj`.
 /-- Ambient values determine a map into a subcoalgebra, as does its composite inclusion. -/
 private def extensionalityContract (D : Subcoalgebra K C) : Prop :=
-  (∀ f g : A →ₗc[K] D, (∀ x, (f x : C) = (g x : C)) → f = g) ∧
-    Function.Injective (fun f : A →ₗc[K] D => D.subtype.comp f) ∧
-    (∀ f g : A →ₗc[K] D, D.subtype.comp f = D.subtype.comp g ↔ f = g)
+  (∀ f g : A →ₗc[K] D.toSubmodule, (∀ x, (f x : C) = (g x : C)) → f = g) ∧
+    Function.Injective (fun f : A →ₗc[K] D.toSubmodule => D.subtype.comp f) ∧
+    (∀ f g : A →ₗc[K] D.toSubmodule, D.subtype.comp f = D.subtype.comp g ↔ f = g)
 
 private lemma extensionalityClient (D : Subcoalgebra K C) :
     extensionalityContract (A := A) D :=
@@ -238,9 +241,10 @@ private lemma extensionalityClient (D : Subcoalgebra K C) :
 /-- Restriction recovers a map into a subcoalgebra and identifies any factorization. -/
 private def factorizationContract (f : A →ₗc[K] C) (D : Subcoalgebra K C)
     (h : ∀ x, f x ∈ D) : Prop :=
-  (∀ g : A →ₗc[K] D,
-      (D.subtype.comp g).codRestrict D (fun x => Subcoalgebra.coe_mem (g x)) = g) ∧
-    (∀ g : A →ₗc[K] D, D.subtype.comp g = f → g = f.codRestrict D h)
+  (∀ g : A →ₗc[K] D.toSubmodule,
+      (D.subtype.comp g).codRestrict D (fun x => (Subcoalgebra.mem_toSubmodule).mp (g
+          x).property) = g) ∧
+    (∀ g : A →ₗc[K] D.toSubmodule, D.subtype.comp g = f → g = f.codRestrict D h)
 
 private lemma factorizationClient (f : A →ₗc[K] C) (D : Subcoalgebra K C)
     (h : ∀ x, f x ∈ D) : factorizationContract f D h :=
@@ -250,7 +254,7 @@ private lemma factorizationClient (f : A →ₗc[K] C) (D : Subcoalgebra K C)
 -- The law of `CoalgHom.existsUnique_subtype_comp_iff`.
 /-- Unique factorization through inclusion is equivalent to membership of all values. -/
 private def uniqueFactorizationContract (f : A →ₗc[K] C) (D : Subcoalgebra K C) : Prop :=
-  (∃! g : A →ₗc[K] D, D.subtype.comp g = f) ↔ ∀ x, f x ∈ D
+  (∃! g : A →ₗc[K] D.toSubmodule, D.subtype.comp g = f) ↔ ∀ x, f x ∈ D
 
 private lemma uniqueFactorizationClient (f : A →ₗc[K] C) (D : Subcoalgebra K C) :
     uniqueFactorizationContract f D :=
@@ -279,7 +283,7 @@ private lemma precompositionClient (f : B →ₗc[K] C) (g : A →ₗc[K] B)
     (D : Subcoalgebra K C) (h : ∀ y, f y ∈ D) : precompositionContract f g D h :=
   CoalgHom.codRestrict_comp f g D h
 
-end Subcoalgebra
+end TauCeti.Subcoalgebra
 
 namespace CoalgebraTest
 
@@ -291,10 +295,12 @@ variable [AddCommGroup F] [Module K F] [Coalgebra K F]
 unique factorization is equivalent to membership of all values, and restricting the
 inclusion gives the identity. -/
 theorem codRestrict_full_source_specialization (f : F →ₗc[K] C) (D : Subcoalgebra K C) :
-    (∀ g : F →ₗc[K] D,
-      (D.subtype.comp g).codRestrict D (fun x => Subcoalgebra.coe_mem (g x)) = g) ∧
-    ((∃! g : F →ₗc[K] D, D.subtype.comp g = f) ↔ ∀ x, f x ∈ D) ∧
-    D.subtype.codRestrict D (fun x => Subcoalgebra.coe_mem x) = CoalgHom.id K D :=
+    (∀ g : F →ₗc[K] D.toSubmodule,
+      (D.subtype.comp g).codRestrict D (fun x => (Subcoalgebra.mem_toSubmodule).mp (g
+          x).property) = g) ∧
+    ((∃! g : F →ₗc[K] D.toSubmodule, D.subtype.comp g = f) ↔ ∀ x, f x ∈ D) ∧
+    D.subtype.codRestrict D (fun x => (Subcoalgebra.mem_toSubmodule).mp x.property) =
+        CoalgHom.id K D.toSubmodule :=
   ⟨CoalgHom.codRestrict_subtype_comp D, CoalgHom.existsUnique_subtype_comp_iff f D,
     CoalgHom.codRestrict_subtype D⟩
 
@@ -317,7 +323,7 @@ private def projectedRestrictionContract : Prop :=
     (f.codRestrict D h).toLinearMap ≠ 0 ∧
     ¬ Function.Injective (f.codRestrict D h) ∧
     f.codRestrict D h (kernelVector K D) = 0 ∧
-    (∃! g : projectedSource K D →ₗc[K] D, D.subtype.comp g = f) ∧
+    (∃! g : projectedSource K D →ₗc[K] D.toSubmodule, D.subtype.comp g = f) ∧
     Subcoalgebra.restrictionInjectivityContract D f (f.comp (eraseSecond K D)) h
       (fun x => h (eraseSecond K D x)) ∧
     Subcoalgebra.precompositionContract f (eraseSecond K D) D h

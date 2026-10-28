@@ -33,7 +33,7 @@ derived here independently; no quotient of group schemes is asserted.
 
 public section
 
-namespace Matrix.UnitriangularGroup
+namespace TauCeti.UpperUnitriangularGroup
 
 variable (n : ℕ) (R : Type) [CommRing R]
 
@@ -52,7 +52,7 @@ private theorem coordinate_one (r : ℕ) (hr : 1 ≤ r)
   simp [hne]
 
 private theorem coordinate_mul (r : ℕ) (hr : 1 ≤ r)
-    (x y : superdiagonalSubgroup n R r) (ij : superdiagonalIndex n r) :
+    (x y : superdiagonalSubgroup (n := n) (R := R) r) (ij : superdiagonalIndex n r) :
     (((x * y).1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2) =
       (x.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2 +
         (y.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2 := by
@@ -63,9 +63,9 @@ private theorem coordinate_mul (r : ℕ) (hr : 1 ≤ r)
     apply Finset.sum_eq_zero
     intro k _
     by_cases hik : k.val < ij.1.1.val + r
-    · simp [(mem_superdiagonalSubgroup n R x.1).1 x.2 ij.1.1 k hik, X]
+    · simp [(mem_superdiagonalSubgroup_iff (n := n) (R := R) _ x.1).1 x.2 ij.1.1 k hik, X]
     · have hkj : ij.1.2.val < k.val + r := by omega
-      simp [(mem_superdiagonalSubgroup n R y.1).1 y.2 k ij.1.2 hkj, Y]
+      simp [(mem_superdiagonalSubgroup_iff (n := n) (R := R) _ y.1).1 y.2 k ij.1.2 hkj, Y]
   have hone := coordinate_one n R r hr ij
   have hformula : X * Y = (X - 1) * (Y - 1) + X + Y - 1 := by
     noncomm_ring
@@ -80,7 +80,7 @@ Compare the published one-entry quotients in Milne, *Algebraic Groups*
 (2017), §6.49; this whole-stage point-group map works over arbitrary
 commutative rings. -/
 def superdiagonalCoordinateHom (r : ℕ) (hr : 1 ≤ r) :
-    superdiagonalSubgroup n R r →*
+    superdiagonalSubgroup (n := n) (R := R) r →*
       Multiplicative (superdiagonalIndex n r → R) where
   toFun x := Multiplicative.ofAdd (fun ij =>
     (x.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2)
@@ -96,7 +96,7 @@ def superdiagonalCoordinateHom (r : ℕ) (hr : 1 ≤ r) :
 
 /-- Evaluation of the stage-coordinate homomorphism is a matrix entry. -/
 @[simp] theorem superdiagonalCoordinateHom_apply (r : ℕ) (hr : 1 ≤ r)
-    (x : superdiagonalSubgroup n R r) (ij : superdiagonalIndex n r) :
+    (x : superdiagonalSubgroup (n := n) (R := R) r) (ij : superdiagonalIndex n r) :
     Multiplicative.toAdd (superdiagonalCoordinateHom n R r hr x) ij =
       (x.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2 := by
   simp [superdiagonalCoordinateHom]
@@ -106,18 +106,18 @@ This identifies the subgroup to which Mathlib's `QuotientGroup.liftEquiv`
 is applied. -/
 theorem superdiagonalCoordinateHom_ker (r : ℕ) (hr : 1 ≤ r) :
     (superdiagonalCoordinateHom n R r hr).ker =
-      (superdiagonalSubgroup n R (r + 1)).subgroupOf
-        (superdiagonalSubgroup n R r) := by
+      (superdiagonalSubgroup (n := n) (R := R) (r + 1)).subgroupOf
+        (superdiagonalSubgroup (n := n) (R := R) r) := by
   apply Subgroup.ext
   intro x
   change superdiagonalCoordinateHom n R r hr x = 1 ↔
-    x.1 ∈ superdiagonalSubgroup n R (r + 1)
+    x.1 ∈ superdiagonalSubgroup (n := n) (R := R) (r + 1)
   constructor
   · intro hx
-    apply (mem_superdiagonalSubgroup n R x.1).2
+    apply (mem_superdiagonalSubgroup_iff (n := n) (R := R) _ x.1).2
     intro i j hij
     by_cases hlt : j.val < i.val + r
-    · exact (mem_superdiagonalSubgroup n R x.1).1 x.2 i j hlt
+    · exact (mem_superdiagonalSubgroup_iff (n := n) (R := R) _ x.1).1 x.2 i j hlt
     · have heq : j.val = i.val + r := by omega
       let ij : superdiagonalIndex n r := ⟨(i, j), heq⟩
       have hentry : (x.1.1 : Matrix (Fin n) (Fin n) R) i j = 0 := by
@@ -131,7 +131,7 @@ theorem superdiagonalCoordinateHom_ker (r : ℕ) (hr : 1 ≤ r) :
     apply Multiplicative.toAdd.injective
     funext ij
     rw [superdiagonalCoordinateHom_apply]
-    have hentry := (mem_superdiagonalSubgroup n R x.1).1 hx
+    have hentry := (mem_superdiagonalSubgroup_iff (n := n) (R := R) _ x.1).1 hx
       ij.1.1 ij.1.2 (by omega : ij.1.2.val < ij.1.1.val + (r + 1))
     simpa [Matrix.sub_apply, coordinate_one n R r hr ij] using hentry
 
@@ -166,8 +166,9 @@ theorem superdiagonalCoordinateHom_surjective (r : ℕ) (hr : 1 ≤ r) :
   have hdet : IsUnit (1 + A).det := by
     rw [Matrix.det_of_isUpperTriangular hupper]
     simp [hdiag]
-  let g : Matrix.UnitriangularGroup (Fin n) R :=
+  let g : TauCeti.upperUnitriangularGroup (Fin n) R :=
     ⟨Matrix.GeneralLinearGroup.mk'' (1 + A) hdet, by
+      rw [mem_iff, Matrix.isUpperUnitriangular_def]
       constructor
       · change (1 + A).IsUpperTriangular
         exact hupper
@@ -176,13 +177,13 @@ theorem superdiagonalCoordinateHom_surjective (r : ℕ) (hr : 1 ≤ r) :
         exact hdiag i⟩
   have hmatrix : (g.1 : Matrix (Fin n) (Fin n) R) = 1 + A := by
     simp [g]
-  have hstage : g ∈ superdiagonalSubgroup n R r := by
-    apply (mem_superdiagonalSubgroup n R g).2
+  have hstage : g ∈ superdiagonalSubgroup (n := n) (R := R) r := by
+    apply (mem_superdiagonalSubgroup_iff (n := n) (R := R) _ g).2
     intro i j hij
     have hne : j.val ≠ i.val + r := by omega
     have hzero : A i j = 0 := by simp [A, coordinateMatrix, hne]
     rw [hmatrix]
-    simp [Matrix.add_apply, Matrix.sub_apply, hzero]
+    simp [Matrix.add_apply, hzero]
   refine ⟨⟨g, hstage⟩, ?_⟩
   apply Multiplicative.toAdd.injective
   funext ij
@@ -195,31 +196,31 @@ The isomorphism uses Mathlib's `QuotientGroup.liftEquiv`. Milne,
 antecedents, including the one-coordinate case; the whole-stage point-group
 equivalence over arbitrary commutative rings is derived here independently. -/
 noncomputable def superdiagonalQuotientEquiv (r : ℕ) (hr : 1 ≤ r) :
-    (superdiagonalSubgroup n R r ⧸
-      (superdiagonalSubgroup n R (r + 1)).subgroupOf
-        (superdiagonalSubgroup n R r)) ≃*
+    (superdiagonalSubgroup (n := n) (R := R) r ⧸
+      (superdiagonalSubgroup (n := n) (R := R) (r + 1)).subgroupOf
+        (superdiagonalSubgroup (n := n) (R := R) r)) ≃*
       Multiplicative (superdiagonalIndex n r → R) :=
   QuotientGroup.liftEquiv _ (superdiagonalCoordinateHom_surjective n R r hr)
     (superdiagonalCoordinateHom_ker n R r hr).symm
 
 /-- Evaluating the quotient equivalence at the coset of a stage element. -/
 @[simp] theorem superdiagonalQuotientEquiv_mk (r : ℕ) (hr : 1 ≤ r)
-    (x : superdiagonalSubgroup n R r) (ij : superdiagonalIndex n r) :
+    (x : superdiagonalSubgroup (n := n) (R := R) r) (ij : superdiagonalIndex n r) :
     Multiplicative.toAdd
         (superdiagonalQuotientEquiv n R r hr
-          (x : superdiagonalSubgroup n R r ⧸
-            (superdiagonalSubgroup n R (r + 1)).subgroupOf
-              (superdiagonalSubgroup n R r))) ij =
+          (x : superdiagonalSubgroup (n := n) (R := R) r ⧸
+            (superdiagonalSubgroup (n := n) (R := R) (r + 1)).subgroupOf
+              (superdiagonalSubgroup (n := n) (R := R) r))) ij =
       (x.1.1 : Matrix (Fin n) (Fin n) R) ij.1.1 ij.1.2 := by
   simp [superdiagonalQuotientEquiv]
 
 /-- Apply any unital coefficient homomorphism to an entire stage. -/
 def superdiagonalStageMap {S : Type} [CommRing S] (f : R →+* S) (r : ℕ) :
-    superdiagonalSubgroup n R r →* superdiagonalSubgroup n S r where
-  toFun x := ⟨Matrix.UnitriangularGroup.map f x.1,
+    superdiagonalSubgroup (n := n) (R := R) r →* superdiagonalSubgroup (n := n) (R := S) r where
+  toFun x := ⟨TauCeti.UpperUnitriangularGroup.map f x.1,
     map_mem_superdiagonalSubgroup n R f x.2⟩
-  map_one' := Subtype.ext (map_one (Matrix.UnitriangularGroup.map f))
-  map_mul' x y := Subtype.ext (map_mul (Matrix.UnitriangularGroup.map f) x.1 y.1)
+  map_one' := Subtype.ext (map_one (TauCeti.UpperUnitriangularGroup.map f))
+  map_mul' x y := Subtype.ext (map_mul (TauCeti.UpperUnitriangularGroup.map f) x.1 y.1)
 
 /-- Apply any unital coefficient map pointwise to additive superdiagonal coordinates. -/
 def superdiagonalCoordinateMap {S : Type} [CommRing S] (f : R →+* S) (r : ℕ) :
@@ -239,36 +240,35 @@ def superdiagonalCoordinateMap {S : Type} [CommRing S] (f : R →+* S) (r : ℕ)
 /-- Stage coordinates commute with arbitrary unital coefficient change. -/
 theorem superdiagonalCoordinateHom_natural {S : Type} [CommRing S]
     (f : R →+* S) (r : ℕ) (hr : 1 ≤ r)
-    (x : superdiagonalSubgroup n R r) :
+    (x : superdiagonalSubgroup (n := n) (R := R) r) :
     superdiagonalCoordinateHom n S r hr (superdiagonalStageMap n R f r x) =
       superdiagonalCoordinateMap n R f r
         (superdiagonalCoordinateHom n R r hr x) := by
   apply Multiplicative.toAdd.injective
   funext ij
-  simp [superdiagonalCoordinateMap, superdiagonalStageMap,
-    Matrix.UnitriangularGroup.map_apply]
+  simp [superdiagonalCoordinateMap, superdiagonalStageMap]
 
 /-- Coefficient maps descend to the quotients by their actual next stages,
 using Mathlib's `QuotientGroup.map`. -/
 def superdiagonalQuotientMap {S : Type} [CommRing S] (f : R →+* S) (r : ℕ) :
-    (superdiagonalSubgroup n R r ⧸
-      (superdiagonalSubgroup n R (r + 1)).subgroupOf
-        (superdiagonalSubgroup n R r)) →*
-    (superdiagonalSubgroup n S r ⧸
-      (superdiagonalSubgroup n S (r + 1)).subgroupOf
-        (superdiagonalSubgroup n S r)) :=
+    (superdiagonalSubgroup (n := n) (R := R) r ⧸
+      (superdiagonalSubgroup (n := n) (R := R) (r + 1)).subgroupOf
+        (superdiagonalSubgroup (n := n) (R := R) r)) →*
+    (superdiagonalSubgroup (n := n) (R := S) r ⧸
+      (superdiagonalSubgroup (n := n) (R := S) (r + 1)).subgroupOf
+        (superdiagonalSubgroup (n := n) (R := S) r)) :=
   QuotientGroup.map _ _ (superdiagonalStageMap n R f r) (by
     intro x hx
-    change (superdiagonalStageMap n R f r x).1 ∈ superdiagonalSubgroup n S (r + 1)
+    change (superdiagonalStageMap n R f r x).1 ∈ superdiagonalSubgroup (n := n) (R := S) (r + 1)
     exact map_mem_superdiagonalSubgroup n R f hx)
 
 /-- The quotient-to-coordinate equivalences are natural for all coefficient
 maps, using the quotient map supplied by Mathlib's `QuotientGroup.map`. -/
 theorem superdiagonalQuotientEquiv_natural {S : Type} [CommRing S]
     (f : R →+* S) (r : ℕ) (hr : 1 ≤ r)
-    (x : superdiagonalSubgroup n R r ⧸
-      (superdiagonalSubgroup n R (r + 1)).subgroupOf
-        (superdiagonalSubgroup n R r)) :
+    (x : superdiagonalSubgroup (n := n) (R := R) r ⧸
+      (superdiagonalSubgroup (n := n) (R := R) (r + 1)).subgroupOf
+        (superdiagonalSubgroup (n := n) (R := R) r)) :
     superdiagonalQuotientEquiv n S r hr (superdiagonalQuotientMap n R f r x) =
       superdiagonalCoordinateMap n R f r
         (superdiagonalQuotientEquiv n R r hr x) := by
@@ -276,4 +276,4 @@ theorem superdiagonalQuotientEquiv_natural {S : Type} [CommRing S]
   intro y
   exact superdiagonalCoordinateHom_natural n R f r hr y
 
-end Matrix.UnitriangularGroup
+end TauCeti.UpperUnitriangularGroup

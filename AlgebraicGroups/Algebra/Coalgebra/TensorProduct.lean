@@ -100,7 +100,7 @@ theorem mapCoalgHom_tmul (f : M →ₗc[S] N) (g : P →ₗc[R] Q) (m : M) (p : 
 theorem mapCoalgHom_id :
     mapCoalgHom (CoalgHom.id S M) (CoalgHom.id R P) =
       CoalgHom.id S (M ⊗[R] P) := by
-  apply CoalgHom.coe_linearMap_injective
+  apply CoalgHom.linearMapOfClass_injective
   exact AlgebraTensorModule.map_id
 
 variable {N' : Type uN'} {Q' : Type uQ'}
@@ -114,7 +114,7 @@ theorem mapCoalgHom_comp (f₁ : M →ₗc[S] N) (f₂ : N →ₗc[S] N')
     (g₁ : P →ₗc[R] Q) (g₂ : Q →ₗc[R] Q') :
     mapCoalgHom (f₂.comp f₁) (g₂.comp g₁) =
       (mapCoalgHom f₂ g₂).comp (mapCoalgHom f₁ g₁) := by
-  apply CoalgHom.coe_linearMap_injective
+  apply CoalgHom.linearMapOfClass_injective
   exact AlgebraTensorModule.map_comp f₂.toLinearMap f₁.toLinearMap
     g₂.toLinearMap g₁.toLinearMap
 
@@ -128,7 +128,7 @@ variable [Coalgebra S M] [Coalgebra S N] [Coalgebra R P] [Coalgebra R Q]
 coalgebra homomorphisms. -/
 theorem mapCoalgHom_eq_coalgebraTensorProductMap (f : M →ₗc[S] N) (g : P →ₗc[R] Q) :
     mapCoalgHom f g = Coalgebra.TensorProduct.map (R := R) (S := S) f g := by
-  apply CoalgHom.coe_linearMap_injective
+  apply CoalgHom.linearMapOfClass_injective
   rfl
 
 end Coalgebra

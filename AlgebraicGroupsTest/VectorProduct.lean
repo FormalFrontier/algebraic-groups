@@ -62,7 +62,8 @@ private theorem testSchemeMapComp (U : Type u) [AddCommGroup U] [Module K U]
 variable {i j : Type u} [Finite i] [Finite j]
   (b : Module.Basis i K V) (c : Module.Basis j K W)
 
-private def testProductIso : vectorGroupScheme K V ≅ (∏ᶜ fun _ : i ↦ additiveGroupScheme K) :=
+private def testProductIso : vectorGroupScheme K V ≅ (∏ᶜ fun _ : i ↦
+  TauCeti.AdditiveGroup.groupScheme K) :=
   vectorGroupSchemeProductIso K V b
 
 private def testUnderlyingIsLimit : Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
@@ -95,17 +96,20 @@ private theorem testVectorHomForward (X : Over (Spec (.of K)))
         (affineSpecHomOverEquiv K X (vectorGroupCoordinateRing K V) h) := rfl
 
 private theorem testAdditiveHomForward (X : Over (Spec (.of K)))
-    (h : X ⟶ (additiveGroupScheme K).X) :
+    (h : X ⟶ (TauCeti.AdditiveGroup.groupScheme K).X) :
     additiveGroupHomOverEquiv K X h =
       (LinearMap.ringLmapEquivSelf K K ((algΓ (.of K)).obj X).unop)
         (SymmetricAlgebra.lift.symm
-          (affineSpecHomOverEquiv K X (additiveGroupCoordinateRing K) h)) := rfl
+          (affineSpecHomOverEquiv K X (SymmetricAlgebra K K)
+            (h ≫ (Grp.forget _).map
+              (eqToHom (TauCeti.AdditiveGroup.groupScheme_def K))))) := by
+  rfl
 
 section UnderlyingFanLift
 
 open Classical in
 private theorem testUnderlyingFanLift
-    (s : Limits.Fan (fun _ : i ↦ (additiveGroupScheme K).X)) :
+    (s : Limits.Fan (fun _ : i ↦ (TauCeti.AdditiveGroup.groupScheme K).X)) :
     (vectorGroupBasisFanForgetIsLimit K V b).lift s =
       (vectorGroupHomOverEquiv K V s.pt).symm
         (b.dualBasis.constr K (fun j ↦ additiveGroupHomOverEquiv K s.pt (s.proj j))) := by
@@ -116,16 +120,16 @@ end UnderlyingFanLift
 
 private theorem testProductIsoHomProjection (k : i) :
     (vectorGroupSchemeProductIso K V b).hom ≫
-      Limits.Pi.π (fun _ : i ↦ additiveGroupScheme K) k =
+      Limits.Pi.π (fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) k =
       vectorGroupProjection K V b k := by simp
 
 private theorem testProductIsoInvProjection (k : i) :
     (vectorGroupSchemeProductIso K V b).inv ≫ vectorGroupProjection K V b k =
-      Limits.Pi.π (fun _ : i ↦ additiveGroupScheme K) k := by simp
+      Limits.Pi.π (fun _ : i ↦ TauCeti.AdditiveGroup.groupScheme K) k := by simp
 
 omit b [Finite i] in
-/-- Retain the original regression's finite-index hypothesis, even for a single coordinate. -/
-private theorem testProjectionGlobalCoordinate [Finite i] (b : Module.Basis i K V)
+/-- A single basis coordinate is natural on every test scheme. -/
+private theorem testProjectionGlobalCoordinate (b : Module.Basis i K V)
     (X : Over (Spec (.of K)))
     (h : X ⟶ (vectorGroupScheme K V).X)
     (k : i) :
@@ -134,8 +138,8 @@ private theorem testProjectionGlobalCoordinate [Finite i] (b : Module.Basis i K 
   vectorGroupProjection_globalCoordinate K V b k X h
 
 omit b c [Finite i] [Finite j] in
-/-- The original regression includes both finite-index hypotheses as well as its chosen basis. -/
-private theorem testCoordinateMapBasis [Finite i] [Finite j]
+/-- A finite source basis computes pullback of every target basis coordinate. -/
+private theorem testCoordinateMapBasis
     (b : Module.Basis i K V) (c : Module.Basis j K W) [Fintype i]
     (f : V →ₗ[K] W) (k : j) :
     vectorGroupCoordinateMap K V W f (SymmetricAlgebra.ι K _ (c.coord k)) =
@@ -144,14 +148,14 @@ private theorem testCoordinateMapBasis [Finite i] [Finite j]
   vectorGroupCoordinateMap_basis K V W b c f k
 
 omit b c [Finite i] [Finite j] in
-/-- Preserve the original finite-index context while checking the scheme-map coordinate. -/
-private theorem testSchemeMapProjectionCoordinate [Finite i] [Finite j]
+/-- The coordinate of a scheme map is computed by the finite source basis. -/
+private theorem testSchemeMapProjectionCoordinate
     (b : Module.Basis i K V) (c : Module.Basis j K W) [Fintype i]
     (f : V →ₗ[K] W) (k : j) :
     ((vectorGroupCoordinateBialgHom K V W f).comp
-      (vectorGroupProjectionBialgHom K W c k)) (additiveGroupCoordinate K) =
+      (vectorGroupProjectionBialgHom K W c k)) ((SymmetricAlgebra.ι K K 1)) =
       ∑ s : i, (c.coord k (f (b s))) •
-        (vectorGroupProjectionBialgHom K V b s) (additiveGroupCoordinate K) :=
+        (vectorGroupProjectionBialgHom K V b s) ((SymmetricAlgebra.ι K K 1)) :=
   vectorGroupSchemeMap_projection_coordinate K V W b c f k
 
 private theorem testBasisMapSquare (f : V →ₗ[K] W) :
@@ -160,7 +164,7 @@ private theorem testBasisMapSquare (f : V →ₗ[K] W) :
 
 private theorem testBasisMapProjection (f : V →ₗ[K] W) (k : j) :
     vectorGroupBasisMap K V W b c f ≫
-        Limits.Pi.π (fun _ : j ↦ additiveGroupScheme K) k =
+        Limits.Pi.π (fun _ : j ↦ TauCeti.AdditiveGroup.groupScheme K) k =
       (vectorGroupSchemeProductIso K V b).inv ≫
         vectorGroupSchemeMap K V W f ≫ vectorGroupProjection K W c k :=
   vectorGroupBasisMap_projection K V W b c f k
@@ -185,8 +189,8 @@ private theorem testSchemeMapPoints (f : V →ₗ[K] W) (x : V ⊗[K] R) :
 
 omit b c [Finite i] [Finite j] [FiniteDimensional K V] [FiniteDimensional K W]
     R [CommRing R] [Algebra K R] in
-/-- Preserve the original finite-index and finite-dimensional regression context. -/
-private theorem testTensorDualBasis [Finite i] [Finite j]
+/-- Finite-dimensional tensor evaluation agrees with the finite source-basis formula. -/
+private theorem testTensorDualBasis
     (b : Module.Basis i K V) (c : Module.Basis j K W)
     [FiniteDimensional K V] [FiniteDimensional K W]
     (R : Type u) [CommRing R] [Algebra K R] [Fintype i]
@@ -199,8 +203,8 @@ private theorem testTensorDualBasis [Finite i] [Finite j]
 
 omit b c [Finite i] [Finite j] [FiniteDimensional K V] [FiniteDimensional K W]
     R [CommRing R] [Algebra K R] in
-/-- Preserve the original finite-index and finite-dimensional regression context. -/
-private theorem testMulEquivAlgHomBasis [Finite i] [Finite j]
+/-- Finite-dimensional tensor evaluation agrees with the finite source-basis formula. -/
+private theorem testMulEquivAlgHomBasis
     (b : Module.Basis i K V) (c : Module.Basis j K W)
     [FiniteDimensional K V] [FiniteDimensional K W]
     (R : Type u) [CommRing R] [Algebra K R] [Fintype i]
@@ -214,8 +218,8 @@ private theorem testMulEquivAlgHomBasis [Finite i] [Finite j]
   vectorGroupMulEquivAlgHom_basis K V W b c f R x k
 
 omit b [Finite i] [FiniteDimensional K V] R [CommRing R] [Algebra K R] in
-/-- Retain the original finite-index hypothesis in the pure-tensor coordinate regression. -/
-private theorem testCoordinatePureTensor [Finite i] (b : Module.Basis i K V)
+/-- A pure tensor evaluates at any basis coordinate. -/
+private theorem testCoordinatePureTensor (b : Module.Basis i K V)
     [FiniteDimensional K V] (R : Type u) [CommRing R] [Algebra K R]
     (v : V) (r : R) (k : i) :
     vectorGroupTensorDualEquiv K V R (v ⊗ₜ[K] r) (b.coord k) =
@@ -236,15 +240,15 @@ section Concrete
 variable (k : Type) [Field k]
 
 private def testFinZeroProductIso : vectorGroupScheme k (Fin 0 → k) ≅
-    (∏ᶜ fun _ : Fin 0 ↦ additiveGroupScheme k) :=
+    (∏ᶜ fun _ : Fin 0 ↦ TauCeti.AdditiveGroup.groupScheme k) :=
   vectorGroupSchemeProductIso k _ (Pi.basisFun k (Fin 0))
 
 private def testFinOneProductIso : vectorGroupScheme k (Fin 1 → k) ≅
-    (∏ᶜ fun _ : Fin 1 ↦ additiveGroupScheme k) :=
+    (∏ᶜ fun _ : Fin 1 ↦ TauCeti.AdditiveGroup.groupScheme k) :=
   vectorGroupSchemeProductIso k _ (Pi.basisFun k (Fin 1))
 
 private def testFinTwoProductIso : vectorGroupScheme k (Fin 2 → k) ≅
-    (∏ᶜ fun _ : Fin 2 ↦ additiveGroupScheme k) :=
+    (∏ᶜ fun _ : Fin 2 ↦ TauCeti.AdditiveGroup.groupScheme k) :=
   vectorGroupSchemeProductIso k _ (Pi.basisFun k (Fin 2))
 
 private def testFinZeroTerminalIso : vectorGroupScheme k (Fin 0 → k) ≅
@@ -274,7 +278,7 @@ private theorem testZeroAlgebraPoints (x : (Fin 2 → ZMod 2) ⊗[ZMod 2] ZMod 1
   vectorGroupSchemeMap_points (ZMod 2) _ _ (ZMod 1) _ x
 
 private def testFiniteFieldProductIso : vectorGroupScheme (ZMod 2) (Fin 2 → ZMod 2) ≅
-    (∏ᶜ fun _ : Fin 2 ↦ additiveGroupScheme (ZMod 2)) :=
+    (∏ᶜ fun _ : Fin 2 ↦ TauCeti.AdditiveGroup.groupScheme (ZMod 2)) :=
   vectorGroupSchemeProductIso (ZMod 2) _ (Pi.basisFun (ZMod 2) (Fin 2))
 
 private theorem testFiniteFieldCoordinateMap

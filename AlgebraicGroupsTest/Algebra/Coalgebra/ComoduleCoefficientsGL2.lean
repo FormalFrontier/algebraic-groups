@@ -18,7 +18,7 @@ public import Mathlib.Tactic.NormNum
 # Coefficients of the standard right representation of GL₂
 
 The determinant-localized coordinate Hopf algebra of `GL₂` over `ℚ` coacts on
-`Fin 2 → ℚ`. On the standard basis, the right column coaction sends `eⱼ` to
+`Fin 2 → ℚ`. On the standard basis, the right column coact sends `eⱼ` to
 `∑ᵢ eᵢ ⊗ xᵢⱼ`. Its laws follow directly from the coordinate coproduct and
 counit. Coordinate functionals extract each of the four matrix entries, and
 arbitrary dual contractions lie in their span.
@@ -46,6 +46,9 @@ No restricted coalgebra structure on the coefficient span is constructed here.
 
 @[expose] public section
 
+open TauCeti
+
+
 noncomputable section
 
 open scoped TensorProduct
@@ -53,7 +56,7 @@ open scoped TensorProduct
 namespace ComoduleCoefficientsGL2
 
 /-- The determinant-localized coordinate ring of `GL₂` over `ℚ`. -/
-abbrev C := GeneralLinearCoordinateRing.CoordinateRing ℚ (Fin 2)
+abbrev C := TauCeti.GeneralLinear.coordinateHopfAlgebra ℚ 2
 
 /-- The carrier of the standard two-dimensional representation. -/
 abbrev M := Fin 2 → ℚ
@@ -62,7 +65,7 @@ abbrev M := Fin 2 → ℚ
 def vector (i : Fin 2) : M := Pi.basisFun ℚ (Fin 2) i
 
 /-- An entry of the universal invertible matrix. -/
-def entry (i j : Fin 2) : C := GeneralLinearCoordinateRing.matrix ℚ (Fin 2) i j
+def entry (i j : Fin 2) : C := (TauCeti.GeneralLinear.genericMatrix ℚ 2) i j
 
 @[simp] theorem vector_apply (i j : Fin 2) :
     vector i j = if j = i then 1 else 0 := by
@@ -79,79 +82,84 @@ def coordinate (i : Fin 2) : M →ₗ[ℚ] ℚ := LinearMap.proj i
 theorem entry_comul (i j : Fin 2) :
     Coalgebra.comul (R := ℚ) (entry i j) =
       ∑ k : Fin 2, entry i k ⊗ₜ[ℚ] entry k j :=
-  GeneralLinearCoordinateRing.native_comul_matrix ℚ (Fin 2) i j
+  by simpa only [entry, TauCeti.GeneralLinear.genericMatrix_apply] using
+    TauCeti.GeneralLinear.coordinateHopfAlgebra_comul_X ℚ 2 i j
 
 /-- The matrix-entry counit is evaluation at the identity matrix. -/
 theorem entry_counit (i j : Fin 2) :
     Coalgebra.counit (R := ℚ) (entry i j) = (1 : Matrix (Fin 2) (Fin 2) ℚ) i j :=
-  GeneralLinearCoordinateRing.native_counit_matrix ℚ (Fin 2) i j
+  by simpa only [entry, TauCeti.GeneralLinear.genericMatrix_apply, Matrix.one_apply] using
+    TauCeti.GeneralLinear.coordinateHopfAlgebra_counit_X ℚ 2 i j
 
-/-- The linear column coaction, specified on the standard Pi basis. -/
-def coactionLinearMap : M →ₗ[ℚ] M ⊗[ℚ] C :=
+/-- The linear column coact, specified on the standard Pi basis. -/
+def coactLinearMap : M →ₗ[ℚ] M ⊗[ℚ] C :=
   (Pi.basisFun ℚ (Fin 2)).constr ℚ
     (fun j ↦ ∑ i : Fin 2, vector i ⊗ₜ[ℚ] entry i j)
 
-@[simp] theorem coactionLinearMap_vector (j : Fin 2) :
-    coactionLinearMap (vector j) = ∑ i : Fin 2, vector i ⊗ₜ[ℚ] entry i j := by
+@[simp] theorem coactLinearMap_vector (j : Fin 2) :
+    coactLinearMap (vector j) = ∑ i : Fin 2, vector i ⊗ₜ[ℚ] entry i j := by
   exact (Pi.basisFun ℚ (Fin 2)).constr_basis ℚ _ j
 
-/-- The column coaction on an arbitrary vector, in its standard coordinates. -/
-theorem coactionLinearMap_apply (m : M) :
-    coactionLinearMap m =
+/-- The column coact on an arbitrary vector, in its standard coordinates. -/
+theorem coactLinearMap_apply (m : M) :
+    coactLinearMap m =
       ∑ j : Fin 2, m j • (∑ i : Fin 2, vector i ⊗ₜ[ℚ] entry i j) := by
-  simp only [coactionLinearMap, Module.Basis.constr_apply_fintype,
+  simp only [coactLinearMap, Module.Basis.constr_apply_fintype,
     Pi.basisFun_equivFun, LinearEquiv.refl_apply]
 
 private theorem column_coassoc :
-    TensorProduct.assoc ℚ M C C ∘ₗ coactionLinearMap.rTensor C ∘ₗ coactionLinearMap =
-      (Coalgebra.comul (R := ℚ) (A := C)).lTensor M ∘ₗ coactionLinearMap := by
+    TensorProduct.assoc ℚ M C C ∘ₗ coactLinearMap.rTensor C ∘ₗ coactLinearMap =
+      (Coalgebra.comul (R := ℚ) (A := C)).lTensor M ∘ₗ coactLinearMap := by
   apply (Pi.basisFun ℚ (Fin 2)).ext
   intro j
   change TensorProduct.assoc ℚ M C C
-      (coactionLinearMap.rTensor C (coactionLinearMap (vector j))) =
+      (coactLinearMap.rTensor C (coactLinearMap (vector j))) =
     (Coalgebra.comul (R := ℚ) (A := C)).lTensor M
-      (coactionLinearMap (vector j))
-  simp only [coactionLinearMap_vector, map_sum, LinearMap.rTensor_tmul,
+      (coactLinearMap (vector j))
+  simp only [coactLinearMap_vector, map_sum, LinearMap.rTensor_tmul,
     TensorProduct.sum_tmul, TensorProduct.assoc_tmul, LinearMap.lTensor_tmul,
     entry_comul, TensorProduct.tmul_sum]
   rw [Finset.sum_comm]
 
 private theorem column_counit :
-    (Coalgebra.counit (R := ℚ) (A := C)).lTensor M ∘ₗ coactionLinearMap =
+    (Coalgebra.counit (R := ℚ) (A := C)).lTensor M ∘ₗ coactLinearMap =
       (TensorProduct.rid ℚ M).symm.toLinearMap := by
   apply (Pi.basisFun ℚ (Fin 2)).ext
   intro j
   change (Coalgebra.counit (R := ℚ) (A := C)).lTensor M
-      (coactionLinearMap (vector j)) = vector j ⊗ₜ[ℚ] (1 : ℚ)
-  fin_cases j <;> simp [coactionLinearMap_vector, entry_counit]
+      (coactLinearMap (vector j)) = vector j ⊗ₜ[ℚ] (1 : ℚ)
+  fin_cases j <;> simp [coactLinearMap_vector, entry_counit]
 
 /-- The standard right column comodule over the coordinate Hopf algebra of `GL₂`. -/
-def comodule : Coalgebra.RightComodule ℚ C M where
-  coaction := coactionLinearMap
+@[instance_reducible] def comodule : TauCeti.Comodule ℚ C M where
+  coact := coactLinearMap
   coassoc := by exact column_coassoc
-  counit_comp := by exact column_counit
+  lTensor_counit_comp_coact := by exact column_counit
 
-@[simp] theorem comodule_coaction_vector (j : Fin 2) :
-    comodule.coaction (vector j) = ∑ i : Fin 2, vector i ⊗ₜ[ℚ] entry i j :=
-  coactionLinearMap_vector j
+attribute [local instance] comodule
 
-/-- The standard comodule's coaction on arbitrary linear combinations. -/
-theorem comodule_coaction_apply (m : M) :
-    comodule.coaction m =
+@[simp] theorem comodule_coact_vector (j : Fin 2) :
+    comodule.coact (vector j) = ∑ i : Fin 2, vector i ⊗ₜ[ℚ] entry i j :=
+  coactLinearMap_vector j
+
+/-- The standard comodule's coact on arbitrary linear combinations. -/
+theorem comodule_coact_apply (m : M) :
+    comodule.coact m =
       ∑ j : Fin 2, m j • (∑ i : Fin 2, vector i ⊗ₜ[ℚ] entry i j) :=
-  coactionLinearMap_apply m
+  coactLinearMap_apply m
 
 /-- Every dual contraction is a linear combination of the four matrix entries. -/
 theorem coefficient_eq_sum (ell : M →ₗ[ℚ] ℚ) (m : M) :
-    comodule.coefficient ell m =
+    (@Comodule.matrixCoefficient ℚ C M _ _ _ _ _ _ comodule) ell m =
       ∑ j : Fin 2, m j • (∑ i : Fin 2, ell (vector i) • entry i j) := by
-  unfold Coalgebra.RightComodule.coefficient
-  rw [comodule_coaction_apply]
+  rw [Comodule.matrixCoefficient_def, ← LinearMap.rTensor_def]
+  rw [comodule_coact_apply]
   simp
 
 /-- Contraction with a coordinate functional extracts the corresponding entry. -/
 @[simp] theorem coefficient_coordinate_vector (i j : Fin 2) :
-    comodule.coefficient (coordinate i) (vector j) = entry i j := by
+    (@Comodule.matrixCoefficient ℚ C M _ _ _ _ _ _ comodule) (coordinate i) (vector j) = entry i
+        j := by
   rw [coefficient_eq_sum]
   simp [ite_smul]
 
@@ -176,9 +184,10 @@ theorem entrySpan_eq_span_four :
     · exact ⟨(1, 1), rfl⟩
 
 /-- The intrinsic all-dual coefficient span is exactly the matrix-entry span. -/
-theorem coefficientSpan_eq_entrySpan : comodule.coefficientSpan = entrySpan := by
+theorem coefficientSpan_eq_entrySpan : (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _
+    comodule) = entrySpan := by
   apply le_antisymm
-  · apply (comodule.coefficientSpan_le_iff entrySpan).mpr
+  · apply (@Comodule.matrixCoefficientSubmodule_le_iff ℚ C M _ _ _ _ _ _ comodule entrySpan).mpr
     intro ell m
     rw [coefficient_eq_sum]
     apply Submodule.sum_mem
@@ -190,11 +199,12 @@ theorem coefficientSpan_eq_entrySpan : comodule.coefficientSpan = entrySpan := b
   · apply Submodule.span_le.mpr
     rintro _ ⟨⟨i, j⟩, rfl⟩
     simpa only [Function.uncurry_def, SetLike.mem_coe, coefficient_coordinate_vector] using
-      comodule.coefficient_mem_coefficientSpan (coordinate i) (vector j)
+      (@Comodule.matrixCoefficient_mem_submodule ℚ C M _ _ _ _ _ _ comodule) (coordinate i)
+          (vector j)
 
 /-- The intrinsic coefficient span is the span of precisely the four matrix entries. -/
 theorem coefficientSpan_eq_span_four :
-    comodule.coefficientSpan =
+    (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _ comodule) =
       Submodule.span ℚ {entry 0 0, entry 0 1, entry 1 0, entry 1 1} :=
   coefficientSpan_eq_entrySpan.trans entrySpan_eq_span_four
 
@@ -206,15 +216,24 @@ private def upperUnipotent : Matrix.GeneralLinearGroup (Fin 2) ℚ :=
   Matrix.GeneralLinearGroup.mkOfDetNeZero !![(1 : ℚ), 1; 0, 1]
     (by norm_num [Matrix.det_fin_two])
 
+private def pointEvaluation (g : Matrix.GeneralLinearGroup (Fin 2) ℚ) : C →ₐ[ℚ] ℚ :=
+  ((TauCeti.GeneralLinear.pointsMulEquiv (R := ℚ) 2).symm g).ofConv
+
+private theorem pointEvaluation_entry (g : Matrix.GeneralLinearGroup (Fin 2) ℚ)
+    (i j : Fin 2) : pointEvaluation g (entry i j) = g i j := by
+  rw [pointEvaluation, entry, TauCeti.GeneralLinear.genericMatrix_apply,
+    TauCeti.GeneralLinear.pointsMulEquiv_symm_apply,
+    TauCeti.GeneralLinear.generalLinearToPoint_apply]
+
 private theorem evaluate_upperUnipotent_entry01 :
-    GeneralLinearCoordinateRing.evaluate (K := ℚ) upperUnipotent (entry 0 1) = 1 := by
-  rw [entry, GeneralLinearCoordinateRing.evaluate_matrix]
+    pointEvaluation upperUnipotent (entry 0 1) = 1 := by
+  rw [pointEvaluation_entry]
   rfl
 
 /-- The off-diagonal coefficient is nonzero, detected by a unipotent matrix. -/
 theorem entry01_ne_zero : entry 0 1 ≠ 0 := by
   intro h
-  have he := congrArg (GeneralLinearCoordinateRing.evaluate (K := ℚ) upperUnipotent) h
+  have he := congrArg (pointEvaluation upperUnipotent) h
   rw [evaluate_upperUnipotent_entry01, map_zero] at he
   exact (one_ne_zero : (1 : ℚ) ≠ 0) he
 
@@ -237,16 +256,16 @@ private def twiceIdentity : Matrix.GeneralLinearGroup (Fin 2) ℚ :=
 
 -- This linear functional vanishes on all entries, but not on the unit.
 private def scalingDifference : C →ₗ[ℚ] ℚ :=
-  (GeneralLinearCoordinateRing.evaluate (K := ℚ) twiceIdentity).toLinearMap -
-    (2 : ℚ) • (GeneralLinearCoordinateRing.evaluate (K := ℚ)
+  (pointEvaluation twiceIdentity).toLinearMap -
+    (2 : ℚ) • (pointEvaluation
       (1 : Matrix.GeneralLinearGroup (Fin 2) ℚ)).toLinearMap
 
 private theorem scalingDifference_entry (i j : Fin 2) :
     scalingDifference (entry i j) = 0 := by
-  change GeneralLinearCoordinateRing.evaluate (K := ℚ) twiceIdentity (entry i j) -
-    2 * GeneralLinearCoordinateRing.evaluate (K := ℚ)
+  change pointEvaluation twiceIdentity (entry i j) -
+    2 * pointEvaluation
       (1 : Matrix.GeneralLinearGroup (Fin 2) ℚ) (entry i j) = 0
-  simp only [entry, GeneralLinearCoordinateRing.evaluate_matrix]
+  simp only [pointEvaluation_entry]
   change ((2 : ℚ) • (1 : Matrix (Fin 2) (Fin 2) ℚ)) i j -
     2 * (1 : Matrix (Fin 2) (Fin 2) ℚ) i j = 0
   simp [Matrix.smul_apply, smul_eq_mul]
@@ -275,14 +294,15 @@ theorem entrySpan_nonzero_proper : entrySpan ≠ ⊥ ∧ entrySpan ≠ ⊤ := by
 
 /-- The standard representation has a proper nonzero finitely generated coefficient span. -/
 theorem coefficientSpan_fg_nonzero_proper :
-    comodule.coefficientSpan.FG ∧ comodule.coefficientSpan ≠ ⊥ ∧
-      comodule.coefficientSpan ≠ ⊤ := by
+    (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _ comodule).FG ∧
+        (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _ comodule) ≠ ⊥ ∧
+      (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _ comodule) ≠ ⊤ := by
   rw [coefficientSpan_eq_entrySpan]
   exact ⟨entrySpan_fg, entrySpan_nonzero_proper⟩
 
 /-- A member of the intrinsic coefficient span is nonzero and not group-like. -/
 theorem coefficientSpan_contains_non_groupLike :
-    entry 0 1 ∈ comodule.coefficientSpan ∧ entry 0 1 ≠ 0 ∧
+    entry 0 1 ∈ (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _ comodule) ∧ entry 0 1 ≠ 0 ∧
       ¬ IsGroupLikeElem (R := ℚ) (entry 0 1) := by
   rw [coefficientSpan_eq_entrySpan]
   exact ⟨Submodule.subset_span ⟨(0, 1), rfl⟩, entry01_ne_zero, entry01_not_groupLike⟩
@@ -294,27 +314,33 @@ universe uLift
 private abbrev liftEquiv : M ≃ₗ[ℚ] ULift.{uLift} M :=
   (ULift.moduleEquiv : ULift.{uLift} M ≃ₗ[ℚ] M).symm
 
-private abbrev liftedComodule : Coalgebra.RightComodule ℚ C (ULift.{uLift} M) :=
-  comodule.transport liftEquiv
+private abbrev liftedComodule : TauCeti.Comodule ℚ C (ULift.{uLift} M) :=
+  letI := comodule; Comodule.Transport (C := C) liftEquiv
 
-private def liftHom : Coalgebra.RightComoduleHom comodule liftedComodule.{uLift} :=
-  Coalgebra.RightComodule.transportHom comodule liftEquiv
+attribute [local instance] liftedComodule
+
+private def liftHom : (@Comodule.Hom ℚ C M (ULift.{uLift} M) _ _ _ _ _ _ comodule _ _
+    liftedComodule) :=
+  letI := comodule; Comodule.transportToHom (C := C) liftEquiv
 
 private theorem liftHom_bijective : Function.Bijective liftHom.{uLift} := by
-  simpa only [liftHom, Coalgebra.RightComodule.coe_transportHom] using
+  simpa only [Function.Bijective, Function.Injective, Function.Surjective, liftHom,
+    Comodule.transportToHom_apply] using
     liftEquiv.{uLift}.bijective
 
 -- The pointwise comparison extracts the same nonzero off-diagonal entry.
 private theorem lifted_coefficient_entry01 :
-    liftedComodule.{uLift}.coefficient ((coordinate 0).comp liftEquiv.symm.toLinearMap)
+    (@Comodule.matrixCoefficient ℚ C (ULift.{uLift} M) _ _ _ _ _ _ liftedComodule.{uLift})
+        ((coordinate 0).comp liftEquiv.symm.toLinearMap)
         (liftHom (vector 1)) = entry 0 1 ∧
-      liftedComodule.{uLift}.coefficient ((coordinate 0).comp liftEquiv.symm.toLinearMap)
+      (@Comodule.matrixCoefficient ℚ C (ULift.{uLift} M) _ _ _ _ _ _ liftedComodule.{uLift})
+          ((coordinate 0).comp liftEquiv.symm.toLinearMap)
         (liftHom (vector 1)) ≠ 0 := by
-  have h := Coalgebra.RightComoduleHom.coefficient_apply liftHom.{uLift}
+  have h := Comodule.matrixCoefficient_map liftHom.{uLift}
     ((coordinate 0).comp liftEquiv.symm.toLinearMap) (vector 1)
   have hcomp : ((coordinate 0).comp liftEquiv.symm.toLinearMap).comp
       liftHom.{uLift}.toLinearMap = coordinate 0 := by
-    simpa only [liftHom, Coalgebra.RightComodule.transportHom_toLinearMap] using
+    simpa only [liftHom, Comodule.transportToHom_toLinearMap] using
       (show ((coordinate 0).comp liftEquiv.symm.toLinearMap).comp
           liftEquiv.{uLift}.toLinearMap = coordinate 0 from by
         apply LinearMap.ext
@@ -326,40 +352,49 @@ private theorem lifted_coefficient_entry01 :
 -- Each comparison retains the source and transported target before using
 -- any description of the coefficient span by matrix entries.
 private theorem lifted_coefficientSpan_le :
-    liftedComodule.{uLift}.coefficientSpan ≤ comodule.coefficientSpan :=
-  Coalgebra.RightComoduleHom.coefficientSpan_le_of_surjective liftHom
+    (@Comodule.matrixCoefficientSubmodule ℚ C (ULift.{uLift} M) _ _ _ _ _ _
+        liftedComodule.{uLift}) ≤ (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _
+        comodule) :=
+  Comodule.matrixCoefficientSubmodule_le_of_surjective liftHom
     liftHom_bijective.surjective
 
 private theorem coefficientSpan_eq_lifted :
-    comodule.coefficientSpan = liftedComodule.{uLift}.coefficientSpan :=
-  Coalgebra.RightComoduleHom.coefficientSpan_eq_of_bijective liftHom liftHom_bijective
+    (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _ comodule) =
+        (@Comodule.matrixCoefficientSubmodule ℚ C (ULift.{uLift} M) _ _ _ _ _ _
+        liftedComodule.{uLift}) :=
+  TauCeti.Comodule.Hom.coefficientSpan_eq_of_bijective liftHom liftHom_bijective
 
 private theorem coefficientSpan_le_lifted :
-    comodule.coefficientSpan ≤ liftedComodule.{uLift}.coefficientSpan :=
-  Coalgebra.RightComoduleHom.coefficientSpan_le_of_injective liftHom
+    (@Comodule.matrixCoefficientSubmodule ℚ C M _ _ _ _ _ _ comodule) ≤
+        (@Comodule.matrixCoefficientSubmodule ℚ C (ULift.{uLift} M) _ _ _ _ _ _
+        liftedComodule.{uLift}) :=
+  TauCeti.Comodule.Hom.coefficientSpan_le_of_injective liftHom
     liftHom_bijective.injective
 
 private theorem lifted_coefficientSubcoalgebra_le :
     liftedComodule.{uLift}.coefficientSubcoalgebra.toSubmodule ≤
       comodule.coefficientSubcoalgebra.toSubmodule :=
-  Coalgebra.RightComoduleHom.coefficientSubcoalgebra_toSubmodule_le_of_surjective
+  TauCeti.Comodule.Hom.coefficientSubcoalgebra_toSubmodule_le_of_surjective
     liftHom liftHom_bijective.surjective
 
 private theorem coefficientSubcoalgebra_eq_lifted :
     comodule.coefficientSubcoalgebra = liftedComodule.{uLift}.coefficientSubcoalgebra :=
-  Coalgebra.RightComoduleHom.coefficientSubcoalgebra_eq_of_bijective
+  TauCeti.Comodule.Hom.coefficientSubcoalgebra_eq_of_bijective
     liftHom liftHom_bijective
 
 private theorem coefficientSubcoalgebra_le_lifted :
     comodule.coefficientSubcoalgebra.toSubmodule ≤
       liftedComodule.{uLift}.coefficientSubcoalgebra.toSubmodule :=
-  Coalgebra.RightComoduleHom.coefficientSubcoalgebra_toSubmodule_le_of_injective
+  TauCeti.Comodule.Hom.coefficientSubcoalgebra_toSubmodule_le_of_injective
     liftHom liftHom_bijective.injective
 
 private theorem lifted_coefficientSpan_fg_nonzero_proper :
-    liftedComodule.{uLift}.coefficientSpan.FG ∧
-      liftedComodule.{uLift}.coefficientSpan ≠ ⊥ ∧
-      liftedComodule.{uLift}.coefficientSpan ≠ ⊤ := by
+    (@Comodule.matrixCoefficientSubmodule ℚ C (ULift.{uLift} M) _ _ _ _ _ _
+        liftedComodule.{uLift}).FG ∧
+      (@Comodule.matrixCoefficientSubmodule ℚ C (ULift.{uLift} M) _ _ _ _ _ _
+          liftedComodule.{uLift}) ≠ ⊥ ∧
+      (@Comodule.matrixCoefficientSubmodule ℚ C (ULift.{uLift} M) _ _ _ _ _ _
+          liftedComodule.{uLift}) ≠ ⊤ := by
   rw [← coefficientSpan_eq_lifted]
   exact coefficientSpan_fg_nonzero_proper
 
