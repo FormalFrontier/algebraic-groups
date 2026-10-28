@@ -287,6 +287,27 @@ theorem coefficientSpan_contains_non_groupLike :
   rw [coefficientSpan_eq_entrySpan]
   exact ⟨Submodule.subset_span ⟨(0, 1), rfl⟩, entry01_ne_zero, entry01_not_groupLike⟩
 
+/-- The finite-basis coefficient formula recovers the ordered universal matrix coproduct. -/
+example (i j : Fin 2) :
+    Coalgebra.comul (R := ℚ) (entry i j) =
+      ∑ k : Fin 2, entry i k ⊗ₜ[ℚ] entry k j := by
+  have hc (k : Fin 2) : (Pi.basisFun ℚ (Fin 2)).coord k = coordinate k := by
+    ext m
+    simp [Module.Basis.coord_apply, coordinate]
+  have hb (k : Fin 2) : Pi.basisFun ℚ (Fin 2) k = vector k := rfl
+  simpa only [hc, hb, coefficient_coordinate_vector] using
+    comodule.comul_coefficient_basis (Pi.basisFun ℚ (Fin 2)) i j
+
+/-- The coefficient counit formula recovers evaluation of the universal matrix at the identity. -/
+example (i j : Fin 2) :
+    Coalgebra.counit (R := ℚ) (entry i j) = (1 : Matrix (Fin 2) (Fin 2) ℚ) i j := by
+  have hc (k : Fin 2) : (Pi.basisFun ℚ (Fin 2)).coord k = coordinate k := by
+    ext m
+    simp [Module.Basis.coord_apply, coordinate]
+  have hb (k : Fin 2) : Pi.basisFun ℚ (Fin 2) k = vector k := rfl
+  simpa only [hc, hb, coefficient_coordinate_vector, Matrix.one_apply] using
+    comodule.counit_coefficient_basis (Pi.basisFun ℚ (Fin 2)) i j
+
 section Lift
 
 universe uLift

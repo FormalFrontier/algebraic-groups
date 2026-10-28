@@ -99,7 +99,7 @@ lemma finrank_fst_eq_finrank_snd
     p₁.finrank (p₁ z) = p₁.finrank (p₂ z) := by
   have hcomposition : IsPullback h.t h.c.fst p₁ p₁ :=
     IsPullback.of_isLimit
-      (CategoryTheory.EquivalenceRelation.isLimit_composition_fst h)
+      (CategoryTheory.EquivalenceRelation.isLimitCompositionFst h)
   have hleft : h.c.fst.finrank z = p₁.finrank (p₁ z) :=
     Scheme.Hom.finrank_of_isPullback h.t h.c.fst p₁ p₁ hcomposition z
   have hrelation : IsPullback h.c.snd h.c.fst p₁ p₂ :=

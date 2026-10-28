@@ -7,7 +7,7 @@ module
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
 /-!
-# Tensor products of maps preserving coalgebra data
+# Tensor products and coherence of coalgebra maps
 
 For a commutative `R`-algebra `S`, an `S`-linear coalgebra homomorphism on the first
 factor and an `R`-linear coalgebra homomorphism on the second induce an `S`-linear
@@ -21,6 +21,8 @@ comultiplication and counit data, not the coalgebra laws.
 * `TensorProduct.mapCoalgHom_eq_coalgebraTensorProductMap` identifies this construction
   with Mathlib's tensor product of coalgebra homomorphisms when the endpoints satisfy
   the full coalgebra laws.
+* `Coalgebra.TensorProduct.assoc_pentagon` and `Coalgebra.TensorProduct.assoc_triangle`
+  give the pentagon and triangle identities for tensor coalgebra homomorphisms.
 
 ## References
 
@@ -29,12 +31,14 @@ Mathlib's constructions, due to Amelia Livingston and Andrew Yang, in
 `Mathlib.RingTheory.Coalgebra.TensorProduct`. Here preservation is generalized to
 `CoalgebraStruct` endpoints. The proof uses the heterobasic tensor shuffle and linear
 map composition from `Mathlib.LinearAlgebra.TensorProduct.Tower`, together with the
-preservation fields from `Mathlib.RingTheory.Coalgebra.Hom`.
+preservation fields from `Mathlib.RingTheory.Coalgebra.Hom`. The coherence identities
+reuse Mathlib's tensor associativity coherence and tensor balancing from
+`Mathlib.LinearAlgebra.TensorProduct.Associator` and `.Defs`.
 -/
 
 @[expose] public section
 
-universe uR uS uM uN uP uQ uN' uQ'
+universe uR uS uM uN uP uQ uN' uQ' uC uD uE uF
 
 open scoped TensorProduct
 
@@ -134,3 +138,45 @@ theorem mapCoalgHom_eq_coalgebraTensorProductMap (f : M →ₗc[S] N) (g : P →
 end Coalgebra
 
 end TensorProduct
+
+namespace Coalgebra.TensorProduct
+
+variable (R : Type uR) [CommSemiring R]
+variable (C : Type uC) (D : Type uD)
+variable [AddCommMonoid C] [AddCommMonoid D] [Module R C] [Module R D]
+variable [Coalgebra R C] [Coalgebra R D]
+
+section Pentagon
+
+variable (E : Type uE) (F : Type uF)
+variable [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
+variable [Coalgebra R E] [Coalgebra R F]
+
+/-- The three-edge and two-edge associator paths for four tensor coalgebras agree. -/
+theorem assoc_pentagon :
+    (map (R := R) (S := R) (CoalgHom.id R C)
+        (Coalgebra.TensorProduct.assoc R R D E F).toCoalgHom).comp
+        ((Coalgebra.TensorProduct.assoc R R C (D ⊗[R] E) F).toCoalgHom.comp
+          (map (R := R) (S := R) (Coalgebra.TensorProduct.assoc R R C D E).toCoalgHom
+            (CoalgHom.id R F))) =
+      (Coalgebra.TensorProduct.assoc R R C D (E ⊗[R] F)).toCoalgHom.comp
+        (Coalgebra.TensorProduct.assoc R R (C ⊗[R] D) E F).toCoalgHom := by
+  apply CoalgHom.coe_linearMap_injective
+  refine _root_.TensorProduct.ext_fourfold fun (c : C) (d : D) (e : E) (f : F) => ?_
+  change c ⊗ₜ[R] (d ⊗ₜ[R] (e ⊗ₜ[R] f)) = c ⊗ₜ[R] (d ⊗ₜ[R] (e ⊗ₜ[R] f))
+  rfl
+
+end Pentagon
+
+/-- The right unitor tensored with the identity agrees with the associator followed
+by the identity tensored with the left unitor, using the scalar coalgebra on `R`. -/
+theorem assoc_triangle :
+    map (R := R) (S := R) (Coalgebra.TensorProduct.rid R R C).toCoalgHom (CoalgHom.id R D) =
+      (map (R := R) (S := R) (CoalgHom.id R C) (Coalgebra.TensorProduct.lid R D).toCoalgHom).comp
+        (Coalgebra.TensorProduct.assoc R R C R D).toCoalgHom := by
+  apply CoalgHom.coe_linearMap_injective
+  refine _root_.TensorProduct.ext_threefold fun (c : C) (s : R) (d : D) => ?_
+  change (s • c) ⊗ₜ[R] d = c ⊗ₜ[R] (s • d)
+  exact _root_.TensorProduct.smul_tmul s c d
+
+end Coalgebra.TensorProduct

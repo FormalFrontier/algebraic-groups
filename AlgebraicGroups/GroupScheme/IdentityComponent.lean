@@ -56,11 +56,15 @@ universe u
 
 variable {S : Scheme.{u}}
 
+-- The chosen component set itself does not use subsingletonness of the base.
+-- We retain the one-point-base contract so the whole unit section lies in this
+-- component and factors through it; over a disconnected base this can fail.
 /-- The connected component containing the identity of a group scheme over a
 nonempty one-point base, regarded as an open subset. Compare Milne,
 *Algebraic Groups*, Proposition 1.34; the openness here uses local
 connectedness of the underlying scheme. -/
-@[expose] noncomputable def Scheme.identityComponent (G : Over S) [GrpObj G]
+@[expose, nolint unusedArguments]
+noncomputable def Scheme.identityComponent (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S] : G.left.Opens :=
   ⟨connectedComponent (η[G].left (Classical.choice (inferInstance : Nonempty S))),
     isOpen_connectedComponent⟩
@@ -264,7 +268,7 @@ lemma Scheme.identityComponentInv_comp_ι (G : Over S) [GrpObj G]
 /-- The identity component is a group scheme when its Cartesian square is
 connected. This follows the restriction argument in Milne, *Algebraic Groups*,
 Proposition 1.34, with connectedness of the square assumed explicitly. -/
-noncomputable instance Scheme.identityComponent_grpObj (G : Over S) [GrpObj G]
+noncomputable instance Scheme.identityComponentGrpObj (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
     [ConnectedSpace ((Scheme.identityComponentOver G ⊗
       Scheme.identityComponentOver G).left)] :
@@ -330,6 +334,10 @@ noncomputable instance Scheme.identityComponent_grpObj (G : Over S) [GrpObj G]
         rw [Category.assoc, mul_i, ← Category.assoc, lift_map]
         simp [inv_i, one_i] }
 
+@[inherit_doc Scheme.identityComponentGrpObj]
+noncomputable abbrev Scheme.identityComponent_grpObj :=
+  @Scheme.identityComponentGrpObj
+
 /-- The identity-component inclusion is a monoid-object homomorphism. -/
 instance Scheme.identityComponentι_isMonHom (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
@@ -341,8 +349,6 @@ instance Scheme.identityComponentι_isMonHom (G : Over S) [GrpObj G]
 
 private lemma Scheme.range_conj_subset_identityComponent (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
-    [ConnectedSpace ((Scheme.identityComponentOver G ⊗
-      Scheme.identityComponentOver G).left)]
     [GeometricallyConnected (Scheme.identityComponentOver G).hom] :
     Set.range ((G ◁ Scheme.identityComponentι G ≫ GrpObj.conj G).left) ⊆
       Set.range (Scheme.identityComponent G).ι := by
@@ -386,8 +392,6 @@ private lemma Scheme.range_conj_subset_identityComponent (G : Over S) [GrpObj G]
 geometrically connected over the base. -/
 noncomputable def Scheme.identityComponentConj (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
-    [ConnectedSpace ((Scheme.identityComponentOver G ⊗
-      Scheme.identityComponentOver G).left)]
     [GeometricallyConnected (Scheme.identityComponentOver G).hom] :
     G ⊗ Scheme.identityComponentOver G ⟶ Scheme.identityComponentOver G :=
   Over.homMk (IsOpenImmersion.lift (Scheme.identityComponent G).ι
@@ -403,8 +407,6 @@ recovers ambient conjugation on the component. -/
 @[reassoc]
 lemma Scheme.identityComponentConj_comp_ι (G : Over S) [GrpObj G]
     [LocallyConnectedSpace G.left] [Nonempty S] [Subsingleton S]
-    [ConnectedSpace ((Scheme.identityComponentOver G ⊗
-      Scheme.identityComponentOver G).left)]
     [GeometricallyConnected (Scheme.identityComponentOver G).hom] :
     Scheme.identityComponentConj G ≫ Scheme.identityComponentι G =
       G ◁ Scheme.identityComponentι G ≫ GrpObj.conj G := by
@@ -424,5 +426,8 @@ instance Scheme.identityComponentι_normal (G : Over S) [GrpObj G]
     IsMonHom.Normal (Scheme.identityComponentι G) where
   exists_comp_eq_conj := ⟨Scheme.identityComponentConj G,
     Scheme.identityComponentConj_comp_ι G⟩
+
+attribute [deprecated Scheme.identityComponentGrpObj (since := "2026-10-26"),
+  nolint defsWithUnderscore] Scheme.identityComponent_grpObj
 
 end AlgebraicGeometry

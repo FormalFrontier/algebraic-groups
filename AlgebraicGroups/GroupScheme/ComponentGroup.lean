@@ -94,12 +94,12 @@ section ClosedPoints
 
 variable [IsAlgClosed K]
 
-/-- Every connected component of a group scheme locally of finite type over an
-algebraically closed field contains a rational point. This is the rational
-representative underlying Milne, *Algebraic Groups*, Proposition 2.37(d),
-obtained here from the Jacobson closed-point argument. -/
+/-- Every connected component of a scheme locally of finite type over an
+algebraically closed field contains a rational point. For group schemes, this
+is the rational representative underlying Milne, *Algebraic Groups*,
+Proposition 2.37(d), obtained here from the Jacobson closed-point argument. -/
 theorem groupSchemePointComponent_surjective
-    (f : G ⟶ Spec (.of K)) [GrpObj (Over.mk f)] [LocallyOfFiniteType f] :
+    (f : G ⟶ Spec (.of K)) [LocallyOfFiniteType f] :
     Function.Surjective (groupSchemePointComponent f) := by
   intro c
   obtain ⟨x, rfl⟩ := ConnectedComponents.surjective_coe c

@@ -411,8 +411,27 @@ def rootsOfUnityPointsIso (n : ℕ) :
       intro ζ
       exact rootsOfUnityMulEquivPoints_naturality K R f.hom n ζ)
 
-/-- The forward component of the representing isomorphism is the point equivalence. -/
+/-- The forward component is the group morphism induced by the point equivalence. -/
 @[simp]
+lemma rootsOfUnityPointsIso_hom_app
+    (R : Type u) [CommRing R] [Algebra K R] (n : ℕ) :
+    (rootsOfUnityPointsIso K n).hom.app (CommAlgCat.of K R) =
+      GrpCat.ofHom (rootsOfUnityMulEquivPoints K R n : rootsOfUnity n R →*
+        ((Spec (.of R)).asOver (Spec (.of K)) ⟶ rootsOfUnityScheme K n)) := by
+  rfl
+
+/-- The inverse component is the group morphism induced by the inverse point equivalence. -/
+@[simp]
+lemma rootsOfUnityPointsIso_inv_app
+    (R : Type u) [CommRing R] [Algebra K R] (n : ℕ) :
+    (rootsOfUnityPointsIso K n).inv.app (CommAlgCat.of K R) =
+      GrpCat.ofHom ((rootsOfUnityMulEquivPoints K R n).symm :
+        (((Spec (.of R)).asOver (Spec (.of K)) ⟶ rootsOfUnityScheme K n) →*
+          rootsOfUnity n R)) := by
+  rfl
+
+/-- The forward component of the representing isomorphism is the point equivalence. -/
+-- Simp uses the bundled component law before taking the underlying function.
 lemma rootsOfUnityPointsIso_hom_app_apply
     (R : Type u) [CommRing R] [Algebra K R] (n : ℕ) (ζ : rootsOfUnity n R) :
     (CategoryTheory.ConcreteCategory.hom
@@ -423,7 +442,7 @@ lemma rootsOfUnityPointsIso_hom_app_apply
   rfl
 
 /-- The inverse component of the representing isomorphism recovers the root from its point. -/
-@[simp]
+-- Simp uses the bundled inverse component law before taking the underlying function.
 lemma rootsOfUnityPointsIso_inv_app_apply
     (R : Type u) [CommRing R] [Algebra K R] (n : ℕ)
     (p : (Spec (.of R)).asOver (Spec (.of K)) ⟶ rootsOfUnityScheme K n) :

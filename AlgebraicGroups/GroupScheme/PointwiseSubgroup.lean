@@ -66,9 +66,20 @@ local instance : Limits.PreservesFiniteLimits (lftPoints K) :=
 
 /-- The Cartesian monoidal structure on schemes locally of finite type over `K`,
 built from their finite products. -/
-local instance : CartesianMonoidalCategory
+local instance instCartesianMonoidalCategoryLocallyFiniteTypeOver : CartesianMonoidalCategory
     (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))) :=
   .ofHasFiniteProducts
+
+-- Generate the unwrappable legacy name as an ordinary transparent, noninstance alias.
+run_cmd do
+  let legacy := Lean.mkIdent <| Lean.Name.mkSimple
+    ("instCartesianMonoidalCategoryOverSchemeLocallyFiniteTypeMorphism" ++
+      "TopMorphismPropertySpecOf_algebraicGroups")
+  let replacement := Lean.mkIdent ``instCartesianMonoidalCategoryLocallyFiniteTypeOver
+  Lean.Elab.Command.elabCommand (← `(command|
+    @[inherit_doc $replacement, deprecated $replacement (since := "2026-10-26"),
+      nolint defsWithUnderscore]
+    public noncomputable abbrev $legacy := @$replacement))
 
 /-- The monoidal structure on `lftPoints K` induced by preservation of finite products. -/
 local instance : (lftPoints K).Monoidal :=

@@ -208,7 +208,7 @@ private theorem SatisfiesEquation.neg {A : Type*} [CommRing A] [Algebra R A]
         -(y ^ p - y - algebraMap R A t * x ^ p) := by ring
     _ = 0 := by rw [h, neg_zero]
 
-private def origin {p : ℕ} [Fact p.Prime] [CharP R p] (t : R) :
+private def origin {p : ℕ} [Fact p.Prime] (t : R) :
     CoordinateRing R p t →ₐ[R] R :=
   lift R p t 0 0 (satisfiesEquation_zero R (Fact.out : p.Prime).ne_zero t)
 
@@ -235,7 +235,7 @@ private def comulY (p : ℕ) (t : R) :
   Algebra.TensorProduct.includeLeft (R := R) (S := R) (y R p t) +
     Algebra.TensorProduct.includeRight (R := R) (y R p t)
 
-private def tensorOrigin {p : ℕ} [Fact p.Prime] [CharP R p] (t : R) :
+private def tensorOrigin {p : ℕ} [Fact p.Prime] (t : R) :
     CoordinateRing R p t ⊗[R] CoordinateRing R p t →ₐ[R] R :=
   Algebra.TensorProduct.lift (origin R t) (origin R t) (fun _ _ ↦ Commute.all _ _)
 
@@ -280,14 +280,14 @@ private theorem comul_y {p : ℕ} [Fact p.Prime] [CharP R p] (t : R) :
     comul R t (y R p t) = comulY R p t := lift_y R _ _ _ _ _
 
 /-- Counit corresponding to the origin. -/
-@[expose] def counit {p : ℕ} [Fact p.Prime] [CharP R p]
+@[expose] def counit {p : ℕ} [Fact p.Prime]
     (t : R) : CoordinateRing R p t →ₐ[R] R :=
   lift R p t 0 0 (by exact satisfiesEquation_zero R (Fact.out : p.Prime).ne_zero t)
 
-private theorem counit_x {p : ℕ} [Fact p.Prime] [CharP R p] (t : R) :
+private theorem counit_x {p : ℕ} [Fact p.Prime] (t : R) :
     counit R t (x R p t) = 0 := by simp [counit, lift_x]
 
-private theorem counit_y {p : ℕ} [Fact p.Prime] [CharP R p] (t : R) :
+private theorem counit_y {p : ℕ} [Fact p.Prime] (t : R) :
     counit R t (y R p t) = 0 := by simp [counit, lift_y]
 
 /-- Antipode corresponding to coordinatewise negation. -/
@@ -303,7 +303,7 @@ private theorem antipode_y {p : ℕ} [Fact p.Prime] [CharP R p] (t : R) :
     antipode R t (y R p t) = -y R p t := lift_y R _ _ _ _ _
 
 /-- The bialgebra structure dual to coordinatewise addition. -/
-noncomputable instance coordinateRing_bialgebra {p : ℕ} [Fact p.Prime] [CharP R p]
+noncomputable instance coordinateRingBialgebra {p : ℕ} [Fact p.Prime] [CharP R p]
     (t : R) : Bialgebra R (CoordinateRing R p t) :=
   Bialgebra.ofAlgHom (comul R t) (counit R t)
     (by
@@ -319,8 +319,12 @@ noncomputable instance coordinateRing_bialgebra {p : ℕ} [Fact p.Prime] [CharP 
       apply hom_ext <;>
         simp [comul_x, comul_y, comulX, comulY, counit_x, counit_y])
 
+@[inherit_doc coordinateRingBialgebra]
+noncomputable abbrev coordinateRing_bialgebra :=
+  @coordinateRingBialgebra
+
 /-- The Hopf-algebra structure dual to coordinatewise addition and negation. -/
-noncomputable instance coordinateRing_hopfAlgebra {p : ℕ} [Fact p.Prime] [CharP R p]
+noncomputable instance coordinateRingHopfAlgebra {p : ℕ} [Fact p.Prime] [CharP R p]
     (t : R) : HopfAlgebra R (CoordinateRing R p t) :=
   HopfAlgebra.ofAlgHom (antipode R t)
     (by
@@ -343,6 +347,10 @@ noncomputable instance coordinateRing_hopfAlgebra {p : ℕ} [Fact p.Prime] [Char
           (antipode R t) (fun _ _ ↦ Commute.all _ _))
             (comul R t (y R p t)) = algebraMap R _ (counit R t (y R p t))
         simp [comul_y, comulY, antipode_y, counit_y])
+
+@[inherit_doc coordinateRingHopfAlgebra]
+noncomputable abbrev coordinateRing_hopfAlgebra :=
+  @coordinateRingHopfAlgebra
 
 open CategoryTheory AlgebraicGeometry
 
@@ -472,11 +480,11 @@ private theorem normalFormHom_W {p : ℕ} [Fact p.Prime] [CharP L p]
   rw [Units.mul_inv, Polynomial.C_1]
   ring
 
-private def normalFormInv {p : ℕ} [Fact p.Prime] [CharP L p]
+private def normalFormInv {p : ℕ}
     (t : R) (u : Lˣ) : Polynomial L →ₐ[L] L ⊗[R] CoordinateRing R p t :=
   Polynomial.aeval (W R L p t u)
 
-private theorem normalFormInv_X {p : ℕ} [Fact p.Prime] [CharP L p]
+private theorem normalFormInv_X {p : ℕ}
     (t : R) (u : Lˣ) : normalFormInv R L t u Polynomial.X = W R L p t u := by
   exact Polynomial.aeval_X _
 
@@ -533,9 +541,9 @@ private theorem normalFormInv_comp_hom {p : ℕ} [Fact p.Prime] [CharP L p]
       (1 : L) ⊗ₜ[R] x R p t
     rw [normalFormHom_tmul_x]
     rw [map_mul, map_sub]
-    have hpow : normalFormInv R L t u (Polynomial.X ^ p) =
-        (normalFormInv R L t u Polynomial.X) ^ p :=
-      map_pow (normalFormInv R L t u).toRingHom Polynomial.X p
+    have hpow : normalFormInv R L (p := p) t u (Polynomial.X ^ p) =
+        (normalFormInv R L (p := p) t u Polynomial.X) ^ p :=
+      map_pow (normalFormInv R L (p := p) t u).toRingHom Polynomial.X p
     rw [hpow]
     rw [normalFormInv_X]
     rw [W_pow_sub_W R L t u hu]
@@ -547,9 +555,9 @@ private theorem normalFormInv_comp_hom {p : ℕ} [Fact p.Prime] [CharP L p]
         (normalFormHom R L t u hu ((1 : L) ⊗ₜ[R] y R p t)) =
       (1 : L) ⊗ₜ[R] y R p t
     rw [normalFormHom_tmul_y]
-    have hpow : normalFormInv R L t u (Polynomial.X ^ p) =
-        (normalFormInv R L t u Polynomial.X) ^ p :=
-      map_pow (normalFormInv R L t u).toRingHom Polynomial.X p
+    have hpow : normalFormInv R L (p := p) t u (Polynomial.X ^ p) =
+        (normalFormInv R L (p := p) t u Polynomial.X) ^ p :=
+      map_pow (normalFormInv R L (p := p) t u).toRingHom Polynomial.X p
     rw [hpow]
     rw [normalFormInv_X, W_pow R L t u hu]
 
@@ -649,12 +657,12 @@ theorem scheme_connectedSpace_of_ne_zero
   change ConnectedSpace (PrimeSpectrum (CoordinateRing K p t))
   infer_instance
 
-private def zeroPoint (K : Type u) [Field K] {p : ℕ} (hp : p.Prime) [CharP K p]
+private def zeroPoint (K : Type u) [Field K] {p : ℕ} (hp : p.Prime)
     (a : K) (ha : a ^ p - a = 0) : CoordinateRing K p 0 →ₐ[K] K :=
   lift K p 0 0 a (by simpa [SatisfiesEquation, hp.ne_zero] using ha)
 
-private theorem zero_idempotent {K : Type u} [Field K] {p : ℕ} (hp : p.Prime)
-    [CharP K p] : IsIdempotentElem (y K p 0 ^ (p - 1)) := by
+private theorem zero_idempotent {K : Type u} [Field K] {p : ℕ} (hp : p.Prime) :
+    IsIdempotentElem (y K p 0 ^ (p - 1)) := by
   have hy : y K p 0 ^ p = y K p 0 := by
     exact sub_eq_zero.mp (by simpa using y_pow_sub_y_eq K p 0)
   have hp2 : 2 ≤ p := hp.two_le
@@ -668,8 +676,8 @@ private theorem zero_idempotent {K : Type u} [Field K] {p : ℕ} (hp : p.Prime)
     _ = y K p 0 ^ ((p - 2) + 1) := by rw [mul_comm, pow_succ]
     _ = y K p 0 ^ (p - 1) := by congr 1; omega
 
-private theorem zero_idempotent_ne_zero {K : Type u} [Field K] {p : ℕ} (hp : p.Prime)
-    [CharP K p] : y K p 0 ^ (p - 1) ≠ 0 := by
+private theorem zero_idempotent_ne_zero {K : Type u} [Field K] {p : ℕ} (hp : p.Prime) :
+    y K p 0 ^ (p - 1) ≠ 0 := by
   intro h
   have hmap := congrArg (zeroPoint K hp 1 (by simp)) h
   have hy : zeroPoint K hp 1 (by simp) (y K p 0) = 1 := by
@@ -677,8 +685,8 @@ private theorem zero_idempotent_ne_zero {K : Type u} [Field K] {p : ℕ} (hp : p
   rw [map_pow, hy, one_pow, map_zero] at hmap
   exact one_ne_zero hmap
 
-private theorem zero_idempotent_ne_one {K : Type u} [Field K] {p : ℕ} (hp : p.Prime)
-    [CharP K p] : y K p 0 ^ (p - 1) ≠ 1 := by
+private theorem zero_idempotent_ne_one {K : Type u} [Field K] {p : ℕ} (hp : p.Prime) :
+    y K p 0 ^ (p - 1) ≠ 1 := by
   intro h
   have hmap := congrArg (zeroPoint K hp 0 (by simp [hp.ne_zero])) h
   have hpm1 : p - 1 ≠ 0 := (Nat.sub_pos_of_lt hp.one_lt).ne'
@@ -689,7 +697,7 @@ private theorem zero_idempotent_ne_one {K : Type u} [Field K] {p : ℕ} (hp : p.
 
 /-- At zero twist, the Artin--Schreier scheme is disconnected. -/
 theorem not_scheme_connectedSpace_zero
-    (K : Type u) [Field K] {p : ℕ} (hp : p.Prime) [CharP K p] :
+    (K : Type u) [Field K] {p : ℕ} (hp : p.Prime) :
     ¬ ConnectedSpace (scheme K p 0).left := by
   change ¬ ConnectedSpace (PrimeSpectrum (CoordinateRing K p 0))
   intro h
@@ -720,5 +728,10 @@ theorem not_scheme_connectedSpace_zero
     exact zero_idempotent_ne_one hp hval
 
 end
+
+attribute [deprecated coordinateRingBialgebra (since := "2026-10-26"),
+  nolint defsWithUnderscore] coordinateRing_bialgebra
+attribute [deprecated coordinateRingHopfAlgebra (since := "2026-10-26"),
+  nolint defsWithUnderscore] coordinateRing_hopfAlgebra
 
 end ArtinSchreierTwistedLine

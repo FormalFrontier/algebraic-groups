@@ -67,6 +67,13 @@ theorem antipode_involutive : Function.Involutive (antipode R (A := A)) := by
 theorem antipode_antipode (a : A) : antipode R (antipode R a) = a :=
   antipode_involutive a
 
+/-- The square of the antipode as a linear map is the identity in a commutative Hopf algebra. -/
+@[simp]
+theorem antipode_comp_antipode :
+    (antipode R (A := A)).comp (antipode R) = LinearMap.id := by
+  ext a
+  exact antipode_antipode a
+
 end CommSemiring
 
 section IsCocomm
@@ -127,6 +134,13 @@ theorem antipode_involutive_of_isCocomm : Function.Involutive (antipode R (A := 
 @[simp]
 theorem antipode_antipode_of_isCocomm (a : A) : antipode R (antipode R a) = a :=
   antipode_involutive_of_isCocomm a
+
+/-- The square of the antipode as a linear map is the identity in a cocommutative Hopf algebra. -/
+@[simp]
+theorem antipode_comp_antipode_of_isCocomm :
+    (antipode R (A := A)).comp (antipode R) = LinearMap.id := by
+  ext a
+  exact antipode_antipode_of_isCocomm a
 
 end IsCocomm
 

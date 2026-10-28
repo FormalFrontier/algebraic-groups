@@ -527,13 +527,13 @@ noncomputable def plane : RightComodule ℕ ℕ (ℕ × ℕ) := RightComodule.sc
 noncomputable def A : RightComoduleHom plane plane where
   toLinearMap := (LinearMap.snd ℕ ℕ ℕ).prod (0 : ℕ × ℕ →ₗ[ℕ] ℕ)
   colinear := by
-    ext m <;> simp [plane, LinearMap.rTensor_tmul]
+    ext <;> simp [plane, LinearMap.rTensor_tmul]
 
 /-- The coordinate map `(x, y) ↦ (0, x)` on the scalar comodule. -/
 noncomputable def B : RightComoduleHom plane plane where
   toLinearMap := (0 : ℕ × ℕ →ₗ[ℕ] ℕ).prod (LinearMap.fst ℕ ℕ ℕ)
   colinear := by
-    ext m <;> simp [plane, LinearMap.rTensor_tmul]
+    ext <;> simp [plane, LinearMap.rTensor_tmul]
 
 @[simp] theorem A_apply (m : ℕ × ℕ) : A m = (m.2, 0) := rfl
 @[simp] theorem B_apply (m : ℕ × ℕ) : B m = (0, m.1) := rfl
@@ -545,7 +545,7 @@ def e : ℕ × ℕ := (1, 0)
 theorem id_ne_zero : RightComoduleHom.id plane ≠ (0 : RightComoduleHom plane plane) := by
   intro h
   have hp := congrArg (fun f : RightComoduleHom plane plane ↦ (f e).1) h
-  simpa [e] using hp
+  simp [e] at hp
 
 /-- Addition on morphisms is pointwise addition. -/
 theorem id_add_id_at_e :
@@ -700,26 +700,18 @@ private def coloredX : RightComodule ℕ ColoredCoalgebra (ℕ × ℕ) where
         (coloredRhoX.rTensor ColoredCoalgebra (coloredRhoX (a, b))) =
       (Coalgebra.comul (R := ℕ) (A := ColoredCoalgebra)).lTensor (ℕ × ℕ)
         (coloredRhoX (a, b))
-    rw [coloredRhoX_apply]
-    simp [coloredRhoX_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
-      TensorProduct.add_tmul, color0_groupLike.comul_eq_tmul_self,
-      color1_groupLike.comul_eq_tmul_self]
-    simp only [Prod.mk_zero_zero, TensorProduct.zero_tmul, add_zero, zero_add]
+    simp only [coloredRhoX_apply, map_add, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
+      color0_groupLike.comul_eq_tmul_self, color1_groupLike.comul_eq_tmul_self,
+      Prod.mk_zero_zero, TensorProduct.zero_tmul, add_zero, zero_add]
     refine (LinearEquiv.map_add
       (TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra)
       (((a, 0) ⊗ₜ[ℕ] color0) ⊗ₜ[ℕ] color0)
       (((0, b) ⊗ₜ[ℕ] color1) ⊗ₜ[ℕ] color1)).trans ?_
     exact congrArg₂ (· + ·)
-      (show TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
-          (((a, 0) ⊗ₜ[ℕ] color0) ⊗ₜ[ℕ] color0) =
-          (a, 0) ⊗ₜ[ℕ] (color0 ⊗ₜ[ℕ] color0) from
-        TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
-          (N := ColoredCoalgebra) (P := ColoredCoalgebra) (a, 0) color0 color0)
-      (show TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
-          (((0, b) ⊗ₜ[ℕ] color1) ⊗ₜ[ℕ] color1) =
-          (0, b) ⊗ₜ[ℕ] (color1 ⊗ₜ[ℕ] color1) from
-        TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
-          (N := ColoredCoalgebra) (P := ColoredCoalgebra) (0, b) color1 color1)
+      (TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
+        (N := ColoredCoalgebra) (P := ColoredCoalgebra) (a, 0) color0 color0)
+      (TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
+        (N := ColoredCoalgebra) (P := ColoredCoalgebra) (0, b) color1 color1)
   counit_comp := by
     apply LinearMap.ext
     rintro ⟨a, b⟩
@@ -740,26 +732,18 @@ private def coloredY : RightComodule ℕ ColoredCoalgebra (ℕ × ℕ) where
         (coloredRhoY.rTensor ColoredCoalgebra (coloredRhoY (a, b))) =
       (Coalgebra.comul (R := ℕ) (A := ColoredCoalgebra)).lTensor (ℕ × ℕ)
         (coloredRhoY (a, b))
-    rw [coloredRhoY_apply]
-    simp [coloredRhoY_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
-      TensorProduct.add_tmul, color0_groupLike.comul_eq_tmul_self,
-      color1_groupLike.comul_eq_tmul_self]
-    simp only [Prod.mk_zero_zero, TensorProduct.zero_tmul, add_zero, zero_add]
+    simp only [coloredRhoY_apply, map_add, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
+      color0_groupLike.comul_eq_tmul_self, color1_groupLike.comul_eq_tmul_self,
+      Prod.mk_zero_zero, TensorProduct.zero_tmul, add_zero, zero_add]
     refine (LinearEquiv.map_add
       (TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra)
       (((a, 0) ⊗ₜ[ℕ] color1) ⊗ₜ[ℕ] color1)
       (((0, b) ⊗ₜ[ℕ] color0) ⊗ₜ[ℕ] color0)).trans ?_
     exact congrArg₂ (· + ·)
-      (show TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
-          (((a, 0) ⊗ₜ[ℕ] color1) ⊗ₜ[ℕ] color1) =
-          (a, 0) ⊗ₜ[ℕ] (color1 ⊗ₜ[ℕ] color1) from
-        TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
-          (N := ColoredCoalgebra) (P := ColoredCoalgebra) (a, 0) color1 color1)
-      (show TensorProduct.assoc ℕ (ℕ × ℕ) ColoredCoalgebra ColoredCoalgebra
-          (((0, b) ⊗ₜ[ℕ] color0) ⊗ₜ[ℕ] color0) =
-          (0, b) ⊗ₜ[ℕ] (color0 ⊗ₜ[ℕ] color0) from
-        TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
-          (N := ColoredCoalgebra) (P := ColoredCoalgebra) (0, b) color0 color0)
+      (TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
+        (N := ColoredCoalgebra) (P := ColoredCoalgebra) (a, 0) color1 color1)
+      (TensorProduct.assoc_tmul (R := ℕ) (M := ℕ × ℕ)
+        (N := ColoredCoalgebra) (P := ColoredCoalgebra) (0, b) color0 color0)
   counit_comp := by
     apply LinearMap.ext
     rintro ⟨a, b⟩

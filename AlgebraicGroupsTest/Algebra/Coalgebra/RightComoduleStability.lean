@@ -19,7 +19,11 @@ evaluation in the scalar-extension image at `1 ⊗ (e₀ + e₁)`.
 
 The examples apply both evaluation criteria, the identity one-tensor law and
 the independently universe-polymorphic forward preservation theorem. The zero
-and whole submodules give the boundary cases. No subtype coaction is chosen.
+and whole submodules give the boundary cases. The induced coordinate-line
+subcomodules and their binary join also give a canonical injective,
+non-surjective inclusion from span{e₀} into the proper stable span{e₀,e₁}.
+The latter is finitely generated and contains e₀ + e₁, in contrast to that
+vector's nonstable cyclic span.
 
 ## References
 
@@ -131,13 +135,86 @@ private theorem V_ne_top : V ≠ ⊤ := by
   exact e_zero_not_mem_V
     (h.symm ▸ (Submodule.mem_top : e 0 ∈ (⊤ : Submodule ℕ C)))
 
-/-- Direct image witness for the original right-order coaction. -/
-private theorem U_isStable : regularComodule.IsStable U := by
+/-- Each coordinate line has a direct image witness for the right-order coaction. -/
+private theorem span_e_isStable (i : ℤ) :
+    regularComodule.IsStable (Submodule.span ℕ {e i}) := by
   intro x hx
   obtain ⟨n, rfl⟩ := Submodule.mem_span_singleton.mp hx
-  refine ⟨n • ((⟨e 0, e_zero_mem_U⟩ : U) ⊗ₜ[ℕ] e 0), ?_⟩
-  rw [(U.subtype.rTensor C).map_smul, regularComodule.coaction.map_smul]
-  exact congrArg (fun t : C ⊗[ℕ] C => n • t) (coaction_e 0).symm
+  refine ⟨n • ((⟨e i, Submodule.mem_span_singleton_self _⟩ :
+    Submodule.span ℕ {e i}) ⊗ₜ[ℕ] e i), ?_⟩
+  rw [((Submodule.span ℕ {e i}).subtype.rTensor C).map_smul,
+    regularComodule.coaction.map_smul]
+  exact congrArg (fun t : C ⊗[ℕ] C => n • t) (coaction_e i).symm
+
+private theorem U_isStable : regularComodule.IsStable U := span_e_isStable 0
+
+private def coordinateLine (i : ℤ) : regularComodule.Subcomodule :=
+  Subcomodule.ofIsStable regularComodule (Submodule.span ℕ {e i}) (span_e_isStable i)
+
+private theorem coordinateLine_toSubmodule (i : ℤ) :
+    (coordinateLine i).toSubmodule = Submodule.span ℕ {e i} := rfl
+
+private def pairStage : regularComodule.Subcomodule := coordinateLine 0 ⊔ coordinateLine 1
+
+private theorem pairStage_toSubmodule :
+    pairStage.toSubmodule = Submodule.span ℕ ({e 0, e 1} : Set C) := by
+  rw [pairStage, Subcomodule.sup_toSubmodule, coordinateLine_toSubmodule,
+    coordinateLine_toSubmodule, ← Submodule.span_union, Set.singleton_union]
+
+private theorem pairStage_fg : pairStage.toSubmodule.FG := by
+  rw [pairStage_toSubmodule]
+  exact Submodule.fg_span (Set.toFinite _)
+
+private theorem e_one_mem_pairStage : e 1 ∈ pairStage.toSubmodule := by
+  rw [pairStage_toSubmodule]
+  exact Submodule.subset_span (by simp)
+
+private theorem sum_mem_pairStage : e 0 + e 1 ∈ pairStage.toSubmodule := by
+  rw [pairStage_toSubmodule]
+  exact Submodule.add_mem _ (Submodule.subset_span (by simp))
+    (Submodule.subset_span (by simp))
+
+private theorem pairStage_ne_top : pairStage.toSubmodule ≠ ⊤ := by
+  have hker : Submodule.span ℕ ({e 0, e 1} : Set C) ≤ LinearMap.ker (q 2) := by
+    rw [Submodule.span_le]
+    intro x hx
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hx
+    rcases hx with rfl | rfl <;> simp [LinearMap.mem_ker, q_e]
+  intro htop
+  have he : e 2 ∈ pairStage.toSubmodule := htop.symm ▸ Submodule.mem_top
+  rw [pairStage_toSubmodule] at he
+  have hq := hker he
+  simp [LinearMap.mem_ker, q_e] at hq
+
+/-- The canonical inclusion between the coordinate line and its pair-stage is
+injective but not surjective: the target's e₁ has no preimage in span{e₀}. -/
+private theorem coordinateLine_inclusion_proper :
+    Function.Injective (Subcomodule.inclusion
+      (show coordinateLine 0 ≤ pairStage from le_sup_left)) ∧
+    ¬ Function.Surjective (Subcomodule.inclusion
+      (show coordinateLine 0 ≤ pairStage from le_sup_left)) := by
+  refine ⟨Subcomodule.inclusion_injective _, ?_⟩
+  intro hsurj
+  obtain ⟨x, hx⟩ := hsurj ⟨e 1, e_one_mem_pairStage⟩
+  have hval : (x : C) = e 1 := by
+    simpa only [Subcomodule.coe_inclusion] using
+      congrArg (fun z : pairStage.toSubmodule ↦ (z : C)) hx
+  have hxU : e 1 ∈ U := hval ▸ x.property
+  have hq := q_one_zero_on_U hxU
+  simp [q_e] at hq
+
+/-- A nonzero coordinate line embeds canonically into a proper finitely generated
+stable pair-stage containing e₀ + e₁. The inclusion is genuinely non-surjective. -/
+private theorem proper_canonical_inclusion_model :
+    (coordinateLine 0).toSubmodule ≠ ⊥ ∧ pairStage.toSubmodule ≠ ⊤ ∧
+      pairStage.toSubmodule.FG ∧ e 0 + e 1 ∈ pairStage.toSubmodule ∧
+      regularComodule.IsStable pairStage.toSubmodule ∧
+      Function.Injective (Subcomodule.inclusion
+        (show coordinateLine 0 ≤ pairStage from le_sup_left)) ∧
+      ¬ Function.Surjective (Subcomodule.inclusion
+        (show coordinateLine 0 ≤ pairStage from le_sup_left)) :=
+  ⟨U_ne_bot, pairStage_ne_top, pairStage_fg, sum_mem_pairStage, pairStage.isStable,
+    coordinateLine_inclusion_proper⟩
 
 /-- First-factor slice of the original right-order coaction. -/
 private def firstSlice (i : ℤ) : C ⊗[ℕ] C →ₗ[ℕ] C :=

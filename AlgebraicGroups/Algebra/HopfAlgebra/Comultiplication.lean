@@ -202,8 +202,9 @@ theorem comul_comp_antipode_comp_antipode :
   simp only [LinearMap.comp_apply, comul_antipode, ← map_comm, comm_comm, map_map]
 
 /-- Comultiplication of the square of the antipode is the tensor of its square
-applied to comultiplication. -/
-@[simp]
+applied to comultiplication. Simplify this before `comul_antipode` introduces
+two interleaved tensor flips. -/
+@[simp↓]
 theorem comul_antipode_antipode (x : A) :
     Δ (S (S x)) = map (S ∘ₗ S) (S ∘ₗ S) (Δ x) :=
   LinearMap.congr_fun comul_comp_antipode_comp_antipode x

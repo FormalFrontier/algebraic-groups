@@ -114,13 +114,18 @@ theorem baseChange_presentation (x : S ⊗[R] FreeCoordinateRing R ι) :
       algebraMap S (CoordinateRing S ι) s := by
   simpa using (baseChange R S ι).commutes s
 
-/-- The forward law for every matrix entry in the actual quotient, not just
-the freely varying strictly upper entries. -/
-@[simp] theorem baseChange_tmul_entry (s : S) (i j : ι) :
+/-- The forward law for polynomial matrix-coordinate images in the quotient,
+including diagonal and lower coordinates. -/
+@[simp] theorem baseChange_tmul_quotient_X (s : S) (i j : ι) :
     baseChange R S ι
-        (s ⊗ₜ[R] quotient R ι (GeneralLinearCoordinateRing.matrix R ι i j)) =
+        (s ⊗ₜ[R] quotient R ι
+          (algebraMap (GeneralLinearCoordinateRing.PolynomialRing R ι)
+            (GeneralLinearCoordinateRing.CoordinateRing R ι) (MvPolynomial.X (i, j)))) =
       algebraMap S (CoordinateRing S ι) s *
-        quotient S ι (GeneralLinearCoordinateRing.matrix S ι i j) := by
+        quotient S ι
+          (algebraMap (GeneralLinearCoordinateRing.PolynomialRing S ι)
+            (GeneralLinearCoordinateRing.CoordinateRing S ι) (MvPolynomial.X (i, j))) := by
+  simp only [← GeneralLinearCoordinateRing.matrix_apply]
   rcases lt_trichotomy i j with hij | hij | hji
   · simpa only [MvPolynomial.map_X, Algebra.smul_def, map_mul, AlgEquiv.commutes,
       freeEquiv_variable] using
@@ -130,20 +135,46 @@ the freely varying strictly upper entries. -/
   · simp only [quotient_lower R ι i j hji, quotient_lower S ι i j hji,
       TensorProduct.tmul_zero, map_zero, mul_zero]
 
+/-- The forward law for every matrix entry in the actual quotient, not just
+the freely varying strictly upper entries. -/
+-- Simp first uses `matrix_apply`, then `baseChange_tmul_quotient_X`.
+theorem baseChange_tmul_entry (s : S) (i j : ι) :
+    baseChange R S ι
+        (s ⊗ₜ[R] quotient R ι (GeneralLinearCoordinateRing.matrix R ι i j)) =
+      algebraMap S (CoordinateRing S ι) s *
+        quotient S ι (GeneralLinearCoordinateRing.matrix S ι i j) := by
+  simpa only [GeneralLinearCoordinateRing.matrix_apply] using
+    baseChange_tmul_quotient_X R S ι s i j
+
+/-- The inverse law for polynomial matrix-coordinate images in the quotient. -/
+@[simp] theorem baseChange_symm_quotient_X (i j : ι) :
+    (baseChange R S ι).symm
+        (quotient S ι
+          (algebraMap (GeneralLinearCoordinateRing.PolynomialRing S ι)
+            (GeneralLinearCoordinateRing.CoordinateRing S ι) (MvPolynomial.X (i, j)))) =
+      1 ⊗ₜ[R] quotient R ι
+          (algebraMap (GeneralLinearCoordinateRing.PolynomialRing R ι)
+            (GeneralLinearCoordinateRing.CoordinateRing R ι) (MvPolynomial.X (i, j))) := by
+  apply (baseChange R S ι).injective
+  simp only [AlgEquiv.apply_symm_apply, baseChange_tmul_quotient_X, map_one, one_mul]
+
 /-- The inverse comparison sends each actual quotient entry to its scalar
 extension with tensor coefficient one. -/
-@[simp] theorem baseChange_symm_entry (i j : ι) :
+-- Simp first uses `matrix_apply`, then `baseChange_symm_quotient_X`.
+theorem baseChange_symm_entry (i j : ι) :
     (baseChange R S ι).symm
         (quotient S ι (GeneralLinearCoordinateRing.matrix S ι i j)) =
       1 ⊗ₜ[R] quotient R ι (GeneralLinearCoordinateRing.matrix R ι i j) := by
-  apply (baseChange R S ι).injective
-  simp only [AlgEquiv.apply_symm_apply, baseChange_tmul_entry, map_one, one_mul]
+  simpa only [GeneralLinearCoordinateRing.matrix_apply] using
+    baseChange_symm_quotient_X R S ι i j
 
 /-- The inverse coefficient law is valid also over the zero ring. -/
-@[simp] theorem baseChange_symm_algebraMap (s : S) :
+-- This is the generic inverse algebra-equivalence coefficient law, whose tensor
+-- algebra map simplifies to a pure tensor by `Algebra.TensorProduct.algebraMap_apply`.
+theorem baseChange_symm_algebraMap (s : S) :
     (baseChange R S ι).symm (algebraMap S (CoordinateRing S ι) s) =
       s ⊗ₜ[R] (1 : CoordinateRing R ι) := by
-  apply (baseChange R S ι).injective
-  simp only [AlgEquiv.apply_symm_apply, baseChange_tmul_one]
+  simpa only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self,
+    RingHom.id_apply] using (baseChange R S ι).symm.commutes s
 
 end UnitriangularCoordinateRing

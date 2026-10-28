@@ -45,6 +45,32 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Coalgebras and Hopf algebras
 
+- **A finitely presented rank-one nonflat coalgebra over a PID.** For any
+  field `K`, put `R = K[X]`, `T = R/(X²)` and give `C = R ⊕ T`
+  (implemented as `TrivSqZeroExt R T`) its primitive `R`-coalgebra structure.
+  Then `C` is finitely presented of cardinal module rank one, has the nonzero
+  torsion element `(0, [1])` killed by nonzero `X²`, and is not `R`-flat.
+  Its `R`-group-like elements are equivalent to `K`, with parameter `k`
+  represented by `(1, [Polynomial.C k * X])`. They are infinite if `K`
+  is infinite; finite fields are included in the equivalence. This extends
+  the rational construction in *Finite generation and group-like elements*, §3.
+  [Module results](AlgebraicGroups/Algebra/Coalgebra/PrimitiveExtension/Polynomial/Module.lean),
+  [group-like classification](AlgebraicGroups/Algebra/Coalgebra/PrimitiveExtension/Polynomial/GroupLike.lean).
+  More generally, finite presentation and cardinal rank one hold for any
+  commutative coefficient ring, with Mathlib's rank convention even for the
+  zero ring. Nonzero torsion and nonflatness require only nontriviality;
+  the group-like family is injective over any commutative ring, and it is
+  exhaustive over a reduced ring. Infinitude is deduced only under `Infinite K`.
+- **Cofree specified right comodules.** For an arbitrary coalgebra `C` over a
+  commutative semiring `R` and arbitrary `R`-modules in independent universes,
+  `V ⊗[R] C` has its canonical cofree coaction. Colinear maps into it correspond
+  `R`-linearly to ordinary linear maps into `V`, with both inverse laws,
+  naturalities and triangles. Every specified coaction gives a colinear injective
+  map into this cofree comodule, with a linear retraction; colinearity of that
+  projection is not asserted. At `V = R` the left unitor recovers the regular-target
+  coefficient correspondence.
+  [API](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Cofree.lean),
+  [infinite natural-number diagonal use with proper range](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule/Cofree.lean).
 - **Coalgebra data on a linear range.** Over a commutative ring, let the source and
   codomain of a linear map be modules with additive commutative groups. If the source
   has weak coalgebra data and the kernel is a coideal, the linear range carries the
@@ -95,6 +121,35 @@ maintained project libraries; it does not claim to formalize an entire source.
   [Composition theorem](AlgebraicGroups/Algebra/Coalgebra/CoefficientOperators.lean);
   the [matrix-unit example](AlgebraicGroupsTest/Algebra/Coalgebra/CoefficientOperators.lean)
   distinguishes the two orders.
+- **Regular coefficient normalization and recovery.** Over a commutative semiring
+  `R`, for arbitrary `R`-modules `M,N` and a linear map
+  `F : M →ₗ[R] R ⊗[R] N`, conjugating its tensor extension by the left unitors
+  gives `lid ∘ F`. This module-only
+  [normalization API](AlgebraicGroups/LinearAlgebra/TensorProduct/Extension.lean)
+  specializes to `F = (TensorProduct.map ell id) ∘ Δ`, giving
+  `lid ∘ ell.rTensor C ∘ Δ` for arbitrary `Δ : C →ₗ[R] C ⊗[R] C` and
+  `ell : C →ₗ[R] R`. If `C` is a coalgebra and `Δ` its registered
+  comultiplication, postcomposition with the counit recovers `ell`. All scalar
+  and module universes are independent; no multiplication on `C`, field,
+  finiteness, flatness or projectivity is required.
+  [Coefficient API](AlgebraicGroups/Algebra/Coalgebra/CoefficientOperators.lean).
+- **Ordered rational matrix-point operators.** For arbitrary `U,V ∈ GL₂(ℚ)`
+  with `(UV)₀₀ = 2` and `(VU)₀₀ = 1`, the two raw tensor-extended coefficient
+  operator compositions differ. The points are the general-linear coordinate
+  ring's multiplicative-equivalence images, and a supplied linear map is given
+  equal to its registered comultiplication. The registered-counit readbacks,
+  retaining both left unitors, are respectively `2` and `1`: applying `β`
+  after `α` corresponds to `UV`, not `VU`.
+  [Operators and readbacks](AlgebraicGroups/GroupScheme/GeneralLinearPointOperators.lean).
+- **Scalar-extension characteristics.** Over a commutative semiring `R`, for any
+  semiring `R`-algebra `A` and `R`-semimodule `M`, the tensor extension of a linear
+  map `F : M →ₗ[R] A ⊗[R] M` is the identity exactly when `F(m) = 1 ⊗ₜ[R] m`.
+  For a semiring `R`-algebra `C`, arbitrary linear `Δ : C →ₗ[R] C ⊗[R] C` and
+  given `δ : M →ₗ[R] C ⊗[R] M`, relative coassociativity is equivalent to
+  composition of the tensor-square operators for the ordered left and right
+  inclusions. No commutativity of `A` or `C`, coalgebra structure or law on `Δ`
+  is required. [Identity characteristic](AlgebraicGroups/LinearAlgebra/TensorProduct/Extension.lean),
+  [tensor-square characteristic](AlgebraicGroups/Algebra/Coalgebra/CanonicalPointOperators.lean).
 - **Canonical-point counit criterion.** For an `R`-bialgebra `C` over a
   commutative semiring `R` and an arbitrary linear map `δ : M →ₗ[R] C ⊗[R] M`,
   the counit law holds exactly when the tensor-extended operator at the convolution unit is the identity for
@@ -163,6 +218,11 @@ maintained project libraries; it does not claim to formalize an entire source.
   evaluation and unique-factorization laws are stated alongside the constructions.
   [Module](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Hom.lean),
   [infinite monoid-algebra example](AlgebraicGroupsTest/Algebra/Coalgebra/MonoidAlgebraCollapse.lean).
+- **Tensor products of subcoalgebras.** Over a field, the range of the tensor
+  product of two subcoalgebra inclusions is spanned by the pure tensors from
+  their factors. Membership is characterized by an arbitrary tensor preimage;
+  containment in any submodule is equivalent to containment of those generators.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/TensorProduct.lean).
 - **Surjective descent of coalgebra laws.** Coassociativity
   and both counitality laws descend over a commutative semiring from a coalgebra
   to a fixed `CoalgebraStruct` along a surjective `CoalgHomClass` map.
@@ -331,7 +391,36 @@ maintained project libraries; it does not claim to formalize an entire source.
   to `D` on the **same module** is equivalent to coefficient-span containment in
   `D`. No ambient finite dimension is needed; module-finiteness of the comodule
   gives module-finite coefficients, not algebra finite generation.
+  For the regular right comodule of any coalgebra, `coefficientSpan = ⊤`
+  over a commutative semiring; over a field,
+  `coefficientSubcoalgebra.toSubmodule = ⊤`.
   [Module and GL₂ model](docs/COALGEBRAS.md#intrinsic-coefficient-coalgebras).
+- **Regular-target correspondence.** Over a commutative semiring, composition
+  with the counit identifies morphisms from a specified right comodule to the
+  regular comodule with linear functionals on its underlying module. The inverse
+  is the bundled coefficient morphism, naturally in the source comodule; the
+  module and coalgebra universes are independent.
+  [Correspondence](AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean),
+  [nonidentity regular-comodule projection](AlgebraicGroupsTest/Algebra/Coalgebra/RegularComoduleCoefficients.lean).
+- **Finite coefficient spans.** Over a commutative semiring, the all-dual
+  coefficient span is the range of the coefficient map from the dual tensor
+  the comodule. A module-finite tensor domain makes this span finitely generated;
+  in particular, it suffices that both the comodule and its linear dual are
+  module-finite. Over a Noetherian commutative ring, module-finiteness of the
+  comodule alone suffices, without freeness or a chosen basis.
+  [Tensor and finite-generation API](AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean),
+  [finite nonfree integral comodule](AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsUse.lean).
+- **Arbitrary-basis coefficient columns.** For a supplied module basis over a
+  commutative semiring, the canonical tensor/Finsupp equivalence gives a finitely
+  supported column for each value of the specified coaction. Its entries are
+  coefficients, reconstruct the same coaction, and recover the original basis
+  coordinates under the counit. Every functional has a coproduct expansion over
+  that column's support. A finite basis index specializes this to the usual
+  matrix-coefficient formula. The column identities use no finite-index
+  hypothesis or finite-row-support claim.
+  [Coordinate API](AlgebraicGroups/Algebra/Coalgebra/ComoduleCoefficients.lean),
+  [infinite-basis columns](AlgebraicGroupsTest/Algebra/Coalgebra/RegularComoduleCoefficients.lean),
+  [ordered GL₂ matrix formulas](AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsGL2.lean).
 - **Coefficient functoriality.** For morphisms of specified right comodules
   over a commutative semiring, coefficients pull back along the underlying
   linear map; surjections decrease coefficient spans and bijections preserve

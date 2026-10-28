@@ -43,6 +43,7 @@ flatness, projectivity or freeness.
   `RightComodule.Subcomodule` instead carries a coaction on the submodule subtype
   and a colinear inclusion, bundled as `Subcomodule.subtype`. Every such
   subcomodule is image-stable, without flatness assumptions.
+  Image stability is closed under binary and arbitrary indexed submodule joins.
 * For a commutative algebra carrying a coalgebra on its canonical module,
   `RightComodule.isStable_iff_id_evaluation_mem_baseChange` detects image
   stability by identity evaluation on the scalar-extension image.
@@ -54,8 +55,14 @@ flatness, projectivity or freeness.
   subtype coaction using Mathlib's injective codomain lift. Flatness transfers
   the coaction laws through the tensor inclusion and makes the coaction unique;
   `Subcomodule.ext` identifies subcomodules with the same underlying submodule.
+  Underlying containment is a preorder without flatness, and a partial order
+  under flatness. Binary joins and the named `Subcomodule.iSup` are least upper
+  bounds in this order; they use the induced subtype coaction.
   `Subcomodule.existsUnique_factorization` gives the unique colinear
   factorization of a comodule morphism whose values lie in the subcomodule.
+  `Subcomodule.inclusion` bundles the ordinary linear inclusion between two
+  specified subcomodules. It preserves their coactions, respects identity and
+  composition, and factors their inclusions into the ambient comodule.
 * Under `[Module.Projective R C]`,
   `RightComodule.exists_fg_subcomodule_of_finite` places every finite subset of
   `M` in a subcomodule whose underlying submodule is finitely generated.
@@ -227,6 +234,33 @@ theorem IsStable.coaction_mem_range {X : RightComodule R C M} {U : Submodule R M
     (h : X.IsStable U) (m : M) (hm : m ∈ U) :
     ∃ t : U ⊗[R] C, U.subtype.rTensor C t = X.coaction m := h m hm
 
+omit [Coalgebra R C] in
+private theorem tensorRange_mono {U V : Submodule R M} (h : U ≤ V) :
+    LinearMap.range (U.subtype.rTensor C) ≤ LinearMap.range (V.subtype.rTensor C) := by
+  simpa only [LinearMap.rTensor_def] using
+    (TensorProduct.range_map_mono
+      (a := U.subtype) (b := V.subtype)
+      (c := (LinearMap.id : C →ₗ[R] C)) (d := (LinearMap.id : C →ₗ[R] C))
+      (by simpa only [Submodule.range_subtype] using h) le_rfl)
+
+/-- The join of two image-stable submodules is image-stable, without flatness. -/
+theorem IsStable.sup {X : RightComodule R C M} {U V : Submodule R M}
+    (hU : X.IsStable U) (hV : X.IsStable V) : X.IsStable (U ⊔ V) := by
+  -- The coaction-comap of the tensor-inclusion range contains both summands.
+  have hU' : U ≤ (LinearMap.range ((U ⊔ V).subtype.rTensor C)).comap X.coaction :=
+    fun m hm ↦ tensorRange_mono le_sup_left (hU m hm)
+  have hV' : V ≤ (LinearMap.range ((U ⊔ V).subtype.rTensor C)).comap X.coaction :=
+    fun m hm ↦ tensorRange_mono le_sup_right (hV m hm)
+  exact fun m hm ↦ (sup_le hU' hV') hm
+
+/-- An arbitrary indexed join of image-stable submodules is image-stable.
+The index sort may be empty; no flatness or directedness is required. -/
+theorem IsStable.iSup {X : RightComodule R C M} {ι : Sort z} {U : ι → Submodule R M}
+    (hU : ∀ i, X.IsStable (U i)) : X.IsStable (⨆ i, U i) := by
+  have hle : (⨆ i, U i) ≤
+      (LinearMap.range ((⨆ i, U i).subtype.rTensor C)).comap X.coaction :=
+    _root_.iSup_le fun i m hm ↦ tensorRange_mono (_root_.le_iSup U i) (hU i m hm)
+  exact fun m hm ↦ hle hm
 section MapCoalgebra
 
 variable {D E : Type*}
@@ -676,6 +710,23 @@ def bot (X : RightComodule R C M) : X.Subcomodule where
 @[simp] theorem bot_toSubmodule (X : RightComodule R C M) :
     (bot X).toSubmodule = ⊥ := rfl
 
+/-- Containment of underlying submodules, without identifying chosen coactions. -/
+instance instPreorder : Preorder X.Subcomodule where
+  le U V := U.toSubmodule ≤ V.toSubmodule
+  le_refl U := le_refl U.toSubmodule
+  le_trans U V W hUV hVW := le_trans hUV hVW
+
+/-- Subcomodule containment is containment of the underlying submodules. -/
+theorem le_def (U V : X.Subcomodule) : U ≤ V ↔ U.toSubmodule ≤ V.toSubmodule := Iff.rfl
+
+/-- Subcomodule containment is elementwise containment. -/
+theorem le_iff {U V : X.Subcomodule} : U ≤ V ↔ ∀ ⦃m : M⦄, m ∈ U → m ∈ V := Iff.rfl
+
+/-- The zero subcomodule is least under underlying containment. -/
+instance instOrderBot : OrderBot X.Subcomodule where
+  bot := bot X
+  bot_le U := show (⊥ : Submodule R M) ≤ U.toSubmodule from bot_le
+
 section Flat
 
 variable [Module.Flat R C]
@@ -853,8 +904,145 @@ theorem existsUnique_factorization (U : X.Subcomodule) {N : Type z}
   intro g' hg'
   exact (U.subtype_comp_eq_iff).mp (hg'.trans hg.symm)
 
+/-- The canonical colinear inclusion between two specified subcomodules.
+Its linear map is the ordinary submodule inclusion; the existing unique
+factorization property supplies colinearity for the specified coactions. -/
+def inclusion {U V : X.Subcomodule} (h : U ≤ V) :
+    RightComoduleHom U.comodule V.comodule where
+  toLinearMap := Submodule.inclusion h
+  colinear := by
+    obtain ⟨g, hg, _⟩ := V.existsUnique_factorization U.comodule U.subtype
+      (fun m ↦ h m.property)
+    have hg_linear : g.toLinearMap = Submodule.inclusion h := by
+      apply LinearMap.ext
+      intro m
+      apply Subtype.ext
+      exact congrArg (fun f : RightComoduleHom U.comodule X ↦ f m) hg
+    rw [← hg_linear]
+    exact g.colinear
+
+/-- Forgetting colinearity gives the ordinary submodule inclusion. -/
+@[simp] theorem inclusion_toLinearMap {U V : X.Subcomodule} (h : U ≤ V) :
+    (inclusion h).toLinearMap = Submodule.inclusion h := rfl
+
+/-- The canonical inclusion retains the element and its containment proof. -/
+theorem inclusion_apply {U V : X.Subcomodule} (h : U ≤ V) (m : U.toSubmodule) :
+    inclusion h m = ⟨m, h m.property⟩ := rfl
+
+/-- The canonical inclusion does not change the underlying ambient element. -/
+@[simp] theorem coe_inclusion {U V : X.Subcomodule} (h : U ≤ V) (m : U.toSubmodule) :
+    (inclusion h m : M) = m := rfl
+
+/-- Composing a canonical inclusion with the ambient inclusion recovers the source inclusion. -/
+@[simp] theorem subtype_comp_inclusion {U V : X.Subcomodule} (h : U ≤ V) :
+    V.subtype.comp (inclusion h) = U.subtype := by
+  apply RightComoduleHom.ext
+  intro m
+  rfl
+
+/-- The canonical inclusion is the unique morphism with its ambient factorization equation. -/
+theorem inclusion_unique {U V : X.Subcomodule} (h : U ≤ V)
+    (f : RightComoduleHom U.comodule V.comodule) (hf : V.subtype.comp f = U.subtype) :
+    f = inclusion h :=
+  (V.subtype_comp_eq_iff).mp (hf.trans (subtype_comp_inclusion h).symm)
+
+/-- The canonical inclusion is independent of the proof of containment. -/
+theorem inclusion_congr {U V : X.Subcomodule} (h h' : U ≤ V) :
+    inclusion h = inclusion h' := rfl
+
+/-- The inclusion of a subcomodule into itself is its identity morphism. -/
+@[simp] theorem inclusion_refl (U : X.Subcomodule) :
+    inclusion (le_refl U) = RightComoduleHom.id U.comodule := by
+  apply RightComoduleHom.ext
+  intro m
+  rfl
+
+/-- Canonical inclusions compose according to transitivity of containment. -/
+@[simp] theorem inclusion_comp {U V W : X.Subcomodule} (hUV : U ≤ V) (hVW : V ≤ W) :
+    (inclusion hVW).comp (inclusion hUV) = inclusion (hUV.trans hVW) := by
+  apply RightComoduleHom.ext
+  intro m
+  rfl
+
+/-- A canonical subcomodule inclusion is injective. -/
+theorem inclusion_injective {U V : X.Subcomodule} (h : U ≤ V) :
+    Function.Injective (inclusion h) :=
+  Submodule.inclusion_injective h
+
 end Flat
+
+section Joins
+
+variable [Module.Flat R C]
+
+/-- Flatness makes underlying containment antisymmetric, using uniqueness of
+specified subtype coactions. The preorder is the flat-free containment preorder. -/
+instance instPartialOrder : PartialOrder X.Subcomodule where
+  toPreorder := instPreorder
+  le_antisymm _ _ hUV hVU := ext (_root_.le_antisymm hUV hVU)
+
+/-- The binary join with its induced subtype coaction. -/
+noncomputable def sup (U V : X.Subcomodule) : X.Subcomodule :=
+  ofIsStable X (U.toSubmodule ⊔ V.toSubmodule) (U.isStable.sup V.isStable)
+
+/-- Binary joins are least upper bounds for underlying containment. -/
+noncomputable instance instSemilatticeSup : SemilatticeSup X.Subcomodule where
+  toPartialOrder := instPartialOrder
+  sup := sup
+  le_sup_left U V :=
+    show U.toSubmodule ≤ U.toSubmodule ⊔ V.toSubmodule from le_sup_left
+  le_sup_right U V :=
+    show V.toSubmodule ≤ U.toSubmodule ⊔ V.toSubmodule from le_sup_right
+  sup_le U V W hU hV :=
+    show U.toSubmodule ⊔ V.toSubmodule ≤ W.toSubmodule from _root_.sup_le hU hV
+
+/-- The underlying submodule of a binary join is the ordinary submodule join. -/
+@[simp] theorem sup_toSubmodule (U V : X.Subcomodule) :
+    (U ⊔ V).toSubmodule = U.toSubmodule ⊔ V.toSubmodule := rfl
+
+/-- Membership in a binary join is a sum of a member of each summand. -/
+theorem mem_sup {U V : X.Subcomodule} {m : M} :
+    m ∈ U ⊔ V ↔ ∃ u ∈ U, ∃ v ∈ V, u + v = m :=
+  Submodule.mem_sup
+
+/-- An arbitrary indexed join with its induced subtype coaction.
+The index sort may be empty. -/
+noncomputable def iSup {ι : Sort z} (F : ι → X.Subcomodule) : X.Subcomodule :=
+  ofIsStable X (⨆ i, (F i).toSubmodule) (IsStable.iSup fun i ↦ (F i).isStable)
+
+/-- The underlying submodule of an indexed join is the ordinary submodule join. -/
+@[simp] theorem iSup_toSubmodule {ι : Sort z} (F : ι → X.Subcomodule) :
+    (iSup F).toSubmodule = ⨆ i, (F i).toSubmodule := rfl
+
+/-- Indexed-join membership is ordinary submodule-join membership, so the
+submodule induction principle applies without a directedness assumption. -/
+theorem mem_iSup {ι : Sort z} (F : ι → X.Subcomodule) (m : M) :
+    m ∈ iSup F ↔ m ∈ ⨆ i, (F i).toSubmodule := Iff.rfl
+
+/-- Every summand is contained in the named indexed join. -/
+theorem le_iSup {ι : Sort z} (F : ι → X.Subcomodule) (i : ι) : F i ≤ iSup F :=
+  show (F i).toSubmodule ≤ ⨆ j, (F j).toSubmodule from
+    _root_.le_iSup (fun j ↦ (F j).toSubmodule) i
+
+/-- The named indexed join is the least upper bound for containment. -/
+@[simp] theorem iSup_le_iff {ι : Sort z} (F : ι → X.Subcomodule) (V : X.Subcomodule) :
+    iSup F ≤ V ↔ ∀ i, F i ≤ V :=
+  show (⨆ i, (F i).toSubmodule) ≤ V.toSubmodule ↔
+      ∀ i, (F i).toSubmodule ≤ V.toSubmodule from
+    _root_.iSup_le_iff
+
+/-- The join of an empty family is the zero subcomodule. -/
+@[simp] theorem iSup_of_isEmpty {ι : Sort z} [IsEmpty ι] (F : ι → X.Subcomodule) :
+    iSup F = bot X := by
+  apply ext
+  simp
+
+end Joins
 end Subcomodule
+
+/-- The zero submodule is image-stable, using its specified zero subtype coaction. -/
+theorem isStable_bot (X : RightComodule R C M) : X.IsStable (⊥ : Submodule R M) :=
+  (Subcomodule.bot X).isStable
 
 /-- Every finite subset of a right comodule over a projective coalgebra is
 contained in a module-finitely-generated submodule with a subtype coaction and
@@ -957,6 +1145,19 @@ theorem scalar_subtype_colinear (U : Submodule R M) :
   ext m
   simp
 
+/-- Binary joins of scalar subcomodules agree with the scalar subcomodule
+of the ordinary submodule join. -/
+@[simp] theorem scalarSubcomodule_sup (U V : Submodule R M) :
+    scalarSubcomodule U ⊔ scalarSubcomodule V = scalarSubcomodule (U ⊔ V) := by
+  apply Subcomodule.ext
+  rfl
+
+/-- Indexed joins of scalar subcomodules agree with the scalar subcomodule
+of the ordinary indexed submodule join, including empty families. -/
+@[simp] theorem scalarSubcomodule_iSup {ι : Sort z} (F : ι → Submodule R M) :
+    Subcomodule.iSup (fun i ↦ scalarSubcomodule (F i)) = scalarSubcomodule (⨆ i, F i) := by
+  apply Subcomodule.ext
+  rfl
 /-- Changing any right comodule along the counit gives the scalar coaction. -/
 @[simp] theorem mapCoalgebra_counit {C : Type*}
     [AddCommMonoid C] [Module R C] [Coalgebra R C] (X : RightComodule R C M) :

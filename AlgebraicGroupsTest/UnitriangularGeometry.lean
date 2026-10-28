@@ -71,10 +71,14 @@ example : GeometricallyIntegral
     (unitriangularGroupUnderlyingScheme (ZMod 1) (Fin 0)).hom := inferInstance
 
 example : topologicalKrullDim (unitriangularGroupUnderlyingScheme ℚ (Fin 0)).left =
-    (0 : WithBot ℕ∞) := by simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 0
+    (0 : WithBot ℕ∞) := by
+  simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 0
 example : topologicalKrullDim (unitriangularGroupUnderlyingScheme ℚ (Fin 1)).left =
-    (0 : WithBot ℕ∞) := by simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 1
+    (0 : WithBot ℕ∞) := by
+  simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 1
 example : topologicalKrullDim (unitriangularGroupUnderlyingScheme ℚ (Fin 2)).left =
-    (1 : WithBot ℕ∞) := by simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 2
+    (1 : WithBot ℕ∞) := by
+  simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 2
 example : topologicalKrullDim (unitriangularGroupUnderlyingScheme ℚ (Fin 3)).left =
-    (3 : WithBot ℕ∞) := by simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 3
+    (3 : WithBot ℕ∞) := by
+  simpa using unitriangularGroupUnderlyingScheme_topologicalKrullDim_fin ℚ 3

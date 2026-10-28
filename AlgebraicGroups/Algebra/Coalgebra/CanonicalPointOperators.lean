@@ -5,12 +5,19 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientOperators
+public import AlgebraicGroups.LinearAlgebra.TensorProduct.Extension
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.RingTheory.Bialgebra.Convolution
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Canonical point tests for left coaction laws
+
+For a semiring `R`-algebra `C`, an arbitrary linear map `Δ : C →ₗ[R] C ⊗[R] C`
+and a given `δ : M →ₗ[R] C ⊗[R] M`, relative coassociativity is equivalent to
+composition of the tensor-extended operators for the two ordered inclusions into
+`C ⊗[R] C`. This tensor-square criterion requires neither commutativity of `C`
+nor a coalgebra structure or law on `Δ`.
 
 For an `R`-bialgebra `C` over a commutative semiring `R` and a given linear map
 `δ : M →ₗ[R] C ⊗[R] M`, its counit law is equivalent to
@@ -44,6 +51,91 @@ open scoped TensorProduct
 namespace TensorProduct.AlgebraTensorModule
 
 universe uR uC uM uA w
+
+section Inclusions
+
+variable {R : Type uR} {C : Type uC}
+variable [CommSemiring R] [Semiring C] [Algebra R C]
+
+private theorem mul'_comp_map_includeLeft_includeRight :
+    (LinearMap.mul' R (C ⊗[R] C)).comp
+        (TensorProduct.map
+          (Algebra.TensorProduct.includeLeft : C →ₐ[R] C ⊗[R] C).toLinearMap
+          (Algebra.TensorProduct.includeRight : C →ₐ[R] C ⊗[R] C).toLinearMap) =
+      (LinearMap.id : C ⊗[R] C →ₗ[R] C ⊗[R] C) := by
+  apply TensorProduct.ext'
+  intro c d
+  have h := congrArg (fun f : C ⊗[R] C →ₐ[R] C ⊗[R] C => f (c ⊗ₜ[R] d))
+    (Algebra.TensorProduct.lift_includeLeft_includeRight
+      (R := R) (S := R) (A := C) (B := C))
+  change (c ⊗ₜ[R] (1 : C)) * ((1 : C) ⊗ₜ[R] d) = c ⊗ₜ[R] d at h ⊢
+  exact h
+
+variable {M : Type uM} [AddCommMonoid M] [Module R M]
+
+private theorem lift_toSpanSingleton_comp_inclusions_one_tmul
+    (δ : M →ₗ[R] C ⊗[R] M) (m : M) :
+    (lift
+      (LinearMap.toSpanSingleton (C ⊗[R] C) (M →ₗ[R] (C ⊗[R] C) ⊗[R] M)
+        ((TensorProduct.map
+          (Algebra.TensorProduct.includeRight : C →ₐ[R] C ⊗[R] C).toLinearMap
+          (LinearMap.id : M →ₗ[R] M)).comp δ))).comp
+      (lift
+        (LinearMap.toSpanSingleton (C ⊗[R] C) (M →ₗ[R] (C ⊗[R] C) ⊗[R] M)
+          ((TensorProduct.map
+            (Algebra.TensorProduct.includeLeft : C →ₐ[R] C ⊗[R] C).toLinearMap
+            (LinearMap.id : M →ₗ[R] M)).comp δ)))
+        ((1 : C ⊗[R] C) ⊗ₜ[R] m) =
+      (TensorProduct.assoc R C C M).symm.toLinearMap
+        (((TensorProduct.map (LinearMap.id : C →ₗ[R] C) δ).comp δ) m) := by
+  simp only [LinearMap.comp_apply, lift_tmul, LinearMap.toSpanSingleton_apply,
+    one_smul, LinearEquiv.coe_toLinearMap]
+  simpa only [mul'_comp_map_includeLeft_includeRight, TensorProduct.map_id,
+    LinearMap.id_apply] using
+    lift_toSpanSingleton_apply_map δ
+      (Algebra.TensorProduct.includeLeft : C →ₐ[R] C ⊗[R] C).toLinearMap
+      (Algebra.TensorProduct.includeRight : C →ₐ[R] C ⊗[R] C).toLinearMap (δ m)
+
+/-- A given linear map satisfies relative coassociativity for `Δ` if and only if
+its tensor-square coefficient operators compose in the order of the two
+inclusions. No coalgebra structure or law on `Δ` is required. -/
+theorem coassoc_iff_lift_toSpanSingleton_comp_map_inclusions
+    (Δ : C →ₗ[R] C ⊗[R] C) (δ : M →ₗ[R] C ⊗[R] M) :
+    ((TensorProduct.map Δ (LinearMap.id : M →ₗ[R] M)).comp δ =
+      (TensorProduct.assoc R C C M).symm.toLinearMap.comp
+        ((TensorProduct.map (LinearMap.id : C →ₗ[R] C) δ).comp δ)) ↔
+    (lift
+      (LinearMap.toSpanSingleton (C ⊗[R] C) (M →ₗ[R] (C ⊗[R] C) ⊗[R] M)
+        ((TensorProduct.map
+          (Algebra.TensorProduct.includeRight : C →ₐ[R] C ⊗[R] C).toLinearMap
+          (LinearMap.id : M →ₗ[R] M)).comp δ))).comp
+      (lift
+        (LinearMap.toSpanSingleton (C ⊗[R] C) (M →ₗ[R] (C ⊗[R] C) ⊗[R] M)
+          ((TensorProduct.map
+            (Algebra.TensorProduct.includeLeft : C →ₐ[R] C ⊗[R] C).toLinearMap
+            (LinearMap.id : M →ₗ[R] M)).comp δ))) =
+      lift
+        (LinearMap.toSpanSingleton (C ⊗[R] C) (M →ₗ[R] (C ⊗[R] C) ⊗[R] M)
+          ((TensorProduct.map Δ (LinearMap.id : M →ₗ[R] M)).comp δ)) := by
+  constructor
+  · intro hδ
+    have hComposition := lift_toSpanSingleton_comp_map_of_coassoc Δ δ
+      (Algebra.TensorProduct.includeLeft : C →ₐ[R] C ⊗[R] C).toLinearMap
+      (Algebra.TensorProduct.includeRight : C →ₐ[R] C ⊗[R] C).toLinearMap hδ
+    rw [← LinearMap.comp_assoc, mul'_comp_map_includeLeft_includeRight, LinearMap.id_comp]
+      at hComposition
+    exact hComposition
+  · intro h
+    apply LinearMap.ext
+    intro m
+    have hm := congrArg
+      (fun f : (C ⊗[R] C) ⊗[R] M →ₗ[C ⊗[R] C] (C ⊗[R] C) ⊗[R] M =>
+        f ((1 : C ⊗[R] C) ⊗ₜ[R] m)) h
+    rw [lift_toSpanSingleton_comp_inclusions_one_tmul] at hm
+    simpa only [lift_tmul, LinearMap.toSpanSingleton_apply, LinearMap.smul_apply,
+      LinearMap.comp_apply, one_smul, LinearEquiv.coe_toLinearMap] using hm.symm
+
+end Inclusions
 
 section Counit
 
@@ -87,33 +179,23 @@ theorem counit_iff_forall_lift_toSpanSingleton_one
         (LinearMap.id : A ⊗[R] M →ₗ[A] A ⊗[R] M)) := by
   constructor
   · intro hδ A _ _
-    apply ext
-    intro a m
+    apply (lift_toSpanSingleton_eq_id_iff _).mpr
+    apply LinearMap.ext
+    intro m
     have hm :
         (TensorProduct.lid R M)
           (TensorProduct.map (Bialgebra.counitAlgHom R C).toLinearMap
             (LinearMap.id : M →ₗ[R] M) (δ m)) = m :=
       LinearMap.congr_fun hδ m
-    simp only [lift_tmul, LinearMap.toSpanSingleton_apply, LinearMap.smul_apply,
-      LinearMap.comp_apply, LinearMap.id_apply]
-    rw [map_one_eq_one_tmul_counit, hm]
-    simp only [TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+    simp only [LinearMap.comp_apply, TensorProduct.mk_apply,
+      map_one_eq_one_tmul_counit, hm]
   · intro h
-    -- Normalize the scalar-one action before specializing the coefficient algebra.
-    have hseed (A : Type (max uR uC w)) [CommSemiring A] [Algebra R A] (m : M) :
-        TensorProduct.map
-            (1 : WithConv (C →ₐ[R] A)).ofConv.toLinearMap
-            (LinearMap.id : M →ₗ[R] M) (δ m) =
-          (1 : A) ⊗ₜ[R] m := by
-      -- Coefficient change is R-linear, not linear over the two different algebras.
-      have hR := congrArg (LinearMap.restrictScalars R) (h A)
-      have hm := LinearMap.congr_fun hR ((1 : A) ⊗ₜ[R] m)
-      simpa only [LinearMap.coe_restrictScalars, lift_tmul, LinearMap.toSpanSingleton_apply,
-        LinearMap.smul_apply, LinearMap.comp_apply, LinearMap.id_apply, one_smul] using hm
     let e : ULift.{max uC w} R ≃ₐ[R] R := ULift.algEquiv
+    have hseed := (lift_toSpanSingleton_eq_id_iff _).mp (h (ULift.{max uC w} R))
     apply LinearMap.ext
     intro m
-    have hm := hseed (ULift.{max uC w} R) m
+    have hm := LinearMap.congr_fun hseed m
+    simp only [LinearMap.comp_apply, TensorProduct.mk_apply] at hm
     rw [map_one_eq_one_tmul_counit] at hm
     have hdown := congrArg
       (fun z => (TensorProduct.lid R M)
@@ -130,14 +212,6 @@ section Coassociativity
 variable {R : Type uR} {C : Type uC} {M : Type uM}
 variable [CommSemiring R] [CommSemiring C] [Bialgebra R C]
 variable [AddCommMonoid M] [Module R M]
-
-private theorem lift_toSpanSingleton_one_tmul
-    {A : Type uA} [Semiring A] [Algebra R A]
-    (F : M →ₗ[R] A ⊗[R] M) (m : M) :
-    (lift (LinearMap.toSpanSingleton A (M →ₗ[R] A ⊗[R] M) F)).restrictScalars R
-      ((1 : A) ⊗ₜ[R] m) = F m := by
-  simpa only [LinearMap.coe_restrictScalars, lift_tmul,
-    LinearMap.toSpanSingleton_apply, LinearMap.smul_apply] using (one_smul A (F m))
 
 /-- Coassociativity of a given left linear coaction is equivalent to the
 composition law for all algebra-point coefficient operators at one fixed
@@ -204,11 +278,8 @@ theorem coassoc_iff_forall_lift_toSpanSingleton_comp_map
       exact e.apply_symm_apply (r c)
     have hmul :
         (LinearMap.mul' R U).comp (TensorProduct.map l.toLinearMap r.toLinearMap) =
-          (LinearMap.id : U →ₗ[R] U) := by
-      apply TensorProduct.ext'
-      intro c d
-      change (c ⊗ₜ[R] (1 : C)) * ((1 : C) ⊗ₜ[R] d) = c ⊗ₜ[R] d
-      simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+          (LinearMap.id : U →ₗ[R] U) :=
+      mul'_comp_map_includeLeft_includeRight (R := R) (C := C)
     have hInclusions : (WithConv.toConv l * WithConv.toConv r).ofConv =
         Bialgebra.comulAlgHom R C := by
       apply AlgHom.toLinearMap_injective
@@ -257,49 +328,18 @@ theorem coassoc_iff_forall_lift_toSpanSingleton_comp_map
         E (T γ x) = S (e.toAlgHom.comp γ) (E x) :=
       LinearMap.congr_fun (hdown γ) x
     have htest : (T β).comp (T α) = T p := h B α β
-    have heval (m : M) :
-        S r (S l ((1 : U) ⊗ₜ[R] m)) =
-          S (Bialgebra.comulAlgHom R C) ((1 : U) ⊗ₜ[R] m) := by
-      have hz := congrArg
-        (fun f : B ⊗[R] M →ₗ[B] B ⊗[R] M => E (f ((1 : B) ⊗ₜ[R] m))) htest
-      change E (T β (T α ((1 : B) ⊗ₜ[R] m))) = E (T p ((1 : B) ⊗ₜ[R] m)) at hz
-      rw [hdownApply β, hdownApply α, hdownApply p, hα, hβ, hp] at hz
-      simpa only [E, TensorProduct.congr_tmul, AlgEquiv.coe_toLinearEquiv,
-        LinearEquiv.refl_apply, map_one] using hz
-    have hCoefficient (c : C) (y : C ⊗[R] M) :
-        (c ⊗ₜ[R] (1 : C)) •
-            TensorProduct.map r.toLinearMap (LinearMap.id : M →ₗ[R] M) y =
-          (TensorProduct.assoc R C C M).symm (c ⊗ₜ[R] y) := by
-      induction y using TensorProduct.inductionOn with
-      | tmul d n =>
-          change ((c ⊗ₜ[R] (1 : C)) * ((1 : C) ⊗ₜ[R] d)) ⊗ₜ[R] n =
-            (c ⊗ₜ[R] d) ⊗ₜ[R] n
-          simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
-      | add x y hx hy =>
-          simp only [map_add, TensorProduct.tmul_add, smul_add, hx, hy]
-    have hIteration (x : C ⊗[R] M) :
-        S r (TensorProduct.map l.toLinearMap (LinearMap.id : M →ₗ[R] M) x) =
-          (TensorProduct.assoc R C C M).symm
-            (TensorProduct.map (LinearMap.id : C →ₗ[R] C) δ x) := by
-      induction x using TensorProduct.inductionOn with
-      | tmul c m =>
-          change (c ⊗ₜ[R] (1 : C)) •
-              TensorProduct.map r.toLinearMap (LinearMap.id : M →ₗ[R] M) (δ m) =
-            (TensorProduct.assoc R C C M).symm (c ⊗ₜ[R] δ m)
-          exact hCoefficient c (δ m)
-      | add x y hx hy =>
-          simp only [map_add, hx, hy]
+    apply (coassoc_iff_lift_toSpanSingleton_comp_map_inclusions
+      (Bialgebra.comulAlgHom R C).toLinearMap δ).mpr
+    change (S r).comp (S l) = S (Bialgebra.comulAlgHom R C)
     apply LinearMap.ext
-    intro m
-    have hseed (γ : C →ₐ[R] U) :
-        S γ ((1 : U) ⊗ₜ[R] m) =
-          TensorProduct.map γ.toLinearMap (LinearMap.id : M →ₗ[R] M) (δ m) :=
-      lift_toSpanSingleton_one_tmul
-        ((TensorProduct.map γ.toLinearMap (LinearMap.id : M →ₗ[R] M)).comp δ) m
-    have hm := heval m
-    rw [hseed l, hseed (Bialgebra.comulAlgHom R C)] at hm
-    simpa only [LinearMap.comp_apply, LinearEquiv.coe_toLinearMap] using
-      hm.symm.trans (hIteration (δ m))
+    intro x
+    obtain ⟨y, rfl⟩ := E.surjective x
+    have hz := congrArg
+      (fun f : B ⊗[R] M →ₗ[B] B ⊗[R] M => E (f y)) htest
+    change E (T β (T α y)) = E (T p y) at hz
+    change S r (S l (E y)) = S (Bialgebra.comulAlgHom R C) (E y)
+    rw [hdownApply β, hdownApply α, hdownApply p, hα, hβ, hp] at hz
+    exact hz
 
 end Coassociativity
 

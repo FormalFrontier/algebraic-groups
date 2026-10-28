@@ -258,6 +258,57 @@ coaction value is required to be a pure tensor. -/
         (X.coaction m ⊗ₜ[R] Y.coaction n) := by
   exact externalTensorCoaction_tmul X Y m n
 
+universe uC' uD'
+
+/-- Tensoring coefficient-changed comodules agrees with changing the coefficients
+of their external tensor product along the tensor product of coalgebra maps. -/
+theorem externalTensor_mapCoalgebra
+    {C' : Type uC'} {D' : Type uD'}
+    [AddCommMonoid C'] [Module R C'] [Coalgebra R C']
+    [AddCommMonoid D'] [Module R D'] [Coalgebra R D']
+    (X : RightComodule R C M) (Y : RightComodule R D N)
+    (f : C →ₗc[R] C') (g : D →ₗc[R] D') :
+    (X.mapCoalgebra f).externalTensor (Y.mapCoalgebra g) =
+      (X.externalTensor Y).mapCoalgebra
+        (Coalgebra.TensorProduct.map (R := R) (S := R) f g) := by
+  apply ext
+  have hshuffle :
+      (_root_.TensorProduct.tensorTensorTensorComm R M C' N D').toLinearMap ∘ₗ
+          _root_.TensorProduct.map (f.toLinearMap.lTensor M) (g.toLinearMap.lTensor N) =
+        (_root_.TensorProduct.map f.toLinearMap g.toLinearMap).lTensor (M ⊗[R] N) ∘ₗ
+          (_root_.TensorProduct.tensorTensorTensorComm R M C N D).toLinearMap := by
+    simpa only [LinearMap.lTensor_def, _root_.TensorProduct.map_id] using
+      (_root_.TensorProduct.tensorTensorTensorComm_comp_map R
+        (LinearMap.id : M →ₗ[R] M) f.toLinearMap
+        (LinearMap.id : N →ₗ[R] N) g.toLinearMap)
+  have hfg : _root_.TensorProduct.map f.toLinearMap g.toLinearMap =
+      (Coalgebra.TensorProduct.map (R := R) (S := R) f g).toLinearMap := by
+    refine _root_.TensorProduct.ext' fun (c : C) (d : D) => ?_
+    rfl
+  simp only [externalTensor_coaction, mapCoalgebra_coaction, externalTensorCoaction]
+  rw [_root_.TensorProduct.map_comp, ← LinearMap.comp_assoc, hshuffle,
+    LinearMap.comp_assoc, hfg]
+
+/-- Change only the left coefficient coalgebra of an external tensor product. -/
+theorem externalTensor_mapCoalgebra_left
+    {C' : Type uC'} [AddCommMonoid C'] [Module R C'] [Coalgebra R C']
+    (X : RightComodule R C M) (Y : RightComodule R D N) (f : C →ₗc[R] C') :
+    (X.mapCoalgebra f).externalTensor Y =
+      (X.externalTensor Y).mapCoalgebra
+        (Coalgebra.TensorProduct.map (R := R) (S := R) f (CoalgHom.id R D)) := by
+  simpa only [mapCoalgebra_id] using
+    (externalTensor_mapCoalgebra X Y f (CoalgHom.id R D))
+
+/-- Change only the right coefficient coalgebra of an external tensor product. -/
+theorem externalTensor_mapCoalgebra_right
+    {D' : Type uD'} [AddCommMonoid D'] [Module R D'] [Coalgebra R D']
+    (X : RightComodule R C M) (Y : RightComodule R D N) (g : D →ₗc[R] D') :
+    X.externalTensor (Y.mapCoalgebra g) =
+      (X.externalTensor Y).mapCoalgebra
+        (Coalgebra.TensorProduct.map (R := R) (S := R) (CoalgHom.id R C) g) := by
+  simpa only [mapCoalgebra_id] using
+    (externalTensor_mapCoalgebra X Y (CoalgHom.id R C) g)
+
 /-- A coefficient of an external tensor product on a pure input is the tensor
 of the corresponding coefficients. The functional is the tensor of the two
 functionals followed by the left unitor. -/

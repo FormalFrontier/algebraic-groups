@@ -109,8 +109,8 @@ private theorem testCoordinateAntipode :
       -additiveGroupCoordinate K :=
   additiveGroupCoordinate_antipode K
 
--- The entire API remains available when the target algebra is subsingleton.
-private def testSubsingletonPointsEquiv [Subsingleton R] : Multiplicative R ≃*
+-- The points API needs no nontriviality assumption on the target algebra.
+private def testSubsingletonPointsEquiv : Multiplicative R ≃*
     ((Spec (.of R)).asOver (Spec (.of K)) ⟶ additiveGroupUnderlyingScheme K) :=
   additiveGroupMulEquivPoints K R
 

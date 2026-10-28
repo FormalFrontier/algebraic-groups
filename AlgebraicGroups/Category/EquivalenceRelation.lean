@@ -118,7 +118,7 @@ lemma isIso_symmetry (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
 projection form a pullback over the first relation map. This abstracts the
 groupoid cartesian square of Stacks Project, Lemma 39.13.4 (tag 02YE), without
 requiring a quotient or any geometric hypotheses. -/
-def isLimit_composition_fst (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
+def compositionFstIsLimit (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
     IsLimit (PullbackCone.mk h.t h.c.fst h.transitivity₁) := by
   let inverseComposeCone (z : PullbackCone p₁ p₁) : PullbackCone p₂ p₁ :=
     PullbackCone.mk (z.snd ≫ h.s) z.fst <| by
@@ -172,11 +172,16 @@ def isLimit_composition_fst (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
         Category.assoc, h.transitivity₂]
       simp only [Category.assoc]
 
+@[inherit_doc compositionFstIsLimit]
+abbrev isLimit_composition_fst :=
+  @compositionFstIsLimit
+
 /-- Composition and the first projection form a limiting pullback cone. -/
 abbrev isLimitCompositionFst (h : CategoryTheory.EquivalenceRelation p₁ p₂) :
     IsLimit (PullbackCone.mk h.t h.c.fst h.transitivity₁) :=
   isLimit_composition_fst h
 
-attribute [deprecated isLimitCompositionFst (since := "2026-10-26")] isLimit_composition_fst
+attribute [deprecated isLimitCompositionFst (since := "2026-10-26"),
+  nolint defsWithUnderscore] isLimit_composition_fst
 
 end CategoryTheory.EquivalenceRelation

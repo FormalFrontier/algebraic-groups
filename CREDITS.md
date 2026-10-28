@@ -87,6 +87,20 @@ and Mathlib’s submodule scalar-extension and ideal-image APIs.
 
 ## Mathematical sources
 
+*Finite generation and group-like elements*, §3, gives the rational primitive
+coalgebra `ℚ[X] ⊕ ℚ[X]/(X²)`, its finite presentation, cardinal rank one,
+torsion calculation and rational parametrization of group-like elements.
+Section 4 explains its role as a counterexample to finiteness of group-like
+elements from finite generation without torsion-freeness, even for a finitely
+presented rank-one coalgebra over this principal ideal domain.
+The polynomial primitive-extension modules generalize that rational example:
+quotient normal forms, finite presentation and rank calculations hold over any
+commutative coefficient ring; nonzero torsion and nonflatness require only
+nontriviality. The group-like family is injective over any commutative ring,
+classification holds over reduced rings, and infinitude is concluded only under
+`Infinite K`. These broader hypotheses belong to the formalization, not to the
+rational statement of the exposition.
+
 M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969, is credited
 bibliographically for the classical field coalgebra theorem and
 coefficient-coalgebra method. Formal Frontier Agents developed the coalgebra

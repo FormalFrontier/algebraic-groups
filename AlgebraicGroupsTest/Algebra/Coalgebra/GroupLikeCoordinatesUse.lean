@@ -6,6 +6,8 @@ module
 
 public import AlgebraicGroupsTest.Algebra.Coalgebra.GroupLikeCoordinatesModels
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoordinates
+public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finite
+public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finsupp
 
 /-!
 # Coalgebra evaluation and span coordinates on an infinite diagonal example
@@ -17,6 +19,9 @@ is used. The weighted vector also belongs to the canonical group-like span, wher
 the coalgebra equivalence recovers its two distinct coordinates. Applying the
 ambient coordinate formulas gives the diagonal comultiplication and counit five.
 An empty indexing type supplies the zero-source boundary of evaluation.
+The singleton-supported subcoalgebras also give two finite stages of the directed
+exhaustion: a common finite stage contains every weighted pair from these whole
+stages and hence contains the stored vector with its counit five.
 
 ## References
 
@@ -146,6 +151,37 @@ theorem spanVector_counit : counit (R := ℚ) vector = 5 := by
     _ = 5 := by
       rw [spanVector_coefficients]
       norm_num [Finsupp.sum_add_index', Finsupp.sum_single_index]
+
+/-- The two singleton-supported stages lie in one finite-dimensional subcoalgebra.
+It contains every weighted pair from the whole stages, including the stored vector
+with counit five. -/
+theorem exists_finite_subcoalgebra_weighted :
+    ∃ E : Subcoalgebra ℚ C∞, Module.Finite ℚ E ∧
+      (Finsupp.supportedSubcoalgebra ℚ ({0} : Set ℤ)).toSubmodule ≤ E.toSubmodule ∧
+      (Finsupp.supportedSubcoalgebra ℚ ({1} : Set ℤ)).toSubmodule ≤ E.toSubmodule ∧
+      (∀ (a : Finsupp.supportedSubcoalgebra ℚ ({0} : Set ℤ))
+        (b : Finsupp.supportedSubcoalgebra ℚ ({1} : Set ℤ)),
+        (2 : ℚ) • (a : C∞) + (3 : ℚ) • (b : C∞) ∈ E) ∧
+      ∃ w : E, (w : C∞) = vector ∧ counit (R := ℚ) (w : C∞) = 5 := by
+  let A : {D : Subcoalgebra ℚ C∞ // Module.Finite ℚ D} :=
+    ⟨Finsupp.supportedSubcoalgebra ℚ ({0} : Set ℤ),
+      Finsupp.supportedSubcoalgebra_finite ℚ _ (Set.finite_singleton 0)⟩
+  let B : {D : Subcoalgebra ℚ C∞ // Module.Finite ℚ D} :=
+    ⟨Finsupp.supportedSubcoalgebra ℚ ({1} : Set ℤ),
+      Finsupp.supportedSubcoalgebra_finite ℚ _ (Set.finite_singleton 1)⟩
+  obtain ⟨E, hA, hB⟩ := Subcoalgebra.directed_finite_toSubmodule A B
+  have htransport (a : A.val) (b : B.val) :
+      (2 : ℚ) • (a : C∞) + (3 : ℚ) • (b : C∞) ∈ E.val := by
+    apply Subcoalgebra.mem_toSubmodule.mp
+    exact E.val.toSubmodule.add_mem
+      (E.val.toSubmodule.smul_mem (2 : ℚ) (hA a.property))
+      (E.val.toSubmodule.smul_mem (3 : ℚ) (hB b.property))
+  have h0 : δ₀ ∈ A.val :=
+    Finsupp.single_mem_supportedSubcoalgebra ℚ ({0} : Set ℤ) 1 (Set.mem_singleton 0)
+  have h1 : δ₁ ∈ B.val :=
+    Finsupp.single_mem_supportedSubcoalgebra ℚ ({1} : Set ℤ) 1 (Set.mem_singleton 1)
+  have hv : vector ∈ E.val := htransport ⟨δ₀, h0⟩ ⟨δ₁, h1⟩
+  exact ⟨E.val, E.property, hA, hB, htransport, ⟨vector, hv⟩, rfl, vector_counit⟩
 
 /-- Empty-index evaluation into the same target sends every source element to zero. -/
 theorem lift_empty_eq_zero (x : ℚ[Empty]) :

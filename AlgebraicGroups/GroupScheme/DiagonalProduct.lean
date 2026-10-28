@@ -302,7 +302,7 @@ def diagonalGroupProductFan : Limits.Fan (fun _ : n ↦ multiplicativeGroupSchem
   Limits.Fan.mk (diagonalGroupScheme K n) (diagonalGroupProjection K n)
 
 /-- The underlying cone is universal over all schemes over `Spec K`. -/
-def diagonalGroupProductFan_forget_isLimit :
+def diagonalProductUnderlyingIsLimit :
     Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
       (diagonalGroupProductFan K n)) := by
   change Limits.IsLimit (Limits.Fan.mk (diagonalGroupScheme K n).X
@@ -328,10 +328,18 @@ def diagonalGroupProductFan_forget_isLimit :
       factor j
     rw [hfac]
 
+@[inherit_doc diagonalProductUnderlyingIsLimit]
+abbrev diagonalGroupProductFan_forget_isLimit :=
+  @diagonalProductUnderlyingIsLimit
+
 /-- The group-object forgetful functor reflects this product limit. -/
-def diagonalGroupProductFan_isLimit : Limits.IsLimit (diagonalGroupProductFan K n) :=
+def diagonalProductIsLimit : Limits.IsLimit (diagonalGroupProductFan K n) :=
   Limits.isLimitOfReflects (Grp.forget (Over (Spec (.of K))))
     (diagonalGroupProductFan_forget_isLimit K n)
+
+@[inherit_doc diagonalProductIsLimit]
+abbrev diagonalGroupProductFan_isLimit :=
+  @diagonalProductIsLimit
 
 /-- The finite categorical product of multiplicative group schemes over any
 commutative base; compare Milne, *Algebraic Groups* (2017), §12.d (p. 234),
@@ -378,9 +386,9 @@ abbrev diagonalGroupProductFanForgetIsLimit :
 abbrev diagonalGroupProductFanIsLimit : Limits.IsLimit (diagonalGroupProductFan K n) :=
   diagonalGroupProductFan_isLimit K n
 
-attribute [deprecated diagonalGroupProductFanForgetIsLimit (since := "2026-10-26")]
-  diagonalGroupProductFan_forget_isLimit
-attribute [deprecated diagonalGroupProductFanIsLimit (since := "2026-10-26")]
-  diagonalGroupProductFan_isLimit
+attribute [deprecated diagonalGroupProductFanForgetIsLimit (since := "2026-10-26"),
+  nolint defsWithUnderscore] diagonalGroupProductFan_forget_isLimit
+attribute [deprecated diagonalGroupProductFanIsLimit (since := "2026-10-26"),
+  nolint defsWithUnderscore] diagonalGroupProductFan_isLimit
 
 end AlgebraicGeometry

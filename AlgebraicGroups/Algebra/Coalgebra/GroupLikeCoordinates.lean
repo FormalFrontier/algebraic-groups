@@ -310,7 +310,7 @@ theorem subtype_comp_spanCoalgebraEquiv :
   rw [spanCoalgebraEquiv_eq_groupLikeCoalgebraEquiv]
   apply MonoidAlgebra.coalgHom_ext
   intro g
-  simp only [CoalgHom.comp_apply, CoalgEquiv.toCoalgHom_eq_coe, CoalgEquiv.coe_coe,
+  simp only [CoalgHom.comp_apply, CoalgEquiv.coe_coe,
     Module.Basis.groupLikeCoalgebraEquiv_single, one_smul, spanBasis_apply,
     Subcoalgebra.subtype_apply, MonoidAlgebra.liftGroupLikeCoalgHom_single, id_eq]
 

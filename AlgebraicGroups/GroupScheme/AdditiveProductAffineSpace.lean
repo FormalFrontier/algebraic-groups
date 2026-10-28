@@ -121,7 +121,7 @@ def additiveGroupAffineProductFan :
 Its universal property includes every nonaffine test over-scheme. The proof uses
 Mathlib's `algΓAlgSpecAdjunction` through `affineSpecHomOverEquiv` and the
 universal evaluation map `MvPolynomial.aeval`. -/
-def additiveGroupAffineProductFan_isLimit :
+def additiveAffineProductIsLimit :
     Limits.IsLimit (additiveGroupAffineProductFan K D) := by
   classical
   refine Limits.Fan.IsLimit.mk _ (fun s ↦
@@ -150,6 +150,10 @@ def additiveGroupAffineProductFan_isLimit :
     simpa only [additiveGroupAffineProductGlobalCoordinate,
       additiveGroupGlobalCoordinate, Equiv.apply_symm_apply, MvPolynomial.aeval_X] using hcoord
 
+@[inherit_doc additiveAffineProductIsLimit]
+abbrev additiveGroupAffineProductFan_isLimit :=
+  @additiveAffineProductIsLimit
+
 /-- The cone obtained by forgetting the actual group-object product. -/
 def additiveGroupProductUnderlyingFan :
     Limits.Fan (fun _ : D => (additiveGroupScheme K).X) :=
@@ -158,13 +162,17 @@ def additiveGroupProductUnderlyingFan :
 
 /-- Forgetting group structure preserves the actual group-object product cone,
 using Mathlib's `Grp.forget` product preservation and `Limits.productIsProduct`. -/
-def additiveGroupProductUnderlyingFan_isLimit :
+def additiveProductUnderlyingIsLimit :
     Limits.IsLimit (additiveGroupProductUnderlyingFan K D) := by
   classical
   change Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
     (Limits.Fan.mk _ (Limits.Pi.π (fun _ : D => additiveGroupScheme K))))
   exact Limits.isLimitOfPreserves (Grp.forget (Over (Spec (.of K))))
     (Limits.productIsProduct (fun _ : D => additiveGroupScheme K))
+
+@[inherit_doc additiveProductUnderlyingIsLimit]
+abbrev additiveGroupProductUnderlyingFan_isLimit :=
+  @additiveProductUnderlyingIsLimit
 
 /-- The underlying scheme of the literal finite group-scheme product is
 the spectrum of the polynomial coordinate ring, over any commutative ring.
@@ -235,9 +243,9 @@ abbrev additiveGroupProductUnderlyingFanIsLimit :
     Limits.IsLimit (additiveGroupProductUnderlyingFan K D) :=
   additiveGroupProductUnderlyingFan_isLimit K D
 
-attribute [deprecated additiveGroupAffineProductFanIsLimit (since := "2026-10-26")]
-  additiveGroupAffineProductFan_isLimit
-attribute [deprecated additiveGroupProductUnderlyingFanIsLimit (since := "2026-10-26")]
-  additiveGroupProductUnderlyingFan_isLimit
+attribute [deprecated additiveGroupAffineProductFanIsLimit (since := "2026-10-26"),
+  nolint defsWithUnderscore] additiveGroupAffineProductFan_isLimit
+attribute [deprecated additiveGroupProductUnderlyingFanIsLimit (since := "2026-10-26"),
+  nolint defsWithUnderscore] additiveGroupProductUnderlyingFan_isLimit
 
 end AlgebraicGeometry

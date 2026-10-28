@@ -521,7 +521,8 @@ theorem antipode_x {p : ℕ} [Fact p.Prime] [CharP K p] (t : K) :
 theorem antipode_y {p : ℕ} [Fact p.Prime] [CharP K p] (t : K) :
     antipode K t (y K p t) = -y K p t := lift_y K _ _ _ _ _
 
-noncomputable instance coordinateRing_bialgebra {p : ℕ} [Fact p.Prime]
+/-- The bialgebra structure on the Frobenius-twisted coordinate ring. -/
+noncomputable instance coordinateRingBialgebra {p : ℕ} [Fact p.Prime]
     [CharP K p] (t : K) : Bialgebra K (CoordinateRing K p t) :=
   Bialgebra.ofAlgHom (comul K t) (counit K t)
     (by
@@ -541,7 +542,12 @@ noncomputable instance coordinateRing_bialgebra {p : ℕ} [Fact p.Prime]
         simp [comulX, comulY, Algebra.TensorProduct.includeLeft_apply,
           Algebra.TensorProduct.includeRight_apply])
 
-noncomputable instance coordinateRing_hopfAlgebra {p : ℕ} [Fact p.Prime]
+@[inherit_doc coordinateRingBialgebra]
+noncomputable abbrev coordinateRing_bialgebra :=
+  @coordinateRingBialgebra
+
+/-- The Hopf-algebra structure on the Frobenius-twisted coordinate ring. -/
+noncomputable instance coordinateRingHopfAlgebra {p : ℕ} [Fact p.Prime]
     [CharP K p] (t : K) : HopfAlgebra K (CoordinateRing K p t) :=
   HopfAlgebra.ofAlgHom (antipode K t)
     (by
@@ -564,6 +570,10 @@ noncomputable instance coordinateRing_hopfAlgebra {p : ℕ} [Fact p.Prime]
           (antipode K t) (fun _ _ => Commute.all _ _))
             (comul K t (y K p t)) = algebraMap K _ (counit K t (y K p t))
         simp [comulY])
+
+@[inherit_doc coordinateRingHopfAlgebra]
+noncomputable abbrev coordinateRing_hopfAlgebra :=
+  @coordinateRingHopfAlgebra
 
 open CategoryTheory
 open AlgebraicGeometry
@@ -613,5 +623,10 @@ theorem scheme_not_geometricallyReduced {p : ℕ} (hp : p.Prime) [CharP K p] (t 
       K (CoordinateRing K p t))
 
 end
+
+attribute [deprecated coordinateRingBialgebra (since := "2026-10-26"),
+  nolint defsWithUnderscore] coordinateRing_bialgebra
+attribute [deprecated coordinateRingHopfAlgebra (since := "2026-10-26"),
+  nolint defsWithUnderscore] coordinateRing_hopfAlgebra
 
 end FrobeniusTwistedLine

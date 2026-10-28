@@ -146,6 +146,14 @@ def localizedCoordinateInverseBase (f : MvPolynomial σ K) :
   aeval (fun i : S => (Ideal.Quotient.mkₐ K (localizedCoordinateIdeal K S f))
     (algebraMap (MvPolynomial σ K) (Localization.Away f) (X i.1)))
 
+/-- A retained polynomial coordinate maps to its class in the localized quotient. -/
+@[simp]
+theorem localizedCoordinateInverseBase_X (f : MvPolynomial σ K) (i : S) :
+    localizedCoordinateInverseBase K S f (X i) =
+      algebraMap (MvPolynomial σ K)
+        (Localization.Away f ⧸ localizedCoordinateIdeal K S f) (X i.1) := by
+  exact aeval_X _ i
+
 theorem localizedCoordinateInverseBase_erase (f : MvPolynomial σ K) :
     (localizedCoordinateInverseBase K S f).comp (eraseCoordinates K S) =
       (Ideal.Quotient.mkₐ K (localizedCoordinateIdeal K S f)).comp
@@ -226,14 +234,26 @@ def localizedCoordinateQuotientEquiv (f : MvPolynomial σ K) :
       · rw [eraseCoordinates_X_not_mem K S i hi, map_zero, map_zero]
         exact (quotient_killed K S f i hi).symm)
 
+/-- On canonical polynomial images in the quotient, the equivalence erases the
+coordinates outside `S`. -/
 @[simp]
+theorem localizedCoordinateQuotientEquiv_polynomial (f p : MvPolynomial σ K) :
+    localizedCoordinateQuotientEquiv K S f
+        (algebraMap (MvPolynomial σ K)
+          (Localization.Away f ⧸ localizedCoordinateIdeal K S f) p) =
+      algebraMap (MvPolynomial S K) (Localization.Away (eraseCoordinates K S f))
+        (eraseCoordinates K S p) := by
+  exact localizedCoordinateForwardQuotient_base K S f p
+
+-- Simp uses the canonical polynomial algebra-map form above.
 theorem localizedCoordinateQuotientEquiv_algebraMap (f p : MvPolynomial σ K) :
     localizedCoordinateQuotientEquiv K S f
         ((Ideal.Quotient.mkₐ K (localizedCoordinateIdeal K S f))
           (algebraMap (MvPolynomial σ K) (Localization.Away f) p)) =
       algebraMap (MvPolynomial S K) (Localization.Away (eraseCoordinates K S f))
         (eraseCoordinates K S p) := by
-  exact localizedCoordinateForwardQuotient_base K S f p
+  simp only [Ideal.Quotient.mkₐ_eq_mk, Ideal.Quotient.mk_algebraMap,
+    localizedCoordinateQuotientEquiv_polynomial]
 
 @[simp]
 theorem localizedCoordinateQuotientEquiv_symm_algebraMap (f : MvPolynomial σ K)
@@ -243,7 +263,7 @@ theorem localizedCoordinateQuotientEquiv_symm_algebraMap (f : MvPolynomial σ K)
       localizedCoordinateInverseBase K S f p := by
   exact localizedCoordinateInverseAway_base K S f p
 
-@[simp]
+-- The polynomial algebra-map law and `eraseCoordinates_X_mem` already simplify this.
 theorem localizedCoordinateQuotientEquiv_coordinate (f : MvPolynomial σ K) (i : σ)
     (hi : i ∈ S) :
     localizedCoordinateQuotientEquiv K S f
@@ -251,16 +271,18 @@ theorem localizedCoordinateQuotientEquiv_coordinate (f : MvPolynomial σ K) (i :
           (algebraMap (MvPolynomial σ K) (Localization.Away f) (X i))) =
       algebraMap (MvPolynomial S K) (Localization.Away (eraseCoordinates K S f))
         (X ⟨i, hi⟩) := by
-  rw [localizedCoordinateQuotientEquiv_algebraMap, eraseCoordinates_X_mem K S i hi]
+  simp only [Ideal.Quotient.mkₐ_eq_mk, Ideal.Quotient.mk_algebraMap,
+    localizedCoordinateQuotientEquiv_polynomial, eraseCoordinates_X_mem K S i hi]
 
-@[simp]
+-- The inverse polynomial law and `localizedCoordinateInverseBase_X` already simplify this.
 theorem localizedCoordinateQuotientEquiv_symm_coordinate (f : MvPolynomial σ K)
     (i : S) :
     (localizedCoordinateQuotientEquiv K S f).symm
       (algebraMap (MvPolynomial S K) (Localization.Away (eraseCoordinates K S f)) (X i)) =
       (Ideal.Quotient.mkₐ K (localizedCoordinateIdeal K S f))
         (algebraMap (MvPolynomial σ K) (Localization.Away f) (X i.1)) := by
-  rw [localizedCoordinateQuotientEquiv_symm_algebraMap]
-  simp [localizedCoordinateInverseBase]
+  simp only [localizedCoordinateQuotientEquiv_symm_algebraMap,
+    localizedCoordinateInverseBase_X, Ideal.Quotient.mkₐ_eq_mk,
+    Ideal.Quotient.mk_algebraMap]
 
 end MvPolynomial

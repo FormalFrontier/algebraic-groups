@@ -252,7 +252,7 @@ theorem vectorGroupProjection_globalCoordinate {i : Type u}
   Limits.Fan.mk (vectorGroupScheme K V) (vectorGroupProjection K V b)
 
 /-- The underlying cone is universal even for nonaffine schemes over the base. -/
-@[expose] def vectorGroupBasisFan_forget_isLimit {i : Type u} [Finite i]
+@[expose] def vectorBasisProductUnderlyingIsLimit {i : Type u} [Finite i]
     (b : Module.Basis i K V) :
     Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
       (vectorGroupBasisFan K V b)) := by
@@ -287,12 +287,20 @@ theorem vectorGroupProjection_globalCoordinate {i : Type u}
     rw [← hb j]
     simp only [Module.Basis.constr_basis, Equiv.apply_symm_apply]
 
+@[inherit_doc vectorBasisProductUnderlyingIsLimit]
+abbrev vectorGroupBasisFan_forget_isLimit :=
+  @vectorBasisProductUnderlyingIsLimit
+
 /-- Group objects inherit the finite-product universal property of the
 underlying schemes. -/
-def vectorGroupBasisFan_isLimit {i : Type u} [Finite i]
+def vectorBasisProductIsLimit {i : Type u} [Finite i]
     (b : Module.Basis i K V) : Limits.IsLimit (vectorGroupBasisFan K V b) :=
   Limits.isLimitOfReflects (Grp.forget (Over (Spec (.of K))))
     (vectorGroupBasisFan_forget_isLimit K V b)
+
+@[inherit_doc vectorBasisProductIsLimit]
+abbrev vectorGroupBasisFan_isLimit :=
+  @vectorBasisProductIsLimit
 
 /-- A chosen finite basis identifies the vector group with the literal product
 of its one-dimensional additive group factors. Milne, *Algebraic Groups*
@@ -491,7 +499,7 @@ theorem vectorGroupBasisMap_changeBasis_comp
   simpa using (vectorGroupBasisMap_comp K V V b c V d LinearMap.id LinearMap.id).symm
 
 /-- Limit data for the underlying cone of the finite basis-coordinate product. -/
-@[expose] abbrev vectorGroupBasisFanForgetIsLimit {i : Type u} [Finite i]
+abbrev vectorGroupBasisFanForgetIsLimit {i : Type u} [Finite i]
     (b : Module.Basis i K V) :
     Limits.IsLimit ((Grp.forget (Over (Spec (.of K)))).mapCone
       (vectorGroupBasisFan K V b)) :=
@@ -502,9 +510,9 @@ abbrev vectorGroupBasisFanIsLimit {i : Type u} [Finite i]
     (b : Module.Basis i K V) : Limits.IsLimit (vectorGroupBasisFan K V b) :=
   vectorGroupBasisFan_isLimit K V b
 
-attribute [deprecated vectorGroupBasisFanForgetIsLimit (since := "2026-10-26")]
-  vectorGroupBasisFan_forget_isLimit
-attribute [deprecated vectorGroupBasisFanIsLimit (since := "2026-10-26")]
-  vectorGroupBasisFan_isLimit
+attribute [deprecated vectorGroupBasisFanForgetIsLimit (since := "2026-10-26"),
+  nolint defsWithUnderscore] vectorGroupBasisFan_forget_isLimit
+attribute [deprecated vectorGroupBasisFanIsLimit (since := "2026-10-26"),
+  nolint defsWithUnderscore] vectorGroupBasisFan_isLimit
 
 end AlgebraicGeometry
