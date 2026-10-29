@@ -733,6 +733,12 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Closed points of the additive group.** Over an algebraically closed field
+  `K`, the closed-point subspace of the additive group scheme is homeomorphic
+  to `K` with the cofinite topology. Field addition corresponds to the
+  transported closed-point group law, whose multiplication is not continuous
+  for the ordinary product of the closed-point subspace topologies.
+  [Comparison and noncontinuity](AlgebraicGroups/GroupScheme/AdditiveClosedPoints.lean).
 - **Separated group schemes.** Every group object over a base scheme whose
   underlying space has at most one point is separated over that base. In
   particular, this holds over every field, without a finite-type assumption.

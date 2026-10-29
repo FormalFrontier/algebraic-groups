@@ -104,6 +104,7 @@ public import AlgebraicGroups.GroupObject.SplitKernelProduct
 public import AlgebraicGroups.GroupObject.SplitKernelSemidirect
 public import AlgebraicGroups.GroupObject.Translation
 public import AlgebraicGroups.GroupScheme.Additive
+public import AlgebraicGroups.GroupScheme.AdditiveClosedPoints
 public import AlgebraicGroups.GroupScheme.AdditiveComodule
 public import AlgebraicGroups.GroupScheme.AdditiveInvariantLine
 public import AlgebraicGroups.GroupScheme.AdditiveProductAffineSpace
