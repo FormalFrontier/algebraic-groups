@@ -13,6 +13,8 @@ public import Mathlib.AlgebraicGeometry.AlgClosed.Basic
 This file relates the group of rational points of a finite-type group scheme
 over an algebraically closed field to its closed points. It also restricts
 inversion and left translation to homeomorphisms of the closed-point subspace.
+For locally-finite-type group schemes over an algebraically closed field, this
+inversion agrees with the transported group inverse and is continuous.
 
 No topological-group structure is asserted: continuity of scheme-theoretic
 multiplication uses the scheme-product topology, which need not be the ordinary
@@ -102,12 +104,22 @@ abbrev groupSchemeClosedPointsGroup (f : G ⟶ Spec (.of K))
 /-- With the transported group structure, the equivalence from rational points
 to closed points is an equivalence of groups, as in Milne, *Algebraic Groups*
 (2017), item 1.7. -/
+@[expose]
 def groupSchemePointMulEquivClosedPoint (f : G ⟶ Spec (.of K))
     [LocallyOfFiniteType f] [IsAlgClosed K] [GrpObj (Over.mk f)] :
     letI := groupSchemeClosedPointsGroup f
     (𝟙_ (Over (Spec (.of K))) ⟶ Over.mk f) ≃* closedPoints G := by
   letI := groupSchemeClosedPointsGroup f
   exact (Equiv.mulEquiv (groupSchemePointEquivClosedPoint f).symm).symm
+
+/-- The group equivalence from rational points to closed points has the same
+underlying map as the point equivalence. -/
+@[simp]
+lemma groupSchemePointMulEquivClosedPoint_apply (f : G ⟶ Spec (.of K))
+    [LocallyOfFiniteType f] [IsAlgClosed K] [GrpObj (Over.mk f)]
+    (x : 𝟙_ (Over (Spec (.of K))) ⟶ Over.mk f) :
+    groupSchemePointMulEquivClosedPoint f x = groupSchemePointEquivClosedPoint f x :=
+  rfl
 
 /-- A scheme isomorphism restricts to a homeomorphism of closed-point
 subspaces, using Mathlib's `schemeIsoToHomeo`. -/
@@ -147,6 +159,32 @@ lemma groupSchemeInvClosedPointsHomeomorph_apply_point (f : G ⟶ Spec (.of K))
   change (asIso ι[Over.mk f]).hom.left (x.left (IsLocalRing.closedPoint K)) =
     x⁻¹.left (IsLocalRing.closedPoint K)
   rfl
+
+/-- The scheme-induced inversion homeomorphism acts at every closed point by
+inversion in the group explicitly supplied by `groupSchemeClosedPointsGroup`. -/
+lemma groupSchemeInvClosedPointsHomeomorph_apply (f : G ⟶ Spec (.of K))
+    [LocallyOfFiniteType f] [IsAlgClosed K] [GrpObj (Over.mk f)]
+    (x : closedPoints G) :
+    groupSchemeInvClosedPointsHomeomorph f x =
+      @Inv.inv _ (groupSchemeClosedPointsGroup f).toInv x := by
+  let := groupSchemeClosedPointsGroup f
+  obtain ⟨p, rfl⟩ := (groupSchemePointEquivClosedPoint f).surjective x
+  calc
+    groupSchemeInvClosedPointsHomeomorph f (groupSchemePointEquivClosedPoint f p) =
+        groupSchemePointEquivClosedPoint f (p⁻¹) :=
+      groupSchemeInvClosedPointsHomeomorph_apply_point f p
+    _ = (groupSchemePointEquivClosedPoint f p)⁻¹ := by
+      change (groupSchemePointMulEquivClosedPoint f) (p⁻¹) =
+        ((groupSchemePointMulEquivClosedPoint f) p)⁻¹
+      exact map_inv (groupSchemePointMulEquivClosedPoint f) p
+
+/-- The inverse of the explicitly transported closed-point group is continuous
+for the closed-point subspace topology. -/
+theorem groupSchemeClosedPoints_continuous_inv (f : G ⟶ Spec (.of K))
+    [LocallyOfFiniteType f] [IsAlgClosed K] [GrpObj (Over.mk f)] :
+    Continuous (@Inv.inv (closedPoints G) (groupSchemeClosedPointsGroup f).toInv) := by
+  exact (groupSchemeInvClosedPointsHomeomorph f).continuous.congr
+    (groupSchemeInvClosedPointsHomeomorph_apply f)
 
 /-- On closed points represented by rational points, the left-translation
 homeomorphism acts by left multiplication in the rational-point group. -/

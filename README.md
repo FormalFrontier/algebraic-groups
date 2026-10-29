@@ -512,6 +512,13 @@ maintained project libraries; it does not claim to formalize an entire source.
   are idempotent and pairwise orthogonal. The summands are indexed by the given
   basis, not by every group-like element of the coalgebra.
   [Decomposition and API](AlgebraicGroups/Algebra/Coalgebra/RightComodule/WeightDecomposition.lean).
+- **Quotients of specified right comodules.** Over a commutative ring `R`, a
+  specified right comodule over an `R`-coalgebra `C` on an additive-group
+  `R`-module `M` descends canonically to `M ⧸ U` for every stable submodule `U`.
+  No flatness hypothesis is needed on `C` or `M`. The canonical quotient map
+  is a surjective comodule morphism, and colinear maps vanishing on `U`
+  factor uniquely through it.
+  [Construction and universal property](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Quotient.lean).
 - **External tensor products of specified right comodules.** Over a commutative
   semiring, right comodules on arbitrary additive-monoid modules over full
   coalgebras `C` and `D` give a right comodule on `M ⊗[R] N` over the tensor

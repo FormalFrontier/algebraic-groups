@@ -55,6 +55,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.Symm
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.Unitors
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Cofree
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Prod
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport
 public import AlgebraicGroups.Algebra.Coalgebra.SkewPrimitive
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProduct

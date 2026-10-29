@@ -95,6 +95,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.Components",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComoduleStability",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.Quotient",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.TensorProduct",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.TensorProduct.Associator",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.TensorProduct.Symmetry",
