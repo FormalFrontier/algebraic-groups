@@ -8,6 +8,15 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Group objects
 
+- **Conjugacy of stabilizers.** For a given internal group action in a Cartesian
+  monoidal category, an arbitrary group section `g` induces
+  `ModObj.stabilizerConjIso x g` between the original chosen stabilizers of `x`
+  and `g • x`. Only these two pullbacks are required. The inclusion squares,
+  inverse, all-test conjugation formulas and precomposition naturality retain
+  the original action. Over a scheme, both orbit-fibre projections and all test
+  schemes are retained, with no reducedness or other geometric hypothesis.
+  [Internal construction](AlgebraicGroups/GroupObject/StabilizerConjugacy.lean),
+  [scheme specialization](AlgebraicGroups/GroupScheme/StabilizerConjugacy.lean).
 - **Group structure on a monoid kernel.** In any Cartesian monoidal category,
   let `G` be a group object, `H` and `N` monoid objects, and `f : G → H` and
   `i : N → G` monoid morphisms. A supplied pullback of `f` along the unit of `H`

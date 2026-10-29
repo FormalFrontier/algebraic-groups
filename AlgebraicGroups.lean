@@ -103,6 +103,7 @@ public import AlgebraicGroups.GroupObject.Quotient
 public import AlgebraicGroups.GroupObject.SplitKernelProduct
 public import AlgebraicGroups.GroupObject.SplitKernelSemidirect
 public import AlgebraicGroups.GroupObject.Stabilizer
+public import AlgebraicGroups.GroupObject.StabilizerConjugacy
 public import AlgebraicGroups.GroupObject.Translation
 public import AlgebraicGroups.GroupScheme.Additive
 public import AlgebraicGroups.GroupScheme.AdditiveClosedPoints
@@ -199,6 +200,7 @@ public import AlgebraicGroups.GroupScheme.SpecialLinearKernel
 public import AlgebraicGroups.GroupScheme.SpecialLinearModule
 public import AlgebraicGroups.GroupScheme.Smooth
 public import AlgebraicGroups.GroupScheme.Stabilizer
+public import AlgebraicGroups.GroupScheme.StabilizerConjugacy
 public import AlgebraicGroups.LinearAlgebra.Basis.Semilocal
 public import AlgebraicGroups.LinearAlgebra.Coalgebra.GroupLikeBasis
 public import AlgebraicGroups.LinearAlgebra.FiniteProjective.Charpoly

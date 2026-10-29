@@ -55,6 +55,21 @@ theorem stabilizerUnderlyingIso_hom_snd :
     (stabilizerUnderlyingIso G x).hom ≫ pullback.snd _ _ = (stabilizer G x).hom :=
   (stabilizerUnderlyingIsPullback G x).isoPullback_hom_snd
 
+/-- The inverse orbit-fibre comparison identifies the inclusion with the first projection. -/
+@[reassoc (attr := simp)]
+theorem stabilizerUnderlyingIso_inv_ι :
+    (stabilizerUnderlyingIso G x).inv ≫ (stabilizerι G x).left =
+      pullback.fst (orbitMap G x).left x.left := by
+  rw [← stabilizerUnderlyingIso_hom_fst G x, Iso.inv_hom_id_assoc]
+
+/-- The inverse orbit-fibre comparison identifies the structure map with the second projection. -/
+@[reassoc (attr := simp)]
+theorem stabilizerUnderlyingIso_inv_structure :
+    (stabilizerUnderlyingIso G x).inv ≫ (stabilizer G x).hom =
+      pullback.snd (orbitMap G x).left x.left := by
+  rw [← stabilizerUnderlyingIso_hom_snd G x, Iso.inv_hom_id_assoc]
+
+
 /-- Stabilizer inclusions are closed immersions when the fixed section is closed. -/
 theorem stabilizerι_isClosedImmersion [IsClosedImmersion x.left] :
     IsClosedImmersion (stabilizerι G x).left :=
