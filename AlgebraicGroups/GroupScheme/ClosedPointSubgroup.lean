@@ -12,8 +12,9 @@ public import GroupTheory.Topology.Algebra.Group.LocallyClosed
 
 For a group scheme locally of finite type over an algebraically closed field,
 a subgroup of its closed-point group is closed exactly when it is a neighborhood
-of the identity within its closure. In particular, locally closed subgroups are
-closed. The group is precisely `groupSchemeClosedPointsGroup` for the given
+of the identity within its closure. Equivalently, it is locally closed at any
+specified member; in particular, locally closed subgroups are closed.
+The group is precisely `groupSchemeClosedPointsGroup` for the given
 group object, and the topology is the original closed-point subspace topology.
 
 Left translations come from scheme isomorphisms. Together with continuous
@@ -33,7 +34,8 @@ is not jointly continuous; see `AlgebraicGroups.GroupScheme.AdditiveClosedPoints
 - J. S. Milne, *Algebraic Groups* (2017), items 1.7–1.8, for the closed-point
   group, inversion and translation, as formalized in
   `AlgebraicGroups.GroupScheme.ClosedPoints`.
-- GroupTheory, `Subgroup.isClosed_iff_mem_nhdsWithin_one` and
+- GroupTheory, `Subgroup.isClosed_iff_mem_nhdsWithin_one`,
+  `Subgroup.isClosed_iff_isLocallyClosedAt` and
   `Subgroup.isClosed_iff_isLocallyClosed`, for the subgroup criteria under
   separate continuity and continuous inversion. These generalize Mathlib's
   `Subgroup.isClosed_of_isLocallyClosed` on the same group and topology.
@@ -91,6 +93,24 @@ theorem groupSchemeClosedPoints_isClosed_iff_mem_nhdsWithin_closure
   let : ContinuousInv (closedPoints G) :=
     ⟨groupSchemeClosedPoints_continuous_inv f⟩
   exact H.isClosed_iff_mem_nhdsWithin_one
+
+/-- A subgroup of the canonical closed-point group is closed exactly when it
+is locally closed at a specified member, in the closed-point subspace topology.
+This applies GroupTheory's single-member criterion using the same translations
+and continuous inversion as the identity-neighborhood criterion. -/
+theorem groupSchemeClosedPoints_isClosed_iff_isLocallyClosedAt
+    (f : G ⟶ Spec (.of K)) [LocallyOfFiniteType f] [IsAlgClosed K]
+    [GrpObj (Over.mk f)]
+    (H : @Subgroup (closedPoints G) (groupSchemeClosedPointsGroup f))
+    {x : closedPoints G} (hx : x ∈ H) :
+    IsClosed (H : Set (closedPoints G)) ↔
+      IsLocallyClosedAt (H : Set (closedPoints G)) x := by
+  let := groupSchemeClosedPointsGroup f
+  let : SeparatelyContinuousMul (closedPoints G) :=
+    groupSchemeClosedPoints_separatelyContinuousMul f
+  let : ContinuousInv (closedPoints G) :=
+    ⟨groupSchemeClosedPoints_continuous_inv f⟩
+  exact H.isClosed_iff_isLocallyClosedAt hx
 
 /-- A locally closed subgroup of the canonical closed-point group is closed
 in the closed-point subspace topology. This uses GroupTheory's locally closed

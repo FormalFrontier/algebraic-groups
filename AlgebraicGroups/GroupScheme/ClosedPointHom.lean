@@ -17,9 +17,11 @@ closed-point groups. Its algebraic map is the composite of Mathlib's
 Its topology is the original closed-point subspace topology. Joint continuity
 of multiplication is not required.
 
-The range is the usual `MonoidHom.range`. Closedness of a general range requires
-a locally closed image; it is not asserted for every group-scheme morphism.
-No conclusion about scheme immersions or nonreduced subgroup schemes follows.
+The range is the usual `MonoidHom.range`, and its carrier is the preimage of
+the original scheme-point range under the target closed-point inclusion.
+A locally closed range is closed; closedness is not asserted for every
+group-scheme morphism. No conclusion about scheme immersions or nonreduced
+subgroup schemes follows.
 
 ## References
 
@@ -29,6 +31,8 @@ No conclusion about scheme immersions or nonreduced subgroup schemes follows.
   rational-point comparison, following Milne, *Algebraic Groups* (2017), item 1.7.
 - `AlgebraicGroups.GroupScheme.ClosedPointSubgroup`, for the locally closed
   subgroup criterion without joint continuity of multiplication.
+- Mathlib, `LocallyOfFiniteType.jacobsonSpace` and
+  `nonempty_inter_closedPoints`, for a closed point in each nonempty closed fibre.
 -/
 
 @[expose] public section
@@ -176,6 +180,30 @@ theorem mem_groupSchemeClosedPointsMap_range (y : closedPoints H) :
     exact ⟨x, (groupSchemeClosedPointsMap_apply_value fG fH φ x).symm⟩
   · rintro ⟨x, hx⟩
     exact ⟨x, Subtype.ext ((groupSchemeClosedPointsMap_apply_value fG fH φ x).trans hx)⟩
+
+/-- The canonical closed-point range is the preimage of the original
+scheme-point range under the target closed-point inclusion. A nonempty fibre
+over a closed point is closed, and contains a closed point because the source
+is Jacobson. No quasi-compactness of the morphism is needed. -/
+theorem groupSchemeClosedPointsMap_range_eq_preimage :
+    (@MonoidHom.range (closedPoints G) (groupSchemeClosedPointsGroup fG)
+      (closedPoints H) (groupSchemeClosedPointsGroup fH)
+      (@ContinuousMonoidHom.toMonoidHom _ _
+        (groupSchemeClosedPointsGroup fG).toMonoid
+        (groupSchemeClosedPointsGroup fH).toMonoid inferInstance inferInstance
+        (groupSchemeClosedPointsMap fG fH φ)) : Set (closedPoints H)) =
+      (Subtype.val : closedPoints H → H) ⁻¹' Set.range φ.left := by
+  ext y
+  refine (mem_groupSchemeClosedPointsMap_range fG fH φ y).trans ?_
+  constructor
+  · rintro ⟨x, hx⟩
+    exact ⟨x.val, hx⟩
+  · rintro ⟨x, hx⟩
+    let : JacobsonSpace G := LocallyOfFiniteType.jacobsonSpace fG
+    obtain ⟨z, hz, hzclosed⟩ := nonempty_inter_closedPoints
+      (X := G) (Z := φ.left ⁻¹' ({y.val} : Set H))
+      ⟨x, hx⟩ (y.property.preimage φ.left.continuous).isLocallyClosed
+    exact ⟨⟨z, hzclosed⟩, hz⟩
 
 /-- A locally closed image of a group-scheme homomorphism is closed
 in the original closed-point subspace, by the locally closed subgroup criterion. -/
