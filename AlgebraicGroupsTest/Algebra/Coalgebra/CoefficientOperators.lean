@@ -233,6 +233,10 @@ example :
       T' (P ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) ⊗ₜ[ℕ] 1)) =
         (ULift.up (Matrix.single (0 : Fin 2) 0 1 : Mat₂) : ULift.{u} Mat₂) ⊗ₜ[ℕ] 1 := by
   intro e F P T T'
+  have := TensorProduct.AlgebraTensorModule.congr_comp_lift_toSpanSingleton
+    (AlgEquiv.refl : Mat₂ ≃ₐ[ℕ] Mat₂) F
+  have := TensorProduct.AlgebraTensorModule.congr_comp_lift_toSpanSingleton
+    e (0 : ℕ →ₗ[ℕ] Mat₂ ⊗[ℕ] ℕ)
   have hT : T ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) ⊗ₜ[ℕ] 1) =
       (Matrix.single (0 : Fin 2) 0 1 : Mat₂) ⊗ₜ[ℕ] 1 := by
     dsimp only [T, F]
