@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-import AlgebraicGroups.GroupScheme.RootsOfUnity
+import AlgebraicGroups.GroupScheme.RootsOfUnityClosedPoints
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -20,6 +20,9 @@ whose square is one. These separations use no scheme-theoretic kernel theorem.
 The kernel universal property identifies this explicit root point as the unique
 lift of that multiplicative-group point. A positive-order polynomial coordinate
 equation over the zero ring records the other boundary.
+
+The closed-point client is also checked at orders zero and one over arbitrary
+algebraically closed fields.
 -/
 
 noncomputable section
@@ -219,5 +222,39 @@ private theorem rootsOfUnity_rational_zero_properties :
   ⟨rootsOfUnityCoordinateRing_finitePresentation ℚ 0,
     rootsOfUnityScheme_flat ℚ 0,
     rootsOfUnityScheme_locallyOfFinitePresentation ℚ 0⟩
+
+section ClosedPoints
+
+universe u
+
+variable (K : Type u) [Field K] [IsAlgClosed K]
+
+/-- The all-order client really applies at zero: every original ambient closed
+point, not just the identity, has a unique lift through the original inclusion. -/
+private theorem rootsOfUnity_closedPoints_zero_lift
+    (x : closedPoints (multiplicativeGroupUnderlyingScheme K).left) :
+    ∃! y : closedPoints (rootsOfUnityScheme K 0).left,
+      (rootsOfUnityGroupSchemeInclusion K 0).hom.hom.left y.val = x.val :=
+  (rootsOfUnityClosedPoints_pow_eq_one_iff K 0 x).mp
+    (@pow_zero _
+      (@groupSchemeClosedPointsGroup _ _ _ (multiplicativeGroupUnderlyingScheme K).hom
+        inferInstance inferInstance (multiplicativeGroupScheme K).grp).toMonoid x)
+
+/-- At order one the same original inclusion has a lift precisely over the
+canonical identity closed point. -/
+private theorem rootsOfUnity_closedPoints_one_lift_iff
+    (x : closedPoints (multiplicativeGroupUnderlyingScheme K).left) :
+    (∃! y : closedPoints (rootsOfUnityScheme K 1).left,
+      (rootsOfUnityGroupSchemeInclusion K 1).hom.hom.left y.val = x.val) ↔
+      x = @One.one (closedPoints (multiplicativeGroupUnderlyingScheme K).left)
+        (@groupSchemeClosedPointsGroup _ _ _ (multiplicativeGroupUnderlyingScheme K).hom
+          inferInstance inferInstance (multiplicativeGroupScheme K).grp).toOne := by
+  have hp := @pow_one _
+    (@groupSchemeClosedPointsGroup _ _ _ (multiplicativeGroupUnderlyingScheme K).hom
+      inferInstance inferInstance (multiplicativeGroupScheme K).grp).toMonoid x
+  exact (rootsOfUnityClosedPoints_pow_eq_one_iff K 1 x).symm.trans
+    ⟨fun h ↦ hp.symm.trans h, fun h ↦ hp.trans h⟩
+
+end ClosedPoints
 
 end AlgebraicGeometry

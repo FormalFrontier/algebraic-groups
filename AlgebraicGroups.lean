@@ -127,6 +127,7 @@ public import AlgebraicGroups.GroupScheme.ArtinSchreierTwistedLine
 public import AlgebraicGroups.GroupScheme.ClosedPoints
 public import AlgebraicGroups.GroupScheme.ClosedPointSubgroup
 public import AlgebraicGroups.GroupScheme.ClosedPointHom
+public import AlgebraicGroups.GroupScheme.ClosedPointKernel
 public import AlgebraicGroups.GroupScheme.Commutative
 public import AlgebraicGroups.GroupScheme.ComponentGroup
 public import AlgebraicGroups.GroupScheme.ComponentQuotient
@@ -191,6 +192,7 @@ public import AlgebraicGroups.GroupScheme.QuotientSheaf
 public import AlgebraicGroups.GroupScheme.Reduction
 public import AlgebraicGroups.GroupScheme.ReducedIdentityComponent
 public import AlgebraicGroups.GroupScheme.RootsOfUnity
+public import AlgebraicGroups.GroupScheme.RootsOfUnityClosedPoints
 public import AlgebraicGroups.GroupScheme.RootsOfUnityThree
 public import AlgebraicGroups.GroupScheme.Separated
 public import AlgebraicGroups.GroupScheme.SpecialLinearKernel

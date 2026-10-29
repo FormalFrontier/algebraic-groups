@@ -733,6 +733,24 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Closed points of a given scheme-theoretic kernel.** For given group schemes
+  `G,H` locally of finite type over an algebraically closed field, a homomorphism
+  `G → H`, and a supplied group-scheme unit-pullback `N → G`, the canonical comparison is a
+  stock `ContinuousMulEquiv` from `N`'s closed-point group to the stock kernel of
+  the original canonical closed-point map. It retains the full supplied group
+  structures, original inclusion and original subspace topologies. The inclusion
+  is a closed immersion and `N` is locally of finite type by derivation, not extra
+  hypotheses; no normality, reducedness, joint continuity or topology on the field
+  is assumed. Inclusion, inverse, rational-point/pullback-lift and unique-lift
+  readbacks characterize the comparison. For every `n : ℕ`, the original `Gₘ`
+  power map acts by `x ↦ x^n`, and `x^n = 1` is equivalent to a unique closed-point
+  lift through the original `μₙ → Gₘ` inclusion. This includes order zero, using
+  its whole-`Gₘ` group-algebra model, not a positive-order polynomial presentation.
+  These are closed-point comparisons, not a test for equality of schemes.
+  [Kernel comparison and readbacks](AlgebraicGroups/GroupScheme/ClosedPointKernel.lean),
+  [all-order roots client](AlgebraicGroups/GroupScheme/RootsOfUnityClosedPoints.lean),
+  [zero/one-order checks](AlgebraicGroupsTest/RootsOfUnity.lean).
+
 - **Canonical continuous maps on closed points.** A homomorphism between given
   group schemes locally of finite type over an algebraically closed field induces
   a `ContinuousMonoidHom` on their canonical closed-point groups, with their original
