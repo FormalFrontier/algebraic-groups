@@ -490,6 +490,28 @@ maintained project libraries; it does not claim to formalize an entire source.
   submodules indexed by group-like elements are independent for arbitrary
   modules; no spanning or finite-dimensional hypothesis is used.
   [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule/WeightSpace.lean).
+- **Components in a group-like basis.** Let `C` be a full coalgebra over a
+  commutative semiring `R`, with a given basis `b` whose vectors are group-like.
+  For any specified right `C`-comodule `V`, the stock right-basis tensor
+  equivalence gives an `R`-linear map to finitely supported `V`-valued
+  components. Each component is the coordinate projection of the coaction
+  on its coalgebra factor, and the corresponding tensor sum reconstructs the
+  coaction. The component at `i` coacts as its tensor with `b i`, and the
+  finite sum of all components recovers the original vector. The modules `C`
+  and `V` need only additive commutative monoids with `R`-module structures,
+  in independent universes from `R` and the basis index; no finiteness,
+  field, domain, nontriviality, flatness or projectivity is assumed. The
+  group-like basis is an input, not a classification assertion.
+  [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Components.lean).
+- **Weight decomposition in a group-like basis.** With the same given basis
+  and semiring/module hypotheses, the weight spaces `X.weightSpace (b i)`
+  form an internal direct sum. The canonical inclusion-sum map is bijective,
+  and its inverse `X.weightDecomposition b hb` is a linear equivalence whose
+  coordinates are exactly `X.components b`. Each component is the identity
+  on its own basis-weight space and vanishes on the others, so these projections
+  are idempotent and pairwise orthogonal. The summands are indexed by the given
+  basis, not by every group-like element of the coalgebra.
+  [Decomposition and API](AlgebraicGroups/Algebra/Coalgebra/RightComodule/WeightDecomposition.lean).
 - **External tensor products of specified right comodules.** Over a commutative
   semiring, right comodules on arbitrary additive-monoid modules over full
   coalgebras `C` and `D` give a right comodule on `M ⊗[R] N` over the tensor

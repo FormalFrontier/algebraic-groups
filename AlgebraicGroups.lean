@@ -42,9 +42,11 @@ public import AlgebraicGroups.Algebra.Coalgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.Range
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProductQuotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Components
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.DirectSum
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Gluing
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightSpace
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightDecomposition
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.Associator
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.Coherence
@@ -216,6 +218,9 @@ public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.TensorProduct
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finite
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Equiv
 public import AlgebraicGroups.Algebra.Coalgebra.Surjective
+
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Duality
+public import AlgebraicGroups.LinearAlgebra.Coevaluation.Field
 
 /-!
 # Algebraic groups and group schemes

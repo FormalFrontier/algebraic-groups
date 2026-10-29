@@ -300,3 +300,47 @@ private theorem persistentTestMatrixEndScheme026 (f : Module.End (Polynomial (ZM
 end FiniteFieldBoundaries
 
 end AlgebraicGeometry
+
+#lint
+
+#print axioms AlgebraicGeometry.sourceOrderedEndBaseChange
+#print axioms AlgebraicGeometry.sourceOrderedEndBaseChangeAddHom
+#print axioms AlgebraicGeometry.sourceOrderedEndBaseChangeAddHom_apply
+#print axioms AlgebraicGeometry.sourceOrderedEndBaseChange_id
+#print axioms AlgebraicGeometry.sourceOrderedEndBaseChange_comp
+#print axioms AlgebraicGeometry.sourceOrderedEndBaseChange_tmul
+#print axioms AlgebraicGeometry.sourceOrderedAdditiveEndFunctor
+#print axioms AlgebraicGeometry.sourceOrderedEndGroupIso
+#print axioms AlgebraicGeometry.sourceOrderedEndPointsIso
+#print axioms AlgebraicGeometry.endMatrixBaseLinearEquiv
+#print axioms AlgebraicGeometry.endMatrixBaseLinearEquiv_apply
+#print axioms AlgebraicGeometry.endMatrixSchemeIso
+#print axioms AlgebraicGeometry.endMatrixSchemeIso_hom
+#print axioms AlgebraicGeometry.endMatrixSchemeIso_spec
+#print axioms AlgebraicGeometry.endMatrixSchemeIso_coordinate
+#print axioms AlgebraicGeometry.endMatrixSchemeIso_entry_dual
+#print axioms AlgebraicGeometry.endMatrixSchemeIso_tensor
+#print axioms AlgebraicGeometry.endMatrixSchemeIso_evaluation
+#print axioms AlgebraicGeometry.endMatrixSchemeIso_evaluation_entry
+#print axioms AlgebraicGeometry.endMatrixSchemeIso_polynomial
+#print axioms AlgebraicGeometry.endMatrixSchemeIso_points
+#print axioms AlgebraicGeometry.sourceOrderedEndMatrixScheme_points
+#print axioms AlgebraicGeometry.sourceOrderedEndMatrixGroupIso
+#print axioms AlgebraicGeometry.sourceOrderedEndMatrixPointsIso
+#print axioms AlgebraicGeometry.sourceOrderedEndMatrixGroupIso_apply
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisChangeIso
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisLinearMap
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisChangeIso_hom
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisChangeIso_spec
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisChangeIso_coordinate
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisChangeIso_coordinate_comp
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisChangeIso_evaluation
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisChangeIso_refl
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisChangeIso_comp
+#print axioms AlgebraicGeometry.endMatrixSchemeBasisChangeIso_points
+#print axioms AlgebraicGeometry.matrixEndSchemeTest_add
+#print axioms AlgebraicGeometry.matrixEndSchemeTest_evaluationEntry
+#print axioms AlgebraicGeometry.matrixEndSchemeTest_polynomial
+#print axioms AlgebraicGeometry.matrixEndSchemeTest_basisPoints
+#print axioms AlgebraicGeometry.matrixEndSchemeTest_zeroAlgebra
+#print axioms AlgebraicGeometry.matrixEndSchemeTest_finiteFieldPolynomial

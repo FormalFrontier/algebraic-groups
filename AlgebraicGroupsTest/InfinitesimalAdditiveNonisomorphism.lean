@@ -50,3 +50,12 @@ theorem infinitesimalAdditive_coordinate_zero_exponent
     (K : Type u) [Field K] (p : ℕ) :
     infinitesimalAdditiveCoordinate K p 0 = 0 := by
   simpa using infinitesimalAdditiveCoordinate_pow K p 0
+
+#print axioms infinitesimalAdditive_not_iso_abstract
+#print axioms infinitesimalAdditive_not_iso_reverse
+#print axioms infinitesimalAdditive_not_iso_zmod2
+#print axioms infinitesimalAdditive_not_iso_zmod3
+#print axioms infinitesimalAdditiveNativeGroupObject
+#print axioms infinitesimalAdditive_coordinate_zero_exponent
+
+#lint

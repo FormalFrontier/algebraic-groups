@@ -229,4 +229,26 @@ private theorem first_power_coordinate_test
   rw [infinitesimalAdditiveMulEquivAlgHom_coordinate]
   exact congrArg Subtype.val (infinitesimalAdditiveSubgroup_zero_eq_zero K p R r)
 
+#print axioms zero_target_coordinate_test
+#print axioms first_power_coordinate_test
+
 end AlgebraicGeometry
+
+#print axioms Bialgebra.IsPrimitiveElem.isHopfIdeal_span_pow_char_pow
+#print axioms Bialgebra.Quotient.comul_mk
+#print axioms Bialgebra.Quotient.counit_mk
+#print axioms HopfAlgebra.Quotient.antipode_mk
+#print axioms HopfAlgebra.Quotient.instQuotientIdeal
+#print axioms AlgHom.convMul_comp_bialgHom_distrib
+#print axioms CharP.cast_eq_zero
+#print axioms Ideal.mem_span_singleton'
+#print axioms Ideal.Quotient.eq_zero_iff_mem
+#print axioms Ideal.Quotient.liftₐ
+#print axioms Ideal.Quotient.algHom_ext
+#print axioms AlgebraicGeometry.additiveGroupMulEquivAlgHom
+#print axioms AlgebraicGeometry.additiveGroupMulEquivAlgHom_coordinate
+#print axioms AlgebraicGeometry.additiveGroupMulEquivAlgHom_naturality
+#print axioms AlgebraicGeometry.additiveGroupCoordinate_comul
+#print axioms AlgebraicGeometry.additiveGroupCoordinate_counit
+#print axioms AlgebraicGeometry.additiveGroupCoordinate_antipode
+#print axioms AlgebraicGeometry.Spec.mapMulEquiv

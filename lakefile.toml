@@ -93,6 +93,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.QuotientQuotient",
   "AlgebraicGroupsTest.Algebra.Coalgebra.Kernel",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.Components",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComoduleStability",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.TensorProduct",
   "AlgebraicGroupsTest.Algebra.Coalgebra.RightComodule.TensorProduct.Associator",
@@ -203,4 +204,5 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.PolynomialPrimitiveExtensionBoundary",
   "AlgebraicGroupsTest.RightComoduleProduct",
   "AlgebraicGroupsTest.RightComoduleProductExamples",
+  "AlgebraicGroupsTest.RightComoduleDual",
 ]
