@@ -124,6 +124,7 @@ public import AlgebraicGroups.GroupScheme.MatrixEndScheme
 public import AlgebraicGroups.GroupScheme.AdditivePowerQuotient
 public import AlgebraicGroups.GroupScheme.ArtinSchreierTwistedLine
 public import AlgebraicGroups.GroupScheme.ClosedPoints
+public import AlgebraicGroups.GroupScheme.ClosedPointSubgroup
 public import AlgebraicGroups.GroupScheme.Commutative
 public import AlgebraicGroups.GroupScheme.ComponentGroup
 public import AlgebraicGroups.GroupScheme.ComponentQuotient

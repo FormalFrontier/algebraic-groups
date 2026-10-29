@@ -29,6 +29,11 @@ name = "coherent-modules"
 git = "https://github.com/FormalFrontier/coherent-modules.git"
 rev = "1112034c447b07049c12402ce0f3f25c4cffb5e4"
 
+[[require]]
+name = "groupTheory"
+git = "https://github.com/FormalFrontier/group-theory.git"
+rev = "29001ecda5eff8e37c9ddb712f8abb509c31461d"
+
 [[lean_lib]]
 name = "AlgebraicGroups"
 roots = [

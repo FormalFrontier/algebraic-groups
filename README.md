@@ -733,6 +733,14 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Locally closed subgroups of closed points.** For a group scheme locally
+  of finite type over an algebraically closed field, a subgroup of its
+  canonical closed-point group is closed exactly when it is a neighborhood
+  of the identity within its closure. In particular, locally closed subgroups
+  are closed in the original closed-point subspace topology. This uses
+  separate continuity, not joint continuity, and asserts subset closedness,
+  not a scheme-theoretic closed immersion.
+  [Criteria](AlgebraicGroups/GroupScheme/ClosedPointSubgroup.lean).
 - **Closed points of the additive group.** Over an algebraically closed field
   `K`, the closed-point subspace of the additive group scheme is homeomorphic
   to `K` with the cofinite topology. Field addition corresponds to the
@@ -967,8 +975,8 @@ lift of `−1` at order two with the point of the explicit root `−1 : ℚ`.
 Lean `v4.34.0-rc2` and exact GitHub dependencies are pinned in
 [lean-toolchain](lean-toolchain), [lakefile.toml](lakefile.toml) and
 [lake-manifest.json](lake-manifest.json). Direct requirements are Mathlib,
-SchemeProperties, GeneralLinearGroups and CoherentModules; building requires
-access to them.
+SchemeProperties, GeneralLinearGroups, CoherentModules and GroupTheory;
+building requires access to them.
 At the root, install the pinned toolchain and fetch the matching cache **before**
 building both library and test targets:
 

@@ -76,6 +76,13 @@ related_formalizations:
       derives its sharp nilpotency class using its own central-filtration bound.
       General-linear-groups retains distinct contributors, rights and license.
 
+  - id: https://github.com/FormalFrontier/group-theory/tree/29001ecda5eff8e37c9ddb712f8abb509c31461d
+    relationship: builds-on
+    note: >-
+      The closed-point subgroup criteria apply its closedness theorems for
+      groups with separately continuous multiplication and continuous inversion.
+      The original closed-point group and subspace topology are retained.
+
 automation:
   methods:
     - method: agent
@@ -132,6 +139,10 @@ status:
     or complete formalization of Milne's book. Read exact limitations with
     each mathematical guide.
   main_results:
+    - declaration: AlgebraicGeometry.groupSchemeClosedPoints_isClosed_iff_mem_nhdsWithin_closure
+      file: AlgebraicGroups/GroupScheme/ClosedPointSubgroup.lean
+    - declaration: AlgebraicGeometry.groupSchemeClosedPoints_isClosed_of_isLocallyClosed
+      file: AlgebraicGroups/GroupScheme/ClosedPointSubgroup.lean
     - declaration: Coalgebra.comul_mem_range_mapIncl_span_of_isGroupLikeElem
       file: AlgebraicGroups/Algebra/Coalgebra/GroupLikeSpan.lean
     - declaration: Coalgebra.span_le_span_coefficients
