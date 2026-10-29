@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -20,6 +21,18 @@ Postcomposition with an `A`-linear map commutes with this extension. This genera
 `LinearMap.liftBaseChange_comp` from Mathlib to noncommutative scalar algebras. For
 commutative scalar algebras, the extension agrees with `LinearMap.liftBaseChange`.
 The extension to `A ⊗[R] M` is the identity precisely for the map `m ↦ 1 ⊗ₜ[R] m`.
+
+For an arbitrary algebra map `φ : A →ₐ[R] B`, changing coefficients by
+`TensorProduct.map φ.toLinearMap LinearMap.id` commutes with the extension of
+`F : M →ₗ[R] A ⊗[R] N`. The coefficient algebras need not be commutative, and neither
+needs to act on `M` or `N`. Algebra-equivalence transport is a specialization using
+`TensorProduct.congr`; for commutative coefficients, the agreement with
+`LinearMap.liftBaseChange` gives the same naturality square for that extension.
+
+## References
+
+These calculations use Mathlib's tensor-product universal property and its algebra,
+scalar-extension and linear-map APIs.
 -/
 
 @[expose] public section
@@ -28,9 +41,10 @@ open scoped TensorProduct
 
 namespace TensorProduct.AlgebraTensorModule
 
-universe uR uA uM uN uP
+universe uR uA uB uM uN uP
 
-variable {R : Type uR} {A : Type uA} {M : Type uM} {N : Type uN} {P : Type uP}
+variable {R : Type uR} {A : Type uA} {B : Type uB}
+variable {M : Type uM} {N : Type uN} {P : Type uP}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R N]
 
@@ -82,6 +96,72 @@ theorem comp_lift_toSpanSingleton (F : M →ₗ[R] N) (H : N →ₗ[A] P) :
   exact H.map_smul a (F m)
 
 end Semiring
+
+section ScalarTransport
+
+variable [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+/-- Changing coefficients along an algebra homomorphism commutes with tensor scalar
+extension. Both sides are `R`-linear maps; no action of either coefficient algebra
+on `M` or `N` is required. The coefficient algebras need not be commutative. -/
+theorem map_comp_lift_toSpanSingleton
+    (φ : A →ₐ[R] B) (F : M →ₗ[R] A ⊗[R] N) :
+    (TensorProduct.map φ.toLinearMap (LinearMap.id : N →ₗ[R] N)).comp
+      ((lift (LinearMap.toSpanSingleton A
+        (M →ₗ[R] A ⊗[R] N) F)).restrictScalars R) =
+      ((lift (LinearMap.toSpanSingleton B
+        (M →ₗ[R] B ⊗[R] N)
+        ((TensorProduct.map φ.toLinearMap
+          (LinearMap.id : N →ₗ[R] N)).comp F))).restrictScalars R).comp
+        (TensorProduct.map φ.toLinearMap (LinearMap.id : M →ₗ[R] M)) := by
+  have hφ (a : A) (y : A ⊗[R] N) :
+      TensorProduct.map φ.toLinearMap (LinearMap.id : N →ₗ[R] N) (a • y) =
+        φ a • TensorProduct.map φ.toLinearMap (LinearMap.id : N →ₗ[R] N) y := by
+    induction y using TensorProduct.inductionOn with
+    | tmul b n =>
+        simp only [TensorProduct.smul_tmul', TensorProduct.map_tmul,
+          AlgHom.toLinearMap_apply, LinearMap.id_apply, smul_eq_mul, map_mul]
+    | add y y' hy hy' =>
+        simp only [smul_add, map_add, hy, hy']
+  apply TensorProduct.ext'
+  intro a m
+  simpa only [LinearMap.comp_apply, LinearMap.coe_restrictScalars,
+    TensorProduct.map_tmul, AlgHom.toLinearMap_apply, LinearMap.id_apply,
+    lift_tmul, LinearMap.toSpanSingleton_apply, LinearMap.smul_apply] using hφ a (F m)
+
+/-- Elementwise coefficient naturality of tensor scalar extension along an arbitrary
+algebra homomorphism. This is the application form of `map_comp_lift_toSpanSingleton`. -/
+theorem map_lift_toSpanSingleton_apply
+    (φ : A →ₐ[R] B) (F : M →ₗ[R] A ⊗[R] N)
+    (z : A ⊗[R] M) :
+    TensorProduct.map φ.toLinearMap (LinearMap.id : N →ₗ[R] N)
+      (lift (LinearMap.toSpanSingleton A
+        (M →ₗ[R] A ⊗[R] N) F) z) =
+      lift (LinearMap.toSpanSingleton B
+        (M →ₗ[R] B ⊗[R] N)
+        ((TensorProduct.map φ.toLinearMap
+          (LinearMap.id : N →ₗ[R] N)).comp F))
+        (TensorProduct.map φ.toLinearMap (LinearMap.id : M →ₗ[R] M) z) := by
+  simpa only [LinearMap.comp_apply, LinearMap.coe_restrictScalars] using
+    LinearMap.congr_fun (map_comp_lift_toSpanSingleton φ F) z
+
+/-- Transport by an algebra equivalence is the specialization of coefficient
+naturality in which the coefficient maps are tensor linear equivalences. -/
+theorem congr_comp_lift_toSpanSingleton
+    (e : A ≃ₐ[R] B) (F : M →ₗ[R] A ⊗[R] N) :
+    (TensorProduct.congr e.toLinearEquiv (LinearEquiv.refl R N)).toLinearMap.comp
+      ((lift (LinearMap.toSpanSingleton A
+        (M →ₗ[R] A ⊗[R] N) F)).restrictScalars R) =
+      ((lift (LinearMap.toSpanSingleton B
+        (M →ₗ[R] B ⊗[R] N)
+        ((TensorProduct.congr e.toLinearEquiv
+          (LinearEquiv.refl R N)).toLinearMap.comp F))).restrictScalars R).comp
+        (TensorProduct.congr e.toLinearEquiv (LinearEquiv.refl R M)).toLinearMap := by
+  simpa only [TensorProduct.toLinearMap_congr, LinearEquiv.refl_toLinearMap,
+    AlgEquiv.toAlgHom_toLinearMap] using
+    map_comp_lift_toSpanSingleton e.toAlgHom F
+
+end ScalarTransport
 
 section CommSemiring
 

@@ -6,13 +6,15 @@ module
 
 import AlgebraicGroups.Algebra.Coalgebra.CoefficientOperators
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.Group.Nat.Hom
+import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Matrix.Basis
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Coalgebra.Basic
 
 /-!
-# Matrix-valued coefficients on the scalar coalgebra
+# Coefficient operators and scalar transport
 
 For the canonical scalar comultiplication on `ℕ`, the linear coefficient maps
 `n ↦ n E₁₂` and `n ↦ n E₂₁` give right multiplication by the two matrix units
@@ -31,13 +33,22 @@ The constructions used here are Mathlib's tensor extension, scalar coalgebra,
 matrix units and tensor unitor; no action on the original scalar module by the
 matrix algebra is required.
 
+Coefficient transport is also tested along the noninjective evaluation-at-two
+map from `ℕ[Multiplicative ℕ]` to `ℕ`. The generator and the constant two have
+the same image, while their tensor-extended operator has transported value
+`4 ⊗ₜ 1`, nonzero by the left unitor. Transport of the matrix coefficient operator
+to `ULift` preserves the value `E₁₁ ⊗ₜ 1`, with the lift universe independent of
+the original matrix and scalar universes.
+
 ## References
 
 Mathlib's scalar coalgebra is by Ali Ramsey and Eric Wieser; its tensor scalar
 extension and unitor APIs are by Kim Morrison, Johan Commelin and Eric Wieser.
 The matrix-unit API is by Jalex Stark, Kim Morrison, Eric Wieser, Oliver Nash
 and Wen Yang. The coefficient-composition theorem is an AlgebraicGroups
-construction by Formal Frontier Agents.
+construction by Formal Frontier Agents. Mathlib also supplies the monoid-algebra
+lifting, `powersHom` and `ULift` algebra-equivalence APIs used in the transport
+examples.
 -/
 
 open scoped TensorProduct
@@ -147,3 +158,99 @@ example :
     simp only [one_mul, Matrix.single_mul_single_same] at h00
     change (1 : ℕ) = 0 at h00
     cases h00
+
+-- Evaluation at two is genuinely noninjective, and both routes through the
+-- tensor-extension square give the same nonzero tensor with the original Nat actions.
+example :
+    let A := MonoidAlgebra ℕ (Multiplicative ℕ)
+    let φ : A →ₐ[ℕ] ℕ :=
+      MonoidAlgebra.lift ℕ ℕ (Multiplicative ℕ) (powersHom ℕ 2)
+    let X : A := MonoidAlgebra.single (Multiplicative.ofAdd 1) 1
+    let c : A := MonoidAlgebra.single (1 : Multiplicative ℕ) 2
+    let F : ℕ →ₗ[ℕ] A ⊗[ℕ] ℕ := TensorProduct.mk ℕ A ℕ X
+    let P := TensorProduct.map φ.toLinearMap (LinearMap.id : ℕ →ₗ[ℕ] ℕ)
+    let T := TensorProduct.AlgebraTensorModule.lift
+      (LinearMap.toSpanSingleton A (ℕ →ₗ[ℕ] A ⊗[ℕ] ℕ) F)
+    let T' := TensorProduct.AlgebraTensorModule.lift
+      (LinearMap.toSpanSingleton ℕ (ℕ →ₗ[ℕ] ℕ ⊗[ℕ] ℕ) (P.comp F))
+    X ≠ c ∧ φ X = 2 ∧ φ c = 2 ∧ ¬ Function.Injective φ ∧
+      P (T (X ⊗ₜ[ℕ] 1)) = (4 : ℕ) ⊗ₜ[ℕ] 1 ∧
+      T' (P (X ⊗ₜ[ℕ] 1)) = (4 : ℕ) ⊗ₜ[ℕ] 1 ∧
+      ((4 : ℕ) ⊗ₜ[ℕ] (1 : ℕ) : ℕ ⊗[ℕ] ℕ) ≠ 0 := by
+  intro A φ X c F P T T'
+  have hne : X ≠ c := by
+    intro h
+    have hcoeff := congrArg
+      (fun f : MonoidAlgebra ℕ (Multiplicative ℕ) =>
+        f.coeff (Multiplicative.ofAdd 1)) h
+    simp [X, c] at hcoeff
+  have hφX : φ X = 2 := by
+    exact (MonoidAlgebra.lift_single (R := ℕ) (A := ℕ)
+      (powersHom ℕ 2) (Multiplicative.ofAdd 1) 1).trans (by rfl)
+  have hφc : φ c = 2 := by
+    exact (MonoidAlgebra.lift_single (R := ℕ) (A := ℕ)
+      (powersHom ℕ 2) (1 : Multiplicative ℕ) 2).trans (by rfl)
+  have hnoninj : ¬ Function.Injective φ := by
+    intro h
+    exact hne (h (hφX.trans hφc.symm))
+  have hPX : P (X ⊗ₜ[ℕ] 1) = (2 : ℕ) ⊗ₜ[ℕ] 1 := by
+    dsimp only [P]
+    rw [TensorProduct.map_tmul, AlgHom.toLinearMap_apply, LinearMap.id_apply, hφX]
+  have hright : T' (P (X ⊗ₜ[ℕ] 1)) = (4 : ℕ) ⊗ₜ[ℕ] 1 := by
+    rw [hPX]
+    dsimp only [T']
+    rw [TensorProduct.AlgebraTensorModule.lift_tmul]
+    -- Expose the rank-one map with the given Nat module structures before rewriting.
+    change (2 : ℕ) • P (F 1) = (4 : ℕ) ⊗ₜ[ℕ] 1
+    rw [show F 1 = X ⊗ₜ[ℕ] 1 from rfl, hPX,
+      TensorProduct.smul_tmul', smul_eq_mul]
+  have htransport : P (T (X ⊗ₜ[ℕ] 1)) = T' (P (X ⊗ₜ[ℕ] 1)) :=
+    TensorProduct.AlgebraTensorModule.map_lift_toSpanSingleton_apply φ F (X ⊗ₜ[ℕ] 1)
+  refine ⟨hne, hφX, hφc, hnoninj, htransport.trans hright, hright, ?_⟩
+  intro h
+  have h4 : (4 : ℕ) = 0 := by
+    simpa only [TensorProduct.lid_tmul, smul_eq_mul, mul_one, map_zero] using
+      congrArg (TensorProduct.lid ℕ ℕ) h
+  exact (by decide : (4 : ℕ) ≠ 0) h4
+
+universe u
+
+-- Reuse the original lower-coefficient operator: E12 * E21 = E11 before and
+-- after transport to an independently lifted coefficient universe.
+example :
+    let e : Mat₂ ≃ₐ[ℕ] ULift.{u} Mat₂ :=
+      (ULift.algEquiv (R := ℕ) (A := Mat₂)).symm
+    let F : ℕ →ₗ[ℕ] Mat₂ ⊗[ℕ] ℕ :=
+      (TensorProduct.map lowerCoefficient (LinearMap.id : ℕ →ₗ[ℕ] ℕ)).comp scalarComul
+    let P := TensorProduct.congr e.toLinearEquiv (LinearEquiv.refl ℕ ℕ)
+    let T := TensorProduct.AlgebraTensorModule.lift
+      (LinearMap.toSpanSingleton Mat₂ (ℕ →ₗ[ℕ] Mat₂ ⊗[ℕ] ℕ) F)
+    let T' := TensorProduct.AlgebraTensorModule.lift
+      (LinearMap.toSpanSingleton (ULift.{u} Mat₂)
+        (ℕ →ₗ[ℕ] ULift.{u} Mat₂ ⊗[ℕ] ℕ) (P.toLinearMap.comp F))
+    P (T ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) ⊗ₜ[ℕ] 1)) =
+        (ULift.up (Matrix.single (0 : Fin 2) 0 1 : Mat₂) : ULift.{u} Mat₂) ⊗ₜ[ℕ] 1 ∧
+      T' (P ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) ⊗ₜ[ℕ] 1)) =
+        (ULift.up (Matrix.single (0 : Fin 2) 0 1 : Mat₂) : ULift.{u} Mat₂) ⊗ₜ[ℕ] 1 := by
+  intro e F P T T'
+  have hT : T ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) ⊗ₜ[ℕ] 1) =
+      (Matrix.single (0 : Fin 2) 0 1 : Mat₂) ⊗ₜ[ℕ] 1 := by
+    dsimp only [T, F]
+    rw [lift_comul_tmul_one]
+    change ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) * Matrix.single 1 0 1) ⊗ₜ[ℕ] 1 =
+      (Matrix.single (0 : Fin 2) 0 1 : Mat₂) ⊗ₜ[ℕ] 1
+    simp only [Matrix.single_mul_single_same, one_mul]
+  have hP : P (T ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) ⊗ₜ[ℕ] 1)) =
+      (ULift.up (Matrix.single (0 : Fin 2) 0 1 : Mat₂) : ULift.{u} Mat₂) ⊗ₜ[ℕ] 1 := by
+    rw [hT]
+    dsimp only [P]
+    rw [TensorProduct.congr_tmul]
+    rfl
+  refine ⟨hP, ?_⟩
+  have htransport :
+      P (T ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) ⊗ₜ[ℕ] 1)) =
+        T' (P ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) ⊗ₜ[ℕ] 1)) :=
+    LinearMap.congr_fun
+      (TensorProduct.AlgebraTensorModule.congr_comp_lift_toSpanSingleton e F)
+      ((Matrix.single (0 : Fin 2) 1 1 : Mat₂) ⊗ₜ[ℕ] 1)
+  exact htransport.symm.trans hP

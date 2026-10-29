@@ -6,6 +6,7 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.FiniteSubcoalgebra
 public import AlgebraicGroups.Algebra.TensorProduct.Submodule
+public import AlgebraicGroups.LinearAlgebra.TensorProduct.Extension
 public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.RingTheory.Coalgebra.Hom
@@ -1230,27 +1231,17 @@ theorem evaluation_naturality
           ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction))
         (TensorProduct.map (AlgHom.toLinearMap q)
           (LinearMap.id : M₀ →ₗ[R₀] M₀) z) := by
-  induction z using TensorProduct.inductionOn with
-  | tmul a m =>
-      have h (y : C₀ ⊗[R₀] M₀) :
-          TensorProduct.map (AlgHom.toLinearMap q)
-              (LinearMap.id : M₀ →ₗ[R₀] M₀)
-              (a • TensorProduct.map (AlgHom.toLinearMap α)
-                (LinearMap.id : M₀ →ₗ[R₀] M₀) y) =
-            q a • TensorProduct.map (AlgHom.toLinearMap (q.comp α))
-              (LinearMap.id : M₀ →ₗ[R₀] M₀) y := by
-        induction y using TensorProduct.inductionOn with
-        | tmul c n =>
-            simp [TensorProduct.smul_tmul', smul_eq_mul]
-        | add y y' hy hy' =>
-            simpa only [map_add, smul_add] using
-              congrArg₂ (fun x x' : B ⊗[R₀] M₀ => x + x') hy hy'
-      simpa only [evaluation_tmul, TensorProduct.map_tmul,
-        AlgHom.toLinearMap_apply, LinearMap.id_apply] using
-        h (TensorProduct.comm R₀ M₀ C₀ (X.coaction m))
-  | add z z' hz hz' =>
-      simpa only [map_add] using
-        congrArg₂ (fun x x' : B ⊗[R₀] M₀ => x + x') hz hz'
+  have hmap :
+      (TensorProduct.map q.toLinearMap (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
+        (TensorProduct.map α.toLinearMap (LinearMap.id : M₀ →ₗ[R₀] M₀)) =
+      TensorProduct.map (q.comp α).toLinearMap (LinearMap.id : M₀ →ₗ[R₀] M₀) := by
+    rw [← TensorProduct.map_comp, LinearMap.id_comp]
+    rfl
+  simpa only [TensorProduct.AlgebraTensorModule.lift_toSpanSingleton_eq_liftBaseChange,
+    ← LinearMap.comp_assoc, hmap] using
+    TensorProduct.AlgebraTensorModule.map_lift_toSpanSingleton_apply q
+      ((TensorProduct.map α.toLinearMap (LinearMap.id : M₀ →ₗ[R₀] M₀)).comp
+        ((TensorProduct.comm R₀ M₀ C₀).toLinearMap.comp X.coaction)) z
 
 /-- Stability preserves the scalar-extension image under every one-algebra
 evaluation, with the algebra universe independent of the coalgebra universe. -/
