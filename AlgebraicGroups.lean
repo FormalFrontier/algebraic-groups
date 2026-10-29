@@ -102,6 +102,7 @@ public import AlgebraicGroups.GroupObject.KernelTorsor
 public import AlgebraicGroups.GroupObject.Quotient
 public import AlgebraicGroups.GroupObject.SplitKernelProduct
 public import AlgebraicGroups.GroupObject.SplitKernelSemidirect
+public import AlgebraicGroups.GroupObject.Stabilizer
 public import AlgebraicGroups.GroupObject.Translation
 public import AlgebraicGroups.GroupScheme.Additive
 public import AlgebraicGroups.GroupScheme.AdditiveClosedPoints
@@ -125,6 +126,7 @@ public import AlgebraicGroups.GroupScheme.AdditivePowerQuotient
 public import AlgebraicGroups.GroupScheme.ArtinSchreierTwistedLine
 public import AlgebraicGroups.GroupScheme.ClosedPoints
 public import AlgebraicGroups.GroupScheme.ClosedPointSubgroup
+public import AlgebraicGroups.GroupScheme.ClosedPointHom
 public import AlgebraicGroups.GroupScheme.Commutative
 public import AlgebraicGroups.GroupScheme.ComponentGroup
 public import AlgebraicGroups.GroupScheme.ComponentQuotient
@@ -172,6 +174,7 @@ public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminant
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantProduct
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantConjugation
 public import AlgebraicGroups.GroupScheme.GeneralLinearDeterminantSection
+public import AlgebraicGroups.GroupScheme.GeneralLinearClosedPoints
 public import AlgebraicGroups.GroupScheme.GeneralLinearModule
 public import AlgebraicGroups.GroupScheme.GeneralSpecialLinearDimension
 public import AlgebraicGroups.GroupScheme.GeneralSpecialLinearGeometricIntegral
@@ -192,6 +195,7 @@ public import AlgebraicGroups.GroupScheme.Separated
 public import AlgebraicGroups.GroupScheme.SpecialLinearKernel
 public import AlgebraicGroups.GroupScheme.SpecialLinearModule
 public import AlgebraicGroups.GroupScheme.Smooth
+public import AlgebraicGroups.GroupScheme.Stabilizer
 public import AlgebraicGroups.LinearAlgebra.Basis.Semilocal
 public import AlgebraicGroups.LinearAlgebra.Coalgebra.GroupLikeBasis
 public import AlgebraicGroups.LinearAlgebra.FiniteProjective.Charpoly

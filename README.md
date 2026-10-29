@@ -733,6 +733,16 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Matrix groups and group schemes
 
+- **Canonical continuous maps on closed points.** A homomorphism between given
+  group schemes locally of finite type over an algebraically closed field induces
+  a `ContinuousMonoidHom` on their canonical closed-point groups, with their original
+  subspace topologies. The point action, comparison naturality, identities and
+  compositions are characterized without unfolding. No joint continuity is assumed.
+  A general range is closed when locally closed; the determinant has
+  full range when a matrix pivot is supplied, by its original group-scheme section.
+  [Maps and readbacks](AlgebraicGroups/GroupScheme/ClosedPointHom.lean),
+  [determinant split and range](AlgebraicGroups/GroupScheme/GeneralLinearClosedPoints.lean).
+
 - **Locally closed subgroups of closed points.** For a group scheme locally
   of finite type over an algebraically closed field, a subgroup of its
   canonical closed-point group is closed exactly when it is a neighborhood
