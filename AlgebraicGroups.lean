@@ -18,6 +18,9 @@ public import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
 public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
 public import AlgebraicGroups.Algebra.Coalgebra.DualAnnihilator
 public import AlgebraicGroups.Algebra.Coalgebra.Equiv
+public import AlgebraicGroups.Algebra.Coalgebra.Evaluation
+public import AlgebraicGroups.Algebra.Coalgebra.Evaluation.Convolution
+public import AlgebraicGroups.Algebra.Coalgebra.Evaluation.Action
 public import AlgebraicGroups.Algebra.Coalgebra.FiniteSubcoalgebra
 public import AlgebraicGroups.Algebra.Coalgebra.CoidealCorrespondence
 public import AlgebraicGroups.Algebra.Coalgebra.FirstIsomorphism
@@ -40,6 +43,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.Range
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProductQuotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.DirectSum
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Gluing
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightSpace
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.Associator
@@ -74,6 +78,7 @@ public import AlgebraicGroups.Algebra.UnitriangularHopfBaseChange
 public import AlgebraicGroups.Algebra.MonoidAlgebraPrimitive
 public import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
 public import AlgebraicGroups.Algebra.HopfAlgebra.Comultiplication
+public import AlgebraicGroups.Algebra.HopfAlgebra.Convolution
 public import AlgebraicGroups.Algebra.HopfAlgebra.GroupLike
 public import AlgebraicGroups.Category.Extensive
 public import AlgebraicGroups.Category.EquivalenceRelation
@@ -96,8 +101,18 @@ public import AlgebraicGroups.GroupObject.SplitKernelProduct
 public import AlgebraicGroups.GroupObject.SplitKernelSemidirect
 public import AlgebraicGroups.GroupObject.Translation
 public import AlgebraicGroups.GroupScheme.Additive
+public import AlgebraicGroups.GroupScheme.AdditiveComodule
+public import AlgebraicGroups.GroupScheme.AdditiveInvariantLine
 public import AlgebraicGroups.GroupScheme.AdditiveProductAffineSpace
 public import AlgebraicGroups.GroupScheme.AffineHomOverConvolution
+public import AlgebraicGroups.GroupScheme.AffineRepresentation
+public import AlgebraicGroups.GroupScheme.PointGroup
+public import AlgebraicGroups.GroupScheme.RepresentationReconstruction
+public import AlgebraicGroups.GroupScheme.RepresentationEquivalence
+public import AlgebraicGroups.GroupScheme.RepresentationIntertwiner
+public import AlgebraicGroups.GroupScheme.RepresentationSubmodule
+public import AlgebraicGroups.GroupScheme.RepresentationUniverse
+public import AlgebraicGroups.GroupScheme.RepresentationFiltration
 public import AlgebraicGroups.GroupScheme.Vector
 public import AlgebraicGroups.GroupScheme.VectorProduct
 public import AlgebraicGroups.GroupScheme.MatrixEndAdditive

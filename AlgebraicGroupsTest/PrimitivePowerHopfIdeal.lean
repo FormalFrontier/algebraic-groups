@@ -73,8 +73,6 @@ private lemma primitive_ι (x : M) : Bialgebra.IsPrimitiveElem K (ι K M x) := b
   · simp
   · simpa only [add_comm] using (comul_ι K M x)
 
-#print axioms primitive_ι
-
 private theorem persistentTestPrimitivePowerHopfIdeal009 [Fact (Nat.Prime 2)] [CharP K 2] (x : M) :
     Ideal.IsHopfIdeal K (Ideal.span {(ι K M x) ^ (2 ^ 2)}) :=
   (primitive_ι K M x).isHopfIdeal_span_pow_char_pow 2
@@ -94,8 +92,6 @@ private lemma primitive_additiveGroupCoordinate :
   constructor
   · simp
   · simpa only [add_comm] using (additiveGroupCoordinate_comul K)
-
-#print axioms primitive_additiveGroupCoordinate
 
 private theorem persistentTestPrimitivePowerHopfIdeal011 [Fact (Nat.Prime 2)] [CharP K 2] :
     Ideal.IsHopfIdeal K (Ideal.span {(additiveGroupCoordinate K) ^ (2 ^ 0)}) :=
@@ -125,16 +121,3 @@ public theorem additiveGroupCoordinate_polynomial_zmod_two_pow_isHopfIdeal :
   infer_instance
 
 end AlgebraicGeometry
-
-#print axioms Bialgebra.IsPrimitiveElem.isHopfIdeal_span_pow_char_pow
-#print axioms Bialgebra.IsPrimitiveElem.antipode_eq_neg
-#print axioms HopfAlgebra.antipodeAlgHom
-#print axioms Commute.add_pow_prime_pow_eq'
-#print axioms CharP.cast_eq_zero
-#print axioms AlgebraicGeometry.additiveGroupCoordinate_comul
-#print axioms AlgebraicGeometry.additiveGroupCoordinate_counit
-#print axioms SymmetricAlgebra.comul_ι
-#print axioms SymmetricAlgebra.counit_ι
-#print axioms HopfAlgebra.Quotient.instQuotientIdeal
-#print axioms Ideal.Quotient.eq_zero_iff_mem
-#print axioms Ideal.mem_span_singleton'

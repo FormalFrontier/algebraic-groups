@@ -316,6 +316,35 @@ maintained project libraries; it does not claim to formalize an entire source.
   Evaluation is the stock scalar-extension lift of the commuted coaction;
   no flatness, bialgebra structure, finiteness, basis or tensor-inclusion
   injectivity is required. [Criteria and API](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean).
+- **Linear-coefficient evaluation of right coactions.** For a coalgebra `C`
+  over a commutative semiring `K`, a specified right coaction on `V` and any
+  linear map `φ : C →ₗ[K] A` to a commutative `K`-algebra `A` define an
+  `A`-linear endomorphism of `A ⊗[K] V`.
+  Evaluation is natural in the scalar algebra and colinear maps; the counit
+  gives the identity, and every image-stable submodule has invariant
+  scalar-extension image. No algebra structure on `C`, flatness or finiteness
+  is required. Algebra-homomorphism inputs recover the stability criteria above.
+  For the same right coaction, convolution satisfies
+  `T_(φ * ψ) = T_φ.comp T_ψ`: the operator for `ψ` acts first.
+  A Hopf algebra gives a homomorphism from algebra-valued convolution points to
+  the units of the scalar-extended endomorphism monoid. Its inverse evaluates
+  after the source antipode; coefficient changes and colinear maps intertwine
+  these operators. Stable submodules retain their original tensor-inclusion
+  images, preserved in both directions by the invertible point operators.
+  [Data and API](AlgebraicGroups/Algebra/Coalgebra/Evaluation.lean),
+  [composition](AlgebraicGroups/Algebra/Coalgebra/Evaluation/Convolution.lean),
+  [point actions](AlgebraicGroups/Algebra/Coalgebra/Evaluation/Action.lean).
+- **Convolution groups and algebra-valued points.** Algebra maps from a Hopf
+  algebra over a commutative semiring to any commutative algebra form a group
+  under convolution, without a coalgebra structure on the target. The named
+  group structure uses the existing convolution monoid and agrees with the
+  full original group structure when the target is also a bialgebra.
+  For commutative Hopf algebras over commutative rings, postcomposition defines
+  a group-valued functor on commutative algebras in independent universes.
+  The same-universe spectrum comparison preserves the antipode inverse and
+  change of coefficients.
+  [Convolution API](AlgebraicGroups/Algebra/HopfAlgebra/Convolution.lean),
+  [point functor](AlgebraicGroups/GroupScheme/PointGroup.lean).
 - **Changing the coacting coalgebra.** Over a commutative semiring, a coalgebra
   morphism `f : C →ₗc[R] D` sends a specified right coaction `ρ` on `V` to
   `(id_V ⊗ f)ρ` on the same module. Full coalgebras and additive-monoid modules
@@ -342,8 +371,115 @@ maintained project libraries; it does not claim to formalize an entire source.
   nor the coacted-on module projective. Flatness of the coacting coalgebra suffices
   for unique subtype coactions from image stability and unique colinear
   factorization; the counit need not be onto. [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean).
-  With projectivity of the coacting coalgebra, the underlying carriers of the
-  module-finite subcomodules are directed and cover the whole comodule.
+  With projectivity of the coacting coalgebra, the module-finite subcomodules
+  form a nonempty directed covering system containing every finite subset.
+  Every compatible family of colinear maps from these specified stages to any
+  target comodule glues to a unique colinear map on the original module.
+  Restriction and gluing are mutually inverse data and commute with target
+  postcomposition. Over a field these are the finite-dimensional stages, with
+  no flatness, projectivity or finiteness hypothesis on the coalgebra or ambient
+  vector space. More generally, directed covering sets of subcomodules have the
+  same gluing property when the coacting coalgebra is flat.
+  [Gluing and readbacks](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Gluing.lean).
+  With flatness of the coacting coalgebra, containment of specified subcomodules
+  gives canonical colinear inclusions with the ordinary submodule inclusion as
+  underlying map. They satisfy identity, composition and unique ambient
+  factorization. A nonzero coordinate line in the regular `ℕ[ℤ]` comodule
+  embeds non-surjectively in the proper stable finitely generated span of two
+  coordinates.
+  [Inclusion model](AlgebraicGroupsTest/Algebra/Coalgebra/RightComoduleStability.lean).
+- **The additive group's polynomial regular comodule.** Over any commutative
+  ring `K`, transport of the regular comodule to `K[X]` keeps the coacting
+  coalgebra `SymmetricAlgebra K K` fixed. Its generator has coaction
+  `X ⊗ 1 + 1 ⊗ t`; the binomial formula proves stability of the usual
+  degree-at-most-`n` submodules. These are module-finite subcomodules, increase
+  and cover every polynomial, with finrank `n + 1` over every nontrivial
+  commutative ring and finite-dimensional stages over a field.
+  Over a nontrivial base every stage is proper and nonzero, while the ambient
+  module is not module-finite. This is a comodule model, not an assertion of a
+  polynomial Hopf-algebra equivalence or the full representation correspondence.
+  [Construction and API](AlgebraicGroups/GroupScheme/AdditiveComodule.lean).
+- **Ground-field invariance is not all-algebra invariance.** In this same
+  polynomial right comodule over `𝔽₂`, the nonzero proper line spanned by
+  `X² + X` is fixed by every ground-field point on the entire tensor-inclusion
+  image. Over `𝔽₂[ε]/(ε²)`, the point `ε` sends its generator to
+  `1 ⊗ (X² + X) + ε ⊗ 1`, outside the original inclusion image.
+  The scalar-extended constant-coefficient linear map annihilates that image
+  and takes the translated vector to the nonzero element `ε`. Thus this is
+  failure of invariance for the same coaction and original image, not merely
+  a comparison of different subspace predicates.
+  [Countermodel](AlgebraicGroups/GroupScheme/AdditiveInvariantLine.lean).
+- **Natural representations and specified right comodules.** For a commutative
+  Hopf algebra `C` over a commutative ring `K` and any `K`-module `V`,
+  `PointRepresentation.rightComoduleEquiv` constructs the correspondence between
+  natural point representations on `R ⊗[K] V` and specified right coactions on
+  the same `V`. Its inverse is the natural point action of a coaction; both
+  composites return the original representation or comodule value. Generic-point
+  reconstruction uses `ULift C`, an internal counit endomorphism and its tensor
+  square, with independent base, coordinate, module and tester universes.
+  Components read back coefficient evaluation, and canonical actions extend to
+  independently sized coefficient algebras, naturally under every algebra map.
+  The linear equivalence `pointHomEquiv` identifies point intertwiners with
+  colinear maps of the same coactions, retaining underlying linear maps,
+  identities and composition. Their scalar extensions give Mathlib's bundled
+  intertwining maps. No finiteness, basis or flatness is needed. For infinite
+  `V` this is the tensor-extension functor, not `Spec Sym(V*)`.
+  [Reconstruction](AlgebraicGroups/GroupScheme/RepresentationReconstruction.lean),
+  [equivalence and actions](AlgebraicGroups/GroupScheme/RepresentationEquivalence.lean),
+  [morphisms](AlgebraicGroups/GroupScheme/RepresentationIntertwiner.lean).
+- **Invariant original submodules and unique restriction.** Invariance means
+  that all algebra-valued point operators preserve the image of the original
+  scalar-extended subtype inclusion, on every tensor in that image. It is
+  equivalent to image stability for the same recovered coaction, without
+  flatness. If `C` is flat over `K`, the restricted coaction is constructed on
+  exactly the original subtype `U`; its inclusion equation uniquely determines
+  its coaction map and specified comodule value. The corresponding restricted
+  point representation is likewise uniquely determined by the original
+  inclusion as a point intertwiner. Component and arbitrary-algebra squares use
+  precisely `U.subtype.baseChange R`. No injectivity is assumed over a general
+  coefficient algebra; over a field it follows from flatness of vector spaces.
+  [Criterion, restriction and readbacks](AlgebraicGroups/GroupScheme/RepresentationSubmodule.lean).
+- **Changes of test-algebra universe.** Canonical extension presents the same
+  recovered coaction at another tester level. Stock-lift restriction is
+  constructed separately from the given representation's components at lifted
+  coefficient algebras, followed by general linear coefficient descent. Its
+  equality with canonical change, both inverse laws, iterated-lift and
+  common-maximum comparisons are equations of representation values. Tensor
+  comparisons are base-linear and coefficient-semilinear; conjugation and
+  every-algebra-map descent retain the same coaction and point operators.
+  Intertwiner transport retains the original linear map and its scalar
+  extensions, respecting identity and composition.
+  [Universe and Hom coherence](AlgebraicGroups/GroupScheme/RepresentationUniverse.lean).
+- **The whole finite-dimensional subrepresentation system.** Over a field,
+  finite stages are the module-finite subcomodules of the recovered coaction,
+  with their original subspace subtypes and restricted representations. They
+  contain zero, are directed under finite sums, cover `V` and contain every
+  finite subset; no ambient or coordinate-algebra finite dimension is assumed.
+  Canonical transition and ambient point maps retain the ordinary submodule
+  inclusions and satisfy identity, composition and the ambient triangle.
+  Every compatible family of point intertwiners on these stages into any target
+  representation glues uniquely on the original `V`. Restriction and gluing are
+  constructed inverse data with evaluation and covering-stage extensionality.
+  They commute with target postcomposition and arbitrary source precomposition;
+  finite-stage image containment gives choice-independent stage formulas.
+  Changes of tester level and stock-lift restriction retain the same stage
+  index, component maps, whole compatible families and ambient glued maps,
+  including common-maximum comparisons.
+  [Finite system and universal property](AlgebraicGroups/GroupScheme/RepresentationFiltration.lean).
+
+- **Canonical affine-coordinate representations.** For a commutative ring `K`
+  and an affine group `G` over `Spec K`, the canonical Hopf algebra on `Γ(G, O_G)`
+  recovers the original group data through `G.isoSpec`. A natural multiplicative
+  comparison identifies geometric points with coordinate-algebra maps in the
+  scheme universe. The representation, original-image, intertwiner and whole
+  finite-family APIs above specialize to this coordinate algebra on the same
+  arbitrary `K`-module `V`, with their stated flatness and field boundaries.
+  Independently sized test algebras use the coordinate point functor, not
+  cross-universe scheme morphisms. For `G = Spec C`, an explicit bialgebra
+  equivalence compatible with antipodes normalizes global sections to the
+  original Hopf algebra `C`; the additive polynomial model keeps its original
+  symmetric-algebra coalgebra and coaction under this readback.
+  [Coordinate adapter and normalization](AlgebraicGroups/GroupScheme/AffineRepresentation.lean).
 - **Right-comodule weight spaces.** For a full coalgebra over a commutative
   semiring and a specified right comodule, weight spaces are the submodules
   where the coaction is `v ↦ v ⊗ c`, for any coalgebra element `c`. The

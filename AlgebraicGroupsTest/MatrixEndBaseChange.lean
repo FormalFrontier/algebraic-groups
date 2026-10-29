@@ -167,5 +167,3 @@ private theorem testZeroRing (f : Module.End (ZMod 1)
   endBaseChange_id (ZMod 1) (Fin 0 → ZMod 1) (ZMod 1) f
 
 end AlgebraicGeometry
-
-#lint

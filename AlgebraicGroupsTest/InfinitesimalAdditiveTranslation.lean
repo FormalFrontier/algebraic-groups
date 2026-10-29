@@ -160,48 +160,6 @@ private theorem zmod3_one_scheme_map_test :
         (infinitesimalAdditiveTranslationAlgEquiv (ZMod 3) 3 1).toAlgHom.toRingHom) :=
   infinitesimalAdditiveTranslationIso_hom_left (ZMod 3) 3 1
 
-#print axioms generic_equiv_test
-#print axioms generic_generator_test
-#print axioms generic_inverse_generator_test
-#print axioms generic_scheme_iso_test
-#print axioms generic_scheme_map_test
-#print axioms generic_scheme_inverse_map_test
-#print axioms generic_point_forward_test
-#print axioms generic_point_inverse_test
-#print axioms generic_naturality_test
-#print axioms generic_inverse_naturality_test
-#print axioms infinitesimalAdditiveTranslation_additive_point_generator
-#print axioms existing_roots_point_coordinate_test
-#print axioms translation_test_fact_prime_two
-#print axioms translation_test_fact_prime_three
-#print axioms zero_target_forward_test
-#print axioms zero_target_inverse_test
-#print axioms zmod2_zero_scheme_test
-#print axioms zmod2_zero_coordinate_test
-#print axioms zmod2_one_generator_test
-#print axioms zmod3_one_inverse_test
-#print axioms zmod3_one_scheme_map_test
-
-#print axioms AdjoinRoot.liftAlgHom
-#print axioms AdjoinRoot.liftAlgHom_root
-#print axioms AdjoinRoot.eval₂_root
-#print axioms AdjoinRoot.algHom_ext
-#print axioms AlgEquiv.ofAlgHom
-#print axioms CommAlgCat.isoMk
-#print axioms AlgebraicGeometry.algSpec
-#print axioms AlgebraicGeometry.algSpec_map_left
-#print axioms AlgebraicGeometry.algSpec_obj_hom
-#print axioms AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv
-#print axioms AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv_generator
-#print axioms AlgebraicGeometry.rootsOfUnityCoordinateAlgEquiv_symm_root
-#print axioms AlgebraicGeometry.additivePowerCoordinateAlgEquiv
-#print axioms AlgebraicGeometry.additivePowerCoordinateAlgEquiv_coordinate
-#print axioms AlgebraicGeometry.additivePowerCoordinateAlgEquiv_symm_root
-#print axioms AlgebraicGeometry.infinitesimalAdditiveCoordinate_pow
-#print axioms AlgebraicGeometry.infinitesimalAdditiveMulEquivAlgHom_coordinate
-#print axioms CharP.cast_eq_zero
-#print axioms Commute.add_pow_prime_pow_eq'
-
 end AlgebraicGeometry
 
 namespace AlgebraicGeometry

@@ -335,8 +335,6 @@ end Boundaries
 
 end AlgebraicGeometry
 
-#lint
-
 /-!
 ## Matrix-coordinate values over semirings
 

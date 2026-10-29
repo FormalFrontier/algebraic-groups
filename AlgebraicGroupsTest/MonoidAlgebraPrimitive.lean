@@ -128,10 +128,3 @@ private theorem persistentTestMonoidAlgebraPrimitive007 (R : Type*) [CommRing R]
     (x : AlgebraicGeometry.rootsOfUnityCoordinateRing R 1) :
     Bialgebra.IsPrimitiveElem R x ↔ x = 0 :=
   rootsOfUnityCoordinateRing_primitive_iff_zero R 1 x
-
-#print axioms MonoidAlgebra.isPrimitiveElem_iff_eq_zero
-#print axioms Bialgebra.isPrimitiveElem_iff_comul_eq_tmul_add_tmul
-#print axioms Coalgebra.isSkewPrimitiveElem_map_equiv
-#print axioms monoidAlgebraPrimitive_ring_bridge
-#print axioms additiveMonoidAlgebraPrimitive_iff_zero
-#print axioms rootsOfUnityCoordinateRing_primitive_iff_zero
