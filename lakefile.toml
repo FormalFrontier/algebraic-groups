@@ -149,6 +149,7 @@ roots = [
   "AlgebraicGroupsTest.MonoidAlgebraPrimitive",
   "AlgebraicGroupsTest.Multiplicative",
   "AlgebraicGroupsTest.RootsOfUnity",
+  "AlgebraicGroupsTest.RootsOfUnityThree",
   "AlgebraicGroupsTest.PrimitivePowerHopfIdeal",
   "AlgebraicGroupsTest.SymmetricAlgebra",
   "AlgebraicGroupsTest.SpecialLinear",

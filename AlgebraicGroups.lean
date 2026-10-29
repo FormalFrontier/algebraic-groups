@@ -191,6 +191,7 @@ public import AlgebraicGroups.GroupScheme.QuotientSheaf
 public import AlgebraicGroups.GroupScheme.Reduction
 public import AlgebraicGroups.GroupScheme.ReducedIdentityComponent
 public import AlgebraicGroups.GroupScheme.RootsOfUnity
+public import AlgebraicGroups.GroupScheme.RootsOfUnityThree
 public import AlgebraicGroups.GroupScheme.Separated
 public import AlgebraicGroups.GroupScheme.SpecialLinearKernel
 public import AlgebraicGroups.GroupScheme.SpecialLinearModule
