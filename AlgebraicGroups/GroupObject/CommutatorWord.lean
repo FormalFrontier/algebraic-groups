@@ -9,6 +9,10 @@ public import Mathlib.Algebra.Group.Commutator
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 public import Mathlib.Data.List.OfFn
+public import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Data.Set.Image
 
 /-!
@@ -22,7 +26,12 @@ No commutativity assumption is made.
 The definition and its characteristic formulas do not require the fan to be limiting.
 For a limiting target fan, its universal property constructs an extension by a unit pair;
 `GrpObj.range_commutatorWord_subset` then gives increasing ranges on generalized points.
-These ranges are sets, with no subgroup assertion. The word maps need not be monoid morphisms.
+These ranges are sets, with no assertion that an individual range is a subgroup.
+The word maps need not be monoid morphisms.
+For any supplied family of limiting fans with `n + 1` pairs,
+`GrpObj.mem_commutator_iff_exists_comp_commutatorWord` characterizes membership in the ordinary
+commutator subgroup of each generalized-point group by a value of one of these words.
+No limiting empty fan or compatibility between the supplied fans is required.
 
 ## Implementation notes
 
@@ -40,6 +49,9 @@ A differently indexed power can be used by reindexing its projections on the sam
   for ordered products and lists indexed by `Fin`.
 * Mathlib, `Mathlib.CategoryTheory.Limits.Shapes.Products`, for lifts into a supplied
   limiting fan.
+* Mathlib, `Mathlib.GroupTheory.Commutator.Basic`, `Mathlib.Algebra.Group.Subgroup.Pointwise`
+  and `Mathlib.Algebra.Group.Submonoid.Membership`, for the ordinary commutator subgroup
+  and finite ordered products of its generators and their inverses.
 -/
 
 @[expose] public section
@@ -106,8 +118,10 @@ theorem commutatorWord_naturality {n : ℕ}
   rw [commutatorWord_eq P, comp_commutatorWord Q d]
   calc
     _ = (List.ofFn (fun i : Fin n => ⁅P.proj (i, 0), P.proj (i, 1)⁆ ≫ φ)).prod := by
-      simpa [List.map_ofFn, Function.comp_def] using
-        (map_list_prod (IsMonHom.monoidHom φ P.pt)
+      let postcomp : (P.pt ⟶ G) →* (P.pt ⟶ H) := IsMonHom.monoidHom φ P.pt
+      have postcomp_apply (g : P.pt ⟶ G) : postcomp g = g ≫ φ := rfl
+      simpa only [List.map_ofFn, Function.comp_def, postcomp_apply] using
+        (map_list_prod postcomp
           (List.ofFn (fun i : Fin n => ⁅P.proj (i, 0), P.proj (i, 1)⁆)))
     _ = _ := by simp only [commutatorElement_def, MonObj.mul_comp, inv_comp, hd]
 
@@ -142,5 +156,52 @@ theorem range_commutatorWord_subset {n : ℕ}
   simpa only [Function.comp_def, Category.assoc, he] using
     (Set.range_comp_subset_range (fun f : Y ⟶ P.pt => f ≫ e)
       (fun f : Y ⟶ Q.pt => f ≫ commutatorWord Q))
+
+/-- The ordinary commutator subgroup of generalized points is exhausted by the word
+maps of any supplied limiting fans with a positive number of pairs.
+The index `n = 0` has one pair. No limiting empty fan or compatibility between
+these fans is required. -/
+theorem mem_commutator_iff_exists_comp_commutatorWord
+    (P : (n : ℕ) → Fan (fun _ : Fin (n + 1) × Fin 2 => G))
+    (hP : ∀ n, IsLimit (P n)) (Y : C) (a : Y ⟶ G) :
+    a ∈ _root_.commutator (Y ⟶ G) ↔
+      ∃ (n : ℕ) (f : Y ⟶ (P n).pt),
+        f ≫ CategoryTheory.GrpObj.commutatorWord (P n) = a := by
+  classical
+  constructor
+  · intro ha
+    rw [_root_.commutator_eq_closure] at ha
+    change a ∈ (Subgroup.closure (commutatorSet (Y ⟶ G))).toSubmonoid at ha
+    rw [Subgroup.closure_toSubmonoid] at ha
+    obtain ⟨l, hl, hprod⟩ := Submonoid.exists_list_of_mem_closure ha
+    have hpair (i : Fin l.length) : ∃ x y : Y ⟶ G, ⁅x, y⁆ = l.get i := by
+      rcases hl (l.get i) (List.get_mem l i) with hi | hi
+      · exact mem_commutatorSet_iff.mp hi
+      · obtain ⟨x, y, hxy⟩ := mem_commutatorSet_iff.mp (Set.mem_inv.mp hi)
+        exact ⟨y, x, by
+          simpa only [commutatorElement_inv, _root_.inv_inv] using congrArg Inv.inv hxy⟩
+    let x : Fin l.length → (Y ⟶ G) := fun i => Classical.choose (hpair i)
+    let y : Fin l.length → (Y ⟶ G) :=
+      fun i => Classical.choose (Classical.choose_spec (hpair i))
+    have hxy (i : Fin l.length) : ⁅x i, y i⁆ = l.get i :=
+      Classical.choose_spec (Classical.choose_spec (hpair i))
+    -- Package the factors on `Y`; only the positive-stage target needs to be limiting.
+    let R : Fan (fun _ : Fin l.length × Fin 2 => G) :=
+      Fan.mk Y (fun j => if j.2 = 0 then x j.1 else y j.1)
+    have hR : commutatorWord R = a := by
+      rw [commutatorWord_eq]
+      change (List.ofFn (fun i : Fin l.length => ⁅x i, y i⁆)).prod = a
+      simpa only [hxy, List.ofFn_get] using hprod
+    have haR : a ∈ Set.range (fun f : Y ⟶ R.pt => f ≫ commutatorWord R) :=
+      ⟨𝟙 Y, by simpa only [Category.id_comp] using hR⟩
+    obtain ⟨f, hf⟩ :=
+      range_commutatorWord_subset R (P l.length) (hP l.length) Y haR
+    exact ⟨l.length, f, hf⟩
+  · rintro ⟨n, f, rfl⟩
+    rw [comp_commutatorWord]
+    apply _root_.list_prod_mem
+    rw [List.forall_mem_ofFn_iff]
+    intro i
+    exact Subgroup.commutator_mem_commutator (Subgroup.mem_top _) (Subgroup.mem_top _)
 
 end CategoryTheory.GrpObj

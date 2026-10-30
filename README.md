@@ -14,8 +14,11 @@ maintained project libraries; it does not claim to formalize an entire source.
   generalized points, the empty and single-pair formulas, naturality under
   monoid morphisms, and invariance under appending a unit pair. A limiting
   target fan supplies the extension and gives inclusion of generalized-point
-  ranges, without a commutativity assumption or a subgroup-image assertion.
-  [Construction and range inclusion](AlgebraicGroups/GroupObject/CommutatorWord.lean).
+  ranges. For any supplied limiting fans with `n + 1` pairs, a generalized point
+  lies in the ordinary commutator subgroup exactly when it is a value of one
+  of these words. No compatibility between fans or subgroup-image assertion
+  for an individual word map is required.
+  [Construction and completeness](AlgebraicGroups/GroupObject/CommutatorWord.lean).
 - **Conjugacy of stabilizers.** For a given internal group action in a Cartesian
   monoidal category, an arbitrary group section `g` induces
   `ModObj.stabilizerConjIso x g` between the original chosen stabilizers of `x`
