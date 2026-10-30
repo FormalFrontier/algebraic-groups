@@ -7,22 +7,22 @@ module
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.JacobsonSpace
 public import Mathlib.Topology.KrullDimension
+public import MinimalPrimes.Topology.KrullDimension.OpenCover
 
 /-!
 # Topological Krull dimension and open covers
 
-This file proves that topological Krull dimension is local on an arbitrary open
-cover.  It then specializes the result to the open cover of a locally connected
-space by its connected components.
+This file specializes the open-cover formula for topological Krull dimension
+from `MinimalPrimes.Topology.KrullDimension.OpenCover` to the connected components
+of a locally connected space. It also gives a Jacobson-space discreteness
+criterion and a quotient-space dimension bound.
 
 The cover result holds for arbitrary spaces, without Noetherian, separation or
 finite-cover assumptions. The empty space and empty cover retain the `WithBot ℕ∞`
 dimension convention.
 
-The open-cover argument restricts a finite strict chain of irreducible closed
-sets to an open member containing a point of the chain's first set; mathlib's
-`orderIsoOfIsOpenEmbedding` transports the whole chain. The Jacobson
-criterion uses closed points in nonempty locally closed subsets.
+The open-cover formula is supplied by MinimalPrimes. The Jacobson criterion
+uses closed points in nonempty locally closed subsets.
 
 ## References
 
@@ -30,10 +30,8 @@ criterion uses closed points in nonempty locally closed subsets.
   for the chain-through-a-point open-neighborhood dimension argument, and
   [Section 5.18](https://stacks.math.columbia.edu/tag/005T) for Jacobson
   spaces and closed points in nonempty locally closed subsets.
-* The mathlib community, *Mathlib*, `Mathlib.Order.RelSeries` for `LTSeries`,
-  `Mathlib.Order.KrullDimension` for `Order.krullDim`,
-  `Mathlib.Topology.Sets.Closeds` for `IrreducibleCloseds` and
-  `orderIsoOfIsOpenEmbedding`, `Mathlib.Topology.KrullDimension` for dimension
+* `MinimalPrimes.Topology.KrullDimension.OpenCover` for the open-cover formula.
+* The mathlib community, *Mathlib*, `Mathlib.Topology.KrullDimension` for dimension
   and the subspace bound, `Mathlib.Topology.JacobsonSpace` for the closed-point
   criterion, and `Mathlib.Topology.Connected.LocallyConnected` for openness of
   connected components.
@@ -83,38 +81,6 @@ theorem Topology.IsQuotientMap.topologicalKrullDim_le_zero_of_isOpen_preimage_cl
       rw [← hf.isOpen_preimage]
       exact h y hy
   exact topologicalKrullDim_zero_of_discreteTopology Y
-
-/-- The topological Krull dimension of a space is the supremum of the
-dimensions of the members of any open cover. As in the Stacks Project,
-Lemma 5.10.2, an open set meeting the first irreducible closed set of a
-strict chain meets every set in the chain. Mathlib's
-`orderIsoOfIsOpenEmbedding` transports this chain to that open set. -/
-theorem topologicalKrullDim_eq_iSup_of_isOpen_cover
-    {ι : Type*} (U : ι → Set X) (hU : ∀ i, IsOpen (U i))
-    (hcover : ⋃ i, U i = Set.univ) :
-    topologicalKrullDim X = ⨆ i, topologicalKrullDim (U i) := by
-  apply le_antisymm
-  · rw [topologicalKrullDim, Order.krullDim]
-    apply iSup_le
-    intro p
-    obtain ⟨z, hz⟩ := p.head.isIrreducible.nonempty
-    have hzcover : z ∈ ⋃ i, U i := by
-      rw [hcover]
-      exact Set.mem_univ z
-    rw [Set.mem_iUnion] at hzcover
-    obtain ⟨i, hi⟩ := hzcover
-    let e := orderIsoOfIsOpenEmbedding (Subtype.val : U i → X)
-      (hU i).isOpenEmbedding_subtypeVal
-    let q : LTSeries (IrreducibleCloseds (U i)) :=
-      LTSeries.mk p.length
-        (fun j ↦ e.symm ⟨p j, ⟨⟨z, hi⟩, p.head_le j hz⟩⟩)
-        (fun _ _ hjk ↦ e.symm.strictMono (p.strictMono hjk))
-    apply le_iSup_of_le i
-    change (q.length : WithBot ℕ∞) ≤ Order.krullDim (IrreducibleCloseds (U i))
-    exact q.length_le_krullDim
-  · apply iSup_le
-    intro i
-    exact topologicalKrullDim_subspace_le X (U i)
 
 /-- In a locally connected space, topological Krull dimension is the supremum
 of the dimensions of the connected components. Specializes the open-cover

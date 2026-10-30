@@ -765,8 +765,10 @@ maintained project libraries; it does not claim to formalize an entire source.
   a `ContinuousMonoidHom` on their canonical closed-point groups, with their original
   subspace topologies. The point action, comparison naturality, identities and
   compositions are characterized without unfolding. No joint continuity is assumed.
-  A general range is closed when locally closed; the determinant has
-  full range when a matrix pivot is supplied, by its original group-scheme section.
+  A quasi-compact homomorphism has closed range on closed points, without global
+  finite-type or quasi-separatedness assumptions. More generally, a locally closed
+  range is closed. The determinant has full range when a matrix pivot is supplied,
+  by its original group-scheme section.
   [Maps and readbacks](AlgebraicGroups/GroupScheme/ClosedPointHom.lean),
   [determinant split and range](AlgebraicGroups/GroupScheme/GeneralLinearClosedPoints.lean).
 
@@ -1024,8 +1026,8 @@ lift of `−1` at order two with the point of the explicit root `−1 : ℚ`.
 Lean `v4.34.0-rc2` and exact GitHub dependencies are pinned in
 [lean-toolchain](lean-toolchain), [lakefile.toml](lakefile.toml) and
 [lake-manifest.json](lake-manifest.json). Direct requirements are Mathlib,
-SchemeProperties, GeneralLinearGroups, CoherentModules and GroupTheory;
-building requires access to them.
+SchemeProperties, MinimalPrimes, GeneralLinearGroups, CoherentModules and
+GroupTheory; building requires access to them.
 At the root, install the pinned toolchain and fetch the matching cache **before**
 building both library and test targets:
 

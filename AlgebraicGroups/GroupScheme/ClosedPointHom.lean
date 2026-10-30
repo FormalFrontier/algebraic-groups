@@ -5,7 +5,10 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.GroupScheme.ClosedPointSubgroup
+public import Mathlib.AlgebraicGeometry.Noetherian
+public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import SchemeProperties.LocallyConstructiblePreimage
 
 /-!
 # Continuous homomorphisms on group-scheme closed points
@@ -19,9 +22,10 @@ of multiplication is not required.
 
 The range is the usual `MonoidHom.range`, and its carrier is the preimage of
 the original scheme-point range under the target closed-point inclusion.
-A locally closed range is closed; closedness is not asserted for every
-group-scheme morphism. No conclusion about scheme immersions or nonreduced
-subgroup schemes follows.
+A locally closed range is closed. A quasi-compact group-scheme morphism has
+closed range on closed points, by Chevalley's theorem and the single-member
+subgroup criterion. Closedness is not asserted for every group-scheme morphism.
+No conclusion about scheme immersions or nonreduced subgroup schemes follows.
 
 ## References
 
@@ -33,6 +37,9 @@ subgroup schemes follows.
   subgroup criterion without joint continuity of multiplication.
 - Mathlib, `LocallyOfFiniteType.jacobsonSpace` and
   `nonempty_inter_closedPoints`, for a closed point in each nonempty closed fibre.
+- Mathlib, `Scheme.Hom.isLocallyConstructible_image` (Chevalley's theorem), and
+  SchemeProperties, `IsLocallyConstructible.exists_isLocallyClosedAt_preimage`,
+  for a locally closed member of the closed-point range.
 -/
 
 @[expose] public section
@@ -205,6 +212,49 @@ theorem groupSchemeClosedPointsMap_range_eq_preimage :
       ⟨x, hx⟩ (y.property.preimage φ.left.continuous).isLocallyClosed
     exact ⟨⟨z, hzclosed⟩, hz⟩
 
+/-- A quasi-compact homomorphism of group schemes locally of finite type over
+an algebraically closed field has closed range in the target closed-point subspace.
+This combines Chevalley's theorem with the single-member subgroup criterion. -/
+theorem groupSchemeClosedPointsMap_isClosed_range_of_quasiCompact
+    [QuasiCompact φ.left] :
+    IsClosed
+      (@MonoidHom.range (closedPoints G) (groupSchemeClosedPointsGroup fG)
+        (closedPoints H) (groupSchemeClosedPointsGroup fH)
+        (@ContinuousMonoidHom.toMonoidHom _ _
+          (groupSchemeClosedPointsGroup fG).toMonoid
+          (groupSchemeClosedPointsGroup fH).toMonoid inferInstance inferInstance
+          (groupSchemeClosedPointsMap fG fH φ)) : Set (closedPoints H)) := by
+  have hw : φ.left ≫ fH = fG := φ.w
+  let : LocallyOfFiniteType (φ.left ≫ fH) := by
+    rw [hw]
+    infer_instance
+  let : LocallyOfFiniteType φ.left := locallyOfFiniteType_of_comp φ.left fH
+  let : IsLocallyNoetherian H := LocallyOfFiniteType.isLocallyNoetherian fH
+  let : LocallyOfFinitePresentation φ.left :=
+    (LocallyOfFinitePresentation.iff_locallyOfFiniteType
+      (X := G) (Y := H) (f := φ.left)).mpr inferInstance
+  have hLC : Topology.IsLocallyConstructible (Set.range φ.left) := by
+    simpa only [Set.image_univ] using
+      (φ.left.isLocallyConstructible_image
+        (s := (Set.univ : Set G)) Topology.IsLocallyConstructible.univ)
+  let R := @MonoidHom.range (closedPoints G) (groupSchemeClosedPointsGroup fG)
+    (closedPoints H) (groupSchemeClosedPointsGroup fH)
+    (@ContinuousMonoidHom.toMonoidHom _ _
+      (groupSchemeClosedPointsGroup fG).toMonoid
+      (groupSchemeClosedPointsGroup fH).toMonoid inferInstance inferInstance
+      (groupSchemeClosedPointsMap fG fH φ))
+  have hR : (R : Set (closedPoints H)) =
+      (Subtype.val : closedPoints H → H) ⁻¹' Set.range φ.left :=
+    groupSchemeClosedPointsMap_range_eq_preimage fG fH φ
+  have hne : ((Subtype.val : closedPoints H → H) ⁻¹' Set.range φ.left).Nonempty := by
+    rw [← hR]
+    exact ⟨_, @Subgroup.one_mem _ (groupSchemeClosedPointsGroup fH) R⟩
+  obtain ⟨x, hx, hxLC⟩ :=
+    _root_.IsLocallyConstructible.exists_isLocallyClosedAt_preimage
+      hLC continuous_subtype_val hne
+  rw [← hR] at hx hxLC
+  exact (groupSchemeClosedPoints_isClosed_iff_isLocallyClosedAt fH R hx).mpr hxLC
+
 /-- A locally closed image of a group-scheme homomorphism is closed
 in the original closed-point subspace, by the locally closed subgroup criterion. -/
 theorem groupSchemeClosedPointsMap_isClosed_range
@@ -223,5 +273,21 @@ theorem groupSchemeClosedPointsMap_isClosed_range
           (groupSchemeClosedPointsGroup fH).toMonoid inferInstance inferInstance
           (groupSchemeClosedPointsMap fG fH φ)) : Set (closedPoints H)) :=
   groupSchemeClosedPoints_isClosed_of_isLocallyClosed fH _ hLC
+
+/-- A dominant group-scheme homomorphism has dense range on the canonical
+closed-point groups with their original subspace topologies. Local finite type
+over the field makes the source Jacobson; no quasi-compactness of the morphism
+is required. -/
+theorem groupSchemeClosedPointsMap_denseRange [IsDominant φ.left] :
+    DenseRange (groupSchemeClosedPointsMap fG fH φ) := by
+  let : JacobsonSpace G := LocallyOfFiniteType.jacobsonSpace fG
+  have hG : Dense (closedPoints G) := dense_iff_closure_eq.mpr closure_closedPoints
+  have hd : DenseRange (φ.left ∘ (Subtype.val : closedPoints G → G)) :=
+    φ.left.denseRange.comp hG.denseRange_val φ.left.continuous
+  change Dense (Set.range (groupSchemeClosedPointsMap fG fH φ))
+  apply Subtype.dense_iff.2
+  intro y _
+  rw [← Set.range_comp]
+  simpa only [Function.comp_def, groupSchemeClosedPointsMap_apply_value] using hd y
 
 end AlgebraicGeometry

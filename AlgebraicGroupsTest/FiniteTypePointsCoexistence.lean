@@ -14,14 +14,22 @@ public import AlgebraicGroups
 
 Finite-type scheme points are provided by Scheme Properties, with group-valued points
 supplied by Algebraic Groups. Representability of the underlying set-valued functor
-implies representability by a finite-type group scheme.
+implies representability by a finite-type group scheme. The open-cover dimension
+formula is available with independent space and cover-index universes.
 -/
 
 set_option warningAsError true
 
 open CategoryTheory
 
-universe u
+universe u v
+
+private theorem topologicalKrullDim_openCover
+    {X : Type u} [TopologicalSpace X] {ι : Type v}
+    (U : ι → Set X) (hU : ∀ i, IsOpen (U i))
+    (hcover : ⋃ i, U i = Set.univ) :
+    topologicalKrullDim X = ⨆ i, topologicalKrullDim (U i) :=
+  topologicalKrullDim_eq_iSup_of_isOpen_cover U hU hcover
 
 namespace AlgebraicGeometry
 

@@ -278,6 +278,9 @@ characterization of faithfully flat coalgebras. Its general module-theoretic
 criterion uses Mathlib's ideal scalar-action and submodule-map interfaces,
 with Mathlib's `Module.FaithfullyFlat.self` for the scalar target and the given
 flatness of the source coalgebra carrier.
+The separately maintained [*MinimalPrimes*](https://github.com/FormalFrontier/minimal-primes)
+supplies the topological open-cover formula for Krull dimension reused in
+[`KrullDimension`](AlgebraicGroups/Topology/KrullDimension.lean).
 Their contributors and licenses are separate from this project's original
 contributions and Mathlib's. The local `VectorProduct` formalizes the
 field/basis group-scheme product as
