@@ -8,6 +8,14 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Group objects
 
+- **Ordered commutator word maps.** For a given group object in any Cartesian
+  monoidal category, a supplied fan indexed by `Fin n × Fin 2` determines the
+  ordered product of its `n` commutators. The API gives evaluation on arbitrary
+  generalized points, the empty and single-pair formulas, naturality under
+  monoid morphisms, and invariance under appending a unit pair. A limiting
+  target fan supplies the extension and gives inclusion of generalized-point
+  ranges, without a commutativity assumption or a subgroup-image assertion.
+  [Construction and range inclusion](AlgebraicGroups/GroupObject/CommutatorWord.lean).
 - **Conjugacy of stabilizers.** For a given internal group action in a Cartesian
   monoidal category, an arbitrary group section `g` induces
   `ModObj.stabilizerConjIso x g` between the original chosen stabilizers of `x`
@@ -977,6 +985,7 @@ maintained project libraries; it does not claim to formalize an entire source.
 | --- | --- |
 | [`AlgebraicGroups`](AlgebraicGroups.lean) | Library aggregate; focused imports are linked above. |
 | [`AlgebraicGroupsTest`](AlgebraicGroupsTest/) | Test library: ordinary-import clients and boundary examples. |
+| [`AlgebraicGroups.GroupObject.CommutatorWord`](AlgebraicGroups/GroupObject/CommutatorWord.lean) | Ordered products of commutators on supplied fans, characteristic and naturality formulas, unit-pair extension and generalized-point range inclusion. |
 | [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean) | Carrier transport with fixed coalgebra, object-coherence laws, canonical inverse colinear maps and target characterization. |
 | [`AlgebraicGroups.GroupScheme.AffineHomOverConvolution`](AlgebraicGroups/GroupScheme/AffineHomOverConvolution.lean) | Affine-target global-sections comparison with convolution, target and coefficient readbacks, naturality, and affine specialization. |
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |

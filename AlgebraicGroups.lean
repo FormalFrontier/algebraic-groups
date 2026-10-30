@@ -90,6 +90,7 @@ public import AlgebraicGroups.FieldTheory.GeometricallyReduced
 public import AlgebraicGroups.GroupObject.BaseChange
 public import AlgebraicGroups.GroupObject.Characteristic
 public import AlgebraicGroups.GroupObject.Commutative
+public import AlgebraicGroups.GroupObject.CommutatorWord
 public import AlgebraicGroups.GroupObject.Coset
 public import AlgebraicGroups.GroupObject.EffectiveEpi
 public import AlgebraicGroups.GroupObject.FunctorCategory
