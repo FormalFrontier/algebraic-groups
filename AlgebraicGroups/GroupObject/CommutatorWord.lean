@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 public import Mathlib.Data.List.OfFn
 public import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Group.Submonoid.Membership
@@ -33,6 +34,15 @@ For any supplied family of limiting fans with `n + 1` pairs,
 commutator subgroup of each generalized-point group by a value of one of these words.
 No limiting empty fan or compatibility between the supplied fans is required.
 
+For every supplied limiting fan with `n` pairs, including `n = 0`,
+`GrpObj.range_commutatorWord_eq_pow` identifies its generalized-point range with the
+ordinary pointwise `n`th power of the commutator set.
+
+For a monoidal functor between Cartesian monoidal categories,
+`GrpObj.map_commutatorWord` identifies the image of a word map with the word on the
+mapped point and projections, using the canonical image group object. The fan need not be
+limiting, and the identity includes the empty word.
+
 ## Implementation notes
 
 The operations are those of Mathlib's group on `Hom(Y, G)`, using the given group object.
@@ -44,11 +54,14 @@ A differently indexed power can be used by reindexing its projections on the sam
 * Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, for the group on generalized
   points, its precomposition maps and the single commutator morphism.
 * Mathlib, `Mathlib.CategoryTheory.Monoidal.Cartesian.Mon`, for postcomposition by monoid
-  morphisms as monoid homomorphisms on generalized points.
+  morphisms and monoidal functor transport as monoid homomorphisms on generalized points.
+* Mathlib, `Mathlib.CategoryTheory.Monoidal.Grp`, for the canonical image group object.
 * Mathlib, `Mathlib.Algebra.BigOperators.Group.List.Basic` and `Mathlib.Data.List.OfFn`,
   for ordered products and lists indexed by `Fin`.
 * Mathlib, `Mathlib.CategoryTheory.Limits.Shapes.Products`, for lifts into a supplied
   limiting fan.
+* Mathlib, `Mathlib.Algebra.Group.Pointwise.Set.ListOfFn`, for ordered witnesses of
+  membership in pointwise powers of sets.
 * Mathlib, `Mathlib.GroupTheory.Commutator.Basic`, `Mathlib.Algebra.Group.Subgroup.Pointwise`
   and `Mathlib.Algebra.Group.Submonoid.Membership`, for the ordinary commutator subgroup
   and finite ordered products of its generators and their inverses.
@@ -56,7 +69,7 @@ A differently indexed power can be used by reindexing its projections on the sam
 
 @[expose] public section
 
-universe u v
+universe u v u₂ v₂
 
 namespace CategoryTheory.GrpObj
 
@@ -124,6 +137,21 @@ theorem commutatorWord_naturality {n : ℕ}
         (map_list_prod postcomp
           (List.ofFn (fun i : Fin n => ⁅P.proj (i, 0), P.proj (i, 1)⁆)))
     _ = _ := by simp only [commutatorElement_def, MonObj.mul_comp, inv_comp, hd]
+
+open scoped CategoryTheory.Obj in
+/-- A monoidal functor sends a commutator word to the word on the mapped point and
+projections, with the canonical image group object. No limiting-fan hypothesis is needed. -/
+theorem map_commutatorWord {D : Type u₂} [Category.{v₂} D] [CartesianMonoidalCategory D]
+    (F : C ⥤ D) [F.Monoidal] {n : ℕ} (P : Fan (fun _ : Fin n × Fin 2 => G)) :
+    F.map (commutatorWord P) =
+      commutatorWord (Fan.mk (F.obj P.pt) (fun j => F.map (P.proj j))) := by
+  rw [commutatorWord_eq, commutatorWord_eq]
+  let mapHom : (P.pt ⟶ G) →* (F.obj P.pt ⟶ F.obj G) := F.homMonoidHom
+  have mapHom_apply (f : P.pt ⟶ G) : mapHom f = F.map f := rfl
+  have hprod := map_list_prod mapHom
+    (List.ofFn (fun i : Fin n => ⁅P.proj (i, 0), P.proj (i, 1)⁆))
+  simp only [List.map_ofFn, Function.comp_def, map_commutatorElement] at hprod
+  simpa only [mapHom_apply, fan_mk_proj] using hprod
 
 /-- Appending a pair of unit coordinates leaves the commutator word unchanged. -/
 theorem comp_commutatorWord_extension {n : ℕ}
@@ -203,5 +231,32 @@ theorem mem_commutator_iff_exists_comp_commutatorWord
     rw [List.forall_mem_ofFn_iff]
     intro i
     exact Subgroup.commutator_mem_commutator (Subgroup.mem_top _) (Subgroup.mem_top _)
+
+open scoped Pointwise in
+/-- The range of a commutator word for a limiting fan is the pointwise power of the
+ordinary commutator set in the group of generalized points. This holds for every rank,
+including zero. -/
+theorem range_commutatorWord_eq_pow {n : ℕ}
+    (P : Fan (fun _ : Fin n × Fin 2 => G)) (hP : IsLimit P) (Y : C) :
+    Set.range (fun f : Y ⟶ P.pt => f ≫ commutatorWord P) =
+      (_root_.commutatorSet (Y ⟶ G)) ^ n := by
+  classical
+  apply Set.Subset.antisymm
+  · rintro _ ⟨f, rfl⟩
+    exact Set.mem_pow.mpr
+      ⟨fun i => ⟨_, commutator_mem_commutatorSet
+        (f ≫ P.proj (i, 0)) (f ≫ P.proj (i, 1))⟩,
+        (comp_commutatorWord P f).symm⟩
+  · intro a ha
+    obtain ⟨c, hc⟩ := Set.mem_pow.mp ha
+    have hpair (i : Fin n) : ∃ x y : Y ⟶ G, ⁅x, y⁆ = (c i : Y ⟶ G) :=
+      mem_commutatorSet_iff.mp (c i).property
+    choose x y hxy using hpair
+    let f : Y ⟶ P.pt :=
+      Fan.IsLimit.lift hP (fun j => if j.2 = 0 then x j.1 else y j.1)
+    refine ⟨f, ?_⟩
+    change f ≫ commutatorWord P = a
+    rw [comp_commutatorWord]
+    simpa [f, hxy] using hc
 
 end CategoryTheory.GrpObj
