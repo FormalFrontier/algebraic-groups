@@ -290,4 +290,15 @@ theorem groupSchemeClosedPointsMap_denseRange [IsDominant φ.left] :
   rw [← Set.range_comp]
   simpa only [Function.comp_def, groupSchemeClosedPointsMap_apply_value] using hd y
 
+/-- A dominant quasi-compact homomorphism of group schemes locally of finite
+ type over an algebraically closed field is surjective on closed points. -/
+theorem groupSchemeClosedPointsMap_surjective
+    [IsDominant φ.left] [QuasiCompact φ.left] :
+    Function.Surjective (groupSchemeClosedPointsMap fG fH φ) := by
+  have hclosed : IsClosed (Set.range (groupSchemeClosedPointsMap fG fH φ)) :=
+    groupSchemeClosedPointsMap_isClosed_range_of_quasiCompact fG fH φ
+  exact Set.range_eq_univ.mp
+    (hclosed.closure_eq.symm.trans
+      (dense_iff_closure_eq.mp (groupSchemeClosedPointsMap_denseRange fG fH φ)))
+
 end AlgebraicGeometry

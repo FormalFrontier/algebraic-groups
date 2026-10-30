@@ -24,8 +24,11 @@ of Milne's item 1.5; an immersion is not required by the generic construction.
 ## Main definitions
 
 - `AlgebraicGeometry.pointwiseSubgroupGrpObj`
+- `AlgebraicGeometry.groupOfPointwiseSubgroup`
 - `AlgebraicGeometry.pointwiseSubgroupIsMonHom`
+- `AlgebraicGeometry.pointwiseSubgroupHom`
 - `AlgebraicGeometry.algebraicGroupOfPointwiseSubgroup`
+- `AlgebraicGeometry.algebraicPointwiseSubgroupHom`
 
 ## References
 
@@ -99,6 +102,39 @@ abbrev pointwiseSubgroupGrpObj
   letI : GrpObj ((lftPoints K).obj X) := h.grpObj
   exact (lftPointsFullyFaithful K).grpObj X
 
+/-- The representing scheme equipped with the group law transported from its
+pointwise subgroup structure by `pointwiseSubgroupGrpObj`. -/
+def groupOfPointwiseSubgroup
+    (X : locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
+    (G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))))
+    (i : X ⟶ G.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp ((lftGroupPoints K).obj G))
+      ((lftPoints K).map i)) :
+    Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))) := by
+  letI : GrpObj X := pointwiseSubgroupGrpObj K X G i h
+  exact ⟨X⟩
+
+/-- The transported group has exactly the given representing scheme. -/
+@[simp] theorem groupOfPointwiseSubgroup_X
+    (X : locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
+    (G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))))
+    (i : X ⟶ G.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp ((lftGroupPoints K).obj G))
+      ((lftPoints K).map i)) :
+    (groupOfPointwiseSubgroup K X G i h).X = X := rfl
+
+/-- The bundled group stores the same group-object data as the transport. -/
+@[simp] theorem groupOfPointwiseSubgroup_grp
+    (X : locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
+    (G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))))
+    (i : X ⟶ G.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp ((lftGroupPoints K).obj G))
+      ((lftPoints K).map i)) :
+    (groupOfPointwiseSubgroup K X G i h).grp = pointwiseSubgroupGrpObj K X G i h := rfl
+
 /-- For the group structure induced by `pointwiseSubgroupGrpObj`, the original
 map to the target group scheme is a group-object homomorphism. For finite-type
 subschemes this is the homomorphism assertion in Milne, *Algebraic Groups*
@@ -110,8 +146,12 @@ theorem pointwiseSubgroupIsMonHom
     (h : NatTrans.IsPointwiseSubgroup
       (G := Monoidal.GrpFunctorCategory.pointwiseGrp ((lftGroupPoints K).obj G))
       ((lftPoints K).map i)) :
-    letI : GrpObj X := pointwiseSubgroupGrpObj K X G i h
-    IsMonHom i := by
+    @IsMonHom
+      (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
+      inferInstance inferInstance
+      (groupOfPointwiseSubgroup K X G i h).X G.X
+      (groupOfPointwiseSubgroup K X G i h).grp.toMonObj
+      G.grp.toMonObj i := by
   let _ : GrpObj X := pointwiseSubgroupGrpObj K X G i h
   have hpOne := by
     letI : GrpObj ((lftPoints K).obj X) := h.grpObj
@@ -165,6 +205,48 @@ theorem pointwiseSubgroupIsMonHom
   rw [hF.preimage_map i] at hpre
   exact hpre
 
+/-- The original map, as a homomorphism from the transported group scheme. -/
+def pointwiseSubgroupHom
+    (X : locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
+    (G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))))
+    (i : X ⟶ G.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp ((lftGroupPoints K).obj G))
+      ((lftPoints K).map i)) : groupOfPointwiseSubgroup K X G i h ⟶ G :=
+  ⟨{ hom := i, isMonHom_hom := pointwiseSubgroupIsMonHom K X G i h }⟩
+
+/-- The bundled homomorphism has exactly the original underlying map. -/
+@[simp] theorem pointwiseSubgroupHom_hom_hom
+    (X : locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
+    (G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))))
+    (i : X ⟶ G.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp ((lftGroupPoints K).obj G))
+      ((lftPoints K).map i)) : (pointwiseSubgroupHom K X G i h).hom.hom = i := rfl
+
+/-- Restricted points of the bundled homomorphism are the original natural map. -/
+@[simp] theorem pointwiseSubgroupHom_points
+    (X : locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
+    (G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))))
+    (i : X ⟶ G.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp ((lftGroupPoints K).obj G))
+      ((lftPoints K).map i)) :
+    ((lftGroupPoints K).map (pointwiseSubgroupHom K X G i h)).hom.hom =
+      (lftPoints K).map i := rfl
+
+/-- On each finitely generated algebra the homomorphism sends a point by `i`. -/
+theorem pointwiseSubgroupHom_points_app
+    (X : locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
+    (G : Grp (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K))))
+    (i : X ⟶ G.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp ((lftGroupPoints K).obj G))
+      ((lftPoints K).map i))
+    (A : (FGAlgCat K)ᵒᵖᵒᵖ) (x : ((lftPoints K).obj X).obj A) :
+    (((lftGroupPoints K).map (pointwiseSubgroupHom K X G i h)).hom.hom.app A) x =
+      ((lftPoints K).map i).app A x := rfl
+
 /-- A finite-type scheme whose point functor maps injectively onto pointwise
 subgroups of a finite-type group scheme becomes a finite-type group scheme on
 the same underlying represented object. This is the pointwise subgroup
@@ -179,6 +261,35 @@ abbrev algebraicGroupOfPointwiseSubgroup
   letI : GrpObj X.obj := pointwiseSubgroupGrpObj K X.obj G.obj i h
   exact ⟨⟨X.obj⟩, X.property⟩
 
+/-- Forgetting the finite-type property gives the same transported group. -/
+@[simp] theorem algebraicGroupOfPointwiseSubgroup_obj
+    (X : algebraicOver K) (G : algebraicGroupOver K) (i : X.obj ⟶ G.obj.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp
+        ((lftGroupPoints K).obj G.obj))
+      ((lftPoints K).map i)) :
+    (algebraicGroupOfPointwiseSubgroup K X G i h).obj =
+      groupOfPointwiseSubgroup K X.obj G.obj i h := rfl
+
+/-- The original map as a homomorphism of finite-type group schemes. -/
+def algebraicPointwiseSubgroupHom
+    (X : algebraicOver K) (G : algebraicGroupOver K) (i : X.obj ⟶ G.obj.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp
+        ((lftGroupPoints K).obj G.obj))
+      ((lftPoints K).map i)) : algebraicGroupOfPointwiseSubgroup K X G i h ⟶ G :=
+  ⟨pointwiseSubgroupHom K X.obj G.obj i h⟩
+
+/-- The finite-type homomorphism has the same underlying group homomorphism. -/
+@[simp] theorem algebraicPointwiseSubgroupHom_hom
+    (X : algebraicOver K) (G : algebraicGroupOver K) (i : X.obj ⟶ G.obj.X)
+    (h : NatTrans.IsPointwiseSubgroup
+      (G := Monoidal.GrpFunctorCategory.pointwiseGrp
+        ((lftGroupPoints K).obj G.obj))
+      ((lftPoints K).map i)) :
+    (algebraicPointwiseSubgroupHom K X G i h).hom =
+      pointwiseSubgroupHom K X.obj G.obj i h := rfl
+
 /-- In the finite-type specialization, the original map to the target group
 scheme is the homomorphism for the recovered group structure, as in Milne,
 *Algebraic Groups* (2017), item 1.5. -/
@@ -188,8 +299,12 @@ theorem algebraicPointwiseSubgroupIsMonHom
       (G := Monoidal.GrpFunctorCategory.pointwiseGrp
         ((lftGroupPoints K).obj G.obj))
       ((lftPoints K).map i)) :
-    letI : GrpObj X.obj := pointwiseSubgroupGrpObj K X.obj G.obj i h
-    IsMonHom i :=
-  pointwiseSubgroupIsMonHom K X.obj G.obj i h
+    @IsMonHom
+      (locallyFiniteTypeMorphism.Over ⊤ (Spec (.of K)))
+      inferInstance inferInstance
+      (groupOfPointwiseSubgroup K X.obj G.obj i h).X G.obj.X
+      (groupOfPointwiseSubgroup K X.obj G.obj i h).grp.toMonObj
+      G.obj.grp.toMonObj i :=
+  (algebraicPointwiseSubgroupHom K X G i h).hom.hom.isMonHom_hom
 
 end AlgebraicGeometry
