@@ -20,6 +20,8 @@ The core API fixes this kernel and places `δ₁ - δ₀` in the greatest coidea
 Counit elimination excludes `δ₀` even from that coideal, whose carrier is thus
 nonzero and proper, unlike the ambient top submodule. The same witness exercises
 binary, set-indexed and natural-number-indexed joins, and core-based meets.
+Its image under the counit is bottom, and the core-preimage of bottom is this
+nonzero proper kernel.
 
 ## References
 
@@ -50,7 +52,8 @@ private theorem mem_counitKernel (x : C) :
     LinearMap.coe_ofClass, Coalgebra.counitCoalgHom_apply]
 
 /-- The counit kernel is a nonzero proper fixed point of core. The greatest
-coideal has a nonzero proper carrier; lattice operations retain the kernel witness. -/
+coideal has a nonzero proper carrier; lattice operations retain the kernel witness.
+The counit sends the kernel to bottom and has this kernel as the core-preimage of bottom. -/
 example :
     Coideal.core counitKernel.toSubmodule = counitKernel ∧
     delta 1 - delta 0 ∈ Coideal.core counitKernel.toSubmodule ∧
@@ -63,7 +66,9 @@ example :
     delta 1 - delta 0 ∈ sSup ({counitKernel, ⊥} : Set (Coideal ℚ C)) ∧
     delta 1 - delta 0 ∈ (⨆ n : ℕ, if n = 0 then counitKernel else ⊥) ∧
     delta 1 - delta 0 ∈ counitKernel ⊓ (⊤ : Coideal ℚ C) ∧
-    delta 1 - delta 0 ∈ sInf ({counitKernel, ⊤} : Set (Coideal ℚ C)) := by
+    delta 1 - delta 0 ∈ sInf ({counitKernel, ⊤} : Set (Coideal ℚ C)) ∧
+    Coideal.map (Coalgebra.counitCoalgHom ℚ C) counitKernel = (⊥ : Coideal ℚ ℚ) ∧
+    Coideal.coreComap (Coalgebra.counitCoalgHom ℚ C) (⊥ : Coideal ℚ ℚ) = counitKernel := by
   have hx : delta 1 - delta 0 ∈ counitKernel := by
     rw [mem_counitKernel]
     simp [delta]
@@ -95,7 +100,7 @@ example :
     apply (Coideal.mem_iff _).mpr
     simp only [htop, Submodule.mem_top]
   have hxm := (Coideal.mem_iff _).mp hx
-  refine ⟨hfixed, ?_, hx_ne, ?_, htop_ne_bot, htop_proper, ?_, ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨hfixed, ?_, hx_ne, ?_, htop_ne_bot, htop_proper, ?_, ?_, ?_, ?_, ?_, ?_, ?_, ?_⟩
   · rw [hfixed]
     exact hx
   · rw [hfixed]
@@ -125,5 +130,19 @@ example :
         exact Coideal.toSubmodule_le_toSubmodule.mpr hle
     rw [Coideal.sInf_eq_core]
     exact (Coideal.le_core (I := counitKernel) hmeet) hx
+  · apply le_antisymm ?_ bot_le
+    intro y hy
+    obtain ⟨x, hx, rfl⟩ := (Coideal.mem_map _ _).mp hy
+    exact Coideal.mem_bot.mpr ((mem_counitKernel x).mp hx)
+  · rw [Coideal.coreComap_eq_core]
+    have hpre : (⊥ : Coideal ℚ ℚ).toSubmodule.comap
+        (Coalgebra.counitCoalgHom ℚ C : C →ₗ[ℚ] ℚ) = counitKernel.toSubmodule := by
+      apply Submodule.ext
+      intro x
+      simp only [Submodule.mem_comap, Coideal.toSubmodule_bot, Submodule.mem_bot,
+        CoalgHom.coe_toLinearMap, Coalgebra.counitCoalgHom_apply,
+        Coideal.mem_toSubmodule, mem_counitKernel]
+    rw [hpre]
+    exact hfixed
 
 end CoidealExamples

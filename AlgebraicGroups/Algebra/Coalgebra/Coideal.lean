@@ -22,11 +22,19 @@ The Galois coinsertion `Coideal.gi` induces a complete lattice. Joins have the
 ambient submodule carriers, including the bottom submodule. Meets and top are
 cores of ambient meets and top, not necessarily those ambient submodules themselves.
 
+`Coideal.map f` is the ordinary linear image under a coalgebra-structure-preserving
+map, while `Coideal.coreComap f` takes the coideal core of the ordinary submodule
+preimage. These operations form a Galois connection: image preserves arbitrary
+joins and core-preimage preserves arbitrary meets, including empty families.
+They respect identity and composition without requiring coalgebra laws.
+
 ## References
 
 The proof-only bundle and carrier API follow Mathlib's `HomogeneousSubmodule`
 and this library's `Subcoalgebra`. The order-theoretic interface uses Mathlib's
 `GaloisConnection` and the coinsertion pattern of `TopologicalSpace.Opens`.
+Transport uses Mathlib's submodule map/comap adjunction and the coideal-image
+theorem from `AlgebraicGroups.Algebra.Coalgebra.Quotient`.
 -/
 
 @[expose] public section
@@ -223,5 +231,137 @@ theorem toSubmodule_bot : (⊥ : Coideal R C).toSubmodule = ⊥ :=
 @[simp]
 theorem mem_bot {x : C} : x ∈ (⊥ : Coideal R C) ↔ x = 0 := by
   rw [mem_iff, toSubmodule_bot, Submodule.mem_bot]
+
+end Coideal
+
+namespace Coideal
+
+universe uR uC uD uE uF uι
+
+variable {R : Type uR} [CommRing R]
+variable {C : Type uC} [AddCommGroup C] [Module R C] [CoalgebraStruct R C]
+variable {D : Type uD} [AddCommGroup D] [Module R D] [CoalgebraStruct R D]
+
+section Map
+
+variable {F : Type uF} [FunLike F C D] [CoalgHomClass F R C D]
+
+/-- The ordinary linear image of a coideal under a coalgebra-structure-preserving map. -/
+def map (f : F) (I : Coideal R C) : Coideal R D where
+  toSubmodule := I.toSubmodule.map (f : C →ₗ[R] D)
+  isCoideal' := I.isCoideal.map f
+
+/-- The greatest coideal contained in the ordinary submodule preimage. -/
+def coreComap (f : F) (J : Coideal R D) : Coideal R C :=
+  core (J.toSubmodule.comap (f : C →ₗ[R] D))
+
+/-- The carrier of coideal image is the ordinary submodule image. -/
+@[simp]
+theorem toSubmodule_map (f : F) (I : Coideal R C) :
+    (map f I).toSubmodule = I.toSubmodule.map (f : C →ₗ[R] D) :=
+  rfl
+
+/-- Membership in coideal image is witnessed by a member of the source coideal. -/
+theorem mem_map (f : F) (I : Coideal R C) {y : D} :
+    y ∈ map f I ↔ ∃ x, x ∈ I ∧ f x = y :=
+  Submodule.mem_map
+
+/-- Core-preimage is the coideal core of the ordinary submodule preimage. -/
+theorem coreComap_eq_core (f : F) (J : Coideal R D) :
+    coreComap f J = core (J.toSubmodule.comap (f : C →ₗ[R] D)) :=
+  rfl
+
+/-- A member of core-preimage maps into the target coideal. -/
+theorem apply_mem_of_mem_coreComap (f : F) (J : Coideal R D) {x : C}
+    (hx : x ∈ coreComap f J) : f x ∈ J :=
+  core_le (J.toSubmodule.comap (f : C →ₗ[R] D)) hx
+
+/-- A source coideal lies in core-preimage exactly when its carrier lies in preimage. -/
+theorem le_coreComap_iff (f : F) {I : Coideal R C} {J : Coideal R D} :
+    I ≤ coreComap f J ↔ I.toSubmodule ≤ J.toSubmodule.comap (f : C →ₗ[R] D) :=
+  le_core_iff
+
+/-- Coideal direct image is left adjoint to coideal core-preimage. -/
+theorem gc_map_coreComap (f : F) :
+    GaloisConnection (map f : Coideal R C → Coideal R D) (coreComap f) := by
+  intro I J
+  calc
+    map f I ≤ J ↔ (map f I).toSubmodule ≤ J.toSubmodule :=
+      toSubmodule_le_toSubmodule.symm
+    _ ↔ I.toSubmodule ≤ J.toSubmodule.comap (f : C →ₗ[R] D) := by
+      rw [toSubmodule_map, Submodule.map_le_iff_le_comap]
+    _ ↔ I ≤ coreComap f J := (le_coreComap_iff f).symm
+
+/-- Image lies in a coideal exactly when the source lies in its core-preimage. -/
+theorem map_le_iff_le_coreComap (f : F) {I : Coideal R C} {J : Coideal R D} :
+    map f I ≤ J ↔ I ≤ coreComap f J :=
+  gc_map_coreComap f I J
+
+/-- Coideal image is monotone. -/
+theorem map_mono (f : F) : Monotone (map f : Coideal R C → Coideal R D) :=
+  (gc_map_coreComap f).monotone_l
+
+/-- Coideal core-preimage is monotone. -/
+theorem coreComap_mono (f : F) : Monotone (coreComap f : Coideal R D → Coideal R C) :=
+  (gc_map_coreComap f).monotone_u
+
+/-- Direct image preserves arbitrary indexed coideal joins, including empty joins. -/
+@[simp]
+theorem map_iSup (f : F) {ι : Sort uι} (I : ι → Coideal R C) :
+    map f (⨆ i, I i) = ⨆ i, map f (I i) :=
+  (gc_map_coreComap f).l_iSup
+
+/-- Core-preimage preserves arbitrary indexed coideal meets, including empty meets. -/
+@[simp]
+theorem coreComap_iInf (f : F) {ι : Sort uι} (J : ι → Coideal R D) :
+    coreComap f (⨅ i, J i) = ⨅ i, coreComap f (J i) :=
+  (gc_map_coreComap f).u_iInf
+
+/-- Direct image preserves joins of sets of coideals. -/
+theorem map_sSup (f : F) (S : Set (Coideal R C)) :
+    map f (sSup S) = sSup (map f '' S) :=
+  (gc_map_coreComap f).l_sSup_eq_sSup_image
+
+/-- Core-preimage preserves meets of sets of coideals. -/
+theorem coreComap_sInf (f : F) (S : Set (Coideal R D)) :
+    coreComap f (sInf S) = sInf (coreComap f '' S) :=
+  (gc_map_coreComap f).u_sInf_eq_sInf_image
+
+/-- The image of the least coideal is the least coideal. -/
+@[simp]
+theorem map_bot (f : F) : map f (⊥ : Coideal R C) = ⊥ :=
+  (gc_map_coreComap f).l_bot
+
+/-- The core-preimage of the greatest coideal is the greatest coideal. -/
+@[simp]
+theorem coreComap_top (f : F) : coreComap f (⊤ : Coideal R D) = ⊤ :=
+  (gc_map_coreComap f).u_top
+
+end Map
+
+/-- Image under the identity coalgebra morphism fixes every coideal. -/
+@[simp]
+theorem map_id (I : Coideal R C) : map (CoalgHom.id R C) I = I := by
+  apply toSubmodule_injective
+  rw [toSubmodule_map, CoalgHom.id_toLinearMap, Submodule.map_id]
+
+/-- Core-preimage under the identity coalgebra morphism fixes every coideal. -/
+@[simp]
+theorem coreComap_id (I : Coideal R C) : coreComap (CoalgHom.id R C) I = I :=
+  (gc_map_coreComap (CoalgHom.id R C)).u_unique GaloisConnection.id (fun J => map_id J)
+
+variable {E : Type uE} [AddCommGroup E] [Module R E] [CoalgebraStruct R E]
+
+/-- Coideal image respects composition of coalgebra morphisms. -/
+theorem map_comp (f : C →ₗc[R] D) (g : D →ₗc[R] E) (I : Coideal R C) :
+    map (g.comp f) I = map g (map f I) := by
+  apply toSubmodule_injective
+  simp only [toSubmodule_map, CoalgHom.comp_toLinearMap, Submodule.map_comp]
+
+/-- Coideal core-preimage reverses composition of coalgebra morphisms. -/
+theorem coreComap_comp (f : C →ₗc[R] D) (g : D →ₗc[R] E) (K : Coideal R E) :
+    coreComap (g.comp f) K = coreComap f (coreComap g K) :=
+  (gc_map_coreComap (g.comp f)).u_unique
+    ((gc_map_coreComap f).compose (gc_map_coreComap g)) (fun I => map_comp f g I)
 
 end Coideal
