@@ -17,7 +17,7 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 [[require]]
 name = "scheme-properties"
 git = "https://github.com/FormalFrontier/scheme-properties.git"
-rev = "e64f24ab913c4347236f11bab8fe29cfa73c955a"
+rev = "935fe5bf779c18ce94cb81c38d03a06343935e60"
 
 [[require]]
 name = "minimal-primes"
@@ -195,6 +195,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraOrderTop",
   "AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraTensorProduct",
   "AlgebraicGroupsTest.GroupScheme.IdentityComponentBaseChange",
+  "AlgebraicGroupsTest.GroupScheme.ConnectedComponents",
   "AlgebraicGroupsTest.GroupScheme.GeometricallyIntegral",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.GroupLikeUnits",
   "AlgebraicGroupsTest.Algebra.Bialgebra.GroupLike",
