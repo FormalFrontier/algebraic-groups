@@ -4,7 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
-public import AlgebraicGroups.Algebra.Coalgebra.Quotient
+public import AlgebraicGroups.Algebra.Coalgebra.CoidealCorrespondence
 public import Mathlib.Order.GaloisConnection.Basic
 
 /-!
@@ -28,13 +28,19 @@ preimage. These operations form a Galois connection: image preserves arbitrary
 joins and core-preimage preserves arbitrary meets, including empty families.
 They respect identity and composition without requiring coalgebra laws.
 
+For a surjective morphism, `Coideal.coreComap` has the ordinary preimage
+carrier. The image and core-preimage identities give
+`Coideal.orderIsoMapCoreComapOfSurjective`, the order isomorphism from
+coideals containing the ordinary linear kernel to target coideals.
+
 ## References
 
 The proof-only bundle and carrier API follow Mathlib's `HomogeneousSubmodule`
 and this library's `Subcoalgebra`. The order-theoretic interface uses Mathlib's
 `GaloisConnection` and the coinsertion pattern of `TopologicalSpace.Opens`.
-Transport uses Mathlib's submodule map/comap adjunction and the coideal-image
-theorem from `AlgebraicGroups.Algebra.Coalgebra.Quotient`.
+Transport uses Mathlib's submodule map/comap adjunction. The surjective
+correspondence transports `Submodule.coidealOrderIsoOfSurjective` from
+`AlgebraicGroups.Algebra.Coalgebra.CoidealCorrespondence` to bundled coideals.
 -/
 
 @[expose] public section
@@ -336,6 +342,101 @@ theorem map_bot (f : F) : map f (⊥ : Coideal R C) = ⊥ :=
 @[simp]
 theorem coreComap_top (f : F) : coreComap f (⊤ : Coideal R D) = ⊤ :=
   (gc_map_coreComap f).u_top
+
+/-- Under a surjective coalgebra morphism, core-preimage has the ordinary preimage carrier. -/
+@[simp]
+theorem toSubmodule_coreComap_of_surjective (f : F) (hf : Function.Surjective f)
+    (J : Coideal R D) :
+    (coreComap f J).toSubmodule = J.toSubmodule.comap (f : C →ₗ[R] D) := by
+  change (core (J.toSubmodule.comap (f : C →ₗ[R] D))).toSubmodule = _
+  exact congrArg toSubmodule
+    (core_coe (ofSubmodule (J.toSubmodule.comap (f : C →ₗ[R] D))
+      (J.isCoideal.comap_of_surjective f hf)))
+
+/-- Under a surjective coalgebra morphism, membership in core-preimage is ordinary preimage
+membership. -/
+@[simp]
+theorem mem_coreComap_of_surjective (f : F) (hf : Function.Surjective f)
+    (J : Coideal R D) {x : C} : x ∈ coreComap f J ↔ f x ∈ J := by
+  change x ∈ (coreComap f J).toSubmodule ↔ f x ∈ J.toSubmodule
+  rw [toSubmodule_coreComap_of_surjective f hf]
+  exact Submodule.mem_comap
+
+/-- Image after core-preimage fixes a coideal under a surjective coalgebra morphism. -/
+@[simp]
+theorem map_coreComap_of_surjective (f : F) (hf : Function.Surjective f)
+    (J : Coideal R D) : map f (coreComap f J) = J := by
+  apply toSubmodule_injective
+  rw [toSubmodule_map, toSubmodule_coreComap_of_surjective f hf]
+  exact congrArg Subtype.val
+    ((Submodule.coidealOrderIsoOfSurjective f hf).apply_symm_apply
+      ⟨J.toSubmodule, J.isCoideal⟩)
+
+/-- Core-preimage after image adjoins the kernel of a surjective coalgebra morphism. -/
+theorem coreComap_map_of_surjective (f : F) (hf : Function.Surjective f)
+    (I : Coideal R C) :
+    coreComap f (map f I) = I ⊔ coreComap f (⊥ : Coideal R D) := by
+  apply toSubmodule_injective
+  rw [toSubmodule_coreComap_of_surjective f hf, toSubmodule_map,
+    Submodule.comap_map_eq, toSubmodule_sup,
+    toSubmodule_coreComap_of_surjective f hf, toSubmodule_bot]
+  rfl
+
+/-- The correspondence between coideals containing the ordinary linear kernel of a surjective
+coalgebra morphism and coideals of its target. The forward map is coideal image, and the inverse
+is core-preimage, whose carrier is the ordinary preimage. -/
+def orderIsoMapCoreComapOfSurjective (f : F) (hf : Function.Surjective f) :
+    {I : Coideal R C // (f : C →ₗ[R] D).ker ≤ I.toSubmodule} ≃o Coideal R D where
+  toFun I := map f I.1
+  invFun J := ⟨coreComap f J, by
+    rw [toSubmodule_coreComap_of_surjective f hf]
+    exact LinearMap.ker_le_comap (f : C →ₗ[R] D)⟩
+  left_inv I := by
+    apply Subtype.ext
+    apply toSubmodule_injective
+    rw [toSubmodule_coreComap_of_surjective f hf, toSubmodule_map]
+    exact congrArg Subtype.val
+      ((Submodule.coidealOrderIsoOfSurjective f hf).symm_apply_apply
+        ⟨I.1.toSubmodule, I.1.isCoideal, I.2⟩)
+  right_inv := map_coreComap_of_surjective f hf
+  map_rel_iff' := by
+    intro I J
+    change I.1.toSubmodule.map (f : C →ₗ[R] D) ≤
+      J.1.toSubmodule.map (f : C →ₗ[R] D) ↔ I.1.toSubmodule ≤ J.1.toSubmodule
+    exact (Submodule.coidealOrderIsoOfSurjective f hf).le_iff_le
+      (x := ⟨I.1.toSubmodule, I.1.isCoideal, I.2⟩)
+      (y := ⟨J.1.toSubmodule, J.1.isCoideal, J.2⟩)
+
+/-- The coideal correspondence sends a kernel-containing coideal to its image. -/
+@[simp]
+theorem orderIsoMapCoreComapOfSurjective_apply (f : F) (hf : Function.Surjective f)
+    (I : {I : Coideal R C // (f : C →ₗ[R] D).ker ≤ I.toSubmodule}) :
+    orderIsoMapCoreComapOfSurjective f hf I = map f I.1 :=
+  rfl
+
+/-- The inverse coideal correspondence is core-preimage. -/
+@[simp]
+theorem orderIsoMapCoreComapOfSurjective_symm_apply (f : F) (hf : Function.Surjective f)
+    (J : Coideal R D) :
+    ((orderIsoMapCoreComapOfSurjective f hf).symm J).1 = coreComap f J :=
+  rfl
+
+/-- The inverse image of the least target coideal has the ordinary linear kernel as carrier. -/
+theorem orderIsoMapCoreComapOfSurjective_symm_bot_toSubmodule
+    (f : F) (hf : Function.Surjective f) :
+    ((orderIsoMapCoreComapOfSurjective f hf).symm ⊥).1.toSubmodule =
+      (f : C →ₗ[R] D).ker := by
+  rw [orderIsoMapCoreComapOfSurjective_symm_apply,
+    toSubmodule_coreComap_of_surjective f hf, toSubmodule_bot]
+  rfl
+
+/-- The inverse image of the least target coideal is least among coideals containing the kernel. -/
+theorem orderIsoMapCoreComapOfSurjective_symm_bot_le (f : F) (hf : Function.Surjective f)
+    (I : {I : Coideal R C // (f : C →ₗ[R] D).ker ≤ I.toSubmodule}) :
+    (orderIsoMapCoreComapOfSurjective f hf).symm ⊥ ≤ I := by
+  change (coreComap f (⊥ : Coideal R D)).toSubmodule ≤ I.1.toSubmodule
+  rw [toSubmodule_coreComap_of_surjective f hf, toSubmodule_bot]
+  exact I.2
 
 end Map
 

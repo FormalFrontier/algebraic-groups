@@ -6,11 +6,12 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.Coideal
 public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Data.ZMod.Basic
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.Tactic.NormNum
 
 /-!
-# Coideal cores in the rational group-like coalgebra
+# Coideal cores and a group-like coideal correspondence
 
 The canonical coalgebra on `MonoidAlgebra ℚ ℕ` has its standard basis indexed by
 all natural numbers. Its counit kernel contains the nonzero vector `δ₁ - δ₀`
@@ -23,11 +24,18 @@ binary, set-indexed and natural-number-indexed joins, and core-based meets.
 Its image under the counit is bottom, and the core-preimage of bottom is this
 nonzero proper kernel.
 
+Over `ZMod 4`, the predecessor pushforward on the natural-number-indexed
+group-like coalgebra is surjective with nonzero kernel. Its coideal correspondence
+sends that kernel to bottom and the source counit kernel to the nonzero target
+counit kernel, giving two distinct inputs to the order isomorphism.
+
 ## References
 
 Mathlib's `MonoidAlgebra.instCoalgebra`, `Coalgebra.counitCoalgHom`, and coefficient
-API supply the coalgebra, counit morphism and coordinate calculation. The kernel
-coideality theorem is from `AlgebraicGroups.Algebra.Coalgebra.Quotient`.
+API supply the rational coalgebra, counit morphism and coordinate calculation.
+The modular example uses `Finsupp.instCoalgebra`, `Finsupp.lmapDomain` and
+`Finsupp.mapDomain_surjective`. The kernel coideality theorems are from
+`AlgebraicGroups.Algebra.Coalgebra.Quotient`.
 -/
 
 @[expose] public section
@@ -146,3 +154,136 @@ example :
     exact hfixed
 
 end CoidealExamples
+
+namespace CoidealExamples.ModFour
+
+private abbrev R := ZMod 4
+private abbrev C := ℕ →₀ R
+
+private noncomputable def delta (n : ℕ) : C := Finsupp.single n 1
+
+private noncomputable def predecessor : C →ₗc[R] C where
+  toLinearMap := Finsupp.lmapDomain R R Nat.pred
+  counit_comp := by
+    apply Finsupp.lhom_ext
+    intro n r
+    simp
+  map_comp_comul := by
+    apply Finsupp.lhom_ext
+    intro n r
+    simp
+
+private theorem predecessor_surjective : Function.Surjective predecessor := by
+  change Function.Surjective (Finsupp.mapDomain Nat.pred : C → C)
+  exact Finsupp.mapDomain_surjective (fun n => ⟨n + 1, rfl⟩)
+
+private noncomputable def counitKernel : Coideal R C :=
+  Coideal.ofSubmodule
+    (Coalgebra.counitCoalgHom R C : C →ₗ[R] R).ker
+    (CoalgHomClass.ker_isCoideal_of_surjective (Coalgebra.counitCoalgHom R C)
+      (fun r => ⟨Finsupp.single 0 r, by simp⟩))
+
+private theorem mem_counitKernel (x : C) :
+    x ∈ counitKernel ↔ Coalgebra.counit (R := R) x = 0 := by
+  simp only [counitKernel, Coideal.mem_ofSubmodule, LinearMap.mem_ker,
+    CoalgHom.coe_toLinearMap, Coalgebra.counitCoalgHom_apply]
+
+/-- The predecessor map on the group-like coalgebra over `ZMod 4` has two distinct
+kernel-containing coideals. The correspondence sends its ordinary kernel to bottom
+and its counit kernel to the nonzero counit kernel. A nonzero element of the first
+input is annihilated by `2`, and the second input is proper as an ambient submodule. -/
+example :
+    ∃ I₀ I₁ : {I : Coideal R C // (predecessor : C →ₗ[R] C).ker ≤ I.toSubmodule},
+      I₀.1 = Coideal.coreComap predecessor (⊥ : Coideal R C) ∧
+      I₁.1 = counitKernel ∧
+      I₀ ≠ I₁ ∧
+      Coideal.orderIsoMapCoreComapOfSurjective predecessor predecessor_surjective I₀ = ⊥ ∧
+      Coideal.orderIsoMapCoreComapOfSurjective predecessor predecessor_surjective I₁ =
+        counitKernel ∧
+      (2 : R) • (delta 1 - delta 0) ∈ I₀.1 ∧
+      (2 : R) • (delta 1 - delta 0) ≠ 0 ∧
+      (2 : R) • ((2 : R) • (delta 1 - delta 0)) = 0 ∧
+      counitKernel ≠ ⊥ ∧
+      counitKernel.toSubmodule ≠ ⊤ := by
+  let K := Coideal.coreComap predecessor (⊥ : Coideal R C)
+  have hK : K.toSubmodule = (predecessor : C →ₗ[R] C).ker := by
+    simpa only [Coideal.toSubmodule_bot, Submodule.comap_bot] using
+      Coideal.toSubmodule_coreComap_of_surjective predecessor predecessor_surjective
+        (⊥ : Coideal R C)
+  have hle : (predecessor : C →ₗ[R] C).ker ≤ counitKernel.toSubmodule := by
+    intro x hx
+    apply (Coideal.mem_iff _).mp
+    apply (mem_counitKernel x).mpr
+    have hpx : predecessor x = 0 := LinearMap.mem_ker.mp hx
+    rw [← CoalgHomClass.counit_comp_apply predecessor x, hpx, map_zero]
+  have hmap : Coideal.map predecessor counitKernel = counitKernel := by
+    apply Coideal.ext
+    intro y
+    rw [Coideal.mem_map]
+    constructor
+    · rintro ⟨x, hx, rfl⟩
+      apply (mem_counitKernel _).mpr
+      simpa only [CoalgHomClass.counit_comp_apply] using (mem_counitKernel x).mp hx
+    · intro hy
+      obtain ⟨x, rfl⟩ := predecessor_surjective y
+      refine ⟨x, ?_, rfl⟩
+      apply (mem_counitKernel x).mpr
+      simpa only [CoalgHomClass.counit_comp_apply] using (mem_counitKernel _).mp hy
+  have hu : delta 1 - delta 0 ∈ counitKernel := by
+    rw [mem_counitKernel]
+    simp [delta]
+  have hu_ne : delta 1 - delta 0 ≠ (0 : C) := by
+    intro h
+    have hcoeff := congrArg (fun z : C => z 1) h
+    norm_num [delta, Finsupp.single_apply, ZMod.one_eq_zero_iff] at hcoeff
+  have hnonzero : counitKernel ≠ ⊥ := by
+    intro h
+    have hz := hu
+    rw [h, Coideal.mem_bot] at hz
+    exact hu_ne hz
+  have hproper : counitKernel.toSubmodule ≠ ⊤ := by
+    have hzero : delta 0 ∉ counitKernel := by
+      rw [mem_counitKernel]
+      norm_num [delta, ZMod.one_eq_zero_iff]
+    intro h
+    apply hzero
+    apply (Coideal.mem_iff _).mpr
+    simp only [h, Submodule.mem_top]
+  have hwK : (2 : R) • (delta 1 - delta 0) ∈ K := by
+    apply (Coideal.mem_iff _).mpr
+    rw [hK, LinearMap.mem_ker]
+    rw [LinearMap.map_smul, map_sub]
+    simp [predecessor, delta]
+  have hw_ne : (2 : R) • (delta 1 - delta 0) ≠ (0 : C) := by
+    intro h
+    have hcoeff := congrArg (fun z : C => z 1) h
+    have htwo : (2 : R) ≠ 0 := by decide
+    apply htwo
+    simpa [delta, Finsupp.single_apply, smul_eq_mul] using hcoeff
+  have hw_annihilated : (2 : R) • ((2 : R) • (delta 1 - delta 0)) = (0 : C) := by
+    rw [← mul_smul]
+    have hfour : (2 : R) * 2 = 0 := by decide
+    rw [hfour, zero_smul]
+  let I₀ : {I : Coideal R C // (predecessor : C →ₗ[R] C).ker ≤ I.toSubmodule} :=
+    ⟨K, le_of_eq hK.symm⟩
+  let I₁ : {I : Coideal R C // (predecessor : C →ₗ[R] C).ker ≤ I.toSubmodule} :=
+    ⟨counitKernel, hle⟩
+  have hzero :
+      Coideal.orderIsoMapCoreComapOfSurjective predecessor predecessor_surjective I₀ = ⊥ := by
+    rw [Coideal.orderIsoMapCoreComapOfSurjective_apply]
+    exact Coideal.map_coreComap_of_surjective predecessor predecessor_surjective ⊥
+  have hone :
+      Coideal.orderIsoMapCoreComapOfSurjective predecessor predecessor_surjective I₁ =
+        counitKernel := by
+    rw [Coideal.orderIsoMapCoreComapOfSurjective_apply]
+    exact hmap
+  have hdistinct : I₀ ≠ I₁ := by
+    intro h
+    have heq := congrArg
+      (Coideal.orderIsoMapCoreComapOfSurjective predecessor predecessor_surjective) h
+    rw [hzero, hone] at heq
+    exact hnonzero heq.symm
+  exact ⟨I₀, I₁, rfl, rfl, hdistinct, hzero, hone, hwK, hw_ne, hw_annihilated,
+    hnonzero, hproper⟩
+
+end CoidealExamples.ModFour
