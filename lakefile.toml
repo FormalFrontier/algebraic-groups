@@ -17,7 +17,12 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 [[require]]
 name = "scheme-properties"
 git = "https://github.com/FormalFrontier/scheme-properties.git"
-rev = "22a428637698c197b9c488e74059a6e8a2d5d23b"
+rev = "b65ad6d657642c2df44c6dae1ee6ad4a31fda8d3"
+
+[[require]]
+name = "multivariate-polynomials"
+git = "https://github.com/FormalFrontier/multivariate-polynomials.git"
+rev = "58f7a9d7846189577c2a46ed1b06161ef71975b1"
 
 [[require]]
 name = "minimal-primes"
@@ -32,7 +37,7 @@ rev = "8b3b07bf2744a870b53934542e4c5ed383765bd6"
 [[require]]
 name = "coherent-modules"
 git = "https://github.com/FormalFrontier/coherent-modules.git"
-rev = "8dd3ab73d6feb55d3c58fc3eee96a0532e049eee"
+rev = "e848789ef591afbad356aa8bda7a0a61c2d5cd38"
 
 [[require]]
 name = "groupTheory"
@@ -46,6 +51,7 @@ roots = [
   "AlgebraicGroups.Algebra.Coalgebra.IdempotentIdealTensor",
   "AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finsupp",
   "AlgebraicGroups.Examples.UnitStalkDimension",
+  "AlgebraicGroups.GroupObject.FlatOverField",
 ]
 
 [[lean_lib]]
