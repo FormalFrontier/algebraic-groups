@@ -86,7 +86,7 @@ private lemma firstProjection_comp_firstInclusion (D : Subcoalgebra K (ℕ →�
 
 private instance projectedSourceCoalgebraStruct (D : Subcoalgebra K (ℕ →₀ K)) :
     CoalgebraStruct K (projectedSource K D) where
-  comul := _root_.TensorProduct.map (firstInclusion K D) (firstInclusion K D) ∘ₗ
+  comul := TensorProduct.map (firstInclusion K D) (firstInclusion K D) ∘ₗ
     comul (R := K) (A := D) ∘ₗ firstProjection K D
   counit := counit (R := K) (A := D) ∘ₗ firstProjection K D
 
@@ -98,8 +98,8 @@ private def firstProjectionHom (D : Subcoalgebra K (ℕ →₀ K)) :
   map_comp_comul := by
     apply LinearMap.ext
     intro x
-    change _root_.TensorProduct.map (firstProjection K D) (firstProjection K D)
-        (_root_.TensorProduct.map (firstInclusion K D) (firstInclusion K D)
+    change TensorProduct.map (firstProjection K D) (firstProjection K D)
+        (TensorProduct.map (firstInclusion K D) (firstInclusion K D)
           (comul (R := K) (A := D) (firstProjection K D x))) =
       comul (R := K) (A := D) (firstProjection K D x)
     rw [TensorProduct.map_map, firstProjection_comp_firstInclusion,
@@ -191,14 +191,14 @@ private lemma projectedSource_left_counit_failure (D : Subcoalgebra K (ℕ →�
         (comul (R := K) (A := projectedSource K D) (kernelVector K D)) ≠
       (1 : K) ⊗ₜ[K] kernelVector K D := by
   have hc : comul (R := K) (A := projectedSource K D) (kernelVector K D) = 0 := by
-    change _root_.TensorProduct.map (firstInclusion K D) (firstInclusion K D)
+    change TensorProduct.map (firstInclusion K D) (firstInclusion K D)
       (comul (R := K) (A := D) 0) = 0
     rw [map_zero, map_zero]
   intro h
   rw [hc, map_zero] at h
   have hx : (0 : projectedSource K D) = kernelVector K D := by
-    simpa only [map_zero, _root_.TensorProduct.lid_tmul, one_smul] using
-      congrArg (_root_.TensorProduct.lid K (projectedSource K D)) h
+    simpa only [map_zero, TensorProduct.lid_tmul, one_smul] using
+      congrArg (TensorProduct.lid K (projectedSource K D)) h
   exact kernelVector_ne_zero K D hx.symm
 
 end Coalgebra

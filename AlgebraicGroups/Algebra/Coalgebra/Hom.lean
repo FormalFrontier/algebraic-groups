@@ -37,11 +37,6 @@ without an injectivity assumption on the target counit. These kernel and injecti
 criteria need only coalgebra structures on both modules, over a commutative semiring;
 the scalar semiring, modules and morphism type may lie in four independent universes.
 
-## Linear factors
-
-`CoalgHom.ofComp` promotes a linear factor through a coalgebra homomorphism whose tensor
-square is injective. All three modules need only coalgebra structures.
-
 ## References
 
 Counit preservation and the bundled homomorphism API are supplied by
@@ -147,74 +142,3 @@ theorem injective_iff_counit_injective (f : F)
   exact (Function.Injective.of_comp_iff hεB (f : A → B)).symm
 
 end CoalgHomClass
-
-namespace CoalgHom
-
-section Factor
-
-variable {R : Type u} {A : Type v} {B : Type w} {C : Type uF}
-variable [CommSemiring R]
-variable [AddCommMonoid A] [Module R A] [CoalgebraStruct R A]
-variable [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
-variable [AddCommMonoid C] [Module R C] [CoalgebraStruct R C]
-
-/-- A linear factor of a coalgebra homomorphism through another coalgebra homomorphism
-is a coalgebra homomorphism if the tensor square of the latter map is injective. -/
-def ofComp (i : B →ₗc[R] C) (f : A →ₗc[R] C) (g : A →ₗ[R] B)
-    (hg : i.toLinearMap ∘ₗ g = f.toLinearMap)
-    (hi : Function.Injective (TensorProduct.map i.toLinearMap i.toLinearMap)) :
-    A →ₗc[R] B where
-  toLinearMap := g
-  counit_comp := by
-    calc
-      Coalgebra.counit ∘ₗ g =
-          (Coalgebra.counit ∘ₗ i.toLinearMap) ∘ₗ g := by rw [i.counit_comp]
-      _ = Coalgebra.counit ∘ₗ f.toLinearMap := by rw [LinearMap.comp_assoc, hg]
-      _ = Coalgebra.counit := f.counit_comp
-  map_comp_comul := by
-    apply LinearMap.ext
-    intro x
-    apply hi
-    simp only [LinearMap.comp_apply]
-    calc
-      TensorProduct.map i.toLinearMap i.toLinearMap
-          (TensorProduct.map g g (Coalgebra.comul (R := R) x)) =
-          TensorProduct.map f.toLinearMap f.toLinearMap
-            (Coalgebra.comul (R := R) x) := by
-        simp only [TensorProduct.map_map, hg]
-      _ = Coalgebra.comul (R := R) (f x) :=
-        CoalgHomClass.map_comp_comul_apply f x
-      _ = Coalgebra.comul (R := R) (i (g x)) :=
-        congrArg (Coalgebra.comul (R := R) (A := C))
-          (LinearMap.congr_fun hg x).symm
-      _ = TensorProduct.map i.toLinearMap i.toLinearMap
-          (Coalgebra.comul (R := R) (g x)) :=
-        (CoalgHomClass.map_comp_comul_apply i (g x)).symm
-
-@[simp]
-theorem ofComp_toLinearMap (i : B →ₗc[R] C) (f : A →ₗc[R] C)
-    (g : A →ₗ[R] B) (hg : i.toLinearMap ∘ₗ g = f.toLinearMap)
-    (hi : Function.Injective (TensorProduct.map i.toLinearMap i.toLinearMap)) :
-    (ofComp i f g hg hi : A →ₗ[R] B) = g :=
-  rfl
-
-@[simp]
-theorem ofComp_apply (i : B →ₗc[R] C) (f : A →ₗc[R] C)
-    (g : A →ₗ[R] B) (hg : i.toLinearMap ∘ₗ g = f.toLinearMap)
-    (hi : Function.Injective (TensorProduct.map i.toLinearMap i.toLinearMap)) (x : A) :
-    ofComp i f g hg hi x = g x :=
-  rfl
-
-/-- The coalgebra factor composes with the given map to the original homomorphism. -/
-@[simp]
-theorem comp_ofComp (i : B →ₗc[R] C) (f : A →ₗc[R] C)
-    (g : A →ₗ[R] B) (hg : i.toLinearMap ∘ₗ g = f.toLinearMap)
-    (hi : Function.Injective (TensorProduct.map i.toLinearMap i.toLinearMap)) :
-    i.comp (ofComp i f g hg hi) = f := by
-  apply CoalgHom.ext
-  intro x
-  exact LinearMap.congr_fun hg x
-
-end Factor
-
-end CoalgHom

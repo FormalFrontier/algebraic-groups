@@ -153,7 +153,7 @@ private lemma isGroupLikeElem_diagonalBasisVector (i : ({0, 1} : Set ℕ)) :
       (diagonalSubcoalgebra K).toSubmodule (diagonalSubcoalgebra K).toSubmodule
     rw [Subcoalgebra.mapIncl_coalgebra_comul, coe_diagonalBasisVector,
       (isGroupLikeElem_single_one K (i : ℕ)).comul_eq_tmul_self]
-    simp only [TensorProduct.mapIncl, _root_.TensorProduct.map_tmul, Submodule.subtype_apply,
+    simp only [TensorProduct.mapIncl, TensorProduct.map_tmul, Submodule.subtype_apply,
       coe_diagonalBasisVector]
 
 /-- Transport of the finite Finsupp coalgebra to the supported subtype, kept as explicit data. -/
@@ -176,7 +176,7 @@ private lemma diagonalComul_basisVector (i : ({0, 1} : Set ℕ)) :
   simp only [diagonalComul, LinearEquiv.coalgebra_comul_apply]
   rw [show (diagonalEquiv K) (diagonalBasisVector K i) = Finsupp.single i 1 from
     (diagonalEquiv K).apply_symm_apply _]
-  simp only [(isGroupLikeElem_single_one K i).comul_eq_tmul_self, _root_.TensorProduct.map_tmul,
+  simp only [(isGroupLikeElem_single_one K i).comul_eq_tmul_self, TensorProduct.map_tmul,
     diagonalBasisVector]
   rfl
 
@@ -214,7 +214,7 @@ example (i : ({0, 1} : Set ℕ)) :
         diagonalBasisVector K i ⊗ₜ[K] diagonalBasisVector K i ∧
       counit (R := K) ((diagonalSubcoalgebra K).subtype (diagonalBasisVector K i)) = 1 ∧
       comul (R := K) ((diagonalSubcoalgebra K).subtype (diagonalBasisVector K i)) =
-        _root_.TensorProduct.map (diagonalSubcoalgebra K).subtype.toLinearMap
+        TensorProduct.map (diagonalSubcoalgebra K).subtype.toLinearMap
           (diagonalSubcoalgebra K).subtype.toLinearMap
           (diagonalBasisVector K i ⊗ₜ[K] diagonalBasisVector K i) := by
   have hi := isGroupLikeElem_diagonalBasisVector K i

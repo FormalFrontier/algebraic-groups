@@ -80,18 +80,18 @@ variable [AddCommMonoid M] [Module K M]
 
 /-- A coefficient of a right coaction, obtained by evaluating its first tensor factor. -/
 def coefficient (X : RightComodule K C M) (ell : M →ₗ[K] K) (m : M) : C :=
-  _root_.TensorProduct.lid K C (ell.rTensor C (X.coaction m))
+  TensorProduct.lid K C (ell.rTensor C (X.coaction m))
 
 /-- The defining all-dual evaluation formula for a coefficient. -/
 theorem coefficient_eq (X : RightComodule K C M) (ell : M →ₗ[K] K) (m : M) :
-    X.coefficient ell m = _root_.TensorProduct.lid K C (ell.rTensor C (X.coaction m)) :=
+    X.coefficient ell m = TensorProduct.lid K C (ell.rTensor C (X.coaction m)) :=
   rfl
 
 /-- The linear map on the dual tensor the comodule that evaluates coefficients. -/
 def coefficientTensor (X : RightComodule K C M) :
     (Module.Dual K M) ⊗[K] M →ₗ[K] C :=
   TensorProduct.lift
-    (LinearMap.llcomp K M (K ⊗[K] C) C (_root_.TensorProduct.lid K C).toLinearMap ∘ₗ
+    (LinearMap.llcomp K M (K ⊗[K] C) C (TensorProduct.lid K C).toLinearMap ∘ₗ
       (LinearMap.llcomp K M (M ⊗[K] C) (K ⊗[K] C)).flip X.coaction ∘ₗ
       LinearMap.rTensorHom C)
 
@@ -106,16 +106,16 @@ right-colinear with the regular coaction. -/
 theorem comul_coefficient_eq_rTensor (X : RightComodule K C M)
     (ell : M →ₗ[K] K) (m : M) :
     comul (R := K) (X.coefficient ell m) =
-      (((_root_.TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C) ∘ₗ
+      (((TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C) ∘ₗ
         X.coaction).rTensor C (X.coaction m) := by
   let q : M ⊗[K] C →ₗ[K] C :=
-    (_root_.TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C
+    (TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C
   let q₂ : M ⊗[K] (C ⊗[K] C) →ₗ[K] C ⊗[K] C :=
-    (_root_.TensorProduct.lid K (C ⊗[K] C)).toLinearMap ∘ₗ ell.rTensor (C ⊗[K] C)
+    (TensorProduct.lid K (C ⊗[K] C)).toLinearMap ∘ₗ ell.rTensor (C ⊗[K] C)
   have hΔ : comul (R := K) ∘ₗ q = q₂ ∘ₗ (comul (R := K)).lTensor M := by
     refine TensorProduct.ext' fun x c => ?_
     simp [q, q₂]
-  have ha : q₂ ∘ₗ (_root_.TensorProduct.assoc K M C C).toLinearMap = q.rTensor C := by
+  have ha : q₂ ∘ₗ (TensorProduct.assoc K M C C).toLinearMap = q.rTensor C := by
     refine TensorProduct.ext (TensorProduct.ext ?_)
     ext x c d
     simp [q, q₂, TensorProduct.smul_tmul']
@@ -123,7 +123,7 @@ theorem comul_coefficient_eq_rTensor (X : RightComodule K C M)
     comul (R := K) (X.coefficient ell m) =
         q₂ ((comul (R := K)).lTensor M (X.coaction m)) :=
       LinearMap.congr_fun hΔ (X.coaction m)
-    _ = q₂ (_root_.TensorProduct.assoc K M C C (X.coaction.rTensor C (X.coaction m))) := by
+    _ = q₂ (TensorProduct.assoc K M C C (X.coaction.rTensor C (X.coaction m))) := by
       rw [X.coassoc_apply]
     _ = q.rTensor C (X.coaction.rTensor C (X.coaction m)) :=
       LinearMap.congr_fun ha _
@@ -135,22 +135,22 @@ theorem comul_coefficient_eq_rTensor (X : RightComodule K C M)
 @[simp] theorem counit_coefficient (X : RightComodule K C M)
     (ell : M →ₗ[K] K) (m : M) :
     counit (R := K) (X.coefficient ell m) = ell m := by
-  have h : counit (R := K) ∘ₗ (_root_.TensorProduct.lid K C).toLinearMap ∘ₗ
+  have h : counit (R := K) ∘ₗ (TensorProduct.lid K C).toLinearMap ∘ₗ
         ell.rTensor C =
-      ell ∘ₗ (_root_.TensorProduct.rid K M).toLinearMap ∘ₗ
+      ell ∘ₗ (TensorProduct.rid K M).toLinearMap ∘ₗ
         (counit (R := K)).lTensor M := by
     refine TensorProduct.ext' fun x c ↦ ?_
     simp [mul_comm]
   calc
     counit (R := K) (X.coefficient ell m) =
-        ell (_root_.TensorProduct.rid K M ((counit (R := K)).lTensor M (X.coaction m))) :=
+        ell (TensorProduct.rid K M ((counit (R := K)).lTensor M (X.coaction m))) :=
       LinearMap.congr_fun h (X.coaction m)
     _ = ell m := congrArg ell (X.rid_counit_coaction m)
 
 /-- A functional on a right comodule determines a morphism to the regular comodule. -/
 def coefficientHom (X : RightComodule K C M) (ell : M →ₗ[K] K) :
     RightComoduleHom X (regular K C) where
-  toLinearMap := (_root_.TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C ∘ₗ X.coaction
+  toLinearMap := (TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C ∘ₗ X.coaction
   colinear := by
     apply LinearMap.ext
     intro m
@@ -166,7 +166,7 @@ def coefficientHom (X : RightComodule K C M) (ell : M →ₗ[K] K) :
 @[simp] theorem coefficientHom_toLinearMap (X : RightComodule K C M)
     (ell : M →ₗ[K] K) :
     (X.coefficientHom ell).toLinearMap =
-      (_root_.TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C ∘ₗ X.coaction := by
+      (TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C ∘ₗ X.coaction := by
   rfl
 
 /-- The counit is a left inverse to the coefficient-morphism construction. -/
@@ -183,11 +183,11 @@ def coefficientHom (X : RightComodule K C M) (ell : M →ₗ[K] K) :
     X.coefficientHom (counit (R := K) ∘ₗ g.toLinearMap) = g := by
   apply RightComoduleHom.ext
   intro m
-  change _root_.TensorProduct.lid K C
+  change TensorProduct.lid K C
     ((counit (R := K) ∘ₗ g.toLinearMap).rTensor C (X.coaction m)) = g m
   rw [LinearMap.rTensor_comp_apply, ← g.colinear_apply]
   simp only [regular_coaction, Coalgebra.rTensor_counit_comul,
-    _root_.TensorProduct.lid_tmul, one_smul]
+    TensorProduct.lid_tmul, one_smul]
 
 /-- On the regular comodule the counit gives the identity coefficient morphism. -/
 @[simp] theorem coefficientHom_regular_counit :
@@ -195,9 +195,9 @@ def coefficientHom (X : RightComodule K C M) (ell : M →ₗ[K] K) :
       RightComoduleHom.id (regular K C) := by
   apply RightComoduleHom.ext
   intro c
-  change _root_.TensorProduct.lid K C ((counit (R := K)).rTensor C
+  change TensorProduct.lid K C ((counit (R := K)).rTensor C
     (comul (R := K) c)) = c
-  simp only [Coalgebra.rTensor_counit_comul, _root_.TensorProduct.lid_tmul, one_smul]
+  simp only [Coalgebra.rTensor_counit_comul, TensorProduct.lid_tmul, one_smul]
 
 /-- Morphisms to the regular comodule correspond to linear functionals by the counit.
 The inverse sends a functional to its coefficient morphism. -/
@@ -307,7 +307,7 @@ theorem comul_coefficient_eq_sum_coaction {ι : Type*} [DecidableEq ι]
     comul (R := K) (X.coefficient ell m) =
       (TensorProduct.equivFinsuppOfBasisLeft b (X.coaction m)).sum
         (fun j c ↦ X.coefficient ell (b j) ⊗ₜ[K] c) := by
-  let T := (((_root_.TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C) ∘ₗ
+  let T := (((TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C) ∘ₗ
     X.coaction).rTensor C
   calc
     comul (R := K) (X.coefficient ell m) = T (X.coaction m) :=
@@ -394,7 +394,7 @@ theorem coefficient_mem_coefficientSpan (X : RightComodule K C M)
   apply Submodule.eq_top_iff'.mpr
   intro c
   simpa only [coefficient, regular_coaction, Coalgebra.rTensor_counit_comul,
-    _root_.TensorProduct.lid_tmul, one_smul] using
+    TensorProduct.lid_tmul, one_smul] using
     (regular K C).coefficient_mem_coefficientSpan (counit (R := K)) c
 
 /-- Containment of the coefficient span is equivalent to containment of all coefficients. -/
@@ -511,7 +511,7 @@ private theorem coefficient_eq_sum_basis {ι : Type*} [Fintype ι]
     (ell : M →ₗ[K] K) (m : M) :
     X.coefficient ell m = ∑ j, b.equivFun m j • X.coefficient ell (b j) := by
   let f : M →ₗ[K] C :=
-    (_root_.TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C ∘ₗ X.coaction
+    (TensorProduct.lid K C).toLinearMap ∘ₗ ell.rTensor C ∘ₗ X.coaction
   have h := b.constr_apply_fintype K (fun j ↦ f (b j)) m
   rw [b.constr_self K f] at h
   simpa only [f, LinearMap.comp_apply, coefficient_eq, LinearEquiv.coe_coe] using h
@@ -527,12 +527,12 @@ theorem coefficientSpan_eq_span_basis {ι : Type z}
   · apply (X.coefficientSpan_le_iff _).mpr
     intro ell m
     rw [coefficient_eq, X.coaction_eq_sum_basis b m, Finsupp.sum]
-    simp only [map_sum, LinearMap.rTensor_tmul, _root_.TensorProduct.lid_tmul]
+    simp only [map_sum, LinearMap.rTensor_tmul, TensorProduct.lid_tmul]
     refine Submodule.sum_mem _ fun i _ ↦ Submodule.smul_mem _ _ ?_
     rw [X.equivFinsuppOfBasisLeft_coaction_apply b m i]
     -- Only the support of this vector's coordinates is used.
     let f : M →ₗ[K] C :=
-      (_root_.TensorProduct.lid K C).toLinearMap ∘ₗ (b.coord i).rTensor C ∘ₗ X.coaction
+      (TensorProduct.lid K C).toLinearMap ∘ₗ (b.coord i).rTensor C ∘ₗ X.coaction
     have h := b.constr_apply K (fun j ↦ f (b j)) m
     rw [b.constr_self K f] at h
     have hcoord : X.coefficient (b.coord i) m =
@@ -553,13 +553,13 @@ private theorem tensor_mem_range_lTensor_iff {K : Type u} {N : Type v} {M : Type
     [Field K] [AddCommMonoid N] [Module K N] [AddCommMonoid M] [Module K M]
     (S : Submodule K N) (z : M ⊗[K] N) :
     z ∈ LinearMap.range (S.subtype.lTensor M) ↔
-      ∀ ell : M →ₗ[K] K, _root_.TensorProduct.lid K N (ell.rTensor N z) ∈ S := by
+      ∀ ell : M →ₗ[K] K, TensorProduct.lid K N (ell.rTensor N z) ∈ S := by
   constructor
   · rintro ⟨y, rfl⟩ ell
     induction y with
     | tmul m n =>
       simpa only [LinearMap.lTensor_tmul, Submodule.subtype_apply,
-        LinearMap.rTensor_tmul, _root_.TensorProduct.lid_tmul] using
+        LinearMap.rTensor_tmul, TensorProduct.lid_tmul] using
         S.smul_mem (ell m) n.property
     | add y₁ y₂ hy₁ hy₂ =>
       simpa only [map_add] using S.add_mem hy₁ hy₂
@@ -708,7 +708,7 @@ theorem subtype_lTensor_comp_coactionCodRestrict (X : RightComodule K C M)
 private theorem coactionCodRestrict_coassoc (X : RightComodule K C M)
     (D : _root_.Subcoalgebra K C)
     (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
-    _root_.TensorProduct.assoc K M D D ∘ₗ (X.coactionCodRestrict D h).rTensor D ∘ₗ
+    TensorProduct.assoc K M D D ∘ₗ (X.coactionCodRestrict D h).rTensor D ∘ₗ
         X.coactionCodRestrict D h =
       (comul (R := K) (A := D)).lTensor M ∘ₗ X.coactionCodRestrict D h := by
   let ρ : M →ₗ[K] M ⊗[K] D := X.coactionCodRestrict D h
@@ -717,18 +717,18 @@ private theorem coactionCodRestrict_coassoc (X : RightComodule K C M)
   have hρ_apply (m : M) : D.subtype.toLinearMap.lTensor M (ρ m) = X.coaction m :=
     LinearMap.congr_fun hρ m
   have hρ_tensor :
-      _root_.TensorProduct.map (D.subtype.toLinearMap.lTensor M) D.subtype.toLinearMap ∘ₗ
+      TensorProduct.map (D.subtype.toLinearMap.lTensor M) D.subtype.toLinearMap ∘ₗ
           ρ.rTensor D =
         X.coaction.rTensor C ∘ₗ D.subtype.toLinearMap.lTensor M := by
     rw [LinearMap.map_comp_rTensor, hρ, LinearMap.rTensor_comp_lTensor]
   have hcomul :
-      (_root_.TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M ∘ₗ
+      (TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M ∘ₗ
           (comul (R := K) (A := D)).lTensor M =
         (comul (R := K) (A := C)).lTensor M ∘ₗ D.subtype.toLinearMap.lTensor M := by
     rw [← LinearMap.lTensor_comp, D.subtype.map_comp_comul, LinearMap.lTensor_comp]
   -- Only the cancellation step needs the field's canonical additive inverses on M.
   have hinj : Function.Injective
-      ((_root_.TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M) := by
+      ((TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M) := by
     let : AddCommGroup M := Module.addCommMonoidToAddCommGroup K (M := M)
     exact Module.Flat.lTensor_preserves_injective_linearMap (M := M)
       (TensorProduct.mapIncl D.toSubmodule D.toSubmodule)
@@ -738,22 +738,22 @@ private theorem coactionCodRestrict_coassoc (X : RightComodule K C M)
   apply hinj
   simp only [LinearMap.comp_apply, LinearEquiv.coe_coe]
   calc
-    (_root_.TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M
-        (_root_.TensorProduct.assoc K M D D (ρ.rTensor D (ρ m))) =
-        _root_.TensorProduct.assoc K M C C
-          (_root_.TensorProduct.map (D.subtype.toLinearMap.lTensor M) D.subtype.toLinearMap
+    (TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M
+        (TensorProduct.assoc K M D D (ρ.rTensor D (ρ m))) =
+        TensorProduct.assoc K M C C
+          (TensorProduct.map (D.subtype.toLinearMap.lTensor M) D.subtype.toLinearMap
             (ρ.rTensor D (ρ m))) :=
       TensorProduct.map_map_assoc (LinearMap.id : M →ₗ[K] M)
         D.subtype.toLinearMap D.subtype.toLinearMap _
-    _ = _root_.TensorProduct.assoc K M C C
+    _ = TensorProduct.assoc K M C C
         (X.coaction.rTensor C (D.subtype.toLinearMap.lTensor M (ρ m))) :=
-      congrArg (_root_.TensorProduct.assoc K M C C) (LinearMap.congr_fun hρ_tensor (ρ m))
-    _ = _root_.TensorProduct.assoc K M C C (X.coaction.rTensor C (X.coaction m)) := by
+      congrArg (TensorProduct.assoc K M C C) (LinearMap.congr_fun hρ_tensor (ρ m))
+    _ = TensorProduct.assoc K M C C (X.coaction.rTensor C (X.coaction m)) := by
       rw [hρ_apply]
     _ = (comul (R := K) (A := C)).lTensor M (X.coaction m) := X.coassoc_apply m
     _ = (comul (R := K) (A := C)).lTensor M
         (D.subtype.toLinearMap.lTensor M (ρ m)) := by rw [hρ_apply]
-    _ = (_root_.TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M
+    _ = (TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap).lTensor M
         ((comul (R := K) (A := D)).lTensor M (ρ m)) :=
       (LinearMap.congr_fun hcomul (ρ m)).symm
 
@@ -761,7 +761,7 @@ private theorem coactionCodRestrict_counit_comp (X : RightComodule K C M)
     (D : _root_.Subcoalgebra K C)
     (h : ∀ m : M, X.coaction m ∈ LinearMap.range (D.subtype.toLinearMap.lTensor M)) :
     (counit (R := K) (A := D)).lTensor M ∘ₗ X.coactionCodRestrict D h =
-      (_root_.TensorProduct.rid K M).symm.toLinearMap := by
+      (TensorProduct.rid K M).symm.toLinearMap := by
   rw [← D.subtype.counit_comp, LinearMap.lTensor_comp, LinearMap.comp_assoc,
     X.subtype_lTensor_comp_coactionCodRestrict D h]
   exact X.counit_comp
