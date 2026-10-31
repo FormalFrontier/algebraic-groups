@@ -5,6 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 import AlgebraicGroups.Algebra.Coalgebra.GroupLike
+import AlgebraicGroups.Algebra.HopfAlgebra.Subalgebra.Hom
+import Mathlib.RingTheory.Bialgebra.Hom
 import Mathlib.RingTheory.HopfAlgebra.GroupLike
 import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
 
@@ -16,6 +18,11 @@ Hopf algebra and inherited coalgebra structures. The basis element at integer we
 is a unit with tensor-square comultiplication and unit counit, distinct from zero and the
 algebra unit at weight `0`. Its normalization uses the coalgebra criterion with those same
 counit-unit and comultiplication inputs.
+
+The scalar
+subalgebra is proper and stable under comultiplication and the antipode. Its induced
+Hopf algebra retains the inherited algebra and module structures and the induced
+coalgebra; the scalar unit homomorphism factors through its inclusion.
 
 Zero satisfies the tensor-square equation in the same coalgebra, but its counit is not a
 unit and it is not group-like.
@@ -69,6 +76,82 @@ private theorem generator_isGroupLikeElem (k : Type u) [Field k] :
     IsGroupLikeElem k (generator k) := by
   exact IsGroupLikeElem.of_isUnit_counit
     (generator_inputs k).1 (generator_inputs k).2.1
+
+private theorem generator_counit (k : Type u) [Field k] :
+    Coalgebra.counit (R := k) (generator k) = 1 :=
+  (generator_isGroupLikeElem k).counit_eq_one
+
+private theorem generator_not_mem_scalar_bottom (k : Type u) [Field k] :
+    generator k ∉ (⊥ : Subalgebra k (GroupAlgebra k)) := by
+  intro ht
+  obtain ⟨c, hc⟩ := Algebra.mem_bot.mp ht
+  have hc1 : c = 1 := by
+    have h := congrArg
+      (fun x : GroupAlgebra k => Coalgebra.counit (R := k) x) hc
+    simpa only [Bialgebra.counit_algebraMap, generator_counit] using h
+  apply (generator_inputs k).2.2.2.2
+  calc
+    generator k = algebraMap k (GroupAlgebra k) c := hc.symm
+    _ = 1 := by rw [hc1, map_one]
+
+private theorem scalar_bottom_inputs (k : Type u) [Field k] :
+    let S := (⊥ : Subalgebra k (GroupAlgebra k))
+    (∀ s : S, Coalgebra.comul (R := k) (s : GroupAlgebra k) ∈
+      LinearMap.range (TensorProduct.map S.val.toLinearMap S.val.toLinearMap)) ∧
+    (∀ s : S, HopfAlgebra.antipode k (s : GroupAlgebra k) ∈ S) := by
+  dsimp only
+  constructor
+  · intro s
+    obtain ⟨c, hc⟩ := Algebra.mem_bot.mp s.property
+    refine ⟨c • ((1 : (⊥ : Subalgebra k (GroupAlgebra k))) ⊗ₜ[k] 1), ?_⟩
+    rw [map_smul, TensorProduct.map_tmul]
+    change c • ((1 : GroupAlgebra k) ⊗ₜ[k] 1) =
+      Coalgebra.comul (R := k) (s : GroupAlgebra k)
+    rw [← hc, Algebra.algebraMap_eq_smul_one, map_smul,
+      Bialgebra.comul_one, Algebra.TensorProduct.one_def]
+  · intro s
+    obtain ⟨c, hc⟩ := Algebra.mem_bot.mp s.property
+    rw [← hc, Algebra.algebraMap_eq_smul_one, map_smul, HopfAlgebra.antipode_one]
+    simpa only [Algebra.algebraMap_eq_smul_one] using
+      (⊥ : Subalgebra k (GroupAlgebra k)).algebraMap_mem c
+
+private theorem scalar_bottom_factorization (k : Type u) [Field k] :
+    let S := (⊥ : Subalgebra k (GroupAlgebra k))
+    ∃ h : S.IsHopfSubalgebra,
+      generator k ∉ S ∧
+      (S.hopfAlgebra h).toBialgebra.toAlgebra = (inferInstance : Algebra k S) ∧
+      @Algebra.toModule k S _ _ (S.hopfAlgebra h).toBialgebra.toAlgebra =
+        (inferInstance : Module k S) ∧
+      (S.hopfAlgebra h).toBialgebra.toCoalgebra =
+        S.coalgebraOfComulMem h.comul_mem ∧
+      (∃ g : @BialgHom k k S
+          (inferInstance : CommSemiring k)
+          (inferInstance : Semiring k) (inferInstance : Algebra k k)
+          (inferInstance : Semiring S) (inferInstance : Algebra k S)
+          (inferInstance : CoalgebraStruct k k)
+          (S.coalgebraOfComulMem h.comul_mem).toCoalgebraStruct,
+        @BialgHom.comp k k S (GroupAlgebra k)
+          (inferInstance : CommSemiring k)
+          (inferInstance : Semiring k) (inferInstance : Semiring S)
+          (inferInstance : Semiring (GroupAlgebra k))
+          (inferInstance : Algebra k k) (inferInstance : Algebra k S)
+          (inferInstance : Algebra k (GroupAlgebra k))
+          (inferInstance : CoalgebraStruct k k)
+          (S.coalgebraOfComulMem h.comul_mem).toCoalgebraStruct
+          (inferInstance : CoalgebraStruct k (GroupAlgebra k))
+          (S.inclusionBialgHom h) g =
+          Bialgebra.unitBialgHom k (GroupAlgebra k)) := by
+  let S : Subalgebra k (GroupAlgebra k) := ⊥
+  have h : S.IsHopfSubalgebra :=
+    ⟨(scalar_bottom_inputs k).1, (scalar_bottom_inputs k).2⟩
+  refine ⟨h, generator_not_mem_scalar_bottom k, S.hopfAlgebra_toAlgebra h,
+    S.hopfAlgebra_toModule h, S.hopfAlgebra_toCoalgebra h, ?_⟩
+  let f : k →ₐc[k] GroupAlgebra k := Bialgebra.unitBialgHom k (GroupAlgebra k)
+  have hf : f.toAlgHom.range ≤ S := by
+    rintro _ ⟨c, rfl⟩
+    change algebraMap k (GroupAlgebra k) c ∈ S
+    exact S.algebraMap_mem c
+  exact ⟨S.corestrict h f hf, S.inclusionBialgHom_comp_corestrict h f hf⟩
 
 private theorem zero_boundary (k : Type u) [Field k] :
     Coalgebra.comul (R := k) (0 : GroupAlgebra k) =

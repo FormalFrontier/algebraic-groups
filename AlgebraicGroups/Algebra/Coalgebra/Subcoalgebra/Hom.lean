@@ -5,7 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Coalgebra
-public import Mathlib.RingTheory.Coalgebra.Hom
+public import AlgebraicGroups.Algebra.Coalgebra.Hom
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.RingTheory.Flat.Basic
 
@@ -143,34 +143,21 @@ variable [AddCommMonoid A] [Module K A] [CoalgebraStruct K A]
 
 /-- Restrict the codomain of a coalgebra homomorphism to a subcoalgebra containing its values. -/
 noncomputable def codRestrict (f : A →ₗc[K] C) (D : Subcoalgebra K C)
-    (h : ∀ x, f x ∈ D) : A →ₗc[K] D where
-  toLinearMap := f.toLinearMap.codRestrict D.toSubmodule h
-  counit_comp := by
-    apply LinearMap.ext
-    intro x
-    rw [LinearMap.comp_apply, D.coalgebra_counit_apply, LinearMap.codRestrict_apply]
-    exact CoalgHomClass.counit_comp_apply f x
-  map_comp_comul := by
-    apply LinearMap.ext
-    intro x
-    apply Module.Flat.tensorProduct_mapIncl_injective_of_right D.toSubmodule D.toSubmodule
-    simp only [LinearMap.comp_apply]
-    calc
-      TensorProduct.mapIncl D.toSubmodule D.toSubmodule
-          (TensorProduct.map (f.toLinearMap.codRestrict D.toSubmodule h)
-            (f.toLinearMap.codRestrict D.toSubmodule h)
-            (Coalgebra.comul (R := K) (A := A) x)) =
-          TensorProduct.map f.toLinearMap f.toLinearMap
-            (Coalgebra.comul (R := K) (A := A) x) := by
-        simp only [TensorProduct.mapIncl, TensorProduct.map_map,
-          LinearMap.subtype_comp_codRestrict]
-      _ = Coalgebra.comul (R := K) (A := C) (f x) :=
-        CoalgHomClass.map_comp_comul_apply f x
-      _ = TensorProduct.mapIncl D.toSubmodule D.toSubmodule
-          (Coalgebra.comul (R := K) (A := D)
-            (f.toLinearMap.codRestrict D.toSubmodule h x)) := by
-        rw [D.mapIncl_coalgebra_comul, LinearMap.codRestrict_apply]
-        rfl
+    (h : ∀ x, f x ∈ D) : A →ₗc[K] D :=
+  ofComp D.subtype f (f.toLinearMap.codRestrict D.toSubmodule h)
+    (LinearMap.subtype_comp_codRestrict (f := f.toLinearMap) D.toSubmodule h)
+    (Module.Flat.tensorProduct_mapIncl_injective_of_right D.toSubmodule D.toSubmodule)
+
+/-- A linear factor through a subcoalgebra inclusion agrees with codomain restriction. -/
+theorem ofComp_eq_codRestrict (f : A →ₗc[K] C) (D : Subcoalgebra K C)
+    (h : ∀ x, f x ∈ D) (g : A →ₗ[K] D)
+    (hg : D.subtype.toLinearMap ∘ₗ g = f.toLinearMap)
+    (hi : Function.Injective
+      (TensorProduct.map D.subtype.toLinearMap D.subtype.toLinearMap)) :
+    ofComp D.subtype f g hg hi = f.codRestrict D h := by
+  apply D.coalgHom_ext
+  intro x
+  exact LinearMap.congr_fun hg x
 
 @[simp]
 theorem codRestrict_toLinearMap (f : A →ₗc[K] C) (D : Subcoalgebra K C)

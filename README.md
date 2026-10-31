@@ -8,6 +8,13 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Group objects
 
+- **Family translations.** For a given group object `G` in any Cartesian
+  monoidal category and any family `i : P → G`, the shears
+  `(p, g) ↦ (p, i(p)g)` and `(g, p) ↦ (gi(p), p)` are isomorphisms of
+  underlying objects. No group structure on `P` or multiplicativity of `i`
+  is required. Projection and generalized-pair formulas, inverse/unit/composition
+  laws and naturality preserve the noncommutative multiplication order.
+  [Construction and factorization](AlgebraicGroups/GroupObject/FamilyTranslation.lean).
 - **Ordered commutator word maps.** For a given group object in any Cartesian
   monoidal category, a supplied fan indexed by `Fin n × Fin 2` determines the
   ordered product of its `n` commutators. The API gives evaluation on arbitrary
@@ -741,6 +748,16 @@ maintained project libraries; it does not claim to formalize an entire source.
   [maps](AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean),
   [comultiplication](AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean).
 
+- **Hopf images and first isomorphism.** Over any field, a bialgebra morphism
+  from a possibly noncommutative ring Hopf algebra to a semiring Hopf algebra
+  gives a full Hopf structure on its ordinary algebra range, with unchanged
+  inherited semiring, algebra and module data. The ordinary quotient by its
+  ring kernel is bialgebra-equivalent to this range via the ordinary algebra
+  first-isomorphism equivalence. Inclusion, corestriction, both factor triangles,
+  representative and inverse formulas, and uniqueness refer to these fixed
+  structures; no surjectivity, injectivity or finiteness hypothesis is required.
+  [API](AlgebraicGroups/Algebra/HopfAlgebra/Range.lean),
+  [infinite cyclic augmentation client](AlgebraicGroupsTest/Algebra/HopfAlgebra/Ideal.lean).
 - **Hopf-ideal kernels and inverse images.** Over a field, a bundled bialgebra
   homomorphism between full Hopf algebras has ordinary kernel with
   `Ideal.IsHopfIdeal`; inverse images preserve that property. Source rings may
@@ -989,6 +1006,7 @@ maintained project libraries; it does not claim to formalize an entire source.
 | [`AlgebraicGroups`](AlgebraicGroups.lean) | Library aggregate; focused imports are linked above. |
 | [`AlgebraicGroupsTest`](AlgebraicGroupsTest/) | Test library: ordinary-import clients and boundary examples. |
 | [`AlgebraicGroups.GroupObject.CommutatorWord`](AlgebraicGroups/GroupObject/CommutatorWord.lean) | Ordered products of commutators on supplied fans, characteristic and naturality formulas, unit-pair extension and generalized-point range inclusion. |
+| [`AlgebraicGroups.GroupObject.FamilyTranslation`](AlgebraicGroups/GroupObject/FamilyTranslation.lean) | Left and right shears for arbitrary parameter families, characteristic formulas, naturality and translated-product factorization. |
 | [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean) | Carrier transport with fixed coalgebra, object-coherence laws, canonical inverse colinear maps and target characterization. |
 | [`AlgebraicGroups.GroupScheme.AffineHomOverConvolution`](AlgebraicGroups/GroupScheme/AffineHomOverConvolution.lean) | Affine-target global-sections comparison with convolution, target and coefficient readbacks, naturality, and affine specialization. |
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
