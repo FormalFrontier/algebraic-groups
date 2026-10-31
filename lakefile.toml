@@ -52,6 +52,8 @@ roots = [
   "AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finsupp",
   "AlgebraicGroups.Examples.UnitStalkDimension",
   "AlgebraicGroups.GroupObject.FlatOverField",
+  "AlgebraicGroups.GroupObject.Word",
+  "AlgebraicGroups.GroupObject.Word.Commutator",
 ]
 
 [[lean_lib]]
