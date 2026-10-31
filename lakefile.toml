@@ -54,6 +54,8 @@ roots = [
   "AlgebraicGroups.GroupObject.FlatOverField",
   "AlgebraicGroups.GroupObject.Word",
   "AlgebraicGroups.GroupObject.Word.Commutator",
+  "AlgebraicGroups.GroupObject.KernelPair",
+  "AlgebraicGroups.GroupObject.KernelPair.Flat",
 ]
 
 [[lean_lib]]
