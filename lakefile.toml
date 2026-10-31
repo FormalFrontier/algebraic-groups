@@ -56,6 +56,9 @@ roots = [
   "AlgebraicGroups.GroupObject.Word.Commutator",
   "AlgebraicGroups.GroupObject.KernelPair",
   "AlgebraicGroups.GroupObject.KernelPair.Flat",
+
+  "AlgebraicGroups.GroupObject.KernelDescent",
+  "AlgebraicGroups.GroupObject.KernelDescent.Fpqc",
 ]
 
 [[lean_lib]]
