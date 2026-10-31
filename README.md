@@ -8,6 +8,12 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Group objects
 
+- **Flatness of group-homomorphism families.** For group objects `G` and `H`
+  over any scheme `S`, let `f : G ⟶ H` be a group homomorphism and
+  `i : P ⟶ G` a family. If `P ⟶ S` is flat and surjective, `G ⟶ S` is flat,
+  and `i ≫ f` is flat, then `f` is flat. Neither a group structure on `P`
+  nor flatness of `i` or `H ⟶ S` is required.
+  See [`Flat.of_group_hom_family`](AlgebraicGroups/GroupObject/Flat.lean).
 - **Family translations.** For a given group object `G` in any Cartesian
   monoidal category and any family `i : P → G`, the shears
   `(p, g) ↦ (p, i(p)g)` and `(g, p) ↦ (gi(p), p)` are isomorphisms of

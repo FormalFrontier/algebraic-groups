@@ -84,6 +84,7 @@ public import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
 public import AlgebraicGroups.Algebra.HopfAlgebra.Comultiplication
 public import AlgebraicGroups.Algebra.HopfAlgebra.Convolution
 public import AlgebraicGroups.Algebra.HopfAlgebra.GroupLike
+public import AlgebraicGroups.Algebra.HopfAlgebra.Subalgebra
 public import AlgebraicGroups.Category.Extensive
 public import AlgebraicGroups.Category.EquivalenceRelation
 public import AlgebraicGroups.Category.Grp.FilteredColimits
@@ -95,6 +96,7 @@ public import AlgebraicGroups.GroupObject.CommutatorWord
 public import AlgebraicGroups.GroupObject.Coset
 public import AlgebraicGroups.GroupObject.EffectiveEpi
 public import AlgebraicGroups.GroupObject.FamilyTranslation
+public import AlgebraicGroups.GroupObject.Flat
 public import AlgebraicGroups.GroupObject.FunctorCategory
 public import AlgebraicGroups.GroupObject.FunctorLimits
 public import AlgebraicGroups.GroupObject.Hom

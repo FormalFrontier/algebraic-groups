@@ -17,7 +17,7 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 [[require]]
 name = "scheme-properties"
 git = "https://github.com/FormalFrontier/scheme-properties.git"
-rev = "935fe5bf779c18ce94cb81c38d03a06343935e60"
+rev = "22a428637698c197b9c488e74059a6e8a2d5d23b"
 
 [[require]]
 name = "minimal-primes"
@@ -32,7 +32,7 @@ rev = "8b3b07bf2744a870b53934542e4c5ed383765bd6"
 [[require]]
 name = "coherent-modules"
 git = "https://github.com/FormalFrontier/coherent-modules.git"
-rev = "1112034c447b07049c12402ce0f3f25c4cffb5e4"
+rev = "8dd3ab73d6feb55d3c58fc3eee96a0532e049eee"
 
 [[require]]
 name = "groupTheory"
