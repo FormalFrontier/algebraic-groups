@@ -5,6 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
+public import AlgebraicGroups.Algebra.Coalgebra.ComoduleBaseChange
+public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Noetherian.Basic
@@ -974,3 +976,141 @@ public theorem Coalgebra.exists_finite_regular_subcomodule_adjoin_coefficients_e
   intro ι b
   rw [U.comodule.coefficientSpan_eq_span_basis b, Algebra.adjoin_span] at hgen
   exact hgen
+
+namespace Coalgebra.RightComodule
+
+section ScalarExtension
+
+variable {K : Type u} {C : Type v} {W : Type w}
+variable [CommSemiring K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
+variable [AddCommMonoid W] [Module K W]
+variable (R : Type z) [CommSemiring R] [Algebra K R]
+
+/-- Extending an old functional and a pure-tensor vector extends their coefficient. -/
+@[simp] theorem coefficient_baseChange_tmul (X : RightComodule K C W)
+    (ell : Module.Dual K W) (r : R) (w : W) :
+    (X.baseChange R).coefficient (Module.Dual.baseChange (R := K) R ell) (r ⊗ₜ[K] w) =
+      r ⊗ₜ[K] X.coefficient ell w := by
+  rw [coefficient_eq, baseChange_coaction_tmul, coefficient_eq]
+  generalize X.coaction w = t
+  induction t using _root_.TensorProduct.inductionOn with
+  | tmul w' c =>
+      simp only [_root_.TensorProduct.AlgebraTensorModule.distribBaseChange_tmul,
+        LinearMap.rTensor_tmul, _root_.TensorProduct.lid_tmul,
+        Module.Dual.baseChange_apply_tmul, _root_.TensorProduct.tmul_smul,
+        _root_.TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+  | add t₁ t₂ h₁ h₂ =>
+      simp only [_root_.TensorProduct.tmul_add, map_add, h₁, h₂]
+
+/-- The image of the original coefficient span is contained in the new coefficient span,
+without projectivity or finiteness assumptions. -/
+theorem coefficientSpan_baseChange_le (X : RightComodule K C W) :
+    X.coefficientSpan.baseChange R ≤ (X.baseChange R).coefficientSpan := by
+  rw [X.coefficientSpan_eq_span, Submodule.baseChange_span,
+    (X.baseChange R).coefficientSpan_eq_span]
+  refine Submodule.span_le.2 ?_
+  rintro _ ⟨c, ⟨⟨ell, w⟩, rfl⟩, rfl⟩
+  exact Submodule.subset_span
+    ⟨(Module.Dual.baseChange (R := K) R ell, (1 : R) ⊗ₜ[K] w), by
+      simpa only [Function.uncurry, _root_.TensorProduct.mk_apply] using
+        (coefficient_baseChange_tmul R X ell 1 w)⟩
+
+end ScalarExtension
+
+end Coalgebra.RightComodule
+
+namespace Coalgebra.RightComodule
+
+section ScalarExtension
+
+variable {K : Type u} {C : Type v} {W : Type w}
+variable [CommSemiring K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
+variable [AddCommMonoid W] [Module K W]
+
+/-- A projective module's canonical free cover gives a finite reconstruction of
+one coaction value by coefficients of that same coaction. -/
+private theorem exists_coaction_eq_sum_coefficients [Module.Projective K W]
+    (X : RightComodule K C W) (w : W) :
+    ∃ (s : Finset W) (ell : W → Module.Dual K W),
+      X.coaction w = ∑ i ∈ s, i ⊗ₜ[K] X.coefficient (ell i) w := by
+  classical
+  obtain ⟨σ, hσ⟩ :=
+    (Module.projective_def' (R := K) (P := W)).mp
+      (inferInstance : Module.Projective K W)
+  let π : (W →₀ K) →ₗ[K] W := Finsupp.linearCombination K id
+  let b : Module.Basis W K (W →₀ K) := Finsupp.basisSingleOne
+  let e : (W →₀ K) ⊗[K] C ≃ₗ[K] (W →₀ C) :=
+    _root_.TensorProduct.equivFinsuppOfBasisLeft b
+  let c : W →₀ C := e (σ.rTensor C (X.coaction w))
+  let ell : W → Module.Dual K W := fun i => (b.coord i).comp σ
+  have hπσ : π ∘ₗ σ = LinearMap.id := hσ
+  have hπσt : π.rTensor C (σ.rTensor C (X.coaction w)) = X.coaction w := by
+    rw [← LinearMap.rTensor_comp_apply, hπσ, LinearMap.rTensor_id_apply]
+  have hπb (i : W) : π (b i) = i := by
+    simp [π, b]
+  have hc (i : W) : c i = X.coefficient (ell i) w := by
+    change _root_.TensorProduct.equivFinsuppOfBasisLeft b
+        (σ.rTensor C (X.coaction w)) i =
+      X.coefficient ((b.coord i).comp σ) w
+    rw [_root_.TensorProduct.equivFinsuppOfBasisLeft_apply, coefficient_eq,
+      LinearMap.rTensor_comp_apply]
+  have he : e.symm c = σ.rTensor C (X.coaction w) := e.symm_apply_apply _
+  refine ⟨c.support, ell, ?_⟩
+  calc
+    X.coaction w = π.rTensor C (e.symm c) := by rw [he, hπσt]
+    _ = ∑ i ∈ c.support, i ⊗ₜ[K] c i := by
+      simp only [e, _root_.TensorProduct.equivFinsuppOfBasisLeft_symm_apply,
+        Finsupp.sum, map_sum, LinearMap.rTensor_tmul, hπb]
+    _ = ∑ i ∈ c.support, i ⊗ₜ[K] X.coefficient (ell i) w := by
+      simp_rw [hc]
+
+variable (R : Type z) [CommSemiring R] [Algebra K R]
+
+/-- Coefficient spans commute with arbitrary scalar extension for a comodule whose
+underlying module is projective. The right side is an image submodule, not an injective
+identification of tensors. -/
+theorem coefficientSpan_baseChange_eq [Module.Projective K W]
+    (X : RightComodule K C W) :
+    (X.baseChange R).coefficientSpan = X.coefficientSpan.baseChange R := by
+  classical
+  apply le_antisymm
+  · apply (coefficientSpan_le_iff (X.baseChange R) (X.coefficientSpan.baseChange R)).2
+    intro μ v
+    rw [coefficient_eq]
+    induction v using _root_.TensorProduct.inductionOn with
+    | tmul r w =>
+        obtain ⟨s, ell, hs⟩ := exists_coaction_eq_sum_coefficients X w
+        rw [baseChange_coaction_tmul, hs]
+        simp only [_root_.TensorProduct.tmul_sum, map_sum,
+          _root_.TensorProduct.AlgebraTensorModule.distribBaseChange_tmul,
+          LinearMap.rTensor_tmul, _root_.TensorProduct.lid_tmul]
+        refine (X.coefficientSpan.baseChange R).sum_mem fun i _hi => ?_
+        apply (X.coefficientSpan.baseChange R).smul_mem
+        exact Submodule.tmul_mem_baseChange_of_mem
+          (A := R) (p := X.coefficientSpan) 1
+          ((coefficientSpan_le_iff X X.coefficientSpan).mp le_rfl (ell i) w)
+    | add a b ha hb =>
+        simpa only [map_add] using (X.coefficientSpan.baseChange R).add_mem ha hb
+  · exact coefficientSpan_baseChange_le R X
+
+end ScalarExtension
+
+section FieldScalarExtension
+
+variable {K : Type u} {C : Type v} {W : Type w}
+variable [Field K] [AddCommMonoid C] [Module K C] [Coalgebra K C]
+variable [AddCommMonoid W] [Module K W]
+variable (R : Type z) [CommSemiring R] [Algebra K R]
+
+/-- Over a field, coefficient spans commute with arbitrary scalar extension,
+with no dimension or additive-group assumption on the supplied comodule. -/
+theorem coefficientSpan_baseChange_eq_of_field (X : RightComodule K C W) :
+    (X.baseChange R).coefficientSpan = X.coefficientSpan.baseChange R := by
+  let : AddCommGroup W := Module.addCommMonoidToAddCommGroup (R := K) (M := W)
+  let : Module.Projective K W :=
+    Module.Projective.of_basis (Module.Basis.ofVectorSpace K W)
+  exact coefficientSpan_baseChange_eq R X
+
+end FieldScalarExtension
+
+end Coalgebra.RightComodule
