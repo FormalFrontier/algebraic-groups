@@ -118,6 +118,7 @@ public import AlgebraicGroups.GroupScheme.AdditiveInvariantLine
 public import AlgebraicGroups.GroupScheme.AdditiveProductAffineSpace
 public import AlgebraicGroups.GroupScheme.AffineHomOverConvolution
 public import AlgebraicGroups.GroupScheme.AffineRepresentation
+public import AlgebraicGroups.GroupScheme.GeometricRepresentationBaseChange
 public import AlgebraicGroups.GroupScheme.PointGroup
 public import AlgebraicGroups.GroupScheme.RepresentationReconstruction
 public import AlgebraicGroups.GroupScheme.RepresentationEquivalence

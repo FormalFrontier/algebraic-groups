@@ -927,6 +927,97 @@ namespace GeometricRepresentation
 
 variable {G V}
 
+section Operators
+
+omit [IsAffine G]
+
+/-- The component homomorphism of a geometric representation on its geometric
+point group, acting on the scalar extension of the representation module. -/
+def operator (η : GeometricRepresentation (K := K) G V) (R : CommAlgCat.{u, u} K) :
+    ((Spec (.of R)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K))) →*
+      LinearMap.GeneralLinearGroup R (R ⊗[K] V) :=
+  ((η.app R).hom :
+      ULift.{v} ((Spec (.of R)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K))) →*
+        LinearMap.GeneralLinearGroup R (R ⊗[K] V)).comp
+    (MulEquiv.ulift :
+      ULift.{v} ((Spec (.of R)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K))) ≃*
+        ((Spec (.of R)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K)))).symm.toMonoidHom
+
+/-- The component automorphism is the value of the given natural transformation. -/
+theorem operator_eq_app (η : GeometricRepresentation (K := K) G V)
+    (R : CommAlgCat.{u, u} K)
+    (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K))) :
+    η.operator R g = (η.app R).hom (ULift.up g) := rfl
+
+/-- The identity point acts as the identity automorphism. -/
+@[simp] theorem operator_one (η : GeometricRepresentation (K := K) G V)
+    (R : CommAlgCat.{u, u} K) :
+    η.operator R 1 = 1 :=
+  (η.operator R).map_one
+
+/-- Component multiplication is multiplication in the composition group:
+the second point acts first. -/
+theorem operator_mul (η : GeometricRepresentation (K := K) G V)
+    (R : CommAlgCat.{u, u} K)
+    (g h : (Spec (.of R)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K))) :
+    η.operator R (g * h) = η.operator R g * η.operator R h :=
+  (η.operator R).map_mul g h
+
+/-- The inverse point acts by the inverse component automorphism. -/
+@[simp] theorem operator_inv (η : GeometricRepresentation (K := K) G V)
+    (R : CommAlgCat.{u, u} K)
+    (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K))) :
+    η.operator R g⁻¹ = (η.operator R g)⁻¹ :=
+  (η.operator R).map_inv g
+
+/-- Component automorphisms commute with the general linear scalar-extension map. -/
+theorem operator_baseChange (η : GeometricRepresentation (K := K) G V)
+    {R S : CommAlgCat.{u, u} K} (φ : R →ₐ[K] S)
+    (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K))) :
+    generalLinearModuleBaseChange K V R S φ (η.operator R g) =
+      η.operator S
+        (((affineGeometricPointFunctor (K := K) G).map (CommAlgCat.ofHom φ)).hom g) := by
+  have h := congrArg
+    (fun f : (affineGeometricPointFunctor G ⋙ GrpCat.uliftFunctor.{v, u}).obj R ⟶
+        (generalLinearModuleFunctor K V).obj S ↦ f.hom (ULift.up g))
+    (η.naturality (CommAlgCat.ofHom φ))
+  exact h.symm
+
+/-- Changing coefficients commutes with the action of a geometric point on every
+scalar tensor. This uses only naturality, without an affineness hypothesis on the group. -/
+theorem naturality_apply (η : GeometricRepresentation (K := K) G V)
+    {R S : CommAlgCat.{u, u} K} (φ : R →ₐ[K] S)
+    (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K)))
+    (w : R ⊗[K] V) :
+    (η.operator S
+        (((affineGeometricPointFunctor (K := K) G).map (CommAlgCat.ofHom φ)).hom g)).val
+        (TensorProduct.map φ.toLinearMap (LinearMap.id : V →ₗ[K] V) w) =
+      TensorProduct.map φ.toLinearMap (LinearMap.id : V →ₗ[K] V)
+        ((η.operator R g).val w) := by
+  rw [← η.operator_baseChange φ g]
+  let σ := TensorProduct.map φ.toLinearMap (LinearMap.id : V →ₗ[K] V)
+  have hσ (r : R) (z : R ⊗[K] V) : σ (r • z) = φ r • σ z := by
+    induction z using TensorProduct.inductionOn with
+    | tmul a x =>
+        simp only [σ, TensorProduct.smul_tmul', TensorProduct.map_tmul,
+          LinearMap.id_apply, AlgHom.toLinearMap_apply, smul_eq_mul, map_mul]
+    | add x y hx hy => simp only [smul_add, map_add, hx, hy]
+  change (generalLinearModuleBaseChange K V R S φ (η.operator R g)).val (σ w) =
+    σ ((η.operator R g).val w)
+  induction w using TensorProduct.inductionOn with
+  | tmul r x =>
+      calc
+        _ = φ r • σ ((η.operator R g).val (1 ⊗ₜ[K] x)) := by
+          simp only [σ, TensorProduct.map_tmul, LinearMap.id_apply,
+            AlgHom.toLinearMap_apply, generalLinearModuleBaseChange_tmul,
+            LinearMap.rTensor_def]
+        _ = σ (r • (η.operator R g).val (1 ⊗ₜ[K] x)) := (hσ r _).symm
+        _ = _ := by
+          rw [← map_smul, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
+  | add x y hx hy => simp only [map_add, hx, hy]
+
+end Operators
+
 /-- Coordinate change of a geometric natural representation. Its inverse is
 precomposition with the proved group-valued natural point comparison. -/
 def coordinateEquiv : GeometricRepresentation (K := K) G V ≃

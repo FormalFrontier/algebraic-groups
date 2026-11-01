@@ -500,6 +500,30 @@ maintained project libraries; it does not claim to formalize an entire source.
   including common-maximum comparisons.
   [Finite system and universal property](AlgebraicGroups/GroupScheme/RepresentationFiltration.lean).
 
+- **Intrinsic geometric invariants and scalar-extension fixedness.** Let `G`
+  be any group scheme over `Spec K`, for a commutative ring `K : Type u`,
+  and let `η` be a geometric representation on a `K`-module `V : Type v`.
+  The submodule `η.invariants` consists exactly of vectors `v` for which
+  `1 ⊗ v` is fixed by every `G(S)` for every
+  `S : CommAlgCat.{u, u} K`. Every point fixes the whole image of the
+  scalar-extended subtype inclusion. The operator and
+  `GeometricRepresentation.naturality_apply` API retain the given
+  representation and commute with all coefficient-algebra maps on arbitrary
+  tensors.
+  Over a field, for every `R : CommAlgCat.{u, u} K` and `w : R ⊗[K] V`,
+  `w` belongs to the image of `η.invariants.subtype.baseChange R` if and only
+  if, for every `S : CommAlgCat.{u, u} K`, every `φ : R →ₐ[K] S` and every
+  `g : G(S)`, the tensor `(φ ⊗ id) w` is fixed by `η.operator S g`.
+  No affineness of `G`, finite-dimensionality, basis, `Small` or stability
+  hypothesis is required; the universes `u` and `v` are independent.
+  This is the intrinsic all-algebra criterion. Bridges to Milne's finitely
+  generated test algebras in *Algebraic Groups* (2017), Proposition 4.31,
+  including comparison of further-algebra tests, are not supplied. For
+  normal-subgroup invariants, ambient-group stability and representation
+  restriction are not included.
+  [Invariant submodule and fixedness](AlgebraicGroups/GroupScheme/GeometricRepresentationInvariants.lean),
+  [field criterion `GeometricRepresentation.mem_range_baseChange_invariants_iff`](AlgebraicGroups/GroupScheme/GeometricRepresentationBaseChange.lean),
+  [operators and naturality](AlgebraicGroups/GroupScheme/AffineRepresentation.lean).
 - **Canonical affine-coordinate representations.** For a commutative ring `K`
   and an affine group `G` over `Spec K`, the canonical Hopf algebra on `Γ(G, O_G)`
   recovers the original group data through `G.isoSpec`. A natural multiplicative
