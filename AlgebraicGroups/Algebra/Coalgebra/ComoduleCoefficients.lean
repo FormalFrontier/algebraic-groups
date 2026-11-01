@@ -9,6 +9,13 @@ public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Hom
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.RingTheory.Adjoin.FG
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Coefficient coalgebras of right comodules
@@ -902,3 +909,68 @@ theorem coefficientSubcoalgebra_toSubmodule_le_of_injective
 end FieldCarrier
 
 end Coalgebra.RightComoduleHom
+
+/-- The underlying submodule of a right regular subcomodule is contained in its
+coefficient span: the inclusion is reconstructed from its composition with the counit. -/
+public theorem Coalgebra.RightComodule.Subcomodule.toSubmodule_le_coefficientSpan
+    {R : Type u} {C : Type v}
+    [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
+    (U : (Coalgebra.RightComodule.regular R C).Subcomodule) :
+    U.toSubmodule ≤ U.comodule.coefficientSpan := by
+  intro c hc
+  let m : U.toSubmodule := ⟨c, hc⟩
+  have h : U.comodule.coefficient
+      (Coalgebra.counit (R := R) ∘ₗ U.subtype.toLinearMap) m = c := by
+    simpa only [Coalgebra.RightComodule.coefficientHom_apply,
+      Coalgebra.RightComodule.Subcomodule.subtype_apply] using
+      congrArg (fun g : Coalgebra.RightComoduleHom U.comodule
+        (Coalgebra.RightComodule.regular R C) ↦ g m)
+        (U.comodule.coefficientHom_counit_comp U.subtype)
+  rw [← h]
+  exact U.comodule.coefficient_mem_coefficientSpan
+    (Coalgebra.counit (R := R) ∘ₗ U.subtype.toLinearMap) m
+
+/-- A finite-type algebra whose underlying coalgebra module is projective contains
+a finite right regular subcomodule whose coefficient span generates the algebra.
+The algebra and coalgebra structures need not satisfy multiplicative compatibility. -/
+public theorem Coalgebra.exists_finite_regular_subcomodule_adjoin_coefficientSpan_eq_top
+    {R : Type u} {A : Type v}
+    [CommSemiring R] [Semiring A] [Algebra R A] [Coalgebra R A]
+    [Algebra.FiniteType R A] [Module.Projective R A] :
+    ∃ U : (Coalgebra.RightComodule.regular R A).Subcomodule,
+      Module.Finite R U.toSubmodule ∧
+        Algebra.adjoin R (U.comodule.coefficientSpan : Set A) = ⊤ := by
+  obtain ⟨s, hs, hsgen⟩ :=
+    Subalgebra.fg_def.mp (Algebra.FiniteType.out (R := R) (A := A))
+  obtain ⟨U, hsU, hUfg⟩ :=
+    Coalgebra.exists_fg_regular_subcomodule_of_finite (K := R) hs
+  refine ⟨U, Module.Finite.iff_fg.mpr hUfg, ?_⟩
+  refine le_antisymm le_top ?_
+  rw [← hsgen]
+  apply Algebra.adjoin_mono
+  intro a ha
+  exact U.toSubmodule_le_coefficientSpan ((U.mem_toSubmodule a).mpr (hsU ha))
+
+/-- A finite-type algebra over a field contains a finite right regular subcomodule
+whose matrix coefficients generate the algebra for every basis of that subcomodule.
+The functional index is the first index and the input-vector index is the second. -/
+public theorem Coalgebra.exists_finite_regular_subcomodule_adjoin_coefficients_eq_top
+    {K : Type u} {A : Type v}
+    [Field K] [Semiring A] [Algebra K A] [Coalgebra K A]
+    [Algebra.FiniteType K A] :
+    ∃ U : (Coalgebra.RightComodule.regular K A).Subcomodule,
+      Module.Finite K U.toSubmodule ∧
+        ∀ {ι : Type w} (b : Module.Basis ι K U.toSubmodule),
+          Algebra.adjoin K
+            (Set.range (Function.uncurry
+              (fun i j : ι ↦ U.comodule.coefficient (b.coord i) (b j)))) = ⊤ := by
+  let : AddCommGroup A := Module.addCommMonoidToAddCommGroup (R := K) (M := A)
+  let : Module.Projective K A :=
+    Module.Projective.of_basis (Module.Basis.ofVectorSpace K A)
+  obtain ⟨U, hU, hgen⟩ :=
+    Coalgebra.exists_finite_regular_subcomodule_adjoin_coefficientSpan_eq_top
+      (R := K) (A := A)
+  refine ⟨U, hU, ?_⟩
+  intro ι b
+  rw [U.comodule.coefficientSpan_eq_span_basis b, Algebra.adjoin_span] at hgen
+  exact hgen
