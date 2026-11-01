@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.CharP.Basic
@@ -12,6 +13,7 @@ public import Mathlib.LinearAlgebra.Dual.Lemmas
 public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct.Finite
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.RingTheory.Bialgebra.Basic
 
 /-!
@@ -27,6 +29,8 @@ the `n`th powers of the generators, for every natural number `n`. It is independ
 of any coaction or characteristic. If `p` is prime and `(p : K) = 0`, the submodule
 for `n = p ^ r` is image-stable. Only the induced subtype coaction uses flatness
 of the coacting bialgebra, through `RightComodule.Subcomodule.ofIsStable`.
+The all-dual coefficients of this induced coaction lie in the linear span of
+prime-power values in the coacting bialgebra.
 
 ## Implementation notes
 
@@ -234,9 +238,9 @@ private theorem symmetricAlgebraCoaction_coassoc_algHom (η : RightComodule K A 
       (i.rTensor A).rTensor A ∘ₗ η.coaction.rTensor A := by
     simpa only [LinearMap.rTensor_comp] using
       congrArg (fun l : V →ₗ[K] S ⊗[K] A ↦ l.rTensor A) hi
-  have ha : (TensorProduct.assoc K S A A).toLinearMap ∘ₗ
+  have ha : (_root_.TensorProduct.assoc K S A A).toLinearMap ∘ₗ
         (i.rTensor A).rTensor A =
-      i.rTensor (A ⊗[K] A) ∘ₗ (TensorProduct.assoc K V A A).toLinearMap := by
+      i.rTensor (A ⊗[K] A) ∘ₗ (_root_.TensorProduct.assoc K V A A).toLinearMap := by
     simpa only [LinearMap.rTensor_def, TensorProduct.map_id] using
       (TensorProduct.map_map_comp_assoc_eq i
         (LinearMap.id : A →ₗ[K] A) (LinearMap.id : A →ₗ[K] A)).symm
@@ -246,18 +250,18 @@ private theorem symmetricAlgebraCoaction_coassoc_algHom (η : RightComodule K A 
   apply SymmetricAlgebra.algHom_ext
   apply LinearMap.ext
   intro v
-  change TensorProduct.assoc K S A A
+  change _root_.TensorProduct.assoc K S A A
       (d.toLinearMap.rTensor A (d (i v))) =
     (comul (R := K) (A := A)).lTensor S (d (i v))
   rw [show d (i v) = i.rTensor A (η.coaction v) from η.symmetricAlgebraCoaction_ι v]
   calc
-    TensorProduct.assoc K S A A
+    _root_.TensorProduct.assoc K S A A
         (d.toLinearMap.rTensor A (i.rTensor A (η.coaction v))) =
-        TensorProduct.assoc K S A A
+        _root_.TensorProduct.assoc K S A A
           ((i.rTensor A).rTensor A (η.coaction.rTensor A (η.coaction v))) :=
-      congrArg (TensorProduct.assoc K S A A) (LinearMap.congr_fun ht (η.coaction v))
+      congrArg (_root_.TensorProduct.assoc K S A A) (LinearMap.congr_fun ht (η.coaction v))
     _ = i.rTensor (A ⊗[K] A)
-        (TensorProduct.assoc K V A A (η.coaction.rTensor A (η.coaction v))) :=
+        (_root_.TensorProduct.assoc K V A A (η.coaction.rTensor A (η.coaction v))) :=
       LinearMap.congr_fun ha (η.coaction.rTensor A (η.coaction v))
     _ = i.rTensor (A ⊗[K] A)
         ((comul (R := K) (A := A)).lTensor V (η.coaction v)) :=
@@ -360,29 +364,14 @@ theorem isStable_purePowerSubmodule (η : RightComodule K A V)
   let U := SymmetricAlgebra.purePowerSubmodule K V (p ^ r)
   let E : Submodule K (SymmetricAlgebra K V ⊗[K] A) :=
     LinearMap.range (U.subtype.rTensor A)
-  have hex (t : V ⊗[K] A) :
-      ∃ l : List (V × A), t = (l.map fun x ↦ x.1 ⊗ₜ[K] x.2).sum := by
-    induction t using TensorProduct.inductionOn with
-    | tmul v a => exact ⟨[(v, a)], by simp⟩
-    | add x y hx hy =>
-      obtain ⟨l, hl⟩ := hx
-      obtain ⟨m, hm⟩ := hy
-      refine ⟨l ++ m, ?_⟩
-      simpa only [List.map_append, List.sum_append] using congrArg₂ (· + ·) hl hm
   have hgen (v : V) :
       η.symmetricAlgebraCoaction ((SymmetricAlgebra.ι K V v) ^ (p ^ r)) ∈ E := by
-    obtain ⟨l, hl⟩ := hex (η.coaction v)
-    have hη : η.coaction v =
-        ∑ i : Fin l.length, (l[i.1]).1 ⊗ₜ[K] (l[i.1]).2 :=
-      hl.trans (Fin.sum_univ_fun_getElem l
-        (fun x : V × A ↦ x.1 ⊗ₜ[K] x.2)).symm
-    rw [η.symmetricAlgebraCoaction_ι_pow_eq_sum p r hp hchar Finset.univ
-      (fun i : Fin l.length ↦ (l[i.1]).1)
-      (fun i : Fin l.length ↦ (l[i.1]).2) v hη]
+    obtain ⟨s, hη⟩ := _root_.TensorProduct.exists_finset (η.coaction v)
+    rw [η.symmetricAlgebraCoaction_ι_pow_eq_sum p r hp hchar s Prod.fst Prod.snd v hη]
     refine E.sum_mem fun i _ ↦ ?_
-    refine ⟨(⟨(SymmetricAlgebra.ι K V ((l[i.1]).1)) ^ (p ^ r),
-      SymmetricAlgebra.ι_pow_mem_purePowerSubmodule K V (p ^ r) ((l[i.1]).1)⟩ : U)
-        ⊗ₜ[K] ((l[i.1]).2 ^ (p ^ r)), ?_⟩
+    refine ⟨(⟨(SymmetricAlgebra.ι K V i.1) ^ (p ^ r),
+      SymmetricAlgebra.ι_pow_mem_purePowerSubmodule K V (p ^ r) i.1⟩ : U)
+        ⊗ₜ[K] (i.2 ^ (p ^ r)), ?_⟩
     rfl
   have hle : U ≤ E.comap η.symmetricAlgebra.coaction := by
     apply (SymmetricAlgebra.purePowerSubmodule_le_iff K V (p ^ r)
@@ -419,6 +408,61 @@ theorem purePowerSubcomodule_coaction (η : RightComodule K A V)
       η.symmetricAlgebraCoaction (w : SymmetricAlgebra K V) := by
   exact LinearMap.congr_fun
     (η.purePowerSubcomodule p r hp hchar).subtype_colinear w
+
+/-- The coefficients of the pure-power subcomodule lie in the linear span of
+prime-power values in the coefficient algebra. -/
+theorem coefficientSpan_purePowerSubcomodule_le_span_pow
+    (η : RightComodule K A V) (p r : ℕ)
+    (hp : p.Prime) (hchar : (p : K) = 0) :
+    (η.purePowerSubcomodule p r hp hchar).comodule.coefficientSpan ≤
+      Submodule.span K (Set.range fun a : A ↦ a ^ (p ^ r)) := by
+  classical
+  let W := SymmetricAlgebra.purePowerSubmodule K V (p ^ r)
+  let X : RightComodule K A W := (η.purePowerSubcomodule p r hp hchar).comodule
+  let N : Submodule K A :=
+    Submodule.span K (Set.range fun a : A ↦ a ^ (p ^ r))
+  let w (v : V) : W :=
+    ⟨(SymmetricAlgebra.ι K V v) ^ (p ^ r),
+      SymmetricAlgebra.ι_pow_mem_purePowerSubmodule K V (p ^ r) v⟩
+  have hinj : Function.Injective (W.subtype.rTensor A) :=
+    Module.Flat.rTensor_preserves_injective_linearMap (M := A)
+      W.subtype Subtype.val_injective
+  have hgen (ell : W →ₗ[K] K) (v : V) : X.coefficient ell (w v) ∈ N := by
+    obtain ⟨s, hη⟩ := _root_.TensorProduct.exists_finset (η.coaction v)
+    have hco : X.coaction (w v) =
+        ∑ i ∈ s, w i.1 ⊗ₜ[K] (i.2 ^ (p ^ r)) := by
+      apply hinj
+      calc
+        W.subtype.rTensor A (X.coaction (w v)) =
+            η.symmetricAlgebraCoaction ((SymmetricAlgebra.ι K V v) ^ (p ^ r)) :=
+          η.purePowerSubcomodule_coaction p r hp hchar (w v)
+        _ = ∑ i ∈ s,
+            ((SymmetricAlgebra.ι K V i.1) ^ (p ^ r)) ⊗ₜ[K]
+              (i.2 ^ (p ^ r)) :=
+          η.symmetricAlgebraCoaction_ι_pow_eq_sum p r hp hchar s Prod.fst Prod.snd v hη
+        _ = W.subtype.rTensor A
+            (∑ i ∈ s, w i.1 ⊗ₜ[K]
+              (i.2 ^ (p ^ r))) := by
+          simp only [map_sum, LinearMap.rTensor_tmul, Submodule.subtype_apply, w]
+    rw [coefficient_eq, hco]
+    simp only [map_sum, LinearMap.rTensor_tmul, _root_.TensorProduct.lid_tmul]
+    exact N.sum_mem fun i _ ↦ N.smul_mem _ (Submodule.subset_span
+      ⟨i.2, rfl⟩)
+  apply (X.coefficientSpan_le_iff N).2
+  intro ell x
+  let f : W →ₗ[K] A := (X.coefficientHom ell).toLinearMap
+  -- The ambient image of this linear coefficient preimage is a submodule.
+  -- Containing every original power generator therefore contains their span.
+  let E : Submodule K (SymmetricAlgebra K V) := (N.comap f).map W.subtype
+  have hle : W ≤ E := by
+    apply (SymmetricAlgebra.purePowerSubmodule_le_iff K V (p ^ r) E).2
+    intro v
+    exact ⟨w v, hgen ell v, rfl⟩
+  obtain ⟨y, hy, hyx⟩ := hle x.property
+  have hxy : y = x := Subtype.ext hyx
+  change f x ∈ N
+  rw [← hxy]
+  exact hy
 
 end Flat
 
