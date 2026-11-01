@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import CoherentModules.RingTheory.Flat.FaithfullyFlat
+public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
@@ -27,6 +28,10 @@ coalgebra identities. The idempotence and scalar-action results do use those
 identities. For a coalgebra satisfying them, the counit is zero exactly when
 the coalgebra is subsingleton; in particular, orthogonal scalar supports give
 a zero tensor product of coalgebras.
+
+For a dependent finite-support sum, the counit range is the supremum of the
+component counit ranges. This also requires only the structure maps and allows
+empty and infinite index types.
 
 The counit range also generates the whole coalgebra under scalar multiplication:
 every element is a sum of terms `ε(x) • y` by the left counit identity. Thus its
@@ -63,7 +68,9 @@ Mathlib supplies the counit coalgebra homomorphism, tensor induction,
 free-module bases, ideal multiplication and submodule scalar action used here.
 The tensor-product range formula uses Mathlib's `TensorProduct.range_map` and
 `Submodule.mulMap_range`; the surjectivity criterion uses `LinearMap.range_eq_top`,
-`Ideal.isUnit_iff` and `IsUnit.mul_iff`. Equality of scalar actions uses the
+`Ideal.isUnit_iff` and `IsUnit.mul_iff`. The dependent-sum formula uses
+`DFinsupp.iSup_range_lsingle`, `DFinsupp.counit_comp_lsingle` and the standard
+submodule-image supremum API. Equality of scalar actions uses the
 surjectivity of `LinearMap.rangeRestrict`, linearity and the left counit identity.
 The finitely generated faithful-action criterion reuses Mathlib's
 `Ideal.isIdempotentElem_iff_of_fg`, singleton-ideal scalar action and
@@ -217,6 +224,26 @@ The left counit identity gives this without any freeness assumption. -/
     simp
 
 end CommSemiring
+
+section DFinsupp
+
+/-- The counit range of a dependent finite-support sum is the supremum of the
+component counit ranges. Only coalgebra structures are required on the fibres. -/
+public theorem counit_range_dfinsupp
+    (R : Type u) (ι : Type v) (C : ι → Type w)
+    [CommSemiring R] [DecidableEq ι]
+    [∀ i, AddCommMonoid (C i)] [∀ i, Module R (C i)]
+    [∀ i, CoalgebraStruct R (C i)] :
+    (LinearMap.range
+      (Coalgebra.counit (R := R) (A := Π₀ i, C i)) : Ideal R) =
+      ⨆ i, (LinearMap.range
+        (Coalgebra.counit (R := R) (A := C i)) : Ideal R) := by
+  have h := congrArg (Submodule.map (counit (R := R) (A := Π₀ i, C i)))
+    (DFinsupp.iSup_range_lsingle (R := R) (M := C))
+  simpa only [Submodule.map_iSup, Submodule.map_top, ← LinearMap.range_comp,
+    DFinsupp.counit_comp_lsingle] using h.symm
+
+end DFinsupp
 
 section TensorProduct
 

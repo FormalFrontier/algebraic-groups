@@ -118,19 +118,13 @@ variable {D : Type w} [AddCommMonoid D] [Module R D] [CoalgebraStruct R D]
 
 example (f : C →ₗc[R] D) :
     LinearMap.range (counit (R := R) (A := C)) ≤
-      LinearMap.range (counit (R := R) (A := D)) := by
-  rw [← f.counit_comp]
-  exact LinearMap.range_comp_le_range f.toLinearMap (counit (R := R) (A := D))
+      LinearMap.range (counit (R := R) (A := D)) :=
+  CoalgHomClass.counit_range_le f
 
 example (f : C →ₗc[R] D) (hf : Function.Surjective f) :
     LinearMap.range (counit (R := R) (A := C)) =
-      LinearMap.range (counit (R := R) (A := D)) := by
-  calc
-    LinearMap.range (counit (R := R) (A := C)) =
-        LinearMap.range ((counit (R := R) (A := D)).comp f.toLinearMap) :=
-      congrArg LinearMap.range f.counit_comp.symm
-    _ = LinearMap.range (counit (R := R) (A := D)) :=
-      LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_eq_top.mpr hf)
+      LinearMap.range (counit (R := R) (A := D)) :=
+  CoalgHomClass.counit_range_eq_of_surjective f hf
 
 end CounitRanges
 

@@ -18,6 +18,13 @@ subsingleton. Counit preservation reduces this to the corresponding criterion fo
 source counit. The scalar semiring, source and target may lie in independent universes.
 Only the source needs the coalgebra laws; the target needs a coalgebra structure.
 
+## Counit ranges
+
+A coalgebra homomorphism sends source counit values to target counit values, so
+its source counit range is contained in the target counit range. The ranges are
+equal when the homomorphism is surjective. Both statements require only coalgebra
+structures and apply to any type satisfying `CoalgHomClass`.
+
 ## Counit-determined morphisms
 
 When the target counit is injective, coalgebra homomorphisms from a fixed source are
@@ -45,7 +52,9 @@ square is injective. All three modules need only coalgebra structures.
 ## References
 
 Counit preservation and the bundled homomorphism API are supplied by
-`Mathlib.RingTheory.Coalgebra.Hom`. The source criterion is
+`Mathlib.RingTheory.Coalgebra.Hom`. The range comparisons use
+`LinearMap.range_comp_le_range` and `LinearMap.range_comp_of_range_eq_top`.
+The source criterion is
 `Coalgebra.counit_eq_zero_iff` from `AlgebraicGroups.Algebra.Coalgebra.CounitRange`.
 The reverse implication uses Mathlib's uniqueness of linear maps from a subsingleton
 module in `Mathlib.Algebra.Module.LinearMap.Defs`. Counit-determined equality uses
@@ -81,6 +90,37 @@ theorem toLinearMap_eq_zero_iff (f : C →ₗc[R] C') :
 end CoalgHom
 
 namespace CoalgHomClass
+
+/-- The source counit range is contained in the target counit range under a coalgebra
+homomorphism. Only coalgebra structures, not coalgebra laws, are required. -/
+public theorem counit_range_le
+    {R : Type u} {C : Type v} {D : Type w} {F : Type uF}
+    [CommSemiring R]
+    [AddCommMonoid C] [Module R C] [CoalgebraStruct R C]
+    [AddCommMonoid D] [Module R D] [CoalgebraStruct R D]
+    [FunLike F C D] [CoalgHomClass F R C D]
+    (f : F) :
+    (LinearMap.range (Coalgebra.counit (R := R) (A := C)) : Ideal R) ≤
+      LinearMap.range (Coalgebra.counit (R := R) (A := D)) := by
+  simpa only [counit_comp f] using
+    (LinearMap.range_comp_le_range (f : C →ₗ[R] D)
+      (Coalgebra.counit (R := R) (A := D)))
+
+/-- A surjective coalgebra homomorphism gives equal source and target counit ranges.
+Surjectivity is required of the homomorphism, not of either counit, and only coalgebra
+structures are needed on both carriers. -/
+public theorem counit_range_eq_of_surjective
+    {R : Type u} {C : Type v} {D : Type w} {F : Type uF}
+    [CommSemiring R]
+    [AddCommMonoid C] [Module R C] [CoalgebraStruct R C]
+    [AddCommMonoid D] [Module R D] [CoalgebraStruct R D]
+    [FunLike F C D] [CoalgHomClass F R C D]
+    (f : F) (hf : Function.Surjective (f : C → D)) :
+    (LinearMap.range (Coalgebra.counit (R := R) (A := C)) : Ideal R) =
+      LinearMap.range (Coalgebra.counit (R := R) (A := D)) := by
+  simpa only [counit_comp f] using
+    (LinearMap.range_comp_of_range_eq_top (Coalgebra.counit (R := R) (A := D))
+      (LinearMap.range_eq_top_of_surjective (f : C →ₗ[R] D) hf))
 
 variable {R : Type u} {A : Type v} {B : Type w} {F : Type uF}
   [CommSemiring R]

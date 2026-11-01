@@ -689,6 +689,12 @@ maintained project libraries; it does not claim to formalize an entire source.
   additive-group coalgebra is faithfully flat **iff flat and its counit
   is onto**; flatness is separate, with no projectivity or nontriviality required.
   [Modules and proper-range examples](docs/COALGEBRAS.md#idempotent-principal-ideal-coalgebras).
+  For a dependent finite-support sum, the counit range is the supremum of the
+  fibre ranges, allowing empty or infinite index types. Under a `CoalgHomClass`
+  map the source counit range lies in the target range, with equality when the
+  map is surjective. These formulas require only `CoalgebraStruct`.
+  [Dependent sums](AlgebraicGroups/Algebra/Coalgebra/CounitRange.lean),
+  [range transport](AlgebraicGroups/Algebra/Coalgebra/Hom.lean).
 - **Hopf coefficient matrix units.** Over a commutative semiring, any finite
   square coefficient matrix in a possibly noncommutative semiring Hopf algebra,
   with the coproduct and counit equations above, is a unit with entrywise

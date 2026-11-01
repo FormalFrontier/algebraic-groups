@@ -6,6 +6,8 @@ module
 
 public import AlgebraicGroups.Algebra.HopfAlgebra.Comultiplication
 public import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
+public import AlgebraicGroups.Algebra.HopfAlgebra.AntipodeSquare
+public import AlgebraicGroupsTest.Algebra.HopfAlgebra.Hom
 public import AlgebraicGroups.Algebra.GeneralLinearCoordinateRing
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
 public import Mathlib.RingTheory.HopfAlgebra.Primitive
@@ -292,3 +294,184 @@ theorem upperLeft_comul_antipode_antipode :
     exact comul_entry_ne_flip
 
 end GeneralLinearCoordinateRing
+
+universe w z
+
+namespace BialgHom
+
+-- Identity and composition coherence use ordinary bialgebra homomorphisms.
+example {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [HopfAlgebra R A] :
+    (BialgHom.id R A).comp (HopfAlgebra.antipodeSquareBialgHom R A) =
+      (HopfAlgebra.antipodeSquareBialgHom R A).comp (BialgHom.id R A) := by
+  exact comp_antipodeSquareBialgHom (BialgHom.id R A)
+
+example {R : Type u} {A : Type v} {B : Type w} {C : Type z}
+    [CommSemiring R] [Semiring A] [Semiring B] [Semiring C]
+    [HopfAlgebra R A] [HopfAlgebra R B] [HopfAlgebra R C]
+    (f : A →ₐc[R] B) (g : B →ₐc[R] C) :
+    (g.comp f).comp (HopfAlgebra.antipodeSquareBialgHom R A) =
+      (HopfAlgebra.antipodeSquareBialgHom R C).comp (g.comp f) := by
+  calc
+    (g.comp f).comp (HopfAlgebra.antipodeSquareBialgHom R A) =
+        g.comp (f.comp (HopfAlgebra.antipodeSquareBialgHom R A)) := comp_assoc _ _ _
+    _ = g.comp ((HopfAlgebra.antipodeSquareBialgHom R B).comp f) := by
+      rw [comp_antipodeSquareBialgHom f]
+    _ = (g.comp (HopfAlgebra.antipodeSquareBialgHom R B)).comp f :=
+      (comp_assoc _ _ _).symm
+    _ = ((HopfAlgebra.antipodeSquareBialgHom R C).comp g).comp f := by
+      rw [comp_antipodeSquareBialgHom g]
+    _ = (HopfAlgebra.antipodeSquareBialgHom R C).comp (g.comp f) := comp_assoc _ _ _
+
+end BialgHom
+
+namespace HopfAlgebra
+
+/-- The bundled square has an unflipped coproduct on weighted arbitrary elements
+of the symmetric-group algebra over the natural numbers. -/
+theorem natPermutationGroupAlgebra_comul_antipodeSquareBialgHom
+    (x y : MonoidAlgebra ℕ (Equiv.Perm (Fin 3))) :
+    Coalgebra.comul (R := ℕ)
+        (antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ (Equiv.Perm (Fin 3))) (2 • x + 3 • y)) =
+      2 • map ((antipode ℕ).comp (antipode ℕ)) ((antipode ℕ).comp (antipode ℕ))
+        (Coalgebra.comul (R := ℕ) x) +
+      3 • map ((antipode ℕ).comp (antipode ℕ)) ((antipode ℕ).comp (antipode ℕ))
+        (Coalgebra.comul (R := ℕ) y) := by
+  have h := (CoalgHomClass.map_comp_comul_apply
+    (antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ (Equiv.Perm (Fin 3))))
+    (2 • x + 3 • y)).symm
+  change Coalgebra.comul (R := ℕ)
+      (antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ (Equiv.Perm (Fin 3))) (2 • x + 3 • y)) =
+    map (antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ (Equiv.Perm (Fin 3)))).toLinearMap
+      (antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ (Equiv.Perm (Fin 3)))).toLinearMap
+      (Coalgebra.comul (R := ℕ) (2 • x + 3 • y)) at h
+  rw [antipodeSquareBialgHom_toLinearMap] at h
+  simpa only [map_add, map_nsmul] using h
+
+/-- The bundled square preserves multiplication of adjacent-transposition basis
+terms, whose products are genuinely unequal in opposite orders. -/
+theorem natPermutationGroupAlgebra_antipodeSquareBialgHom_swap_mul :
+    antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ (Equiv.Perm (Fin 3)))
+        (MonoidAlgebra.single (Equiv.swap (0 : Fin 3) 1) 1 *
+          MonoidAlgebra.single (Equiv.swap (1 : Fin 3) 2) 1) =
+      antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ (Equiv.Perm (Fin 3)))
+          (MonoidAlgebra.single (Equiv.swap (0 : Fin 3) 1) 1) *
+        antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ (Equiv.Perm (Fin 3)))
+          (MonoidAlgebra.single (Equiv.swap (1 : Fin 3) 2) 1) ∧
+      (MonoidAlgebra.single (Equiv.swap (0 : Fin 3) 1) 1 :
+        MonoidAlgebra ℕ (Equiv.Perm (Fin 3))) *
+          MonoidAlgebra.single (Equiv.swap (1 : Fin 3) 2) 1 ≠
+        MonoidAlgebra.single (Equiv.swap (1 : Fin 3) 2) 1 *
+          MonoidAlgebra.single (Equiv.swap (0 : Fin 3) 1) 1 := by
+  exact ⟨map_mul (antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ (Equiv.Perm (Fin 3))))
+    (MonoidAlgebra.single (Equiv.swap (0 : Fin 3) 1) 1)
+    (MonoidAlgebra.single (Equiv.swap (1 : Fin 3) 2) 1),
+    natPermutationGroupAlgebra_swap_mul_ne⟩
+
+end HopfAlgebra
+
+namespace GeneralLinearCoordinateRing
+
+private theorem upperLeft_antipodeSquareBialgHom_evaluations :
+    evaluatePair upperShear lowerShear
+        (Coalgebra.comul (R := ℚ)
+          (HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2))
+            (matrix ℚ (Fin 2) 0 0))) = 2 ∧
+      evaluatePair upperShear lowerShear
+        (TensorProduct.comm ℚ TwoCoordinates TwoCoordinates
+          (Coalgebra.comul (R := ℚ)
+            (HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2))
+              (matrix ℚ (Fin 2) 0 0)))) = 1 := by
+  rw [HopfAlgebra.antipodeSquareBialgHom_eq_id]
+  exact ⟨ordered_comul_entry, flipped_comul_entry⟩
+
+/-- The bundled square fixes the upper-left coordinate of `GL₂` over `ℚ` and
+preserves its ordered two-term coproduct, which is unequal to its tensor flip. -/
+theorem upperLeft_comul_antipodeSquareBialgHom :
+    HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2))
+        (matrix ℚ (Fin 2) 0 0) = matrix ℚ (Fin 2) 0 0 ∧
+      Coalgebra.comul (R := ℚ)
+          (HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2))
+            (matrix ℚ (Fin 2) 0 0)) =
+        matrix ℚ (Fin 2) 0 0 ⊗ₜ[ℚ] matrix ℚ (Fin 2) 0 0 +
+          matrix ℚ (Fin 2) 0 1 ⊗ₜ[ℚ] matrix ℚ (Fin 2) 1 0 ∧
+      Coalgebra.comul (R := ℚ)
+          (HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2))
+            (matrix ℚ (Fin 2) 0 0)) ≠
+        TensorProduct.comm ℚ (CoordinateRing ℚ (Fin 2)) (CoordinateRing ℚ (Fin 2))
+          (Coalgebra.comul (R := ℚ) (matrix ℚ (Fin 2) 0 0)) := by
+  have hfix : HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2))
+      (matrix ℚ (Fin 2) 0 0) = matrix ℚ (Fin 2) 0 0 := by
+    rw [HopfAlgebra.antipodeSquareBialgHom_eq_id]
+    rfl
+  refine ⟨hfix, ?_, ?_⟩
+  · have h := (CoalgHomClass.map_comp_comul_apply
+      (HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2)))
+      (matrix ℚ (Fin 2) 0 0)).symm
+    change Coalgebra.comul (R := ℚ)
+        (HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2))
+          (matrix ℚ (Fin 2) 0 0)) =
+      map (HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2))).toLinearMap
+        (HopfAlgebra.antipodeSquareBialgHom ℚ (CoordinateRing ℚ (Fin 2))).toLinearMap
+        (Coalgebra.comul (R := ℚ) (matrix ℚ (Fin 2) 0 0)) at h
+    rw [HopfAlgebra.antipodeSquareBialgHom_toLinearMap] at h
+    simpa only [native_comul_matrix, Fin.sum_univ_two, map_add, TensorProduct.map_tmul,
+      LinearMap.comp_apply, HopfAlgebra.antipode_antipode] using h
+  · intro h
+    have hvalues := upperLeft_antipodeSquareBialgHom_evaluations
+    have hflipped := hvalues.2
+    rw [hfix] at hflipped
+    have heval := congrArg (evaluatePair upperShear lowerShear) h
+    rw [hvalues.1, hflipped] at heval
+    norm_num at heval
+
+end GeneralLinearCoordinateRing
+
+namespace HopfAlgebraExamples
+
+/-- Naturality of the bundled square applies to the noninjective collapse on the
+infinite permutation-lattice group algebra, and retains its augmentation value. -/
+theorem collapse_comp_antipodeSquareBialgHom (x : MonoidAlgebra ℕ PermutationLattice) :
+    collapse.comp (HopfAlgebra.antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ PermutationLattice)) =
+        (HopfAlgebra.antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ PermutationLattice)).comp
+          collapse ∧
+      collapse (HopfAlgebra.antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ PermutationLattice) x) =
+        MonoidAlgebra.single 1 (Coalgebra.counit (R := ℕ) x) ∧
+      ¬ Function.Injective collapse ∧ Infinite PermutationLattice := by
+  refine ⟨BialgHom.comp_antipodeSquareBialgHom collapse, ?_,
+    collapse_not_injective, permutationLattice_infinite⟩
+  calc
+    collapse (HopfAlgebra.antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ PermutationLattice) x) =
+        MonoidAlgebra.single 1 (Coalgebra.counit (R := ℕ)
+          (HopfAlgebra.antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ PermutationLattice) x)) :=
+      collapse_eq_augmentation _
+    _ = MonoidAlgebra.single 1 (Coalgebra.counit (R := ℕ) x) :=
+      congrArg (MonoidAlgebra.single 1) (CoalgHomClass.counit_comp_apply
+        (HopfAlgebra.antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ PermutationLattice)) x)
+
+/-- Augmentation intertwines the same generic bundled square and preserves the
+counit of every element, for an independently sized group. -/
+theorem nat_augmentation_comp_antipodeSquareBialgHom {G : Type u} [Group G]
+    (x : MonoidAlgebra ℕ G) :
+    (Bialgebra.counitBialgHom ℕ (MonoidAlgebra ℕ G)).comp
+        (HopfAlgebra.antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ G)) =
+      (HopfAlgebra.antipodeSquareBialgHom ℕ ℕ).comp
+        (Bialgebra.counitBialgHom ℕ (MonoidAlgebra ℕ G)) ∧
+      Coalgebra.counit (R := ℕ)
+          (HopfAlgebra.antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ G) x) =
+        Coalgebra.counit (R := ℕ) x := by
+  exact ⟨BialgHom.comp_antipodeSquareBialgHom
+    (Bialgebra.counitBialgHom ℕ (MonoidAlgebra ℕ G)),
+    CoalgHomClass.counit_comp_apply
+      (HopfAlgebra.antipodeSquareBialgHom ℕ (MonoidAlgebra ℕ G)) x⟩
+
+/-- The antipode-square construction fixes every natural-number scalar. -/
+theorem nat_scalar_antipodeSquareBialgHom (n : ℕ) :
+    HopfAlgebra.antipodeSquareBialgHom ℕ ℕ n = n := by
+  simp only [HopfAlgebra.antipodeSquareBialgHom_apply, nat_scalar_antipode]
+
+/-- The same antipode-square construction fixes every scalar of the zero ring. -/
+theorem zero_scalar_antipodeSquareBialgHom (x : ZMod 1) :
+    HopfAlgebra.antipodeSquareBialgHom (ZMod 1) (ZMod 1) x = x := by
+  simp only [HopfAlgebra.antipodeSquareBialgHom_apply, zero_scalar_antipode]
+
+end HopfAlgebraExamples

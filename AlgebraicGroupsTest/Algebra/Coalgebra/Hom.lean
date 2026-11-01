@@ -126,9 +126,8 @@ example : ¬ Nonempty (I₃ →ₗc[ZMod 6] I₄) := by
   rintro ⟨f⟩
   have hrange :
       (LinearMap.range (counit (R := ZMod 6) (A := I₃)) : Ideal (ZMod 6)) ≤
-        LinearMap.range (counit (R := ZMod 6) (A := I₄)) := by
-    rw [← f.counit_comp]
-    exact LinearMap.range_comp_le_range f.toLinearMap (counit (R := ZMod 6) (A := I₄))
+        LinearMap.range (counit (R := ZMod 6) (A := I₄)) :=
+    CoalgHomClass.counit_range_le f
   have hprod :
       (LinearMap.range (counit (R := ZMod 6) (A := I₃)) : Ideal (ZMod 6)) *
         LinearMap.range (counit (R := ZMod 6) (A := I₄)) = ⊥ :=
