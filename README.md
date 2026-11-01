@@ -570,6 +570,17 @@ maintained project libraries; it does not claim to formalize an entire source.
   original Hopf algebra `C`; the additive polynomial model keeps its original
   symmetric-algebra coalgebra and coaction under this readback.
   [Coordinate adapter and normalization](AlgebraicGroups/GroupScheme/AffineRepresentation.lean).
+- **General linear morphisms from based comodules.** Over a commutative ring
+  `K : Type u`, a right comodule on `U : Type v` over the canonical coordinate
+  Hopf algebra of an affine group scheme `G` gives a group-scheme morphism
+  `G → GL(I)` for every given finite basis indexed by `I : Type u`.
+  Its geometric point operators are those of the specified coaction on
+  `R ⊗[K] U`, and its whole coordinate pullback evaluates the coefficient
+  matrix. If these matrix coefficients generate `Γ(G, O_G)` as a `K`-algebra,
+  the same morphism is a closed immersion. No field, nontriviality or
+  positive-rank hypothesis is required; the module universe is independent.
+  [Coordinate evaluation](AlgebraicGroups/Algebra/Coalgebra/RightComodule/GeneralLinear.lean),
+  [group morphism and closed immersion](AlgebraicGroups/GroupScheme/ComoduleGeneralLinear.lean).
 - **Right-comodule weight spaces.** For a full coalgebra over a commutative
   semiring and a specified right comodule, weight spaces are the submodules
   where the coaction is `v ↦ v ⊗ c`, for any coalgebra element `c`. The
@@ -1094,6 +1105,8 @@ maintained project libraries; it does not claim to formalize an entire source.
 | [`AlgebraicGroups.GroupObject.FamilyTranslation`](AlgebraicGroups/GroupObject/FamilyTranslation.lean) | Left and right shears for arbitrary parameter families, characteristic formulas, naturality and translated-product factorization. |
 | [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Transport.lean) | Carrier transport with fixed coalgebra, object-coherence laws, canonical inverse colinear maps and target characterization. |
 | [`AlgebraicGroups.GroupScheme.AffineHomOverConvolution`](AlgebraicGroups/GroupScheme/AffineHomOverConvolution.lean) | Affine-target global-sections comparison with convolution, target and coefficient readbacks, naturality, and affine specialization. |
+| [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.GeneralLinear`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/GeneralLinear.lean) | Coefficient evaluation in general linear coordinates, whole-ring and operator readbacks, and coefficient change for a finite based comodule. |
+| [`AlgebraicGroups.GroupScheme.ComoduleGeneralLinear`](AlgebraicGroups/GroupScheme/ComoduleGeneralLinear.lean) | General linear group morphisms from based coordinate comodules, original-scheme pullbacks and point operators, and the coefficient-generation closed-immersion criterion. |
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
 | [`AlgebraicGroups.Algebra.Bialgebra.GroupLike`](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean) | Monoid homomorphism `BialgHom.groupLikeMap` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |
 | [`AlgebraicGroups.Algebra.HopfAlgebra.GroupLike`](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean) | Injectivity, image characterization and pointwise/monoid-homomorphism `Units.map` naturality of Mathlib's `GroupLike.toUnits` for possibly noncommutative semiring Hopf algebras over a commutative semiring. |

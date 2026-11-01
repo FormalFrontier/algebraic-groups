@@ -47,6 +47,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Components
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.DirectSum
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Gluing
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.GeneralLinear
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.SymmetricAlgebra
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightSpace
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightDecomposition
@@ -122,6 +123,7 @@ public import AlgebraicGroups.GroupScheme.AdditiveInvariantLine
 public import AlgebraicGroups.GroupScheme.AdditiveProductAffineSpace
 public import AlgebraicGroups.GroupScheme.AffineHomOverConvolution
 public import AlgebraicGroups.GroupScheme.AffineRepresentation
+public import AlgebraicGroups.GroupScheme.ComoduleGeneralLinear
 public import AlgebraicGroups.GroupScheme.GeometricRepresentationBaseChange
 public import AlgebraicGroups.GroupScheme.GeometricRepresentationFiniteType
 public import AlgebraicGroups.GroupScheme.GeometricRepresentationSubgroup
