@@ -5,7 +5,8 @@ Authors: Formal Frontier Agents
 module
 
 public import SchemeProperties.FiniteTypePoints
-public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
+public import SchemeProperties.FiniteType.PointFactorization
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Normal
 
 /-!
 # Group-valued functors of points on finite-type affine tests
@@ -14,12 +15,18 @@ The generic functor of points on finitely generated algebras, its full faithfuln
 finite-limit preservation come from `SchemeProperties.FiniteTypePoints`. This module
 extends those results to group objects and finite-type group schemes.
 
-The tests here are `FGAlgCat K`, a category of finitely generated algebras,
-rather than Milne's equivalent small presentation `Alg⁰ₖ`. The
-locally-finite-type group-object results also apply without quasi-compactness.
+Over a commutative ring, normality of a given subgroup morphism is detected by its
+point-group images on finitely generated algebras, provided that the source of conjugation
+is locally of finite type. This criterion does not require affine group schemes.
+
+The full-faithfulness results use `FGAlgCat K`, a category of finitely generated algebras,
+rather than Milne's equivalent small presentation `Alg⁰ₖ`. The normality criterion quantifies
+over `CommAlgCat K` with the finite-type condition. The locally-finite-type group-object
+results also apply without quasi-compactness.
 
 ## Main results
 
+- `CategoryTheory.IsMonHom.normal_iff_normal_monoidHom_forall_finiteType`
 - `AlgebraicGeometry.lftGroupPointsFullyFaithful`
 - `AlgebraicGeometry.lftGroupPoints_essImage_iff`
 - `AlgebraicGeometry.algebraicGroupPointsFullyFaithful`
@@ -36,6 +43,11 @@ locally-finite-type group-object results also apply without quasi-compactness.
 - Mathlib, `Functor.mapGrp` and `Functor.essImage_mapGrp`: lifting fully
   faithful finite-limit-preserving functors and their essential images to
   group objects.
+- Mathlib, `CategoryTheory.IsMonHom.isNormalHom_iff` and
+  `CategoryTheory.IsMonHom.normal_iff_normal_monoidHom`: normality as factorization of
+  conjugation and as normality of point-group images.
+- `SchemeProperties.FiniteType.PointFactorization`: detection of factorization through
+  a monomorphism by points over finitely generated algebras.
 -/
 
 public section
@@ -43,6 +55,45 @@ public section
 open CategoryTheory Opposite
 
 universe u
+
+namespace CategoryTheory.IsMonHom
+
+open AlgebraicGeometry MonoidalCategory CartesianMonoidalCategory
+open scoped CategoryTheory.MonObj
+
+/-- A subgroup morphism over a commutative ring is normal if and only if its image on points
+is normal over every finitely generated algebra. Only the source `G × N` of conjugation
+is required to be locally of finite type over the base. This combines Mathlib's conjugation
+factorization criterion with `Scheme.exists_lift_iff_forall_finiteType`. -/
+theorem normal_iff_normal_monoidHom_forall_finiteType
+    (K : Type u) [CommRing K]
+    {G N : Over (Spec (.of K))} [GrpObj G] [GrpObj N]
+    [LocallyOfFiniteType (G ⊗ N).hom]
+    (i : N ⟶ G) [IsMonHom i] [Mono i] :
+    Normal i ↔
+      ∀ (R : CommAlgCat.{u, u} K), Algebra.FiniteType K R →
+        (monoidHom i ((algSpec (.of K)).obj (op R))).range.Normal := by
+  constructor
+  · intro hnormal R _
+    exact (normal_iff_normal_monoidHom (φ := i)).mp hnormal _
+  · intro hnormal
+    apply (isNormalHom_iff (φ := i)).mpr
+    apply (Scheme.exists_lift_iff_forall_finiteType K i
+      (G ◁ i ≫ GrpObj.conj G)).mpr
+    intro R hR p
+    obtain ⟨q, hq⟩ := (hnormal R hR).conj_mem
+      ((p ≫ snd G N) ≫ i) ⟨p ≫ snd G N, rfl⟩ (p ≫ fst G N)
+    refine ⟨q, ?_⟩
+    calc
+      q ≫ i = (p ≫ fst G N) * ((p ≫ snd G N) ≫ i) *
+          (p ≫ fst G N)⁻¹ := hq
+      _ = lift (p ≫ fst G N) ((p ≫ snd G N) ≫ i) ≫ GrpObj.conj G :=
+        (GrpObj.lift_conj_eq_mul_mul_inv _ _).symm
+      _ = p ≫ G ◁ i ≫ GrpObj.conj G := by
+        rw [← lift_whiskerLeft_assoc (p ≫ fst G N) (p ≫ snd G N) i,
+          lift_comp_fst_snd]
+
+end CategoryTheory.IsMonHom
 
 namespace AlgebraicGeometry
 

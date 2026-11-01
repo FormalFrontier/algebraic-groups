@@ -8,6 +8,12 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Group objects
 
+- **Normality detected on finitely generated algebras.** Over any commutative
+  ring `K`, a given group-scheme monomorphism `i : N ⟶ G` is normal exactly
+  when the range of `N(R) → G(R)` is normal for every finitely generated
+  `K`-algebra `R`. Only the structure map of `G ×_K N` is assumed locally
+  of finite type; neither group scheme is required to be affine.
+  [Criterion](AlgebraicGroups/GroupScheme/FiniteTypePoints.lean).
 - **Flatness of group-homomorphism families.** For group objects `G` and `H`
   over any scheme `S`, let `f : G ⟶ H` be a group homomorphism and
   `i : P ⟶ G` a family. If `P ⟶ S` is flat and surjective, `G ⟶ S` is flat,
