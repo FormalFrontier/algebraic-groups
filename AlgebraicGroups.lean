@@ -8,6 +8,8 @@ public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
 public import AlgebraicGroups.Algebra.Bialgebra.GroupLikeTensorProduct
 public import AlgebraicGroups.Algebra.Bialgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Bialgebra.Quotient
+public import AlgebraicGroups.Algebra.Bialgebra.Range
+public import AlgebraicGroups.Algebra.Bialgebra.RangeMap
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.CanonicalPointOperators
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
@@ -61,6 +63,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport
 public import AlgebraicGroups.Algebra.Coalgebra.SkewPrimitive
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProduct
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProduct.Symmetry
+public import AlgebraicGroups.Algebra.HopfAlgebra.RangeMap
 public import AlgebraicGroups.Algebra.LocalizedCoordinateQuotient
 public import AlgebraicGroups.Algebra.FinitePolynomialLocalizationDimension
 public import AlgebraicGroups.Algebra.GeneralLinearCoordinateRing.Dimension

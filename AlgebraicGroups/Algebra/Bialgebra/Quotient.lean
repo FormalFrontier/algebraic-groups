@@ -238,4 +238,36 @@ theorem existsUnique_liftBialgHom
   intro g hg
   exact liftBialgHom_unique I f hf g hg
 
+section Nested
+
+variable {R : Type uR} {A : Type uA} [CommRing R] [Ring A] [Bialgebra R A]
+variable (I J : Ideal A) [I.IsTwoSided] [J.IsTwoSided]
+variable [(I.restrictScalars R).IsCoideal] [(J.restrictScalars R).IsCoideal]
+
+/-- The canonical bialgebra homomorphism between quotients by nested coideal ideals. -/
+noncomputable def mapBialgHom (h : I ≤ J) : (A ⧸ I) →ₐc[R] (A ⧸ J) :=
+  liftBialgHom I (mkBialgHom (R := R) J) (fun a ha => by
+    change Ideal.Quotient.mk J a = 0
+    exact Ideal.Quotient.eq_zero_iff_mem.mpr (h ha))
+
+/-- The map between nested quotients sends a representative to the same representative. -/
+@[simp]
+theorem mapBialgHom_mk (h : I ≤ J) (a : A) :
+    mapBialgHom (R := R) I J h (Ideal.Quotient.mk I a) = Ideal.Quotient.mk J a := by
+  simp only [mapBialgHom, liftBialgHom_mk, mkBialgHom_apply]
+
+/-- The underlying algebra homomorphism is the ordinary quotient lift of the projection. -/
+@[simp]
+theorem mapBialgHom_toAlgHom (h : I ≤ J) :
+    (mapBialgHom (R := R) I J h).toAlgHom =
+      Ideal.Quotient.liftₐ I (Ideal.Quotient.mkₐ R J)
+        (fun _ ha => Ideal.Quotient.eq_zero_iff_mem.mpr (h ha)) := by
+  have hmk : (mkBialgHom (R := R) J).toAlgHom = Ideal.Quotient.mkₐ R J := by
+    ext a
+    simpa only [BialgHom.coe_toAlgHom, Ideal.Quotient.mkₐ_eq_mk] using
+      mkBialgHom_apply (R := R) J a
+  simp only [mapBialgHom, liftBialgHom_toAlgHom, hmk]
+
+end Nested
+
 end Bialgebra.Quotient

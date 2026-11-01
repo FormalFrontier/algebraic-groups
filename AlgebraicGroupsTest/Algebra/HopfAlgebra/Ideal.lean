@@ -176,8 +176,8 @@ example :
     let q := Bialgebra.Quotient.mkBialgHom (R := k) (augmentationIdeal k)
     let E : (WeightAlgebra k ⧸ augmentationIdeal k) ≃ₐc[k] f.toAlgHom.range :=
       f.quotientKerEquivRange
-    let p := f.rangeRestrict
-    let i := f.rangeInclusion
+    let p := f.hopfRangeRestrict
+    let i := f.hopfRangeInclusion
     t - 1 ≠ 0 ∧ q 1 ≠ 0 ∧ E (q (t - 1)) = 0 ∧ E (q t) = p 1 ∧
       E.toBialgHom.comp q = p ∧
       i.comp E.toBialgHom =

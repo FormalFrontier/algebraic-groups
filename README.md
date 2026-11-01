@@ -791,15 +791,22 @@ maintained project libraries; it does not claim to formalize an entire source.
   [comultiplication](AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean),
   [square endomorphism](AlgebraicGroups/Algebra/HopfAlgebra/AntipodeSquare.lean).
 
-- **Hopf images and first isomorphism.** Over any field, a bialgebra morphism
-  from a possibly noncommutative ring Hopf algebra to a semiring Hopf algebra
-  gives a full Hopf structure on its ordinary algebra range, with unchanged
-  inherited semiring, algebra and module data. The ordinary quotient by its
-  ring kernel is bialgebra-equivalent to this range via the ordinary algebra
-  first-isomorphism equivalence. Inclusion, corestriction, both factor triangles,
-  representative and inverse formulas, and uniqueness refer to these fixed
-  structures; no surjectivity, injectivity or finiteness hypothesis is required.
-  [API](AlgebraicGroups/Algebra/HopfAlgebra/Range.lean),
+- **Weak bialgebra images, postcomposition and Hopf first isomorphism.**
+  Over a field, a morphism of algebras with weak coalgebra structures gives its
+  ordinary algebra range canonical weak coalgebra data. Source coalgebra and
+  bialgebra laws descend without requiring target laws. Postcomposition is
+  functorial and gives an equivalence when the next map is injective only on
+  the original range.
+  For Hopf morphisms from rings to semirings, the ordinary kernel quotient and
+  given Hopf range retain their fixed scalar and coalgebra parents. The
+  identity-on-range `rangeHopfBialgEquiv` goes from the Hopf range to the canonical
+  weak range. The quotient comparison square uses the stock lift of the projection
+  to the composite-kernel quotient and its representative formula, not conjugation.
+  [weak range API](AlgebraicGroups/Algebra/Bialgebra/Range.lean),
+  [postcomposition API](AlgebraicGroups/Algebra/Bialgebra/RangeMap.lean),
+  [quotient compatibility](AlgebraicGroups/Algebra/HopfAlgebra/RangeMap.lean),
+  [nested quotient maps](AlgebraicGroups/Algebra/Bialgebra/Quotient.lean),
+  [Hopf image API](AlgebraicGroups/Algebra/HopfAlgebra/Range.lean),
   [infinite cyclic augmentation client](AlgebraicGroupsTest/Algebra/HopfAlgebra/Ideal.lean).
 - **Hopf-ideal kernels and inverse images.** Over a field, a bundled bialgebra
   homomorphism between full Hopf algebras has ordinary kernel with
