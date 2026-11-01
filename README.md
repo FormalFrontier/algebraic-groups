@@ -541,9 +541,11 @@ maintained project libraries; it does not claim to formalize an entire source.
   semiring and a specified right comodule, weight spaces are the submodules
   where the coaction is `v ↦ v ⊗ c`, for any coalgebra element `c`. The
   coalgebra and comodule carriers need only be additive-commutative-monoid
-  modules, in independent universes. On a regular comodule, the counit and
-  scalar multiplication by a group-like element satisfy both inverse
-  equations, without a nontriviality assumption. Over a field, the weight
+  modules, in independent universes. A regular weight space at a group-like
+  element is linearly equivalent to the scalar module: the forward map is
+  scalar multiplication, and the inverse is the counit. Both maps have
+  characteristic linear-map and application readbacks, without a nontriviality
+  assumption. Over a field, the weight
   submodules indexed by group-like elements are independent for arbitrary
   modules; no spanning or finite-dimensional hypothesis is used.
   [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule/WeightSpace.lean).

@@ -59,11 +59,16 @@ example :
 
 example (v : (regular ℕ Aℕ).weightSpace (generatorWeight ℕ).val) :
     (v : Aℕ) = MonoidAlgebra.single (Multiplicative.ofAdd (1 : ℤ))
-      (counit (R := ℕ) (v : Aℕ)) := by
+      ((regularWeightSpaceEquiv (generatorWeight ℕ)).symm v) := by
+  let E := regularWeightSpaceEquiv (generatorWeight ℕ)
+  have hv := congrArg
+    (fun w : (regular ℕ Aℕ).weightSpace (generatorWeight ℕ).val ↦ (w : Aℕ))
+    (E.apply_symm_apply v)
   calc
-    (v : Aℕ) = (counit (R := ℕ) (v : Aℕ)) • (generatorWeight ℕ).val :=
-      ((regular_weightSpace_inverse (generatorWeight ℕ)).2 v).symm
-    _ = _ := by simp only [generatorWeight, MonoidAlgebra.smul_single', mul_one]
+    (v : Aℕ) = (E (E.symm v) : Aℕ) := hv.symm
+    _ = (E.symm v) • (generatorWeight ℕ).val :=
+      coe_regularWeightSpaceEquiv_apply (generatorWeight ℕ) _
+    _ = _ := by simp only [E, generatorWeight, MonoidAlgebra.smul_single', mul_one]
 
 example : Disjoint
     ((regular ℚ Aℚ).weightSpace (unitWeight ℚ).val)

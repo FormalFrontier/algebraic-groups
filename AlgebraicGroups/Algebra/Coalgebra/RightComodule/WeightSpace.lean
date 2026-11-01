@@ -6,6 +6,7 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import Mathlib.Algebra.Module.Submodule.EqLocus
+public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.Order.SupIndep
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 
@@ -17,8 +18,10 @@ space consists of the vectors whose coaction is `v ↦ v ⊗ c`. The definition
 does not require `c` to be group-like or assert that its weight space is nonzero.
 
 The construction uses Mathlib's equalizer submodule and the existing
-`Coalgebra.RightComodule` formalization. The regular weight-space inverse
-relations and independence statement use Mathlib's bundled `GroupLike` elements.
+`Coalgebra.RightComodule` formalization. A regular weight space at a group-like
+element is linearly equivalent to the scalar module, with scalar multiplication
+forward and the counit backward. This equivalence and the independence statement
+use Mathlib's bundled `GroupLike` elements.
 The weight-space and regular-occurrence viewpoints are motivated by Milne's treatment
 in §§4.22–4.26. Here the coalgebra and coaction are specified directly; an
 algebraic-group or character dictionary is not part of the construction.
@@ -75,6 +78,49 @@ theorem regular_weightSpace_inverse (g : GroupLike R C) :
         TensorProduct.lid R C ((counit (R := R) (A := C)).rTensor C t)) hv
     simpa only [Coalgebra.rTensor_counit_comul, LinearMap.rTensor_tmul,
       TensorProduct.lid_tmul, one_smul] using h.symm
+
+/-- Scalar coordinates on a regular weight space, with scalar multiplication forward
+and the counit backward. -/
+def regularWeightSpaceEquiv (g : GroupLike R C) :
+    R ≃ₗ[R] (regular R C).weightSpace g.val :=
+  LinearEquiv.ofLinearMap
+    ((LinearMap.toSpanSingleton R C g.val).codRestrict
+      ((regular R C).weightSpace g.val) (fun r ↦
+        ((regular R C).weightSpace g.val).smul_mem r
+          ((mem_weightSpace _ _).mpr g.isGroupLikeElem_val.comul_eq_tmul_self)))
+    ((counit (R := R) (A := C)).domRestrict ((regular R C).weightSpace g.val))
+    (by
+      apply LinearMap.ext
+      intro v
+      apply Subtype.ext
+      exact (regular_weightSpace_inverse g).2 v)
+    (by
+      apply LinearMap.ext
+      intro r
+      exact (regular_weightSpace_inverse g).1 r)
+
+/-- The ambient linear map of regular weight-space coordinates is scalar multiplication. -/
+@[simp] theorem subtype_comp_regularWeightSpaceEquiv (g : GroupLike R C) :
+    ((regular R C).weightSpace g.val).subtype.comp
+        (regularWeightSpaceEquiv g).toLinearMap = LinearMap.toSpanSingleton R C g.val :=
+  rfl
+
+/-- The inverse coordinate map is the restriction of the counit. -/
+@[simp] theorem regularWeightSpaceEquiv_symm_toLinearMap (g : GroupLike R C) :
+    (regularWeightSpaceEquiv g).symm.toLinearMap =
+      (counit (R := R) (A := C)).domRestrict ((regular R C).weightSpace g.val) :=
+  rfl
+
+/-- The vector with scalar coordinate `r` is `r` times the group-like element. -/
+@[simp] theorem coe_regularWeightSpaceEquiv_apply (g : GroupLike R C) (r : R) :
+    (regularWeightSpaceEquiv g r : C) = r • g.val :=
+  rfl
+
+/-- The scalar coordinate of a regular weight vector is its counit. -/
+@[simp] theorem regularWeightSpaceEquiv_symm_apply (g : GroupLike R C)
+    (v : (regular R C).weightSpace g.val) :
+    (regularWeightSpaceEquiv g).symm v = counit (R := R) (v : C) :=
+  rfl
 
 end CommSemiring
 
