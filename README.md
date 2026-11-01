@@ -518,11 +518,23 @@ maintained project libraries; it does not claim to formalize an entire source.
   hypothesis is required; the universes `u` and `v` are independent.
   This is the intrinsic all-algebra criterion. Bridges to Milne's finitely
   generated test algebras in *Algebraic Groups* (2017), Proposition 4.31,
-  including comparison of further-algebra tests, are not supplied. For
-  normal-subgroup invariants, ambient-group stability and representation
-  restriction are not included.
+  including comparison of further-algebra tests, are not supplied.
+  Precomposition `η.comap i` along a group-scheme morphism uses the same point
+  functor and operators, with `(η.comap i).operator R n = η.operator R (n ≫ i)`
+  and identity/composition laws. Over a field, if the same morphism `i` is
+  categorically normal, every ambient `G(R)` operator preserves the image of
+  `((η.comap i).invariants).subtype.baseChange R`. This is image stability,
+  not pointwise fixedness under `G`. The ambient representation
+  `η.normalInvariantsRepresentation i` acts on the exact inherited invariant
+  subtype, using the original `R ⊗[K] (η.comap i).invariants` at each coefficient
+  algebra. The unchanged scalar-extended subtype inclusion intertwines its
+  operators with those of `η`, and this equation uniquely determines the
+  natural-transformation value. The original subgroup acts trivially on it;
+  no quotient action is constructed.
   [Invariant submodule and fixedness](AlgebraicGroups/GroupScheme/GeometricRepresentationInvariants.lean),
   [field criterion `GeometricRepresentation.mem_range_baseChange_invariants_iff`](AlgebraicGroups/GroupScheme/GeometricRepresentationBaseChange.lean),
+  [precomposition and normal-subgroup image stability](AlgebraicGroups/GroupScheme/GeometricRepresentationSubgroup.lean),
+  [ambient representation on the normal invariants](AlgebraicGroups/GroupScheme/GeometricRepresentationNormalInvariants.lean),
   [operators and naturality](AlgebraicGroups/GroupScheme/AffineRepresentation.lean).
 - **Canonical affine-coordinate representations.** For a commutative ring `K`
   and an affine group `G` over `Spec K`, the canonical Hopf algebra on `Γ(G, O_G)`
