@@ -412,6 +412,15 @@ maintained project libraries; it does not claim to formalize an entire source.
   [nonidentity coordinate-swap clients over `ℕ`](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean)
   use distinct nonzero coactions.
   [API](docs/COALGEBRAS.md#inverses-of-colinear-linear-equivalences).
+- **Image stability of right-comodule morphisms.** Over a commutative semiring,
+  the linear range of a morphism between specified right comodules is image-stable,
+  without flatness of the coacting coalgebra or either module.
+  [Ranges](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Range.lean).
+- **Canonical range factorization.** When the coacting coalgebra alone is flat,
+  the same linear range has its induced right coaction. Its canonical linear range
+  restriction is a surjective comodule morphism, with inclusion factorization and
+  uniqueness. No flatness of the source or target module is required.
+  [Construction](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Range.lean).
 - **Finite right subcomodules.** Over a commutative semiring, for additive-monoid
   modules, projectivity of the coacting coalgebra alone gives finite-subset
   containment in finitely generated subcomodules. Neither module need be finite,

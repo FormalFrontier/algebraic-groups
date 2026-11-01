@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Range
 public import AlgebraicGroupsTest.Algebra.Coalgebra.FiniteSubcoalgebra
 public import Mathlib.Algebra.Module.PUnit
 public import Mathlib.Data.Finsupp.Fintype
@@ -827,5 +828,133 @@ example :
   simp [LinearMap.rTensor_id]
 
 end
+
+end RightComoduleExamples
+
+/-!
+## A proper nonzero image of a scalar comodule morphism
+
+Doubling on the scalar natural-number comodule is bundled directly from its
+linear map and the pure-tensor coaction law. Its linear image contains two but
+not one, independently of the induced image-comodule construction. The image
+clients compare the new factor with the stock linear range restriction and the
+direct scalar subtype coaction.
+-/
+
+namespace RightComoduleExamples
+
+open Coalgebra (RightComoduleHom)
+
+/-- The scalar coaction on the ordinary natural-number module. -/
+def natScalarComodule : RightComodule ℕ ℕ ℕ := RightComodule.scalar ℕ ℕ
+
+/-- The stock linear map that doubles a natural number. -/
+def natDoubleLinearMap : ℕ →ₗ[ℕ] ℕ := (2 : ℕ) • LinearMap.id
+
+@[simp] theorem natDoubleLinearMap_apply (n : ℕ) : natDoubleLinearMap n = 2 * n := by
+  simp [natDoubleLinearMap]
+
+/-- Doubling is colinear for the scalar coaction, without an additive structure on Hom. -/
+def natDoubleHom : RightComoduleHom natScalarComodule natScalarComodule where
+  toLinearMap := natDoubleLinearMap
+  colinear := by
+    apply LinearMap.ext
+    intro n
+    simp only [LinearMap.comp_apply, natScalarComodule, RightComodule.scalar_coaction,
+      LinearMap.rTensor_tmul]
+
+/-- Two belongs to the linear image, with preimage one. -/
+theorem natDoubleLinearMap_two_mem : (2 : ℕ) ∈ LinearMap.range natDoubleLinearMap :=
+  ⟨1, by simp⟩
+
+/-- One has no preimage under doubling on the natural numbers. -/
+theorem natDoubleLinearMap_one_not_mem : (1 : ℕ) ∉ LinearMap.range natDoubleLinearMap := by
+  rintro ⟨n, hn⟩
+  rw [natDoubleLinearMap_apply] at hn
+  cases n with
+  | zero => simp at hn
+  | succ n =>
+    have htwo : 2 ≤ 2 * (n + 1) :=
+      Nat.mul_le_mul_left 2 (Nat.succ_le_succ (Nat.zero_le n))
+    have hbad : 2 ≤ 1 := hn ▸ htwo
+    exact (Nat.not_succ_le_self 1) hbad
+
+/-- The linear image is nonzero and proper before any induced coaction is used. -/
+theorem natDoubleLinearMap_nonzero_proper :
+    LinearMap.range natDoubleLinearMap ≠ ⊥ ∧ LinearMap.range natDoubleLinearMap ≠ ⊤ := by
+  constructor
+  · intro h
+    have hzero : (2 : ℕ) = 0 := (Submodule.mem_bot ℕ).mp (h ▸ natDoubleLinearMap_two_mem)
+    exact (Nat.succ_ne_zero 1) hzero
+  · intro h
+    apply natDoubleLinearMap_one_not_mem
+    rw [h]
+    exact Submodule.mem_top
+
+/-- The original bundled doubling map is not surjective onto its ambient codomain. -/
+theorem natDoubleHom_not_surjective : ¬ Function.Surjective natDoubleHom := by
+  intro h
+  obtain ⟨n, hn⟩ := h 1
+  exact natDoubleLinearMap_one_not_mem ⟨n, hn⟩
+
+/-- The scalar coalgebra has the stock flatness witness over itself. -/
+theorem natScalar_flat : Module.Flat ℕ ℕ := Module.Flat.self
+
+/-- The zero linear map bundles directly, without a zero instance on comodule morphisms. -/
+def natScalarZeroHom : RightComoduleHom natScalarComodule natScalarComodule where
+  toLinearMap := 0
+  colinear := by
+    apply LinearMap.ext
+    intro n
+    simp only [LinearMap.comp_apply, LinearMap.zero_apply, natScalarComodule,
+      RightComodule.scalar_coaction, LinearMap.rTensor_tmul, TensorProduct.zero_tmul]
+
+example : (RightComoduleHom.range natDoubleHom).toSubmodule =
+    LinearMap.range natDoubleLinearMap :=
+  RightComoduleHom.range_toSubmodule natDoubleHom
+
+example : (2 : ℕ) ∈ RightComoduleHom.range natDoubleHom ∧
+    (1 : ℕ) ∉ RightComoduleHom.range natDoubleHom := by
+  constructor
+  · exact (RightComoduleHom.mem_range natDoubleHom 2).mpr ⟨1, by
+      change natDoubleLinearMap 1 = 2
+      simp⟩
+  · intro h
+    exact natDoubleLinearMap_one_not_mem
+      ((RightComoduleHom.mem_range natDoubleHom 1).mp h)
+
+example : (RightComoduleHom.range natDoubleHom).toSubmodule ≠ ⊥ ∧
+    (RightComoduleHom.range natDoubleHom).toSubmodule ≠ ⊤ := by
+  rw [RightComoduleHom.range_toSubmodule]
+  exact natDoubleLinearMap_nonzero_proper
+
+example : (RightComoduleHom.rangeRestrict natDoubleHom).toLinearMap =
+    natDoubleLinearMap.rangeRestrict :=
+  RightComoduleHom.rangeRestrict_toLinearMap natDoubleHom
+
+example : (RightComoduleHom.range natDoubleHom).subtype.comp
+    (RightComoduleHom.rangeRestrict natDoubleHom) = natDoubleHom :=
+  RightComoduleHom.subtype_comp_rangeRestrict natDoubleHom
+
+example : Function.Surjective (RightComoduleHom.rangeRestrict natDoubleHom) :=
+  RightComoduleHom.surjective_rangeRestrict natDoubleHom
+
+example (n : ℕ) : (RightComoduleHom.range natDoubleHom).comodule.coaction
+    (RightComoduleHom.rangeRestrict natDoubleHom n) =
+      natDoubleLinearMap.rangeRestrict.rTensor ℕ (n ⊗ₜ[ℕ] 1) := by
+  exact (RightComoduleHom.rangeRestrict natDoubleHom).colinear_apply n
+
+example : RightComoduleHom.range natDoubleHom =
+    RightComodule.scalarSubcomodule (LinearMap.range natDoubleLinearMap) := by
+  apply RightComodule.Subcomodule.ext
+  exact RightComoduleHom.range_toSubmodule natDoubleHom
+
+example : (RightComoduleHom.range (RightComoduleHom.id natScalarComodule)).toSubmodule = ⊤ := by
+  rw [RightComoduleHom.range_toSubmodule]
+  exact LinearMap.range_id
+
+example : (RightComoduleHom.range natScalarZeroHom).toSubmodule = ⊥ := by
+  rw [RightComoduleHom.range_toSubmodule]
+  exact LinearMap.range_zero
 
 end RightComoduleExamples
