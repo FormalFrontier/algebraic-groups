@@ -574,6 +574,18 @@ maintained project libraries; it does not claim to formalize an entire source.
   [precomposition and normal-subgroup image stability](AlgebraicGroups/GroupScheme/GeometricRepresentationSubgroup.lean),
   [ambient representations and intertwiners on normal invariants](AlgebraicGroups/GroupScheme/GeometricRepresentationNormalInvariants.lean),
   [operators and naturality](AlgebraicGroups/GroupScheme/AffineRepresentation.lean).
+- **Tensor products and subgroup-invariant tensors.** Over a commutative ring,
+  geometric representations of the same possibly nonaffine group scheme have a
+  tensor product, natural for every coefficient-algebra map. Its operators are
+  tensor products of the given operators under the scalar-extension comparison.
+  For any group-scheme morphism `i : N ⟶ G`, the tensor of the two invariant
+  subtype inclusions induces a linear map
+  `(V^N) ⊗[K] (W^N) → (V ⊗[K] W)^N`, with invariants tested over all
+  coefficient algebras. The pure-tensor formula and inclusion square retain
+  the two underlying vectors. The module universes are independent, and no
+  field, normality, finiteness or flatness assumption is needed. Injectivity
+  and surjectivity are not asserted.
+  [Construction and formulas](AlgebraicGroups/GroupScheme/GeometricRepresentationTensor.lean).
 - **Canonical affine-coordinate representations.** For a commutative ring `K`
   and an affine group `G` over `Spec K`, the canonical Hopf algebra on `Γ(G, O_G)`
   recovers the original group data through `G.isoSpec`. A natural multiplicative
@@ -1124,6 +1136,7 @@ maintained project libraries; it does not claim to formalize an entire source.
 | [`AlgebraicGroups.GroupScheme.AffineHomOverConvolution`](AlgebraicGroups/GroupScheme/AffineHomOverConvolution.lean) | Affine-target global-sections comparison with convolution, target and coefficient readbacks, naturality, and affine specialization. |
 | [`AlgebraicGroups.Algebra.Coalgebra.RightComodule.GeneralLinear`](AlgebraicGroups/Algebra/Coalgebra/RightComodule/GeneralLinear.lean) | Coefficient evaluation in general linear coordinates, whole-ring and operator readbacks, and coefficient change for a finite based comodule. |
 | [`AlgebraicGroups.GroupScheme.ComoduleGeneralLinear`](AlgebraicGroups/GroupScheme/ComoduleGeneralLinear.lean) | General linear group morphisms from based coordinate comodules, original-scheme pullbacks and point operators, and the coefficient-generation closed-immersion criterion. |
+| [`AlgebraicGroups.GroupScheme.GeometricRepresentationTensor`](AlgebraicGroups/GroupScheme/GeometricRepresentationTensor.lean) | Tensor products of geometric representations over commutative rings, the canonical map from tensors of subgroup invariants, pure-tensor values and the inclusion square. |
 | [`AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom`](AlgebraicGroups/Algebra/Coalgebra/GroupLikeHom.lean) | `GroupLike.map`, identity/composition, and naturality of the normalized group-like/scalar-source coalgebra-map equivalence over a commutative semiring; additive-commutative-monoid modules. |
 | [`AlgebraicGroups.Algebra.Bialgebra.GroupLike`](AlgebraicGroups/Algebra/Bialgebra/GroupLike.lean) | Monoid homomorphism `BialgHom.groupLikeMap` with identity/composition laws for possibly noncommutative semiring bialgebras over a commutative semiring; no Hopf structure. |
 | [`AlgebraicGroups.Algebra.HopfAlgebra.GroupLike`](AlgebraicGroups/Algebra/HopfAlgebra/GroupLike.lean) | Injectivity, image characterization and pointwise/monoid-homomorphism `Units.map` naturality of Mathlib's `GroupLike.toUnits` for possibly noncommutative semiring Hopf algebras over a commutative semiring. |
