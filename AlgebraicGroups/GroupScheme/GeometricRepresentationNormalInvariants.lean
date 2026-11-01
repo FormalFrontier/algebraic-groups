@@ -290,4 +290,60 @@ theorem normalInvariantsRepresentation_comap_operator
   simpa only [operator_comap] using
     (ρ.comap i).apply_subtype_baseChange_invariants R n x
 
+universe w
+
+variable {W : Type w} [AddCommGroup W] [Module K W]
+
+/-- Restriction to subgroup invariants intertwines the existing ambient
+representations on those original invariant subtypes. -/
+theorem invariantsMap_normalInvariantsRepresentation_intertwines
+    (ρ : GeometricRepresentation (K := K) G V)
+    (σ : GeometricRepresentation (K := K) G W)
+    (i : N.asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K)))
+    [IsMonHom.Normal i]
+    (f : V →ₗ[K] W)
+    (hf : ∀ (R : CommAlgCat.{u, u} K)
+      (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶
+        G.asOver (Spec (.of K))),
+      f.baseChange R ∘ₗ (ρ.operator R g).val =
+        (σ.operator R g).val ∘ₗ f.baseChange R)
+    (R : CommAlgCat.{u, u} K)
+    (g : (Spec (.of R)).asOver (Spec (.of K)) ⟶
+      G.asOver (Spec (.of K))) :
+    let F : (ρ.comap i).invariants →ₗ[K] (σ.comap i).invariants :=
+      invariantsMap (ρ.comap i) (σ.comap i) f
+        (fun T n => by simpa only [operator_comap] using hf T (n ≫ i))
+    F.baseChange R ∘ₗ
+        ((ρ.normalInvariantsRepresentation i).operator R g).val =
+      ((σ.normalInvariantsRepresentation i).operator R g).val ∘ₗ F.baseChange R := by
+  let F : (ρ.comap i).invariants →ₗ[K] (σ.comap i).invariants :=
+    invariantsMap (ρ.comap i) (σ.comap i) f
+      (fun T n => by simpa only [operator_comap] using hf T (n ≫ i))
+  change F.baseChange R ∘ₗ
+      ((ρ.normalInvariantsRepresentation i).operator R g).val =
+    ((σ.normalInvariantsRepresentation i).operator R g).val ∘ₗ F.baseChange R
+  have hF : (σ.comap i).invariants.subtype.baseChange R ∘ₗ F.baseChange R =
+      f.baseChange R ∘ₗ (ρ.comap i).invariants.subtype.baseChange R :=
+    subtype_baseChange_comp_invariantsMap (ρ.comap i) (σ.comap i) f
+      (fun T n => by simpa only [operator_comap] using hf T (n ≫ i)) R
+  apply LinearMap.ext
+  intro x
+  apply normalInvariants_inclusion_injective σ i R
+  simp only [LinearMap.comp_apply]
+  calc
+    _ = f.baseChange R
+        ((ρ.comap i).invariants.subtype.baseChange R
+          (((ρ.normalInvariantsRepresentation i).operator R g).val x)) :=
+      LinearMap.congr_fun hF _
+    _ = f.baseChange R
+        ((ρ.operator R g).val ((ρ.comap i).invariants.subtype.baseChange R x)) := by
+      rw [normalInvariantsRepresentation_operator_apply]
+    _ = (σ.operator R g).val
+        (f.baseChange R ((ρ.comap i).invariants.subtype.baseChange R x)) :=
+      LinearMap.congr_fun (hf R g) _
+    _ = (σ.operator R g).val
+        ((σ.comap i).invariants.subtype.baseChange R (F.baseChange R x)) :=
+      congrArg (σ.operator R g).val (LinearMap.congr_fun hF x).symm
+    _ = _ := (σ.normalInvariantsRepresentation_operator_apply i R g _).symm
+
 end AlgebraicGeometry.GeometricRepresentation

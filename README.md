@@ -514,7 +514,7 @@ maintained project libraries; it does not claim to formalize an entire source.
   including common-maximum comparisons.
   [Finite system and universal property](AlgebraicGroups/GroupScheme/RepresentationFiltration.lean).
 
-- **Intrinsic geometric invariants and scalar-extension fixedness.** Let `G`
+- **Intrinsic geometric invariants and functoriality.** Let `G`
   be any group scheme over `Spec K`, for a commutative ring `K : Type u`,
   and let `η` be a geometric representation on a `K`-module `V : Type v`.
   The submodule `η.invariants` consists exactly of vectors `v` for which
@@ -523,7 +523,12 @@ maintained project libraries; it does not claim to formalize an entire source.
   scalar-extended subtype inclusion. The operator and
   `GeometricRepresentation.naturality_apply` API retain the given
   representation and commute with all coefficient-algebra maps on arbitrary
-  tensors.
+  tensors. Over a commutative ring, a linear map intertwining all coefficient-algebra
+  point operators of two geometric representations of the same group scheme
+  induces `GeometricRepresentation.invariantsMap` on their invariant subtypes.
+  It commutes with the original subtype inclusions and their scalar extensions,
+  and preserves identities and composition. The given linear map need not be
+  invertible, and the two module universes are independent.
   Over a field, for every `R : CommAlgCat.{u, u} K` and `w : R ⊗[K] V`,
   `w` belongs to the image of `η.invariants.subtype.baseChange R` if and only
   if, for every `S : CommAlgCat.{u, u} K`, every `φ : R →ₐ[K] S` and every
@@ -550,12 +555,15 @@ maintained project libraries; it does not claim to formalize an entire source.
   algebra. The unchanged scalar-extended subtype inclusion intertwines its
   operators with those of `η`, and this equation uniquely determines the
   natural-transformation value. The original subgroup acts trivially on it;
-  no quotient action is constructed.
-  [Invariant submodule and fixedness](AlgebraicGroups/GroupScheme/GeometricRepresentationInvariants.lean),
+  no quotient action is constructed. For a normal group-scheme morphism over a
+  field, the map induced on subgroup invariants by an ambient equivariant linear
+  map intertwines the two ambient representations on those subtypes, at every
+  coefficient algebra and ambient point.
+  [Invariant submodule, fixedness and functorial maps](AlgebraicGroups/GroupScheme/GeometricRepresentationInvariants.lean),
   [finite-type comparisons](AlgebraicGroups/GroupScheme/GeometricRepresentationFiniteType.lean),
   [field criterion `GeometricRepresentation.mem_range_baseChange_invariants_iff`](AlgebraicGroups/GroupScheme/GeometricRepresentationBaseChange.lean),
   [precomposition and normal-subgroup image stability](AlgebraicGroups/GroupScheme/GeometricRepresentationSubgroup.lean),
-  [ambient representation on the normal invariants](AlgebraicGroups/GroupScheme/GeometricRepresentationNormalInvariants.lean),
+  [ambient representations and intertwiners on normal invariants](AlgebraicGroups/GroupScheme/GeometricRepresentationNormalInvariants.lean),
   [operators and naturality](AlgebraicGroups/GroupScheme/AffineRepresentation.lean).
 - **Canonical affine-coordinate representations.** For a commutative ring `K`
   and an affine group `G` over `Spec K`, the canonical Hopf algebra on `Γ(G, O_G)`
