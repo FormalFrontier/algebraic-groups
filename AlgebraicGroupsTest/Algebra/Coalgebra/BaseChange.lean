@@ -6,22 +6,37 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.IdempotentIdeal
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Clients of extension of the counit ideal
 
 The infinite coalgebra `ℕ →₀ ℕ` is extended to the infinite commutative semiring
 `MonoidAlgebra ℕ ℕ`; neither scalar type is a ring. Identity scalar extension
-and the zero scalar semiring are included.
+and the zero scalar semiring are included. The lawful product coalgebra on
+`ℕ × ℕ`, whose counit adds the coordinates, is also extended along the diagonal
+algebra `ℕ → ℕ × ℕ`. These are additive-monoid clients over non-ring scalars.
 
 The proper nonzero ideal `(3)` in `ZMod 6` carries the existing idempotent-ideal
 coalgebra with counit inclusion. Its generator has counit three, not one.
 Extending scalars by the canonical projections to `ZMod 3` and `ZMod 2` gives
 counit ideal zero and the unit ideal, respectively. The zero-ideal assertion is
 only about the counit range; no tensor-product subsingleton assertion is made.
+The projection to `ZMod 2` shows that surjectivity need not reflect without
+faithful flatness; the projection to `ZMod 3` only shows loss of nonzero support.
+Both resulting image ideals are finitely generated.
+
+Extension to `Polynomial (ZMod 6)` instead preserves a proper nonzero counit
+ideal, namely `(Polynomial.C 3)`. Stock polynomial freeness and nontriviality
+make this scalar extension faithfully flat. The faithfully-flat counit APIs
+preserve nonsurjectivity and finite generation of the image. The finite-module
+interpretation concerns the image subtype, not the tensor carrier.
 -/
 
 @[expose] public section
@@ -51,7 +66,7 @@ theorem natural_monoidAlgebra_counit_seven :
 
 /-- Scalar extension along the identity leaves the counit ideal unchanged. -/
 theorem identity_counit_range (R : Type u) (C : Type v)
-    [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C] :
+    [CommSemiring R] [AddCommMonoid C] [Module R C] [CoalgebraStruct R C] :
     (LinearMap.range (counit (R := R) (A := R ⊗[R] C)) : Ideal R) =
       LinearMap.range (counit (R := R) (A := C)) := by
   simpa using counit_range_baseChange R R C
@@ -63,6 +78,24 @@ theorem zero_scalar_counit_range :
   rw [counit_range_baseChange]
   exact Subsingleton.elim _ _
 
+/-- The lawful natural-number product coalgebra has counit the sum of the coordinates. -/
+theorem natural_product_counit (a b : ℕ) :
+    counit (R := ℕ) (a, b) = a + b := by
+  simp
+
+/-- The lawful product coalgebra retains its unit counit ideal after extension
+along the diagonal algebra `ℕ → ℕ × ℕ`, over semiring scalars with an
+additive-monoid source. -/
+theorem natural_product_baseChange_counit_range :
+    (LinearMap.range (counit (R := ℕ × ℕ)
+      (A := (ℕ × ℕ) ⊗[ℕ] (ℕ × ℕ))) : Ideal (ℕ × ℕ)) = ⊤ := by
+  rw [counit_range_baseChange]
+  have hsource : (LinearMap.range (counit (R := ℕ) (A := ℕ × ℕ)) : Ideal ℕ) = ⊤ := by
+    apply LinearMap.range_eq_top.mpr
+    intro n
+    exact ⟨(n, 0), by simp⟩
+  rw [hsource, Ideal.map_top]
+
 section IdempotentIdeal
 
 /-- Three is an idempotent scalar in `ZMod 6`. -/
@@ -70,7 +103,8 @@ theorem three_idempotent : IsIdempotentElem (3 : ZMod 6) := by
   change (3 : ZMod 6) * 3 = 3
   decide
 
-noncomputable local instance :
+/-- The coalgebra on the idempotent principal ideal `(3)` in `ZMod 6`. -/
+noncomputable local instance threeIdealCoalgebra :
     Coalgebra (ZMod 6) (Ideal.span ({3} : Set (ZMod 6))) := three_idempotent.coalgebraSpan
 
 /-- The counit ideal of the idempotent principal ideal coalgebra on `(3)` is `(3)`. -/
@@ -100,7 +134,8 @@ theorem three_counit_range_proper :
 
 section ModThree
 
-local instance : Algebra (ZMod 6) (ZMod 3) :=
+/-- The scalar algebra induced by reduction from `ZMod 6` to `ZMod 3`. -/
+local instance zmodSixToThreeAlgebra : Algebra (ZMod 6) (ZMod 3) :=
   (ZMod.castHom (by decide : 3 ∣ 6) (ZMod 3)).toAlgebra
 
 /-- The projection to `ZMod 3` kills the counit ideal of the coalgebra on `(3)`. -/
@@ -118,7 +153,8 @@ end ModThree
 
 section ModTwo
 
-local instance : Algebra (ZMod 6) (ZMod 2) :=
+/-- The scalar algebra induced by reduction from `ZMod 6` to `ZMod 2`. -/
+local instance zmodSixToTwoAlgebra : Algebra (ZMod 6) (ZMod 2) :=
   (ZMod.castHom (by decide : 2 ∣ 6) (ZMod 2)).toAlgebra
 
 /-- The projection to `ZMod 2` sends the counit ideal of the coalgebra on `(3)`
@@ -134,6 +170,81 @@ theorem three_baseChange_mod_two_counit_range :
   simp
 
 end ModTwo
+
+section Polynomial
+
+private local instance : Nontrivial (ZMod 6) := ZMod.nontrivial_iff.mpr (by decide)
+
+/-- Polynomial extension of the coalgebra on `(3)` has counit ideal `(C 3)`. -/
+theorem three_baseChange_polynomial_counit_range :
+    (LinearMap.range (counit (R := Polynomial (ZMod 6))
+      (A := Polynomial (ZMod 6) ⊗[ZMod 6]
+        Ideal.span ({3} : Set (ZMod 6)))) : Ideal (Polynomial (ZMod 6))) =
+      Ideal.span ({Polynomial.C (3 : ZMod 6)} : Set (Polynomial (ZMod 6))) := by
+  rw [counit_range_baseChange, three_counit_range, Ideal.map_span, Set.image_singleton,
+    Polynomial.algebraMap_eq]
+
+/-- The polynomial counit ideal is nonzero by injectivity of constants and proper
+because evaluation at zero sends its generators into the proper source ideal. -/
+theorem three_baseChange_polynomial_counit_range_proper :
+    (LinearMap.range (counit (R := Polynomial (ZMod 6))
+      (A := Polynomial (ZMod 6) ⊗[ZMod 6]
+        Ideal.span ({3} : Set (ZMod 6)))) : Ideal (Polynomial (ZMod 6))) ≠ ⊥ ∧
+    (LinearMap.range (counit (R := Polynomial (ZMod 6))
+      (A := Polynomial (ZMod 6) ⊗[ZMod 6]
+        Ideal.span ({3} : Set (ZMod 6)))) : Ideal (Polynomial (ZMod 6))) ≠ ⊤ := by
+  rw [three_baseChange_polynomial_counit_range]
+  constructor
+  · rw [ne_eq, Ideal.span_singleton_eq_bot]
+    intro h
+    have hthree : (3 : ZMod 6) = 0 :=
+      Polynomial.C_injective (h.trans (map_zero Polynomial.C).symm)
+    exact (by decide : (3 : ZMod 6) ≠ 0) hthree
+  · intro htop
+    apply three_counit_range_proper.2
+    rw [three_counit_range, Ideal.eq_top_iff_one]
+    have hone : (1 : Polynomial (ZMod 6)) ∈
+        Ideal.span ({Polynomial.C (3 : ZMod 6)} : Set (Polynomial (ZMod 6))) :=
+      (Ideal.eq_top_iff_one _).mp htop
+    obtain ⟨p, hp⟩ := Ideal.mem_span_singleton'.mp hone
+    refine Ideal.mem_span_singleton'.mpr ⟨p.eval 0, ?_⟩
+    simpa only [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_one]
+      using congrArg (Polynomial.eval (0 : ZMod 6)) hp
+
+/-- Faithfully-flat reflection of counit surjectivity preserves nonsurjectivity
+for the polynomial extension of the proper ideal coalgebra on `(3)`. -/
+theorem three_baseChange_polynomial_counit_not_surjective :
+    ¬ Function.Surjective (counit (R := Polynomial (ZMod 6))
+      (A := Polynomial (ZMod 6) ⊗[ZMod 6]
+        Ideal.span ({3} : Set (ZMod 6)))) := by
+  have hsource : ¬ Function.Surjective (counit (R := ZMod 6)
+      (A := Ideal.span ({3} : Set (ZMod 6)))) := by
+    intro h
+    exact three_counit_range_proper.2 (LinearMap.range_eq_top.mpr h)
+  intro htarget
+  exact hsource ((counit_surjective_baseChange_iff_of_faithfullyFlat
+    (ZMod 6) (Polynomial (ZMod 6)) (Ideal.span ({3} : Set (ZMod 6)))).mp htarget)
+
+/-- Faithfully-flat finite-generation ascent applies to the polynomial counit
+image because the source counit image is principal. -/
+theorem three_baseChange_polynomial_counit_range_fg :
+    (LinearMap.range (counit (R := Polynomial (ZMod 6))
+      (A := Polynomial (ZMod 6) ⊗[ZMod 6]
+        Ideal.span ({3} : Set (ZMod 6)))) : Ideal (Polynomial (ZMod 6))).FG := by
+  apply (counit_range_baseChange_fg_iff_of_faithfullyFlat
+    (ZMod 6) (Polynomial (ZMod 6)) (Ideal.span ({3} : Set (ZMod 6)))).mpr
+  rw [three_counit_range]
+  exact Submodule.fg_span_singleton (3 : ZMod 6)
+
+/-- The polynomial counit image subtype is finite as a module over the polynomial ring. -/
+theorem three_baseChange_polynomial_counit_range_finite :
+    Module.Finite (Polynomial (ZMod 6))
+      (LinearMap.range (counit (R := Polynomial (ZMod 6))
+        (A := Polynomial (ZMod 6) ⊗[ZMod 6]
+          Ideal.span ({3} : Set (ZMod 6))))) := by
+  exact Module.Finite.iff_fg.mpr three_baseChange_polynomial_counit_range_fg
+
+end Polynomial
 end IdempotentIdeal
 
 end CoalgebraTest

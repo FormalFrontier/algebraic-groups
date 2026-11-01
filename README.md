@@ -657,8 +657,12 @@ maintained project libraries; it does not claim to formalize an entire source.
   tensor ranges multiply and the tensor counit is onto iff both factor counits
   are onto, already for BOTH `CoalgebraStruct`s on additive-monoid modules over
   a commutative semiring in independent universes. Scalar extension maps the
-  range ideal. No surjectivity, freeness or finite generation is assumed. Over a commutative
-  ring, an additive-group coalgebra is faithfully flat **iff flat and its counit
+  counit range ideal already for a given `CoalgebraStruct`. Over commutative
+  rings, faithfully flat scalar extension preserves and reflects counit
+  surjectivity and finite generation of the image ideal, not finiteness of the
+  carrier. These scalar-extension results need no coalgebra laws, source
+  flatness, freeness or finite generation. Over a commutative ring, an
+  additive-group coalgebra is faithfully flat **iff flat and its counit
   is onto**; flatness is separate, with no projectivity or nontriviality required.
   [Modules and proper-range examples](docs/COALGEBRAS.md#idempotent-principal-ideal-coalgebras).
 - **Hopf coefficient matrix units.** Over a commutative semiring, any finite

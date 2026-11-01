@@ -4,7 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraDiagonal
+public import Mathlib.Algebra.Algebra.Prod
 
 /-!
 # Codomain restriction from comultiplication and counit data
@@ -341,5 +343,52 @@ private lemma projectedRestrictionClient : projectedRestrictionContract K := by
     exact firstProjectionHom_not_injective K D
   · rw [hr]
     rfl
+
+end Coalgebra
+
+namespace Coalgebra
+
+variable (K : Type u) [Field K]
+
+-- The projected structure has unit counit image despite its nonzero counit kernel
+-- and failure of the left counit law. Scalar extension uses these same structure maps.
+example :
+    kernelVector K (supportedPart K) ≠ 0 ∧
+      counit (R := K) (A := projectedSource K (supportedPart K))
+        (kernelVector K (supportedPart K)) = 0 ∧
+      (counit (R := K) (A := projectedSource K (supportedPart K))).rTensor
+          (projectedSource K (supportedPart K))
+          (comul (R := K) (A := projectedSource K (supportedPart K))
+            (kernelVector K (supportedPart K))) ≠
+        (1 : K) ⊗ₜ[K] kernelVector K (supportedPart K) ∧
+      counit (R := K) (A := projectedSource K (supportedPart K))
+        ((⟨Finsupp.single 0 (1 : K), (supportedPart_spec K).2.2.2.2.2.2.1⟩, 0) :
+          projectedSource K (supportedPart K)) = 1 ∧
+      (LinearMap.range (counit (R := K)
+        (A := projectedSource K (supportedPart K))) : Ideal K) = ⊤ ∧
+      (LinearMap.range (counit (R := K × K)
+        (A := (K × K) ⊗[K] projectedSource K (supportedPart K))) : Ideal (K × K)) =
+        Ideal.map (algebraMap K (K × K))
+          (LinearMap.range (counit (R := K) (A := projectedSource K (supportedPart K)))) ∧
+      (LinearMap.range (counit (R := K × K)
+        (A := (K × K) ⊗[K] projectedSource K (supportedPart K))) : Ideal (K × K)) = ⊤ := by
+  let x : projectedSource K (supportedPart K) :=
+    (⟨Finsupp.single 0 (1 : K), (supportedPart_spec K).2.2.2.2.2.2.1⟩, 0)
+  have hε : counit (R := K) (A := projectedSource K (supportedPart K)) x = 1 := by
+    change counit (R := K) (A := supportedPart K)
+      (⟨Finsupp.single 0 (1 : K), (supportedPart_spec K).2.2.2.2.2.2.1⟩ : supportedPart K) = 1
+    rw [Subcoalgebra.coalgebra_counit_apply]
+    simp
+  have hr : (LinearMap.range (counit (R := K)
+      (A := projectedSource K (supportedPart K))) : Ideal K) = ⊤ :=
+    (Ideal.eq_top_iff_one _).2 ⟨x, hε⟩
+  have hb := @Coalgebra.counit_range_baseChange K (K × K)
+    (projectedSource K (supportedPart K)) _ _ _ _ _
+    (projectedSourceCoalgebraStruct K (supportedPart K))
+  refine ⟨kernelVector_ne_zero K (supportedPart K), ?_,
+    projectedSource_left_counit_failure K (supportedPart K), hε, hr, hb, ?_⟩
+  · change counit (R := K) (A := supportedPart K) (0 : supportedPart K) = 0
+    exact map_zero _
+  · rw [hb, hr, Ideal.map_top]
 
 end Coalgebra

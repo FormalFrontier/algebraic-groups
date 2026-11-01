@@ -9,22 +9,35 @@ public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.RingTheory.Coalgebra.Quotient
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.Finiteness.Descent
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 
 /-!
 # The counit ideal and coideals under extension of scalars
 
 For commutative semirings `R` and `S` with an `R`-algebra structure on `S`, the
-canonical `S`-coalgebra on `S ⊗[R] C` has counit ideal equal to the extension of
-the counit ideal of `C`. Neither flatness of `S` nor projectivity, freeness or
-finite generation of `C` is required. The additive structure of `C` need only
-be a commutative monoid, and the three types may lie in independent universes.
+canonical scalar extension of the comultiplication and counit structure maps to
+`S ⊗[R] C` has counit ideal equal to the extension of the counit ideal of `C`.
+Only `CoalgebraStruct R C` is needed: no coalgebra laws are required. When `C`
+is a coalgebra, these maps give its canonical scalar-extension coalgebra.
+
+The range formula requires neither flatness of `S` nor projectivity, freeness
+or finite generation of `C`. The additive structure of `C` need only be a
+commutative monoid, and the three types may lie in independent universes.
+For commutative rings and a faithfully flat scalar algebra `S`, counit
+surjectivity and finite generation of the counit image are preserved and
+reflected. The finiteness condition concerns the image ideal, not the carrier.
+These results also need no coalgebra laws.
 
 ## References
 
-Mathlib supplies the scalar-extension coalgebra and its counit formula, the
-range of a tensored linear map, submodule scalar extension as a span, and
-ideal extension. The proof combines these APIs rather than imposing an
-injectivity condition on tensor products.
+Mathlib supplies the scalar-extended structure maps and their counit formula,
+the range of a tensored linear map, submodule scalar extension as a span, and
+ideal extension. The range proof combines these APIs rather than imposing an
+injectivity condition on tensor products. Surjectivity reflection uses
+Mathlib's `Ideal.map_injective_of_faithfullyFlat` and `Ideal.map_top`; finite
+generation uses `Ideal.FG.of_FG_map_of_faithfullyFlat` and `Ideal.FG.map`.
 
 ## Coideal scalar extension
 
@@ -53,12 +66,15 @@ open scoped TensorProduct
 
 namespace Coalgebra
 
+section CommSemiring
+
 variable (R : Type u) (S : Type v) (C : Type w)
 variable [CommSemiring R] [CommSemiring S] [Algebra R S]
-variable [AddCommMonoid C] [Module R C] [Coalgebra R C]
+variable [AddCommMonoid C] [Module R C] [CoalgebraStruct R C]
 
-/-- The counit ideal of the canonical scalar-extension coalgebra is the extension
-of the original counit ideal. This holds without flatness or freeness assumptions. -/
+/-- The counit ideal of the canonical scalar-extended structure maps is the extension
+of the original counit ideal. No coalgebra laws, flatness or freeness assumptions are
+required. For a coalgebra, this is the counit ideal of its scalar extension. -/
 theorem counit_range_baseChange :
     (LinearMap.range (counit (R := S) (A := S ⊗[R] C)) : Ideal S) =
       Ideal.map (algebraMap R S) (LinearMap.range (counit (R := R) (A := C))) := by
@@ -79,6 +95,44 @@ theorem counit_range_baseChange :
   congr 1
   ext s
   simp [TensorProduct.AlgebraTensorModule.rid_tmul, Algebra.smul_def]
+
+end CommSemiring
+
+section CommRing
+
+variable (R : Type u) (S : Type v) (C : Type w)
+variable [CommRing R] [CommRing S] [Algebra R S] [Module.FaithfullyFlat R S]
+variable [AddCommMonoid C] [Module R C] [CoalgebraStruct R C]
+
+/-- Faithfully flat extension of the scalar ring preserves and reflects surjectivity
+of the counit of the canonical scalar-extended structure maps. No coalgebra laws
+are required. The reflection follows from Mathlib's injectivity of ideal extension. -/
+theorem counit_surjective_baseChange_iff_of_faithfullyFlat :
+    Function.Surjective (counit (R := S) (A := S ⊗[R] C)) ↔
+      Function.Surjective (counit (R := R) (A := C)) := by
+  rw [← LinearMap.range_eq_top, ← LinearMap.range_eq_top, counit_range_baseChange R S C]
+  constructor
+  · intro h
+    apply Ideal.map_injective_of_faithfullyFlat (A := R) (B := S)
+    simpa only [Ideal.map_top] using h
+  · intro h
+    rw [h, Ideal.map_top]
+
+/-- Faithfully flat extension of the scalar ring preserves and reflects finite
+generation of the counit image ideal of the canonical scalar-extended structure
+maps. No coalgebra laws or finiteness of the carrier are required. This combines
+Mathlib's faithfully flat ideal-FG descent with ideal-FG ascent. -/
+theorem counit_range_baseChange_fg_iff_of_faithfullyFlat :
+    (LinearMap.range (counit (R := S) (A := S ⊗[R] C)) : Ideal S).FG ↔
+      (LinearMap.range (counit (R := R) (A := C)) : Ideal R).FG := by
+  rw [counit_range_baseChange R S C]
+  constructor
+  · intro h
+    exact Ideal.FG.of_FG_map_of_faithfullyFlat h
+  · intro h
+    exact Ideal.FG.map h (algebraMap R S)
+
+end CommRing
 
 end Coalgebra
 
