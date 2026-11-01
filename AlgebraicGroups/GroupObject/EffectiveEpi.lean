@@ -9,11 +9,21 @@ public import Mathlib.CategoryTheory.Limits.Over
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
-# Group structures on effective-epimorphic subobjects
+# Group structures and effective epimorphisms
 
 This file transfers effective epimorphisms to over-categories and constructs a group object
 structure on a subobject of a group object when multiplication and inversion restrict and the
 subobject covers the terminal object by an effective epimorphism.
+
+It also constructs a group structure on a supplied monoid object from an effective-epimorphic
+monoid morphism out of a group object. `CategoryTheory.GrpObj.ofEffectiveEpiHom` retains the
+entire supplied monoid structure and descends only inversion. Its inverse is characterized by
+commuting with the original morphism, and is the unique arrow with that property.
+
+The inverse descends because two generalized points agreeing after the monoid morphism have
+inverses agreeing after it: both images are inverses of the same element of the target Hom
+monoid. The inverse laws then follow by cancelling the effective epimorphism itself; no
+product-epimorphism or pullback hypothesis is needed.
 
 ## References
 
@@ -24,6 +34,9 @@ subobject covers the terminal object by an effective epimorphism.
 * Mathlib, `EffectiveEpi.desc`, the cartesian group-object API in
   `Mathlib.CategoryTheory.Monoidal.Cartesian.Grp`, and
   `Mathlib.AlgebraicGeometry.Sites.Fpqc` for the descent and scheme instances.
+* Mathlib's Hom monoid and group structures, `MonObj.mul_comp`, `MonObj.one_comp`,
+  and `left_inv_eq_right_inv` for the inverse-compatibility argument; `EffectiveEpi.fac`
+  characterizes the descended inverse.
 -/
 
 public section
@@ -175,3 +188,100 @@ noncomputable instance effectiveEpi_toUnit_of_nonempty (H : Over (Spec (.of K)))
   infer_instance
 
 end AlgebraicGeometry
+
+namespace CategoryTheory.GrpObj
+
+open scoped CategoryTheory.MonObj
+
+variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory.{v} C]
+variable {G H : C} [gG : GrpObj G] [mH : MonObj H]
+
+private lemma effectiveEpiHom_inv_compatible (q : G ⟶ H) [IsMonHom q]
+    {T : C} (a b : T ⟶ G) (h : a ≫ q = b ≫ q) :
+    a ≫ (ι[G] ≫ q) = b ≫ (ι[G] ≫ q) := by
+  have hleft : (a⁻¹ ≫ q) * (a ≫ q) = 1 := by
+    rw [← MonObj.mul_comp]
+    simp
+  have hright : (a ≫ q) * (b⁻¹ ≫ q) = 1 := by
+    rw [h, ← MonObj.mul_comp]
+    simp
+  have hinv : a⁻¹ ≫ q = b⁻¹ ≫ q := left_inv_eq_right_inv hleft hright
+  simpa only [Hom.inv_def, Category.assoc] using hinv
+
+private noncomputable def effectiveEpiHom_inv
+    (q : G ⟶ H) [IsMonHom q] [EffectiveEpi q] : H ⟶ H :=
+  EffectiveEpi.desc q (ι[G] ≫ q) (effectiveEpiHom_inv_compatible q)
+
+private lemma effectiveEpiHom_inv_fac
+    (q : G ⟶ H) [IsMonHom q] [EffectiveEpi q] :
+    q ≫ effectiveEpiHom_inv q = ι[G] ≫ q :=
+  EffectiveEpi.fac q (ι[G] ≫ q) (effectiveEpiHom_inv_compatible q)
+
+private lemma left_inv_of_epi
+    (q : G ⟶ H) [IsMonHom q] [Epi q]
+    (j : H ⟶ H) (hj : q ≫ j = gG.inv ≫ q) :
+    lift j (𝟙 H) ≫ mH.mul = toUnit H ≫ mH.one := by
+  rw [← Hom.mul_def j (𝟙 H), ← Hom.one_def]
+  apply (cancel_epi q).1
+  calc
+    q ≫ (j * 𝟙 H) = (q ≫ j) * (q ≫ 𝟙 H) := MonObj.comp_mul q j (𝟙 H)
+    _ = (gG.inv ≫ q) * q := by rw [hj, Category.comp_id]
+    _ = (gG.inv * 𝟙 G) ≫ q := by
+      rw [MonObj.mul_comp, Category.id_comp]
+    _ = (1 : G ⟶ G) ≫ q := by
+      rw [Hom.mul_def, GrpObj.left_inv G, ← Hom.one_def]
+    _ = q ≫ (1 : H ⟶ H) := by
+      rw [MonObj.one_comp, MonObj.comp_one]
+
+private lemma right_inv_of_epi
+    (q : G ⟶ H) [IsMonHom q] [Epi q]
+    (j : H ⟶ H) (hj : q ≫ j = gG.inv ≫ q) :
+    lift (𝟙 H) j ≫ mH.mul = toUnit H ≫ mH.one := by
+  rw [← Hom.mul_def (𝟙 H) j, ← Hom.one_def]
+  apply (cancel_epi q).1
+  calc
+    q ≫ (𝟙 H * j) = (q ≫ 𝟙 H) * (q ≫ j) := MonObj.comp_mul q (𝟙 H) j
+    _ = q * (gG.inv ≫ q) := by rw [Category.comp_id, hj]
+    _ = (𝟙 G * gG.inv) ≫ q := by
+      rw [MonObj.mul_comp, Category.id_comp]
+    _ = (1 : G ⟶ G) ≫ q := by
+      rw [Hom.mul_def, GrpObj.right_inv G, ← Hom.one_def]
+    _ = q ≫ (1 : H ⟶ H) := by
+      rw [MonObj.one_comp, MonObj.comp_one]
+
+/-- Extend a supplied monoid object to a group object along an effective-epimorphic monoid
+morphism from a group object. The entire monoid structure is retained definitionally, and
+inversion is the unique arrow commuting with inversion on the source. -/
+@[expose, instance_reducible]
+noncomputable def ofEffectiveEpiHom
+    (q : G ⟶ H) [IsMonHom q] [EffectiveEpi q] : GrpObj H where
+  toMonObj := mH
+  inv := EffectiveEpi.desc q (ι[G] ≫ q) (by exact effectiveEpiHom_inv_compatible q)
+  left_inv := by
+    exact left_inv_of_epi q (effectiveEpiHom_inv q) (effectiveEpiHom_inv_fac q)
+  right_inv := by
+    exact right_inv_of_epi q (effectiveEpiHom_inv q) (effectiveEpiHom_inv_fac q)
+
+/-- The group structure descended along an effective epimorphism retains the entire supplied
+monoid structure. -/
+@[simp]
+theorem ofEffectiveEpiHom_toMonObj
+    (q : G ⟶ H) [IsMonHom q] [EffectiveEpi q] :
+    (ofEffectiveEpiHom q).toMonObj = mH := rfl
+
+/-- Inversion on the descended group object commutes with the effective-epimorphic monoid
+morphism from the original group object. -/
+theorem ofEffectiveEpiHom_inv
+    (q : G ⟶ H) [IsMonHom q] [EffectiveEpi q] :
+    q ≫ (ofEffectiveEpiHom q).inv = gG.inv ≫ q :=
+  effectiveEpiHom_inv_fac q
+
+/-- The inverse on the descended group object is the unique arrow commuting with inversion
+on the original group object. -/
+theorem ofEffectiveEpiHom_inv_unique
+    (q : G ⟶ H) [IsMonHom q] [EffectiveEpi q]
+    (j : H ⟶ H) (hj : q ≫ j = gG.inv ≫ q) :
+    j = (ofEffectiveEpiHom q).inv :=
+  (cancel_epi q).1 (hj.trans (ofEffectiveEpiHom_inv q).symm)
+
+end CategoryTheory.GrpObj
