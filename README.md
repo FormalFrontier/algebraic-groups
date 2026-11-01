@@ -750,9 +750,12 @@ maintained project libraries; it does not claim to formalize an entire source.
   `S² = id`; these are alternatives, not an iff or simultaneous requirements.
   Neither branch needs additive inverses, finiteness or nontriviality. Bialgebra
   maps commute with antipodes, and `Δ ∘ S = (S ⊗ S) ∘ τ ∘ Δ` holds without
-  either commutativity assumption. [Involutivity](AlgebraicGroups/Algebra/HopfAlgebra/Antipode.lean),
+  either commutativity assumption. The square `S²` is a bialgebra endomorphism
+  whose underlying linear map is `S.comp S`; bialgebra maps intertwine these
+  endomorphisms. [Involutivity](AlgebraicGroups/Algebra/HopfAlgebra/Antipode.lean),
   [maps](AlgebraicGroups/Algebra/HopfAlgebra/Hom.lean),
-  [comultiplication](AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean).
+  [comultiplication](AlgebraicGroups/Algebra/HopfAlgebra/Comultiplication.lean),
+  [square endomorphism](AlgebraicGroups/Algebra/HopfAlgebra/AntipodeSquare.lean).
 
 - **Hopf images and first isomorphism.** Over any field, a bialgebra morphism
   from a possibly noncommutative ring Hopf algebra to a semiring Hopf algebra
@@ -1044,8 +1047,9 @@ GitHub `main` contains reviewed releases; Lake records the resolved commit in
 Import `AlgebraicGroups` or a focused module linked above. For example:
 
 ```lean
-import AlgebraicGroups.Algebra.HopfAlgebra.Antipode
+import AlgebraicGroups.Algebra.HopfAlgebra.AntipodeSquare
 #check HopfAlgebra.antipode_involutive
+#check HopfAlgebra.antipodeSquareBialgHom
 ```
 
 ```lean
