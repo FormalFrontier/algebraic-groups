@@ -17,7 +17,7 @@ rev = "83abb3e776bdefcbc447a1e44d0debe4010039e5"
 [[require]]
 name = "scheme-properties"
 git = "https://github.com/FormalFrontier/scheme-properties.git"
-rev = "b65ad6d657642c2df44c6dae1ee6ad4a31fda8d3"
+rev = "c5c50945047d9296ef48ea8d25a37eea7436784e"
 
 [[require]]
 name = "multivariate-polynomials"

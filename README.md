@@ -516,9 +516,15 @@ maintained project libraries; it does not claim to formalize an entire source.
   `g : G(S)`, the tensor `(φ ⊗ id) w` is fixed by `η.operator S g`.
   No affineness of `G`, finite-dimensionality, basis, `Small` or stability
   hypothesis is required; the universes `u` and `v` are independent.
-  This is the intrinsic all-algebra criterion. Bridges to Milne's finitely
-  generated test algebras in *Algebraic Groups* (2017), Proposition 4.31,
-  including comparison of further-algebra tests, are not supplied.
+  These all-algebra results impose no finite-presentation hypothesis.
+  If `G → Spec K` is locally of finite presentation, membership in the same
+  invariant submodule can instead be tested on finite-type `K`-algebras.
+  At arbitrary current `R` and tensor `w`, fixedness after all further maps
+  is equivalent to fixedness after further maps `φ` satisfying exactly
+  `φ.toRingHom.FiniteType`; `R` need not be finite type over `K` and `w`
+  need not be known fixed. These comparisons hold over a commutative ring,
+  extending the field formulation in Milne, *Algebraic Groups* (2017),
+  Proposition 4.31. The scalar-image criterion remains field-scoped.
   Precomposition `η.comap i` along a group-scheme morphism uses the same point
   functor and operators, with `(η.comap i).operator R n = η.operator R (n ≫ i)`
   and identity/composition laws. Over a field, if the same morphism `i` is
@@ -532,6 +538,7 @@ maintained project libraries; it does not claim to formalize an entire source.
   natural-transformation value. The original subgroup acts trivially on it;
   no quotient action is constructed.
   [Invariant submodule and fixedness](AlgebraicGroups/GroupScheme/GeometricRepresentationInvariants.lean),
+  [finite-type comparisons](AlgebraicGroups/GroupScheme/GeometricRepresentationFiniteType.lean),
   [field criterion `GeometricRepresentation.mem_range_baseChange_invariants_iff`](AlgebraicGroups/GroupScheme/GeometricRepresentationBaseChange.lean),
   [precomposition and normal-subgroup image stability](AlgebraicGroups/GroupScheme/GeometricRepresentationSubgroup.lean),
   [ambient representation on the normal invariants](AlgebraicGroups/GroupScheme/GeometricRepresentationNormalInvariants.lean),

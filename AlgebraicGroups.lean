@@ -123,6 +123,7 @@ public import AlgebraicGroups.GroupScheme.AdditiveProductAffineSpace
 public import AlgebraicGroups.GroupScheme.AffineHomOverConvolution
 public import AlgebraicGroups.GroupScheme.AffineRepresentation
 public import AlgebraicGroups.GroupScheme.GeometricRepresentationBaseChange
+public import AlgebraicGroups.GroupScheme.GeometricRepresentationFiniteType
 public import AlgebraicGroups.GroupScheme.GeometricRepresentationSubgroup
 public import AlgebraicGroups.GroupScheme.GeometricRepresentationNormalInvariants
 public import AlgebraicGroups.GroupScheme.PointGroup
