@@ -5,6 +5,7 @@
     {
       "path": ".",
       "targets": [
+        "GroupObjectReflection",
         "AlgebraicGroups",
         "AlgebraicGroupsTest"
       ],
