@@ -8,20 +8,25 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 
 /-!
-# Extension of scalars for right comodules
+# Extension of scalars for right comodules and their morphisms
 
 The scalar extension of a specified right coaction uses the tensor coalgebra
 on the scalar-extended coalgebra and the tensor-distribution equivalence.
-No flatness, projectivity or finiteness is needed for the construction.
+For a colinear map, `Coalgebra.RightComoduleHom.baseChange` uses
+`LinearMap.baseChange` between these extended comodules. It preserves identities,
+composition and specified split retractions.
+No flatness, projectivity or finiteness is needed for these constructions.
 
 ## References
 
-Mathlib's tensor-product coalgebras and scalar-extension equivalences.
+* Mathlib's tensor-product coalgebras, scalar-extension equivalences and linear maps.
+* The specified right-comodule and comodule-morphism formalization in
+  `AlgebraicGroups.Algebra.Coalgebra.RightComodule`.
 -/
 
 @[expose] public section
 
-universe u v w z
+universe u v w z a b
 
 open scoped TensorProduct
 
@@ -154,3 +159,77 @@ theorem baseChange_coaction (X : RightComodule K C W) :
     LinearEquiv.coe_coe]
 
 end Coalgebra.RightComodule
+
+namespace Coalgebra.RightComoduleHom
+
+variable {R : Type u} {C : Type v} {W : Type w} {V : Type a}
+variable [CommSemiring R] [AddCommMonoid C] [Module R C]
+variable [AddCommMonoid W] [Module R W] [AddCommMonoid V] [Module R V]
+variable (S : Type z) [CommSemiring S] [Algebra R S]
+
+private theorem distribBaseChange_naturality (l : W →ₗ[R] V) :
+    (_root_.TensorProduct.AlgebraTensorModule.distribBaseChange R S V C).toLinearMap ∘ₗ
+        (l.rTensor C).baseChange S =
+      (l.baseChange S).rTensor (S ⊗[R] C) ∘ₗ
+        (_root_.TensorProduct.AlgebraTensorModule.distribBaseChange R S W C).toLinearMap := by
+  apply _root_.TensorProduct.AlgebraTensorModule.ext
+  intro s t
+  induction t using _root_.TensorProduct.inductionOn with
+  | tmul w c =>
+    simp only [LinearMap.comp_apply, LinearMap.baseChange_tmul, LinearEquiv.coe_coe,
+      LinearMap.rTensor_tmul,
+      _root_.TensorProduct.AlgebraTensorModule.distribBaseChange_tmul]
+  | add x y hx hy =>
+    simp only [_root_.TensorProduct.tmul_add, map_add, hx, hy]
+
+variable [Coalgebra R C]
+variable {X : RightComodule R C W} {Y : RightComodule R C V}
+
+/-- Extend a colinear map between specified right comodules by extension of scalars. -/
+noncomputable def baseChange (f : RightComoduleHom X Y) :
+    RightComoduleHom (X.baseChange S) (Y.baseChange S) where
+  toLinearMap := f.toLinearMap.baseChange S
+  colinear := by
+    simp only [RightComodule.baseChange_coaction]
+    rw [LinearMap.comp_assoc, ← LinearMap.baseChange_comp, f.colinear,
+      LinearMap.baseChange_comp, ← LinearMap.comp_assoc,
+      distribBaseChange_naturality, LinearMap.comp_assoc]
+
+/-- The underlying linear map of scalar extension is the scalar-extended linear map. -/
+@[simp] theorem baseChange_toLinearMap (f : RightComoduleHom X Y) :
+    (f.baseChange S).toLinearMap = f.toLinearMap.baseChange S := rfl
+
+/-- Scalar extension acts by the extended linear map on every tensor. -/
+@[simp] theorem baseChange_apply (f : RightComoduleHom X Y) (t : S ⊗[R] W) :
+    f.baseChange S t = f.toLinearMap.baseChange S t := rfl
+
+/-- Scalar extension sends `s ⊗ w` to `s ⊗ f w`. -/
+theorem baseChange_tmul (f : RightComoduleHom X Y) (s : S) (w : W) :
+    f.baseChange S (s ⊗ₜ[R] w) = s ⊗ₜ[R] f w := by
+  simp only [baseChange_apply, LinearMap.baseChange_tmul, toLinearMap_apply]
+
+/-- Scalar extension preserves the identity comodule morphism. -/
+@[simp] theorem baseChange_id (X : RightComodule R C W) :
+    (id X).baseChange S = id (X.baseChange S) := by
+  apply toLinearMap_injective
+  simpa only [baseChange_toLinearMap, toLinearMap_id] using
+    (LinearMap.baseChange_id (R := R) (A := S) (M := W))
+
+variable {P : Type b} [AddCommMonoid P] [Module R P]
+variable {Z : RightComodule R C P}
+
+/-- Scalar extension preserves composition of comodule morphisms. -/
+@[simp] theorem baseChange_comp (g : RightComoduleHom Y Z) (f : RightComoduleHom X Y) :
+    (g.comp f).baseChange S = (g.baseChange S).comp (f.baseChange S) := by
+  apply toLinearMap_injective
+  simpa only [baseChange_toLinearMap, toLinearMap_comp] using
+    (LinearMap.baseChange_comp (A := S) f.toLinearMap g.toLinearMap)
+
+/-- A specified split retraction of comodules remains a split retraction after
+extension of scalars. -/
+theorem baseChange_comp_eq_id (f : RightComoduleHom X Y) (j : RightComoduleHom Y X)
+    (h : f.comp j = id Y) :
+    (f.baseChange S).comp (j.baseChange S) = id (Y.baseChange S) := by
+  rw [← baseChange_comp, h, baseChange_id]
+
+end Coalgebra.RightComoduleHom

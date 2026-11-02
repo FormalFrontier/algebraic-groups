@@ -118,6 +118,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   zero ring. Nonzero torsion and nonflatness require only nontriviality;
   the group-like family is injective over any commutative ring, and it is
   exhaustive over a reduced ring. Infinitude is deduced only under `Infinite K`.
+- **Scalar extension of specified right-comodule morphisms.** For commutative
+  semirings `R` and `S` with a given `R`-algebra structure on `S`, every colinear
+  map `f : X → Y` extends between the scalar-extended comodules, with underlying
+  linear map `f.toLinearMap.baseChange S`. The API gives its value on every tensor
+  and on pure tensors, and preserves identities, composition and any specified
+  split retraction. The coalgebra and module universes are independent; no
+  flatness, projectivity or finiteness is required.
+  [Construction and API](AlgebraicGroups/Algebra/Coalgebra/ComoduleBaseChange.lean).
 - **Cofree specified right comodules.** For an arbitrary coalgebra `C` over a
   commutative semiring `R` and arbitrary `R`-modules in independent universes,
   `V ⊗[R] C` has its canonical cofree coaction. Colinear maps into it correspond

@@ -414,6 +414,10 @@ def id (X : RightComodule R C M) : RightComoduleHom X X where
   toLinearMap := LinearMap.id
   colinear := by simp [LinearMap.rTensor_id]
 
+/-- The underlying linear map of the identity comodule morphism is the identity. -/
+@[simp] theorem toLinearMap_id (X : RightComodule R C M) :
+    (id X).toLinearMap = LinearMap.id := rfl
+
 @[simp] theorem id_apply (X : RightComodule R C M) (m : M) : id X m = m := rfl
 
 /-- Composition of right-comodule morphisms. -/
@@ -430,6 +434,10 @@ def comp (g : RightComoduleHom Y Z) (f : RightComoduleHom X Y) : RightComoduleHo
         rw [f.colinear]
       _ = (g.toLinearMap ∘ₗ f.toLinearMap).rTensor C ∘ₗ X.coaction := by
         rw [LinearMap.rTensor_comp, LinearMap.comp_assoc]
+
+/-- The underlying linear map of a composite is the composite of the underlying maps. -/
+@[simp] theorem toLinearMap_comp (g : RightComoduleHom Y Z) (f : RightComoduleHom X Y) :
+    (g.comp f).toLinearMap = g.toLinearMap ∘ₗ f.toLinearMap := rfl
 
 @[simp] theorem comp_apply (g : RightComoduleHom Y Z) (f : RightComoduleHom X Y) (m : M) :
     g.comp f m = g (f m) := rfl
