@@ -21,6 +21,13 @@ balanced lift require only a semiring `A`. For a given central `K`-algebra `B`, 
 extends ring homomorphisms `f : A →+* B` satisfying Frobenius-semilinear scalar
 compatibility, and is characterized on pure tensors by `algebraMap K B c * f a`.
 
+The canonical right inclusion sends `a` to `1 ⊗ a` and requires only a semiring
+algebra. It is a ring homomorphism, semilinear for iterated coefficient Frobenius
+with respect to the new ordinary coefficient action. For commutative bialgebras,
+its composites with relative Frobenius are the corresponding `p ^ r`th power maps.
+Each element of the relative-Frobenius kernel has vanishing `p ^ r`th power; this
+is not a statement about a power of the kernel ideal.
+
 ## Implementation notes
 
 The two scalar rings have the same carrier but different roles. Scalar-extension
@@ -248,6 +255,40 @@ theorem balance (d c : K) (a : A) :
 theorem algebraMap_twistObject (c : K) :
     algebraMap K (twistObject K A p r) c = tmul K A p r c 1 := by
   rfl
+
+/-- The right inclusion into the coefficient-first Frobenius twist, regarded as a
+ring homomorphism. It sends `a` to `1 ⊗ a` and need not preserve the new ordinary
+coefficient algebra structure. -/
+def includeRight : A →+* twistObject K A p r := by
+  let rightInclusion :
+      ∀ (R S : Type u) (B : Type v)
+        [CommSemiring R] [CommSemiring S] [Semiring B]
+        [Algebra R S] [Algebra R B], B →+* S ⊗[R] B :=
+    fun R S B _ _ _ _ _ =>
+      (Algebra.TensorProduct.includeRight (R := R) (A := S) (B := B)).toRingHom
+  unfold twistObject
+  exact @rightInclusion K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A›
+
+/-- The right inclusion is the pure tensor with coefficient one. -/
+@[simp]
+theorem includeRight_apply (a : A) :
+    includeRight K A p r a = tmul K A p r 1 a := by
+  rfl
+
+/-- The right inclusion sends an original scalar to its Frobenius power under
+ the new ordinary coefficient map. -/
+theorem includeRight_algebraMap (c : K) :
+    includeRight K A p r (algebraMap K A c) =
+      algebraMap K (twistObject K A p r) (c ^ (p ^ r)) := by
+  rw [includeRight_apply, algebraMap_twistObject]
+  simpa only [Algebra.smul_def, mul_one] using (balance K A p r c 1 (1 : A)).symm
+
+/-- The right inclusion is semilinear for iterated coefficient Frobenius. -/
+theorem includeRight_smul (c : K) (a : A) :
+    includeRight K A p r (c • a) =
+      (c ^ (p ^ r)) • includeRight K A p r a := by
+  simpa only [includeRight_apply, smul_tmul, mul_one] using
+    (balance K A p r c 1 a).symm
 
 /-- Additive maps out of the twist are determined by their values on pure tensors. -/
 @[ext]
@@ -600,6 +641,75 @@ theorem relativeFrobenius_tmul (c : K) (a : A) :
       f (Algebra.FrobeniusTwist.tmul K A p r c a))
     (relativeFrobenius_toAlgHom K A p r)).trans
       (Algebra.FrobeniusTwist.relativeAlgHom_tmul K A p r c a)
+
+/-- Relative Frobenius after the right inclusion is the `p ^ r`th power on the
+original bialgebra. -/
+theorem relativeFrobenius_includeRight (a : A) :
+    relativeFrobenius K A p r (Algebra.FrobeniusTwist.includeRight K A p r a) =
+      a ^ (p ^ r) := by
+  simp only [Algebra.FrobeniusTwist.includeRight_apply, relativeFrobenius_tmul,
+    map_one, one_mul]
+
+/-- The right inclusion after relative Frobenius is the `p ^ r`th power on the
+same coefficient-first Frobenius twist. -/
+theorem includeRight_relativeFrobenius
+    (x : Algebra.FrobeniusTwist.twistObject K A p r) :
+    Algebra.FrobeniusTwist.includeRight K A p r (relativeFrobenius K A p r x) =
+      x ^ (p ^ r) := by
+  let _ : ExpChar (Algebra.FrobeniusTwist.twistObject K A p r) p :=
+    expChar_of_injective_algebraMap (R := K)
+      (Bialgebra.algebraMap_injective (R := K)
+        (Algebra.FrobeniusTwist.twistObject K A p r)) p
+  -- Stock Frobenius is additive on all elements before the pure-tensor comparison.
+  let powerMap :
+      Algebra.FrobeniusTwist.twistObject K A p r →+
+        Algebra.FrobeniusTwist.twistObject K A p r :=
+    (iterateFrobenius (Algebra.FrobeniusTwist.twistObject K A p r) p r).toAddMonoidHom
+  have h :
+      (Algebra.FrobeniusTwist.includeRight K A p r).toAddMonoidHom.comp
+          (relativeFrobenius K A p r).toAlgHom.toAddMonoidHom = powerMap := by
+    apply Algebra.FrobeniusTwist.ext K A p r
+    intro c a
+    change Algebra.FrobeniusTwist.includeRight K A p r
+        (relativeFrobenius K A p r (Algebra.FrobeniusTwist.tmul K A p r c a)) =
+      (Algebra.FrobeniusTwist.tmul K A p r c a) ^ (p ^ r)
+    rw [relativeFrobenius_tmul, Algebra.FrobeniusTwist.includeRight_apply]
+    calc
+      Algebra.FrobeniusTwist.tmul K A p r 1 (algebraMap K A c * a ^ (p ^ r)) =
+          Algebra.FrobeniusTwist.tmul K A p r 1 (c • a ^ (p ^ r)) := by
+        rw [Algebra.smul_def]
+      _ = Algebra.FrobeniusTwist.tmul K A p r (c ^ (p ^ r)) (a ^ (p ^ r)) := by
+        simpa only [mul_one] using
+          (Algebra.FrobeniusTwist.balance K A p r c 1 (a ^ (p ^ r))).symm
+      _ = (Algebra.FrobeniusTwist.tmul K A p r c a) ^ (p ^ r) := by
+        -- Bind the stock power formula before the two scalar carriers coincide.
+        let tensorPower :
+            ∀ (R S : Type u) (B : Type v)
+              [CommSemiring R] [CommSemiring S] [Semiring B]
+              [Algebra R S] [Algebra R B] (c : S) (a : B) (n : ℕ),
+              (c ⊗ₜ[R] a) ^ n = (c ^ n) ⊗ₜ[R] (a ^ n) :=
+          fun R S B _ _ _ _ _ c a n =>
+            Algebra.TensorProduct.tmul_pow (R := R) c a n
+        exact (@tensorPower K K A _ _ _
+          (Algebra.FrobeniusTwist.coefficientAlgebra K p r) (‹Bialgebra K A›).toAlgebra
+          c a (p ^ r)).symm
+  exact DFunLike.congr_fun h x
+
+/-- Each element killed by relative Frobenius has vanishing `p ^ r`th power.
+This is an elementwise assertion, not vanishing of a power of its kernel ideal. -/
+theorem pow_eq_zero_of_relativeFrobenius_eq_zero
+    {x : Algebra.FrobeniusTwist.twistObject K A p r}
+    (hx : relativeFrobenius K A p r x = 0) :
+    x ^ (p ^ r) = 0 := by
+  rw [← includeRight_relativeFrobenius K A p r x, hx, map_zero]
+
+/-- Each element killed by relative Frobenius is nilpotent. -/
+theorem isNilpotent_of_relativeFrobenius_eq_zero
+    {x : Algebra.FrobeniusTwist.twistObject K A p r}
+    (hx : relativeFrobenius K A p r x = 0) :
+    IsNilpotent x := by
+  exact IsNilpotent.mk x (p ^ r)
+    (pow_eq_zero_of_relativeFrobenius_eq_zero K A p r hx)
 
 /-- The image of relative Frobenius is the scalar span of the `p ^ r`th powers.
 Over an imperfect field this need not be the raw set of powers. -/

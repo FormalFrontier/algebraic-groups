@@ -1265,3 +1265,16 @@ this library's span-closure and restricted-subcoalgebra constructions. Original 
 contributions use [Apache-2.0](LICENSE). [CREDITS.md](CREDITS.md) preserves contributor
 roles, mathematical-method credit and authentic third-party notices separately
 from redistribution rights.
+
+
+## Relative Frobenius power identities
+
+For a commutative semiring `K` of exponential characteristic `p` and a central
+semiring `K`-algebra `A`, the coefficient-first Frobenius twist has a canonical
+ring homomorphism `a ↦ 1 ⊗ a`, semilinear for `c ↦ c ^ (p ^ r)`. When `A` is a
+commutative `K`-bialgebra, composing this inclusion with relative Frobenius in
+either order gives the `p ^ r`th-power map on the respective objects. Every
+element in the kernel of relative Frobenius has vanishing `p ^ r`th power and is
+therefore nilpotent. This is an elementwise statement, not a claim about a power
+of the kernel ideal. See
+[`RelativeFrobenius`](AlgebraicGroups/Algebra/Bialgebra/RelativeFrobenius.lean).
