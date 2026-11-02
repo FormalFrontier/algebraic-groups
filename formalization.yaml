@@ -182,11 +182,22 @@ status:
     lies in a finite-dimensional subcoalgebra. No finite-dimensional ambient
     module or algebra structure is required, and no least finite closure is
     asserted.
+    For a central bialgebra map from a commutative bialgebra A over a
+    commutative ring R to a possibly noncommutative Hopf algebra B, the
+    tensor-quotient equivalence compares B tensor_A B with B tensor_R
+    (B / (ker counit_A)B) as first-factor B-modules. The target uses only
+    the original module quotient, and A need not have an antipode.
     The library is not a blanket arbitrary-base classification or full
     quotient-effectivity theory,
     or complete formalization of Milne's book. Read exact limitations with
     each mathematical guide.
   main_results:
+    - declaration: HopfAlgebra.tensorQuotientEquiv
+      file: AlgebraicGroups/Algebra/HopfAlgebra/TensorQuotient.lean
+    - declaration: HopfAlgebra.tensorQuotientEquiv_tmul
+      file: AlgebraicGroups/Algebra/HopfAlgebra/TensorQuotient.lean
+    - declaration: HopfAlgebra.tensorQuotientEquiv_symm_tmul
+      file: AlgebraicGroups/Algebra/HopfAlgebra/TensorQuotient.lean
     - declaration: AlgebraicGeometry.groupSchemeClosedPoints_isClosed_iff_mem_nhdsWithin_closure
       file: AlgebraicGroups/GroupScheme/ClosedPointSubgroup.lean
     - declaration: AlgebraicGeometry.groupSchemeClosedPoints_isClosed_of_isLocallyClosed
