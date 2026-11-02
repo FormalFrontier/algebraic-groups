@@ -6,6 +6,7 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
+public import AlgebraicGroups.Algebra.SymmetricAlgebra.PowerSpan
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
@@ -53,99 +54,6 @@ universe u a v w z
 open scoped TensorProduct BigOperators
 
 namespace SymmetricAlgebra
-
-section CommSemiring
-
-variable (K : Type u) (V : Type v)
-variable [CommSemiring K] [AddCommMonoid V] [Module K V]
-
-/-- The submodule of the symmetric algebra spanned by the `n`th powers of its generators. -/
-def purePowerSubmodule (n : ℕ) : Submodule K (SymmetricAlgebra K V) :=
-  Submodule.span K (Set.range fun v : V ↦ (ι K V v) ^ n)
-
-/-- The power submodule has the span universal property. -/
-theorem purePowerSubmodule_eq_span (n : ℕ) :
-    purePowerSubmodule K V n =
-      Submodule.span K (Set.range fun v : V ↦ (ι K V v) ^ n) := rfl
-
-/-- Every generating power belongs to the power submodule. -/
-theorem ι_pow_mem_purePowerSubmodule (n : ℕ) (v : V) :
-    (ι K V v) ^ n ∈ purePowerSubmodule K V n := by
-  exact Submodule.subset_span ⟨v, rfl⟩
-
-/-- Containment of a power submodule is tested on every generating power. -/
-theorem purePowerSubmodule_le_iff (n : ℕ) (U : Submodule K (SymmetricAlgebra K V)) :
-    purePowerSubmodule K V n ≤ U ↔ ∀ v : V, (ι K V v) ^ n ∈ U := by
-  constructor
-  · intro h v
-    exact h (ι_pow_mem_purePowerSubmodule K V n v)
-  · intro h
-    apply Submodule.span_le.mpr
-    rintro _ ⟨v, rfl⟩
-    exact h v
-
-/-- The zeroth-power submodule is the unit line. -/
-@[simp] theorem purePowerSubmodule_zero :
-    purePowerSubmodule K V 0 = Submodule.span K {1} := by
-  rw [purePowerSubmodule_eq_span]
-  simp only [pow_zero, Set.range_const]
-
-/-- The first-power submodule is the image of the original generator map. -/
-@[simp] theorem purePowerSubmodule_one :
-    purePowerSubmodule K V 1 = LinearMap.range (ι K V) := by
-  apply le_antisymm
-  · rw [purePowerSubmodule_le_iff]
-    intro v
-    exact ⟨v, by simp only [pow_one]⟩
-  · rintro _ ⟨v, rfl⟩
-    simpa only [pow_one] using ι_pow_mem_purePowerSubmodule K V 1 v
-
-section Map
-
-variable {K V} {W : Type w} {U : Type z}
-variable [AddCommMonoid W] [Module K W] [AddCommMonoid U] [Module K U]
-
-/-- The algebra homomorphism on symmetric algebras induced by a linear map. -/
-def map (f : V →ₗ[K] W) : SymmetricAlgebra K V →ₐ[K] SymmetricAlgebra K W :=
-  lift (ι K W ∘ₗ f)
-
-/-- The induced algebra homomorphism sends generators to their specified images. -/
-@[simp] theorem map_ι (f : V →ₗ[K] W) (v : V) :
-    map f (ι K V v) = ι K W (f v) :=
-  lift_ι_apply _ v
-
-/-- A map induced on symmetric algebras is determined by its generator equation. -/
-theorem map_unique (f : V →ₗ[K] W)
-    (g : SymmetricAlgebra K V →ₐ[K] SymmetricAlgebra K W)
-    (hg : ∀ v : V, g (ι K V v) = ι K W (f v)) : g = map f := by
-  apply algHom_ext
-  apply LinearMap.ext
-  intro v
-  exact (hg v).trans (map_ι f v).symm
-
-/-- The symmetric-algebra construction preserves identity maps. -/
-@[simp] theorem map_id :
-    map (LinearMap.id : V →ₗ[K] V) = AlgHom.id K (SymmetricAlgebra K V) := by
-  apply algHom_ext
-  apply LinearMap.ext
-  intro v
-  exact map_ι (LinearMap.id : V →ₗ[K] V) v
-
-/-- The symmetric-algebra construction preserves composition of linear maps. -/
-@[simp] theorem map_comp (g : W →ₗ[K] U) (f : V →ₗ[K] W) :
-    map (g.comp f) = (map g).comp (map f) := by
-  apply algHom_ext
-  apply LinearMap.ext
-  intro v
-  change map (g.comp f) (ι K V v) = map g (map f (ι K V v))
-  calc
-    map (g.comp f) (ι K V v) = ι K U (g (f v)) := map_ι (g.comp f) v
-    _ = map g (ι K W (f v)) := (map_ι g (f v)).symm
-    _ = map g (map f (ι K V v)) := congrArg (map g) (map_ι f v).symm
-
-end Map
-
-end CommSemiring
 
 section Field
 
