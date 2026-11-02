@@ -6,9 +6,10 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
-# Transport of specified right comodules along linear equivalences
+# Transport of specified right comodules
 
 `Coalgebra.RightComodule.transport` changes the module carrying a specified
 right coaction along an `R`-linear equivalence `e : V ≃ₗ[R] W`. The coalgebra
@@ -28,6 +29,12 @@ inverses as equalities of specified comodule structures. The universal property
 of `e`. These are object-coherence laws and a canonical inverse pair, not a
 construction on arbitrary comodule morphisms.
 
+`mapCoalgebraEquiv` instead changes the coefficient coalgebra along a supplied
+coalgebra equivalence, keeping the module and both coalgebra structures fixed.
+Its forward and inverse maps are the existing `RightComodule.mapCoalgebra`
+construction. It respects identity, composition and inverses, and its coaction
+API reads back the change on the coefficient tensor factor.
+
 ## References
 
 Mathlib supplies `LinearEquiv.arrowCongr`, tensor extensions, associators,
@@ -35,16 +42,114 @@ unitors and their naturality laws. The construction retains the earlier
 project raw-conjugation and tensor-naturality proof approach for specified
 right comodules, including its closed coassociativity and counit arguments.
 The canonical colinear pair and object-coherence proofs use Mathlib's
-linear-equivalence inverse and tensor-composition laws.
+linear-equivalence inverse and tensor-composition laws. Coefficient equivalence
+uses the existing coefficient-change identity and composition laws and Mathlib's
+coalgebra-equivalence inverse laws.
 -/
 
 @[expose] public section
 
-universe uR uC uV uW uZ
+universe uR uC uD uE uV uW uZ
 
 open scoped TensorProduct
 
 namespace Coalgebra.RightComodule
+
+/-- Change the coefficient coalgebra of specified right comodules along a
+coalgebra equivalence, keeping the module and its scalar action fixed. -/
+def mapCoalgebraEquiv
+    {R : Type uR} {C : Type uC} {D : Type uD} {V : Type uV}
+    [CommSemiring R]
+    [AddCommMonoid C] [Module R C] [Coalgebra R C]
+    [AddCommMonoid D] [Module R D] [Coalgebra R D]
+    [AddCommMonoid V] [Module R V]
+    (e : C ≃ₗc[R] D) :
+    RightComodule R C V ≃ RightComodule R D V where
+  toFun X := X.mapCoalgebra e.toCoalgHom
+  invFun Y := Y.mapCoalgebra e.symm.toCoalgHom
+  left_inv X := by
+    have h : e.symm.toCoalgHom.comp e.toCoalgHom = CoalgHom.id R C := by
+      apply CoalgHom.ext
+      intro c
+      exact e.symm_apply_apply c
+    calc
+      (X.mapCoalgebra e.toCoalgHom).mapCoalgebra e.symm.toCoalgHom =
+          X.mapCoalgebra (e.symm.toCoalgHom.comp e.toCoalgHom) :=
+        mapCoalgebra_comp X e.toCoalgHom e.symm.toCoalgHom
+      _ = X.mapCoalgebra (CoalgHom.id R C) :=
+        congrArg (fun f : C →ₗc[R] C => X.mapCoalgebra f) h
+      _ = X := mapCoalgebra_id X
+  right_inv Y := by
+    have h : e.toCoalgHom.comp e.symm.toCoalgHom = CoalgHom.id R D := by
+      apply CoalgHom.ext
+      intro d
+      exact e.apply_symm_apply d
+    calc
+      (Y.mapCoalgebra e.symm.toCoalgHom).mapCoalgebra e.toCoalgHom =
+          Y.mapCoalgebra (e.toCoalgHom.comp e.symm.toCoalgHom) :=
+        mapCoalgebra_comp Y e.symm.toCoalgHom e.toCoalgHom
+      _ = Y.mapCoalgebra (CoalgHom.id R D) :=
+        congrArg (fun f : D →ₗc[R] D => Y.mapCoalgebra f) h
+      _ = Y := mapCoalgebra_id Y
+
+section CoefficientEquivalence
+
+variable {R : Type uR} {C : Type uC} {D : Type uD} {V : Type uV}
+variable [CommSemiring R]
+variable [AddCommMonoid C] [Module R C] [Coalgebra R C]
+variable [AddCommMonoid D] [Module R D] [Coalgebra R D]
+variable [AddCommMonoid V] [Module R V]
+
+/-- Forward coefficient equivalence is change along the forward coalgebra map. -/
+@[simp] theorem mapCoalgebraEquiv_apply (e : C ≃ₗc[R] D) (X : RightComodule R C V) :
+    mapCoalgebraEquiv (V := V) e X = X.mapCoalgebra e.toCoalgHom := rfl
+
+/-- Inverse coefficient equivalence is change along the inverse coalgebra map. -/
+@[simp] theorem mapCoalgebraEquiv_symm_apply (e : C ≃ₗc[R] D) (Y : RightComodule R D V) :
+    (mapCoalgebraEquiv (V := V) e).symm Y = Y.mapCoalgebra e.symm.toCoalgHom := rfl
+
+/-- Coefficient equivalence applies the coalgebra map only to the right tensor factor. -/
+theorem mapCoalgebraEquiv_coaction (e : C ≃ₗc[R] D) (X : RightComodule R C V) :
+    (mapCoalgebraEquiv (V := V) e X).coaction =
+      e.toCoalgHom.toLinearMap.lTensor V ∘ₗ X.coaction :=
+  mapCoalgebra_coaction X e.toCoalgHom
+
+/-- The coefficient-changed coaction at a vector. -/
+theorem mapCoalgebraEquiv_coaction_apply (e : C ≃ₗc[R] D)
+    (X : RightComodule R C V) (v : V) :
+    (mapCoalgebraEquiv (V := V) e X).coaction v =
+      e.toCoalgHom.toLinearMap.lTensor V (X.coaction v) :=
+  mapCoalgebra_coaction_apply X e.toCoalgHom v
+
+/-- The inverse object equivalence is coefficient change along the inverse equivalence. -/
+theorem mapCoalgebraEquiv_symm (e : C ≃ₗc[R] D) :
+    (mapCoalgebraEquiv (V := V) e).symm = mapCoalgebraEquiv (V := V) e.symm := by
+  apply Equiv.ext
+  intro Y
+  rfl
+
+/-- The identity coalgebra equivalence leaves every specified comodule unchanged. -/
+@[simp] theorem mapCoalgebraEquiv_refl :
+    mapCoalgebraEquiv (V := V) (CoalgEquiv.refl R C) =
+      Equiv.refl (RightComodule R C V) := by
+  apply Equiv.ext
+  intro X
+  simpa only [mapCoalgebraEquiv_apply, CoalgEquiv.toCoalgHom_eq_coe,
+    CoalgEquiv.refl_toCoalgHom, Equiv.refl_apply] using (mapCoalgebra_id X)
+
+/-- Coefficient equivalence respects composition, first along `e` and then along `d`. -/
+theorem mapCoalgebraEquiv_trans {E : Type uE}
+    [AddCommMonoid E] [Module R E] [Coalgebra R E]
+    (e : C ≃ₗc[R] D) (d : D ≃ₗc[R] E) :
+    mapCoalgebraEquiv (V := V) (e.trans d) =
+      (mapCoalgebraEquiv (V := V) e).trans (mapCoalgebraEquiv (V := V) d) := by
+  apply Equiv.ext
+  intro X
+  simpa only [mapCoalgebraEquiv_apply, Equiv.trans_apply, CoalgEquiv.toCoalgHom_eq_coe,
+    CoalgEquiv.trans_toCoalgHom] using
+    (mapCoalgebra_comp X e.toCoalgHom d.toCoalgHom).symm
+
+end CoefficientEquivalence
 
 noncomputable section
 

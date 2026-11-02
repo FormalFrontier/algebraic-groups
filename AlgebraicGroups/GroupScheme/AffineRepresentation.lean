@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Transport
 public import AlgebraicGroups.GroupScheme.AffineHomOverConvolution
 public import AlgebraicGroups.GroupScheme.RepresentationFiltration
 public import AlgebraicGroups.GroupScheme.AdditiveComodule
@@ -1396,8 +1397,8 @@ variable {K C : Type u} [CommRing K] [CommRing C] [HopfAlgebra K C]
 sections coordinates of its spectrum. Only the coefficient factor changes. -/
 def normalizeSpecComodule (X : Coalgebra.RightComodule K C V) :
     Coalgebra.RightComodule K Γ(Spec (.of C), ⊤) V :=
-  X.mapCoalgebra ((coordinateSpecEquiv (K := K) (C := C)).symm :
-    C →ₗc[K] Γ(Spec (.of C), ⊤))
+  (Coalgebra.RightComodule.mapCoalgebraEquiv (V := V)
+    (coordinateSpecEquiv (K := K) (C := C)).toCoalgEquiv).symm X
 
 /-- The normalized coaction applies the inverse canonical map to coefficients. -/
 @[simp] theorem normalizeSpecComodule_coaction (X : Coalgebra.RightComodule K C V) :
@@ -1409,13 +1410,16 @@ comodule, not merely an isomorphic module. -/
 @[simp] theorem normalizeSpecComodule_map_back (X : Coalgebra.RightComodule K C V) :
     (normalizeSpecComodule X).mapCoalgebra
       (coordinateSpecEquiv (K := K) (C := C) : Γ(Spec (.of C), ⊤) →ₗc[K] C) = X := by
-  rw [normalizeSpecComodule, Coalgebra.RightComodule.mapCoalgebra_comp]
-  have h : (coordinateSpecEquiv (K := K) (C := C) : Γ(Spec (.of C), ⊤) →ₗc[K] C).comp
-      ((coordinateSpecEquiv (K := K) (C := C)).symm : C →ₗc[K] Γ(Spec (.of C), ⊤)) =
-        CoalgHom.id K C := by
-    ext x
-    exact (coordinateSpecEquiv (K := K) (C := C)).apply_symm_apply x
-  rw [h, Coalgebra.RightComodule.mapCoalgebra_id]
+  have hcoalg {A : Type u} {B : Type u} [Semiring A] [Semiring B]
+      [Algebra K A] [Algebra K B] [CoalgebraStruct K A] [CoalgebraStruct K B]
+      (e : A ≃ₐc[K] B) : e.toCoalgEquiv.toCoalgHom = (e : A →ₗc[K] B) := by
+    apply CoalgHom.ext
+    intro a
+    rfl
+  simpa only [normalizeSpecComodule, Coalgebra.RightComodule.mapCoalgebraEquiv_apply,
+    hcoalg (coordinateSpecEquiv (K := K) (C := C))] using
+    (Coalgebra.RightComodule.mapCoalgebraEquiv (V := V)
+      (coordinateSpecEquiv (K := K) (C := C)).toCoalgEquiv).apply_symm_apply X
 
 /-- The two explicit coefficient changes cancel in every evaluated action,
 for an independently sized coefficient algebra and arbitrary module. -/
