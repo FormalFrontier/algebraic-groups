@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Kernel
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Range
 public import AlgebraicGroupsTest.Algebra.Coalgebra.FiniteSubcoalgebra
 public import Mathlib.Algebra.Module.PUnit
@@ -832,6 +833,12 @@ end
 end RightComoduleExamples
 
 /-!
+## A proper nonzero kernel and a nonzero lift in the regular diagonal comodule
+
+The coordinate projectors are comodule morphisms, not coalgebra morphisms.
+The zeroth kernel contains the first vector but not the zeroth vector; the first
+projector has a nonzero canonical lift with the specified restricted coaction.
+
 ## A proper nonzero image of a scalar comodule morphism
 
 Doubling on the scalar natural-number comodule is bundled directly from its
@@ -842,6 +849,180 @@ direct scalar subtype coaction.
 -/
 
 namespace RightComoduleExamples
+
+namespace DiagonalKernel
+
+open Coalgebra (RightComoduleHom)
+
+noncomputable section
+
+/-- The countable direct sum of copies of the integer scalar coalgebra. -/
+abbrev Carrier := ℕ →₀ ℤ
+
+/-- The regular comodule of the diagonal Finsupp coalgebra. -/
+abbrev regular : RightComodule ℤ Carrier Carrier :=
+  RightComodule.regular ℤ Carrier
+
+local instance diagonalFlat : Module.Flat ℤ Carrier := Module.Flat.finsupp ℕ
+
+/-- A coordinate vector in the diagonal coalgebra. -/
+def delta (i : ℕ) : Carrier := Finsupp.single i 1
+
+/-- Projection onto one diagonal coordinate is a right-comodule endomorphism.
+It need not preserve the counit, so it is not bundled as a coalgebra morphism. -/
+def coordinate (i : ℕ) : RightComoduleHom regular regular where
+  toLinearMap := Finsupp.lsingle i ∘ₗ Finsupp.lapply i
+  colinear := by
+    apply Finsupp.lhom_ext
+    intro j a
+    by_cases hij : i = j
+    · subst j
+      simp [regular, RightComodule.regular_coaction, LinearMap.comp_apply,
+        Finsupp.comul_single, CommSemiring.comul_apply, Finsupp.lsingle_apply,
+        LinearMap.rTensor_tmul]
+    · simp [regular, RightComodule.regular_coaction, LinearMap.comp_apply,
+        Finsupp.comul_single, CommSemiring.comul_apply, Finsupp.lsingle_apply,
+        LinearMap.rTensor_tmul, hij]
+
+@[simp] theorem coordinate_apply (i : ℕ) (x : Carrier) :
+    coordinate i x = Finsupp.single i (x i) := rfl
+
+/-- The zeroth projection does not preserve the counit of the first vector. -/
+theorem coordinate_zero_not_counital :
+    Coalgebra.counit (R := ℤ) (coordinate 0 (delta 1)) ≠
+      Coalgebra.counit (R := ℤ) (delta 1) := by
+  simp [coordinate_apply, delta, Finsupp.counit_single, CommSemiring.counit_apply]
+
+/-- The kernel of the zeroth coordinate projector. -/
+def kernel : regular.Subcomodule := Coalgebra.RightComoduleHom.ker (coordinate 0)
+
+/-- The comodule kernel has precisely the expected coordinate-vanishing carrier. -/
+@[simp] theorem mem_kernel (x : Carrier) : x ∈ kernel ↔ x 0 = 0 := by
+  simpa only [kernel, coordinate_apply, Finsupp.single_eq_zero] using
+    (Coalgebra.RightComoduleHom.mem_ker (coordinate 0) x)
+
+/-- The first coordinate vector lies in the kernel. -/
+theorem delta_one_mem : delta 1 ∈ kernel := by
+  simp [delta]
+
+/-- The zeroth coordinate vector witnesses that the kernel is proper. -/
+theorem delta_zero_not_mem : delta 0 ∉ kernel := by
+  intro h
+  have hz : coordinate 0 (delta 0) = 0 :=
+    Coalgebra.RightComoduleHom.apply_ker_subtype
+      (coordinate 0) ⟨delta 0, h⟩
+  have hcoord := congrArg (fun x : Carrier ↦ x 0) hz
+  simp [coordinate_apply, delta] at hcoord
+
+/-- The first coordinate vector is nonzero. -/
+theorem delta_one_ne_zero : delta 1 ≠ 0 := by
+  intro h
+  have hcoord := congrArg (fun x : Carrier ↦ x 1) h
+  simp [delta] at hcoord
+
+/-- The first vector as an element of the kernel's existing submodule subtype. -/
+def oneVector : kernel.toSubmodule :=
+  ⟨delta 1, by
+    rw [show kernel.toSubmodule = LinearMap.ker (coordinate 0).toLinearMap from
+      Coalgebra.RightComoduleHom.ker_toSubmodule (coordinate 0)]
+    change coordinate 0 (delta 1) = 0
+    simp [coordinate_apply, delta]⟩
+
+/-- The kernel inclusion sends the kernel vector to the first ambient vector. -/
+@[simp] theorem subtype_oneVector : kernel.subtype oneVector = delta 1 := rfl
+
+/-- The kernel contains a genuinely nonzero value. -/
+theorem oneVector_ne_zero : oneVector ≠ 0 := by
+  intro h
+  apply delta_one_ne_zero
+  exact congrArg (fun k : kernel.toSubmodule ↦ (k : Carrier)) h
+
+/-- Annihilation by the projector forces the zeroth coordinate of every kernel value to vanish. -/
+theorem kernel_coordinate_zero (k : kernel.toSubmodule) : (k : Carrier) 0 = 0 := by
+  have h : coordinate 0 (k : Carrier) = 0 :=
+    LinearMap.congr_fun
+      (Coalgebra.RightComoduleHom.comp_ker_subtype (coordinate 0)) k
+  have hcoord := congrArg (fun x : Carrier ↦ x 0) h
+  simpa only [coordinate_apply, Finsupp.single_eq_same,
+    Finsupp.zero_apply] using hcoord
+
+/-- The regular coaction is diagonal on coordinate vectors. -/
+theorem regular_delta (i : ℕ) :
+    regular.coaction (delta i) = delta i ⊗ₜ[ℤ] delta i := by
+  simp [regular, RightComodule.regular_coaction, delta, Finsupp.comul_single,
+    CommSemiring.comul_apply, Finsupp.lsingle_apply]
+
+/-- Reading the restricted coaction through tensor inclusion recovers the ambient diagonal. -/
+theorem oneVector_coaction_readback :
+    kernel.toSubmodule.subtype.rTensor Carrier (kernel.comodule.coaction oneVector) =
+      delta 1 ⊗ₜ[ℤ] delta 1 := by
+  calc
+    _ = regular.coaction (kernel.subtype oneVector) :=
+      LinearMap.congr_fun kernel.subtype_colinear oneVector
+    _ = delta 1 ⊗ₜ[ℤ] delta 1 := by rw [subtype_oneVector, regular_delta]
+
+/-- Flatness of the coacting direct sum determines the restricted coaction itself. -/
+theorem oneVector_coaction :
+    kernel.comodule.coaction oneVector = oneVector ⊗ₜ[ℤ] delta 1 := by
+  have hone : kernel.toSubmodule.subtype oneVector = delta 1 :=
+    subtype_oneVector
+  apply Module.Flat.rTensor_preserves_injective_linearMap (M := Carrier)
+    kernel.toSubmodule.subtype Subtype.val_injective
+  simpa only [LinearMap.rTensor_tmul, hone] using oneVector_coaction_readback
+
+/-- Distinct coordinate projectors annihilate one another. -/
+theorem coordinate_zero_one (x : Carrier) : coordinate 0 (coordinate 1 x) = 0 := by
+  simp [coordinate_apply]
+
+/-- The underlying linear composite of the zeroth and first projectors is zero. -/
+theorem coordinate_zero_comp_one :
+    (coordinate 0).toLinearMap ∘ₗ (coordinate 1).toLinearMap = 0 := by
+  apply LinearMap.ext
+  intro x
+  exact coordinate_zero_one x
+
+/-- The first projector lifted into the kernel of the zeroth projector. -/
+def lift : RightComoduleHom regular kernel.comodule :=
+  Coalgebra.RightComoduleHom.kerLift (coordinate 0) (coordinate 1) coordinate_zero_one
+
+/-- The lift factors the first projector through the kernel inclusion. -/
+theorem subtype_comp_lift : kernel.subtype.comp lift = coordinate 1 :=
+  Coalgebra.RightComoduleHom.subtype_comp_kerLift
+    (coordinate 0) (coordinate 1) coordinate_zero_one
+
+/-- The ambient value of the lift retains exactly the first coordinate. -/
+@[simp] theorem lift_apply (x : Carrier) :
+    (lift x : Carrier) = Finsupp.single 1 (x 1) := by
+  calc
+    (lift x : Carrier) = coordinate 1 x := by
+      exact Coalgebra.RightComoduleHom.kerLift_apply
+        (coordinate 0) (coordinate 1) coordinate_zero_one x
+    _ = Finsupp.single 1 (x 1) := coordinate_apply 1 x
+
+/-- The lift takes the first vector to the specified nonzero kernel vector. -/
+@[simp] theorem lift_delta_one : lift (delta 1) = oneVector := by
+  apply Subtype.ext
+  simp [delta, oneVector]
+
+/-- The lift kills the zeroth vector. -/
+@[simp] theorem lift_delta_zero : lift (delta 0) = 0 := by
+  apply Subtype.ext
+  simp [delta]
+
+/-- The lifted first coordinate vector is nonzero. -/
+theorem lift_delta_one_ne_zero : lift (delta 1) ≠ 0 := by
+  rw [lift_delta_one]
+  exact oneVector_ne_zero
+
+/-- Any comodule morphism with the same inclusion composite is this lift. -/
+theorem lift_unique (g : RightComoduleHom regular kernel.comodule)
+    (hg : kernel.subtype.comp g = coordinate 1) : g = lift :=
+  Coalgebra.RightComoduleHom.kerLift_unique
+    (coordinate 0) (coordinate 1) coordinate_zero_one g hg
+
+end
+
+end DiagonalKernel
 
 open Coalgebra (RightComoduleHom)
 

@@ -412,6 +412,13 @@ maintained project libraries; it does not claim to formalize an entire source.
   [nonidentity coordinate-swap clients over `ℕ`](AlgebraicGroupsTest/Algebra/Coalgebra/RightComodule.lean)
   use distinct nonzero coactions.
   [API](docs/COALGEBRAS.md#inverses-of-colinear-linear-equivalences).
+- **Kernels of right-comodule morphisms.** Over a commutative ring, flatness of
+  the coacting coalgebra alone gives the ordinary linear kernel its induced right
+  coaction. Every comodule morphism annihilated by the given morphism factors
+  uniquely through the kernel, with ordinary linear codomain restriction as the
+  underlying lift. No flatness of either ambient module is required, and all
+  universes are independent.
+  [Kernel and lifts](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Kernel.lean).
 - **Image stability of right-comodule morphisms.** Over a commutative semiring,
   the linear range of a morphism between specified right comodules is image-stable,
   without flatness of the coacting coalgebra or either module.

@@ -48,6 +48,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Components
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.DirectSum
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Gluing
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.GeneralLinear
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Kernel
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.SymmetricAlgebra
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightSpace
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightDecomposition
