@@ -92,6 +92,16 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Coalgebras and Hopf algebras
 
+- **Frobenius scalar extension and relative Frobenius.** Over a commutative
+  semiring `K` with `ExpChar K p`, the coefficient-first Frobenius twist of a
+  semiring `K`-algebra has a balanced lift into any central semiring `K`-algebra,
+  characterized by its values on the original factor. For a commutative
+  `K`-bialgebra `A`, relative Frobenius is a bialgebra map with value
+  `c ⊗ a ↦ algebraMap K A c * a ^ (p ^ r)`. Its image is the `K`-scalar span
+  of these powers, which need not be the raw set of powers over an imperfect
+  field. No flatness, finiteness or perfectness is required.
+  [Construction and API](AlgebraicGroups/Algebra/Bialgebra/RelativeFrobenius.lean),
+  [scalar roles and universal property](docs/MATHEMATICS.md#frobenius-scalar-extension).
 - **A finitely presented rank-one nonflat coalgebra over a PID.** For any
   field `K`, put `R = K[X]`, `T = R/(X²)` and give `C = R ⊕ T`
   (implemented as `TrivSqZeroExt R T`) its primitive `R`-coalgebra structure.

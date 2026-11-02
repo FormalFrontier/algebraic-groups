@@ -449,6 +449,50 @@ and [GL/SL dimension formulas](../AlgebraicGroups/GroupScheme/GeneralSpecialLine
   the base field. See the [dimension API](../AlgebraicGroups/Algebra/GeneralLinearCoordinateRing/Dimension.lean)
   and [rational GL₂ example](../AlgebraicGroupsTest/Algebra/Coalgebra/ComoduleCoefficientsGL2Infinite.lean).
 
+## Frobenius scalar extension
+
+For a commutative semiring `K` with `ExpChar K p`, write `q = p ^ r`.
+The coefficient-first scalar extension in
+[`Algebra.FrobeniusTwist`](../AlgebraicGroups/Algebra/Bialgebra/RelativeFrobenius.lean)
+is `K ⊗[K] A`, with old coefficient action `d • c = d^q * c` and
+new coefficient action `d • (c ⊗ a) = (d*c) ⊗ a`. Its original-factor
+algebra `A` needs only `Semiring A` and the given central `Algebra K A`.
+The balance equation is `(d^q*c) ⊗ a = c ⊗ (d • a)`.
+
+For any given central semiring `K`-algebra `B`, a ring homomorphism
+`f : A →+* B` satisfying
+`f (algebraMap K A d) = algebraMap K B (d^q)` extends uniquely to a
+new-`K` algebra map from this twist, with value
+`c ⊗ a ↦ algebraMap K B c * f a`. The API consists of `lift`,
+`lift_tmul`, `algHom_ext` and `lift_unique`. This is an adapter for
+Mathlib's scalar-extension adjunction `AlgHom.liftEquiv`, not a requirement
+that `f` be linear for the original `K`-actions. Neither `A` nor `B`
+needs commutative multiplication: central coefficient images suffice.
+The scalar and two algebra universes are independent. Stock tensor
+ring and commutative-ring structures are available when `K` is a
+commutative ring, respectively for semiring and commutative-semiring `A`.
+
+For a commutative `K`-bialgebra `A`, its counit splits the original
+algebra map, so `ExpChar A p` follows internally. Taking `f` to be
+iterated Frobenius constructs `Bialgebra.relativeFrobenius` through
+this lift. It preserves the original counit and comultiplication;
+its image is `Submodule.span K (Set.range fun a : A ↦ a^q)`.
+For a given Hopf algebra the twist carries the scalar-extension Hopf
+structure, whose antipode acts on the original factor.
+
+Over the imperfect field `K = 𝔽_p(s)`, with positive characteristic
+and `r > 0`, taking `A = K` gives relative image all of `K`, although
+raw `q`th powers form a proper subset and are not a `K`-subspace.
+The lift distinguishes `s ⊗ 1`, sent to `s`, from `1 ⊗ s`, sent to
+`s^q`. For the Laurent coordinate Hopf algebra of the multiplicative
+group, the image is the proper subalgebra `K[t^q,t^(-q)]` when `q > 1`.
+Entrywise Frobenius on `M₂(𝔽_p(s))` gives a noncommutative example of
+the balanced lift; it is not matrix exponentiation. At `r = 0`, or
+`p = 1` in exponential characteristic zero, the exponent is one and
+the construction is ordinary scalar extension, not an identity between
+different tensor and algebra carriers. No nontriviality, flatness,
+basis, finite-generation or perfectness assumption is imposed.
+
 ## Antipode involutivity
 
 For a full Hopf algebra over a commutative semiring, either commutative

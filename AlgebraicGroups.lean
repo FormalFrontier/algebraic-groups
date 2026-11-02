@@ -10,6 +10,7 @@ public import AlgebraicGroups.Algebra.Bialgebra.MonoidAlgebra
 public import AlgebraicGroups.Algebra.Bialgebra.Quotient
 public import AlgebraicGroups.Algebra.Bialgebra.Range
 public import AlgebraicGroups.Algebra.Bialgebra.RangeMap
+public import AlgebraicGroups.Algebra.Bialgebra.RelativeFrobenius
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.CanonicalPointOperators
 public import AlgebraicGroups.Algebra.Coalgebra.CoefficientMatrixUnit
