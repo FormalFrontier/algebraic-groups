@@ -1230,6 +1230,24 @@ maintained project libraries; it does not claim to formalize an entire source.
   is not just carrier infinitude or Krull dimension; empty indices give the field.
   [Module and GL₂ example](docs/MATHEMATICS.md#general-and-special-linear-geometry).
 
+### Frobenius linearization and generator-power spans
+
+For a commutative semiring `K` of exponential characteristic `p`, a `K`-semimodule
+`V`, and `r : ℕ`, set `q = p ^ r`. The
+[Frobenius linearization](AlgebraicGroups/Algebra/SymmetricAlgebra/Frobenius.lean)
+is the canonical `K`-linear map from the coefficient-first scalar extension along
+`a ↦ a ^ q` to `SymmetricAlgebra K V`, sending `c ⊗ v` to `c • (ι v) ^ q`.
+The original action on `V` is unchanged, and the new coefficient is not powered.
+Its image is exactly `SymmetricAlgebra.purePowerSubmodule K V q`, the span of
+powers of generators, rather than powers of arbitrary algebra elements.
+
+For a projective semimodule, this map is injective and gives a canonical linear
+equivalence with that span. Finite generation of `V` implies finite generation of
+the span without a projectivity assumption. Over a field, the comparison is
+automatic and the span has the same `Module.finrank` as `V`; no perfection or
+finite-dimensionality hypothesis is required.
+
+
 ## Modules and examples
 
 | Module / target | Contents |

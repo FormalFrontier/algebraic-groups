@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.SymmetricAlgebra.Frobenius
 public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
 public import AlgebraicGroups.Algebra.Bialgebra.GroupLikeTensorProduct
 public import AlgebraicGroups.Algebra.Bialgebra.MonoidAlgebra

@@ -7,19 +7,24 @@ module
 public import AlgebraicGroups.Algebra.Coalgebra.BaseChange
 public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.Algebra.CharP.Frobenius
+public import Mathlib.Algebra.Module.Projective
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Frobenius scalar extension
 
-The Frobenius twist of a `K`-algebra `A` is the coefficient-first tensor product
-`K ⊗[K] A`, where the old action on the coefficient factor is through an iterated
-Frobenius. Its new `K`-action is ordinary multiplication on that factor. The ring,
-algebra, coalgebra, bialgebra and Hopf algebra structures are Mathlib's scalar-extension
-structures. The original structures on `A` are unchanged. The scalar extension and its
-balanced lift require only a semiring `A`. For a given central `K`-algebra `B`, the lift
-extends ring homomorphisms `f : A →+* B` satisfying Frobenius-semilinear scalar
-compatibility, and is characterized on pure tensors by `algebraMap K B c * f a`.
+The Frobenius twist of a `K`-module `V` is the coefficient-first tensor product
+`K ⊗[K] V`, where the old action on the coefficient factor is through an iterated
+Frobenius. Its new `K`-action is ordinary multiplication on that factor. The additive
+and module structures require only an additive commutative monoid `V` with its given
+`K`-module structure. For a `K`-algebra `A`, the ring, algebra, coalgebra, bialgebra and
+Hopf algebra structures are Mathlib's scalar-extension structures. The original
+structures on `V` and `A` are unchanged. For a semiring `A` and a given central
+`K`-algebra `B`, the balanced lift extends ring homomorphisms `f : A →+* B` satisfying
+Frobenius-semilinear scalar compatibility, and is characterized on pure tensors by
+`algebraMap K B c * f a`.
 
 The canonical right inclusion sends `a` to `1 ⊗ a` and requires only a semiring
 algebra. It is a ring homomorphism, semilinear for iterated coefficient Frobenius
@@ -54,15 +59,44 @@ namespace Algebra.FrobeniusTwist
 
 /- Bind the two scalar roles before they can become the same carrier. -/
 private abbrev baseChangeType (R : Type u) (S : Type v) (A : Type w)
-    [CommSemiring R] [CommSemiring S] [Semiring A] [Algebra R S] [Algebra R A] :=
+    [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [Algebra R S] [Module R A] :=
   S ⊗[R] A
 
 private def baseChangeTmul (R : Type u) (S : Type v) (A : Type w)
-    [CommSemiring R] [CommSemiring S] [Semiring A] [Algebra R S] [Algebra R A]
-    (c : S) (a : A) : baseChangeType R S A := c ⊗ₜ[R] a
+    [CommSemiring R] [Semiring S] [AddCommMonoid A] [Algebra R S] [Module R A]
+    (c : S) (a : A) : S ⊗[R] A := c ⊗ₜ[R] a
+
+private def scalarBasis (R : Type*) (S : Type*) (M : Type*) (I : Type*)
+    [CommSemiring R] [Semiring S] [AddCommMonoid M] [Algebra R S] [Module R M]
+    (b : Module.Basis I R M) : Module.Basis I S (S ⊗[R] M) :=
+  b.baseChange S
+
+/- Bind the stock basis formula before identifying the scalar rings. -/
+private theorem baseChangeBasis_tmul (R : Type*) (S : Type*) (M : Type*) (I : Type*)
+    [CommSemiring R] [Semiring S] [AddCommMonoid M] [Algebra R S] [Module R M]
+    (b : Module.Basis I R M) (i : I) :
+    scalarBasis R S M I b i = baseChangeTmul R S M 1 (b i) := by
+  simpa only [scalarBasis, baseChangeTmul] using (Module.Basis.baseChange_apply S b i)
+
+/- Use the commutative coefficient-module context when applying the basis. -/
+private theorem baseChangeBasis_apply (R : Type*) (S : Type*) (M : Type*) (I : Type*)
+    [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [Algebra R S] [Module R M]
+    (b : Module.Basis I R M) (i : I) :
+    (let bS : Module.Basis I S (S ⊗[R] M) := scalarBasis R S M I b; bS i) =
+      baseChangeTmul R S M 1 (b i) := by
+  exact baseChangeBasis_tmul R S M I b i
+
+/- Compute coordinates before identifying the scalar rings. -/
+private theorem baseChangeBasis_repr_tmul (R : Type*) (S : Type*) (M : Type*) (I : Type*)
+    [CommSemiring R] [Semiring S] [AddCommMonoid M] [Algebra R S] [Module R M]
+    (b : Module.Basis I R M) (i : I) :
+    (scalarBasis R S M I b).repr (baseChangeTmul R S M 1 (b i)) = Finsupp.single i 1 := by
+  exact (congrArg (scalarBasis R S M I b).repr
+    (baseChangeBasis_tmul R S M I b i).symm).trans
+      ((scalarBasis R S M I b).repr_self i)
 
 private theorem baseChangeTmul_add (R : Type u) (S : Type v) (A : Type w)
-    [CommSemiring R] [CommSemiring S] [Semiring A] [Algebra R S] [Algebra R A]
+    [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [Algebra R S] [Module R A]
     (c : S) (a b : A) :
     baseChangeTmul R S A c (a + b) =
       baseChangeTmul R S A c a + baseChangeTmul R S A c b :=
@@ -94,13 +128,13 @@ private theorem baseChange_comul_tmul (R : Type u) (S : Type v) (A : Type w)
   exact LinearMap.congr_fun (Coalgebra.comul_baseChange R S A) (c ⊗ₜ[R] a)
 
 private theorem baseChange_smul_tmul (R : Type u) (S : Type v) (A : Type w)
-    [CommSemiring R] [CommSemiring S] [Semiring A] [Algebra R S] [Algebra R A]
+    [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [Algebra R S] [Module R A]
     (d c : S) (a : A) :
     d • baseChangeTmul R S A c a = baseChangeTmul R S A (d * c) a :=
   TensorProduct.smul_tmul' d c a
 
 private theorem baseChange_balance (R : Type u) (S : Type v) (A : Type w)
-    [CommSemiring R] [CommSemiring S] [Semiring A] [Algebra R S] [Algebra R A]
+    [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [Algebra R S] [Module R A]
     (d : R) (c : S) (a : A) :
     baseChangeTmul R S A (algebraMap R S d * c) a = baseChangeTmul R S A c (d • a) := by
   change (algebraMap R S d * c) ⊗ₜ[R] a = c ⊗ₜ[R] (d • a)
@@ -126,7 +160,9 @@ private def baseChangeLift (R : Type*) (S : Type*) (A : Type*) (B : Type*)
 
 /- A regular type synonym below keeps its instance head distinct from ordinary tensors.
 Its value is still the same old-balanced tensor, by definitional equality. -/
-variable (K : Type u) (A : Type v) [CommSemiring K] [Semiring A] [Algebra K A]
+section Module
+
+variable (K : Type u) (V : Type v) [CommSemiring K] [AddCommMonoid V] [Module K V]
 variable (p r : ℕ) [ExpChar K p]
 
 /-- The old coefficient algebra, on the same ring `K`, with algebra map `c ↦ c^(p^r)`.
@@ -139,15 +175,215 @@ def coefficientAlgebra : Algebra K K := (iterateFrobenius K p r).toAlgebra
 theorem coefficientAlgebra_algebraMap (c : K) :
     @algebraMap K K _ _ (coefficientAlgebra K p r) c = c ^ (p ^ r) := rfl
 
-/-- The coefficient-first Frobenius scalar extension. The coefficient carrier is `K`
-with its original ring operations and its old scalar action through Frobenius. -/
+/-- The coefficient-first Frobenius scalar extension of a module. The coefficient
+carrier is `K` with its original ring operations and its old scalar action through
+Frobenius. The given additive and module structures on the other factor are unchanged. -/
 def twistObject : Type (max u v) :=
   let scalarExtension :
-      ∀ (R S : Type u) (B : Type v)
-        [CommSemiring R] [CommSemiring S] [Semiring B]
-        [Algebra R S] [Algebra R B], Type (max u v) :=
-    fun R S B _ _ _ _ _ => S ⊗[R] B
-  @scalarExtension K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A›
+      ∀ (R S : Type u) (M : Type v)
+        [CommSemiring R] [CommSemiring S] [AddCommMonoid M]
+        [Algebra R S] [Module R M], Type (max u v) :=
+    fun R S M _ _ _ _ _ => S ⊗[R] M
+  @scalarExtension K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V›
+
+/-- The additive structure of the coefficient-first tensor product. -/
+instance instAddCommMonoid : AddCommMonoid (twistObject K V p r) := by
+  let scalarExtension :
+      ∀ (R S : Type u) (M : Type v)
+        [CommSemiring R] [CommSemiring S] [AddCommMonoid M]
+        [Algebra R S] [Module R M], AddCommMonoid (S ⊗[R] M) :=
+    fun R S M _ _ _ _ _ => inferInstance
+  unfold twistObject
+  exact @scalarExtension K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V›
+
+/- The same-base tensor shortcuts use the old left-factor module. These higher-priority
+instances retain the stock new scalar-extension module and its scalar projections. -/
+/-- The coefficient-self module on the Frobenius scalar extension. -/
+instance (priority := 1100) instModule : Module K (twistObject K V p r) := by
+  let scalarExtension :
+      ∀ (R S : Type u) (M : Type v)
+        [CommSemiring R] [CommSemiring S] [AddCommMonoid M]
+        [Algebra R S] [Module R M], Module S (S ⊗[R] M) :=
+    fun R S M _ _ _ _ _ => inferInstance
+  unfold twistObject
+  exact @scalarExtension K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V›
+
+/-- The distributive action inherited from the coefficient-self module. -/
+instance (priority := 1100) instDistribMulAction :
+    DistribMulAction K (twistObject K V p r) :=
+  (instModule K V p r).toDistribMulAction
+
+/-- Scalar multiplication inherited from the coefficient-self module. -/
+instance (priority := 1100) instSMul : SMul K (twistObject K V p r) :=
+  (instModule K V p r).toDistribMulAction.toMulAction.toSMul
+
+/-- A pure tensor in the coefficient-first Frobenius scalar extension. -/
+def tmul (c : K) (v : V) : twistObject K V p r := by
+  let scalarExtension :
+      ∀ (R S : Type u) (A : Type v)
+        [CommSemiring R] [CommSemiring S] [AddCommMonoid A]
+        [Algebra R S] [Module R A], S → A → S ⊗[R] A :=
+    fun R S A _ _ _ _ _ c a => c ⊗ₜ[R] a
+  unfold twistObject
+  exact @scalarExtension K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V› c v
+
+/-- A pure tensor is additive in its original module factor. -/
+@[simp]
+theorem tmul_add (c : K) (v w : V) :
+    tmul K V p r c (v + w) = tmul K V p r c v + tmul K V p r c w := by
+  exact @baseChangeTmul_add K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V› c v w
+
+/-- The new scalar action is ordinary multiplication on coefficients. -/
+@[simp]
+theorem smul_tmul (d c : K) (v : V) :
+    d • tmul K V p r c v = tmul K V p r (d * c) v := by
+  exact @baseChange_smul_tmul K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V› d c v
+
+/-- Balancing uses the old Frobenius action, not the new scalar action. -/
+theorem balance (d c : K) (v : V) :
+    tmul K V p r (d ^ (p ^ r) * c) v = tmul K V p r c (d • v) := by
+  change @baseChangeTmul K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V›
+      (@algebraMap K K _ _ (coefficientAlgebra K p r) d * c) v =
+    @baseChangeTmul K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V› c (d • v)
+  exact @baseChange_balance K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V› d c v
+
+/-- Additive maps out of the twist are determined by their values on pure tensors. -/
+@[ext]
+theorem ext {M : Type w} [AddCommMonoid M]
+    {f g : twistObject K V p r →+ M}
+    (h : ∀ c v, f (tmul K V p r c v) = g (tmul K V p r c v)) : f = g := by
+  let f' : @baseChangeType K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V› →+ M := f
+  let g' : @baseChangeType K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V› →+ M := g
+  change f' = g'
+  apply AddMonoidHom.ext
+  intro x
+  induction x using TensorProduct.inductionOn with
+  | tmul c v => exact h c v
+  | add x y hx hy => rw [map_add, map_add, hx, hy]
+
+/-- Induction on the named Frobenius scalar extension, using pure tensors and sums. -/
+@[elab_as_elim]
+theorem inductionOn (x : twistObject K V p r) {motive : twistObject K V p r → Prop}
+    (htmul : ∀ c v, motive (tmul K V p r c v))
+    (hadd : ∀ x y, motive x → motive y → motive (x + y)) : motive x := by
+  -- Keep the raw tensor carrier internal to this eliminator.
+  let motive' : @baseChangeType K K V _ _ _ (coefficientAlgebra K p r) ‹Module K V› →
+      Prop := motive
+  change motive' x
+  induction x using TensorProduct.inductionOn with
+  | tmul c v => exact htmul c v
+  | add x y hx hy => exact hadd x y hx hy
+
+/-- The scalar extension of a linear map, linear for the new coefficient action. -/
+def map {W : Type w} [AddCommMonoid W] [Module K W] (f : V →ₗ[K] W) :
+    twistObject K V p r →ₗ[K] twistObject K W p r := by
+  let baseChange :
+      ∀ (R S : Type u) (M : Type v) (N : Type w)
+        [CommSemiring R] [CommSemiring S] [Algebra R S]
+        [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N],
+        (M →ₗ[R] N) → (S ⊗[R] M →ₗ[S] S ⊗[R] N) :=
+    fun R S M N _ _ _ _ _ _ _ g => g.baseChange S
+  unfold twistObject
+  exact @baseChange K K V W _ _ (coefficientAlgebra K p r)
+    _ _ ‹Module K V› ‹Module K W› f
+
+/-- Scalar extension of a linear map retains the coefficient of a pure tensor. -/
+@[simp]
+theorem map_tmul {W : Type w} [AddCommMonoid W] [Module K W] (f : V →ₗ[K] W)
+    (c : K) (v : V) :
+    map K V p r f (tmul K V p r c v) = tmul K W p r c (f v) := rfl
+
+/-- Scalar extension preserves the identity linear map. -/
+@[simp]
+theorem map_id : map K V p r (LinearMap.id : V →ₗ[K] V) = LinearMap.id := by
+  apply LinearMap.toAddMonoidHom_injective
+  apply ext K V p r
+  intro c v
+  change map K V p r LinearMap.id (tmul K V p r c v) = tmul K V p r c v
+  rw [map_tmul, LinearMap.id_apply]
+
+/-- Scalar extension preserves composition of linear maps. -/
+theorem map_comp {W : Type w} {X : Type*}
+    [AddCommMonoid W] [Module K W] [AddCommMonoid X] [Module K X]
+    (f : V →ₗ[K] W) (g : W →ₗ[K] X) :
+    map K V p r (g.comp f) = (map K W p r g).comp (map K V p r f) := by
+  apply LinearMap.toAddMonoidHom_injective
+  apply ext K V p r
+  intro c v
+  change map K V p r (g.comp f) (tmul K V p r c v) =
+    map K W p r g (map K V p r f (tmul K V p r c v))
+  rw [map_tmul, map_tmul, map_tmul, LinearMap.comp_apply]
+
+/-- The base-changed basis of the Frobenius scalar extension. -/
+def basis {I : Type w} (b : Module.Basis I K V) :
+    Module.Basis I K (twistObject K V p r) := by
+  let scalarBasis := private_decl% (@scalarBasis)
+  unfold twistObject
+  exact @scalarBasis K K V I ‹CommSemiring K› (‹CommSemiring K›).toSemiring
+    ‹AddCommMonoid V› (coefficientAlgebra K p r) ‹Module K V› b
+
+/-- The base-changed basis vector has coefficient one and its original module factor. -/
+@[simp]
+theorem basis_apply {I : Type w} (b : Module.Basis I K V) (i : I) :
+    basis K V p r b i = tmul K V p r 1 (b i) := by
+  apply (basis K V p r b).repr.injective
+  rw [Module.Basis.repr_self]
+  exact (@baseChangeBasis_repr_tmul K K V I ‹CommSemiring K›
+    (‹CommSemiring K›).toSemiring ‹AddCommMonoid V›
+    (coefficientAlgebra K p r) ‹Module K V› b i).symm
+
+/-- Finite generation is preserved by Frobenius scalar extension. -/
+theorem moduleFinite [Module.Finite K V] : Module.Finite K (twistObject K V p r) := by
+  let extendFinite :
+      ∀ (R S : Type u) (M : Type v)
+        [CommSemiring R] [CommSemiring S] [Algebra R S]
+        [AddCommMonoid M] [Module R M],
+        Module.Finite R M → Module.Finite S (S ⊗[R] M) :=
+    fun R S M _ _ _ _ _ finite =>
+      @Module.Finite.base_change R S M _ _ _ _ _ finite
+  unfold twistObject
+  exact @extendFinite K K V _ _ (coefficientAlgebra K p r) _ ‹Module K V› inferInstance
+
+/-- Frobenius base extension of a projective module is projective for the new
+ordinary coefficient-self action. -/
+theorem moduleProjective [Module.Projective K V] :
+    Module.Projective K (twistObject K V p r) := by
+  let extendProjective :
+      ∀ (R S : Type u) (M : Type v)
+        [CommSemiring R] [CommSemiring S] [Algebra R S]
+        [AddCommMonoid M] [Module R M],
+        Module.Projective R M → Module.Projective S (S ⊗[R] M) :=
+    fun R S M _ _ _ _ _ projective => by
+      let originalProjective : Module.Projective R M := projective
+      let coefficientFree : Module.Free S S := Module.Free.self S
+      let coefficientProjective : Module.Projective S S := Module.Projective.of_free
+      exact Module.Projective.tensorProduct (R := S) (R₀ := R) (M := S) (N := M)
+  unfold twistObject
+  exact @extendProjective K K V ‹CommSemiring K› ‹CommSemiring K›
+    (coefficientAlgebra K p r) ‹AddCommMonoid V› ‹Module K V› ‹Module.Projective K V›
+
+/-- Frobenius base extension of a free module is free for the new ordinary
+coefficient-self action. -/
+theorem moduleFree [Module.Free K V] : Module.Free K (twistObject K V p r) := by
+  let extendFree :
+      ∀ (R S : Type u) (M : Type v)
+        [CommSemiring R] [CommSemiring S] [Algebra R S]
+        [AddCommMonoid M] [Module R M],
+        Module.Free R M → Module.Free S (S ⊗[R] M) :=
+    fun R S M _ _ _ _ _ free => by
+      let originalFree : Module.Free R M := free
+      let coefficientFree : Module.Free S S := Module.Free.self S
+      exact Module.Free.tensor (R := R) (S := S) (M := S) (N := M)
+  unfold twistObject
+  exact @extendFree K K V ‹CommSemiring K› ‹CommSemiring K›
+    (coefficientAlgebra K p r) ‹AddCommMonoid V› ‹Module K V› ‹Module.Free K V›
+
+end Module
+
+section Semiring
+
+variable (K : Type u) (A : Type v) [CommSemiring K] [Semiring A] [Algebra K A]
+variable (p r : ℕ) [ExpChar K p]
 
 instance instSemiring : Semiring (twistObject K A p r) := by
   let scalarExtension :
@@ -157,28 +393,6 @@ instance instSemiring : Semiring (twistObject K A p r) := by
     fun R S B _ _ _ _ _ => inferInstance
   unfold twistObject
   exact @scalarExtension K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A›
-
-/- The same-base tensor shortcuts use the old left-factor module. These higher-priority
-instances retain the stock new scalar-extension module and its scalar projections. -/
-/-- The coefficient-self module on the Frobenius scalar extension. -/
-instance (priority := 1100) instModule : Module K (twistObject K A p r) := by
-  let scalarExtension :
-      ∀ (R S : Type u) (B : Type v)
-        [CommSemiring R] [CommSemiring S] [Semiring B]
-        [Algebra R S] [Algebra R B], Module S (S ⊗[R] B) :=
-    fun R S B _ _ _ _ _ =>
-      @Algebra.toModule S (S ⊗[R] B) _ _ (inferInstance : Algebra S (S ⊗[R] B))
-  unfold twistObject
-  exact @scalarExtension K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A›
-
-/-- The distributive action inherited from the coefficient-self module. -/
-instance (priority := 1100) instDistribMulAction :
-    DistribMulAction K (twistObject K A p r) :=
-  (instModule K A p r).toDistribMulAction
-
-/-- Scalar multiplication inherited from the coefficient-self module. -/
-instance (priority := 1100) instSMul : SMul K (twistObject K A p r) :=
-  (instModule K A p r).toDistribMulAction.toMulAction.toSMul
 
 /-- The new scalar action multiplies the coefficient factor without Frobenius. -/
 instance (priority := 1100) instAlgebra : Algebra K (twistObject K A p r) := by
@@ -200,22 +414,6 @@ theorem instAlgebra_toSMul :
     (instAlgebra K A p r).toSMul =
       (inferInstance : SMul K (twistObject K A p r)) := rfl
 
-/-- A pure tensor in the coefficient-first Frobenius scalar extension. -/
-def tmul (c : K) (a : A) : twistObject K A p r := by
-  let scalarExtension :
-      ∀ (R S : Type u) (B : Type v)
-        [CommSemiring R] [CommSemiring S] [Semiring B]
-        [Algebra R S] [Algebra R B], S → B → S ⊗[R] B :=
-    fun R S B _ _ _ _ _ c a => c ⊗ₜ[R] a
-  unfold twistObject
-  exact @scalarExtension K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A› c a
-
-/-- A pure tensor is additive in its original algebra factor. -/
-@[simp]
-theorem tmul_add (c : K) (a b : A) :
-    tmul K A p r c (a + b) = tmul K A p r c a + tmul K A p r c b := by
-  exact @baseChangeTmul_add K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A› c a b
-
 /-- Scalar extension commutes with the tensor square, with coefficients first. -/
 def distrib : twistObject K (A ⊗[K] A) p r ≃ₗ[K]
     twistObject K A p r ⊗[K] twistObject K A p r := by
@@ -235,20 +433,6 @@ theorem distrib_tmul (c : K) (a b : A) :
     distrib K A p r (tmul K (A ⊗[K] A) p r c (a ⊗ₜ[K] b)) =
       tmul K A p r c a ⊗ₜ[K] tmul K A p r 1 b := by
   rfl
-
-/-- The new scalar action is ordinary multiplication on coefficients. -/
-@[simp]
-theorem smul_tmul (d c : K) (a : A) :
-    d • tmul K A p r c a = tmul K A p r (d * c) a := by
-  exact @baseChange_smul_tmul K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A› d c a
-
-/-- Balancing uses the old Frobenius action, not the new scalar action. -/
-theorem balance (d c : K) (a : A) :
-    tmul K A p r (d ^ (p ^ r) * c) a = tmul K A p r c (d • a) := by
-  change @baseChangeTmul K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A›
-      (@algebraMap K K _ _ (coefficientAlgebra K p r) d * c) a =
-    @baseChangeTmul K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A› c (d • a)
-  exact @baseChange_balance K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A› d c a
 
 /-- Scalars enter through the coefficient factor. -/
 @[simp]
@@ -289,20 +473,6 @@ theorem includeRight_smul (c : K) (a : A) :
       (c ^ (p ^ r)) • includeRight K A p r a := by
   simpa only [includeRight_apply, smul_tmul, mul_one] using
     (balance K A p r c 1 a).symm
-
-/-- Additive maps out of the twist are determined by their values on pure tensors. -/
-@[ext]
-theorem ext {M : Type w} [AddCommMonoid M]
-    {f g : twistObject K A p r →+ M}
-    (h : ∀ c a, f (tmul K A p r c a) = g (tmul K A p r c a)) : f = g := by
-  let f' : @baseChangeType K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A› →+ M := f
-  let g' : @baseChangeType K K A _ _ _ (coefficientAlgebra K p r) ‹Algebra K A› →+ M := g
-  change f' = g'
-  apply AddMonoidHom.ext
-  intro x
-  induction x using TensorProduct.inductionOn with
-  | tmul c a => exact h c a
-  | add x y hx hy => rw [map_add, map_add, hx, hy]
 
 /-- Extend a Frobenius-semilinear ring homomorphism into the given central `K`-algebra.
 The result is linear for the new coefficient action; the original algebra structures on
@@ -346,6 +516,8 @@ theorem lift_unique (B : Type w) [Semiring B] [Algebra K B] (f : A →+* B)
   apply algHom_ext K A p r
   intro a
   rw [hg, lift_tmul, map_one, one_mul]
+
+end Semiring
 
 end Algebra.FrobeniusTwist
 
@@ -585,7 +757,7 @@ private theorem relativeAlgHom_range_eq_span_pow [Bialgebra K A] :
       Submodule.span K (Set.range fun a : A ↦ a ^ (p ^ r)) := by
   let N : Submodule K A := Submodule.span K (Set.range fun a : A ↦ a ^ (p ^ r))
   let f : @baseChangeType K K A _ _ _ (coefficientAlgebra K p r)
-      (inferInstance : Algebra K A) →+ A :=
+      (inferInstance : Module K A) →+ A :=
     (relativeAlgHom K A p r).toAddMonoidHom
   have hφ (x : twistObject K A p r) : relativeAlgHom K A p r x ∈ N := by
     change f x ∈ N

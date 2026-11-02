@@ -65,8 +65,12 @@ local notation "Eχ" =>
 
 local notation "Tφ" =>
   @Algebra.FrobeniusTwist.twistObject K A
-    (inferInstance : CommSemiring K) (inferInstance : Semiring A)
-    (inferInstance : Algebra K A) p r Eχ
+    (inferInstance : CommSemiring K)
+    (@_root_.Semiring.toAddCommMonoid A (inferInstance : Semiring A))
+    (@Algebra.toModule K A
+      (inferInstance : CommSemiring K) (inferInstance : Semiring A)
+      (inferInstance : Algebra K A))
+    p r Eχ
 
 local notation "Rτ" =>
   @Algebra.FrobeniusTwist.instRing K A
@@ -214,8 +218,12 @@ theorem purePowerRelativeFrobeniusComodule_coaction_ι_pow_eq_sum
     (purePowerRelativeFrobeniusComodule p r hp hchar η).coaction (powGen v) =
       ∑ i ∈ s, powGen (vs i) ⊗ₜ[K]
         rφ (@Algebra.FrobeniusTwist.tmul K A
-          (inferInstance : CommSemiring K) (inferInstance : Semiring A)
-          (inferInstance : Algebra K A) p r Eχ 1 (coeff i)) := by
+          (inferInstance : CommSemiring K)
+          (@_root_.Semiring.toAddCommMonoid A (inferInstance : Semiring A))
+          (@Algebra.toModule K A
+            (inferInstance : CommSemiring K) (inferInstance : Semiring A)
+            (inferInstance : Algebra K A))
+          p r Eχ 1 (coeff i)) := by
   let : Module.Flat K A := Module.Flat.of_field K A
   let : ExpChar K p := Eχ
   apply purePower_range_tensor_injective p r hp hchar
@@ -249,8 +257,12 @@ theorem purePowerRelativeFrobeniusComodule_coaction_ι_pow_of_coaction_eq
     (hη : η.coaction v = v ⊗ₜ[K] a) :
     (purePowerRelativeFrobeniusComodule p r hp hchar η).coaction (powGen v) =
       powGen v ⊗ₜ[K] rφ (@Algebra.FrobeniusTwist.tmul K A
-        (inferInstance : CommSemiring K) (inferInstance : Semiring A)
-        (inferInstance : Algebra K A) p r Eχ 1 a) := by
+        (inferInstance : CommSemiring K)
+        (@_root_.Semiring.toAddCommMonoid A (inferInstance : Semiring A))
+        (@Algebra.toModule K A
+          (inferInstance : CommSemiring K) (inferInstance : Semiring A)
+          (inferInstance : Algebra K A))
+        p r Eχ 1 a) := by
   classical
   simpa only [Finset.sum_singleton] using
     purePowerRelativeFrobeniusComodule_coaction_ι_pow_eq_sum p r hp hchar η
