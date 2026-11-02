@@ -58,6 +58,13 @@ theorem dualContraction_dualMap {W : Type x} [AddCommMonoid W] [Module R W]
   ext v c
   simp [dualContraction]
 
+/-- Contraction against canonical double-dual evaluation is tensor--Hom evaluation. -/
+@[simp] theorem dualContraction_eval (v : V) (t : Module.Dual R V ⊗[R] C) :
+    dualContraction (Module.Dual.eval R V v) t = dualTensorHom R V C t v := by
+  induction t using _root_.TensorProduct.inductionOn with
+  | tmul f c => simp
+  | add t t' ht ht' => simp [ht, ht']
+
 end Contraction
 
 variable [Semiring C] [HopfAlgebra R C]

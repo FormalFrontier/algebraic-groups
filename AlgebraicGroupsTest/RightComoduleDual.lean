@@ -5,7 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeHom
-public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Dual
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.DualCoefficients
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
@@ -284,4 +284,32 @@ theorem coevaluation_character (a r : ℕ) :
     (a * r) • (1 : C)
   rw [functional_apply, mul_smul_comm, g_mul_antipode_g]
 
+/-- The evaluation-pair coefficient of the dual Laurent character has weight
+`t⁻¹`, rather than the original weight `t`. -/
+theorem dual_line_coefficient :
+    (Coalgebra.RightComodule.dual (line g)).coefficient
+      (Module.Dual.eval ℕ ℕ 1) (functional 1) = MonoidAlgebra.single t⁻¹ 1 := by
+  rw [Coalgebra.RightComodule.dual_coefficient_eval]
+  have h : (line g).coefficient (functional 1) 1 = g.val := by
+    simp [Coalgebra.RightComodule.coefficient_eq]
+  rw [h, antipode_g]
+
 end RightComoduleDualTest
+
+universe u v w
+
+/-- Dualizing a zero module still gives zero coefficient span, with no
+nontriviality condition on the scalar semiring or the Hopf algebra. -/
+example {R : Type u} {C : Type v} {V : Type w}
+    [CommSemiring R] [Semiring C] [HopfAlgebra R C]
+    [AddCommMonoid V] [Module R V] [Module.Finite R V] [Module.Projective R V]
+    [Subsingleton V] (X : Coalgebra.RightComodule R C V) :
+    (Coalgebra.RightComodule.dual X).coefficientSpan = ⊥ := by
+  rw [Coalgebra.RightComodule.coefficientSpan_dual]
+  have h : X.coefficientSpan = ⊥ := by
+    apply le_antisymm ?_ bot_le
+    apply (X.coefficientSpan_le_iff _).2
+    intro f v
+    have hv : v = 0 := Subsingleton.elim _ _
+    simp [Coalgebra.RightComodule.coefficient_eq, hv]
+  rw [h, Submodule.map_bot]
