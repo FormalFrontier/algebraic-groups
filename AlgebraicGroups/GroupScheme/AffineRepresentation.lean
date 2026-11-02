@@ -376,6 +376,16 @@ acting by precomposition. The opposite functor here is `rightOp`. -/
 abbrev affineGeometricPointFunctor : CommAlgCat.{u, u} K ⥤ GrpCat.{u} :=
   (algSpec (.of K)).rightOp ⋙ yonedaGrpObj (G.asOver (Spec (.of K)))
 
+omit [IsAffine G] in
+/-- Coefficient maps act on geometric points by precomposition with the induced
+morphism of affine spectra. -/
+@[simp] theorem affineGeometricPointFunctor_map_apply
+    {A B : CommAlgCat.{u, u} K} (φ : A ⟶ B)
+    (x : (Spec (.of A)).asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K))) :
+    ((CategoryTheory.yonedaGrpObj (G.asOver (Spec (.of K)))).map
+      ((algSpec (.of K)).map φ.op).op).hom x =
+      (algSpec (.of K)).map φ.op ≫ x := rfl
+
 /-- The coordinate extension to any independent coefficient universe. The
 coordinate Hopf algebra is the canonical one on global sections. -/
 abbrev affinePointGroupFunctor : CommAlgCat.{r, u} K ⥤ GrpCat.{max u r} :=

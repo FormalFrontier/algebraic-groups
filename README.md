@@ -540,6 +540,18 @@ maintained project libraries; it does not claim to formalize an entire source.
   including common-maximum comparisons.
   [Finite system and universal property](AlgebraicGroups/GroupScheme/RepresentationFiltration.lean).
 
+- **Finite-type restriction of geometric representations.** Over any
+  commutative ring `K`, let `G` be a locally-finite-type group scheme, not
+  necessarily affine or separated. For coefficient algebras in the scheme
+  universe, restriction to finite-type algebras is bijective on natural
+  transformations from its geometric point functor to any given group-valued
+  functor, with an independent target-carrier universe. The derived left-Kan
+  property supplies the existing extension, factorization and uniqueness API.
+  In particular, geometric representations on arbitrary `K`-modules extend
+  uniquely, with their original operators on `R ⊗[K] V` and all coefficient maps.
+  No finiteness, freeness or flatness condition is imposed on `V`.
+  [Finite-type restriction](AlgebraicGroups/GroupScheme/AffineRepresentation/FiniteType.lean).
+
 - **Intrinsic geometric invariants and functoriality.** Let `G`
   be any group scheme over `Spec K`, for a commutative ring `K : Type u`,
   and let `η` be a geometric representation on a `K`-module `V : Type v`.

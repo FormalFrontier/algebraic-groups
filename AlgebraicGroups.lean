@@ -126,6 +126,7 @@ public import AlgebraicGroups.GroupScheme.AdditiveInvariantLine
 public import AlgebraicGroups.GroupScheme.AdditiveProductAffineSpace
 public import AlgebraicGroups.GroupScheme.AffineHomOverConvolution
 public import AlgebraicGroups.GroupScheme.AffineRepresentation
+public import AlgebraicGroups.GroupScheme.AffineRepresentation.FiniteType
 public import AlgebraicGroups.GroupScheme.ComoduleGeneralLinear
 public import AlgebraicGroups.GroupScheme.GeometricRepresentationBaseChange
 public import AlgebraicGroups.GroupScheme.GeometricRepresentationFiniteType
