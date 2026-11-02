@@ -8,6 +8,8 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.GeneralLinear
 public import AlgebraicGroups.GroupScheme.AffineRepresentation
 public import AlgebraicGroups.GroupScheme.GeneralLinear
 public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # General linear group morphisms of based right comodules
@@ -23,14 +25,19 @@ components are the comodule point action, expressed in the scalar-extended basis
 The coordinate formula identifies the underlying scheme morphism with canonical
 affinization followed by the spectrum of the coefficient evaluation. If the
 matrix coefficients generate the coordinate algebra, this same morphism is a
-closed immersion.
+closed immersion. Over a field, every affine group scheme locally of finite type
+admits such a closed immersion into `GLₙ` over the same field for some natural
+number `n`: a finite regular subcomodule with generating coefficients supplies
+the comodule, and a finite basis is chosen internally.
 
 ## References
 
 * J. S. Milne, *Algebraic Groups* (2017), §2, item 2.8: the determinant-localized
-  general linear group; Chapter 4, §c: representations and comodules.
-* Mathlib's group-valued Yoneda embedding, scalar-extension bases, matrix algebra
-  equivalences, affine spectrum adjunction, and affine closed-immersion criterion.
+  general linear group; Chapter 4: representations, comodules and linearity of
+  affine algebraic groups.
+* Mathlib's group-valued Yoneda embedding, scalar-extension and finite bases,
+  matrix algebra equivalences, affine spectrum adjunction, and affine finite-type
+  and closed-immersion criteria.
 -/
 
 @[expose] public section
@@ -492,3 +499,45 @@ theorem generalLinearGroupHom_isClosedImmersion
     (X.generalLinearGroupHom b).hom.hom.left (Function.Surjective.of_comp hsurj)
 
 end Coalgebra.RightComodule
+
+namespace AlgebraicGeometry
+
+/-- Every affine group scheme locally of finite type over a field admits a closed
+immersion into `GLₙ` over the same field for some natural number `n`, retaining its
+given group structure and structure morphism. A finite regular subcomodule of the
+canonical coordinate Hopf algebra supplies the representation, with a basis chosen
+internally.
+This is the linearity theorem for affine algebraic groups in Milne,
+*Algebraic Groups* (2017), Chapter 4. -/
+theorem exists_generalLinearGroupHom_isClosedImmersion
+    {K : Type u} [Field K] (G : Scheme.{u})
+    [G.Over (Spec (.of K))]
+    [GrpObj (G.asOver (Spec (.of K)))] [IsAffine G]
+    [LocallyOfFiniteType (G ↘ Spec (.of K))] :
+    ∃ (n : ℕ)
+      (ρ : Grp.mk (G.asOver (Spec (.of K))) ⟶
+        generalLinearGroupScheme K (ULift.{u} (Fin n))),
+      IsClosedImmersion ρ.hom.hom.left := by
+  classical
+  let : Algebra.FiniteType K Γ(G, ⊤) := by
+    apply RingHom.finiteType_algebraMap.mp
+    apply (HasRingHomProperty.Spec_iff (P := @LocallyOfFiniteType)
+      (φ := CommRingCat.ofHom (algebraMap K Γ(G, ⊤)))).mp
+    have h := (affineGroupIsoSpec (K := K) G).inv.hom.hom.w
+    rw [affineGroupIsoSpec_inv_left] at h
+    change G.isoSpec.inv ≫ (G ↘ Spec (.of K)) =
+      Spec.map (CommRingCat.ofHom (algebraMap K Γ(G, ⊤))) at h
+    rw [← h]
+    infer_instance
+  obtain ⟨U, hU, hgen⟩ :=
+    Coalgebra.exists_finite_regular_subcomodule_adjoin_coefficients_eq_top
+      (K := K) (A := Γ(G, ⊤))
+  let : Module.Finite K U.toSubmodule := hU
+  let b : Module.Basis (ULift.{u} (Fin (Module.finrank K U.toSubmodule)))
+      K U.toSubmodule :=
+    (Module.finBasis K U.toSubmodule).reindex Equiv.ulift.symm
+  refine ⟨Module.finrank K U.toSubmodule,
+    U.comodule.generalLinearGroupHom (G := G) b, ?_⟩
+  exact U.comodule.generalLinearGroupHom_isClosedImmersion (G := G) b (hgen b)
+
+end AlgebraicGeometry

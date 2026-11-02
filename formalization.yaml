@@ -24,6 +24,15 @@ repository:
   role: substantive-development
 
 highlights:
+  - title: Closed linear embeddings of affine algebraic groups
+    statement: >-
+      Every affine group scheme locally of finite type over a field K admits a
+      group-scheme morphism into GL_n over K for some natural number n whose
+      underlying scheme morphism is a closed immersion. Nonreduced group
+      schemes are included, with no representation or basis supplied.
+    declarations:
+      - declaration: AlgebraicGeometry.exists_generalLinearGroupHom_isClosedImmersion
+        file: AlgebraicGroups/GroupScheme/ComoduleGeneralLinear.lean
   - title: Point representations and comodules
     statement: >-
       For a commutative Hopf algebra over a commutative ring and a fixed arbitrary
