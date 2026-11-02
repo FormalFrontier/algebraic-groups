@@ -6,6 +6,7 @@ module
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
 public import AlgebraicGroups.Algebra.HopfAlgebra.Comultiplication
+public import AlgebraicGroups.Algebra.HopfAlgebra.Hom
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 
@@ -318,6 +319,62 @@ theorem eq_dual_of_characteristic (X : Coalgebra.RightComodule R C V)
   apply Coalgebra.RightComodule.ext
   exact coaction_eq_dualCoaction X Y h
 
+section MapCoalgebra
+
+variable {D : Type x} [Semiring D] [HopfAlgebra R D]
+
+/-- After a Hopf coefficient map, the dual coaction is computed by applying the map
+to the antipode of the original contracted coefficient. -/
+theorem dualCoaction_mapCoalgebra_characteristic
+    (X : Coalgebra.RightComodule R C V) (f : C →ₐc[R] D)
+    (φ : Module.Dual R V) (v : V) :
+    dualTensorHom R V D
+        (dualCoaction (X.mapCoalgebra f.toCoalgHom) φ) v =
+      f (HopfAlgebra.antipode R (A := C)
+        (dualContraction φ (X.coaction v))) := by
+  have contraction_map (t : V ⊗[R] C) :
+      dualContraction φ (f.toCoalgHom.toLinearMap.lTensor V t) =
+        f.toCoalgHom.toLinearMap (dualContraction φ t) := by
+    induction t using TensorProduct.inductionOn with
+    | tmul v c => simp
+    | add t₁ t₂ h₁ h₂ => simp only [map_add, h₁, h₂]
+  rw [dualCoaction_characteristic, mapCoalgebra_coaction_apply, contraction_map]
+  exact (f.map_antipode _).symm
+
+/-- Finite-projective dual coactions commute with a Hopf coefficient map. -/
+theorem dualCoaction_mapCoalgebra
+    (X : Coalgebra.RightComodule R C V) (f : C →ₐc[R] D) :
+    dualCoaction (X.mapCoalgebra f.toCoalgHom) =
+      f.toCoalgHom.toLinearMap.lTensor (Module.Dual R V) ∘ₗ dualCoaction X := by
+  apply LinearMap.ext
+  intro φ
+  apply (dualTensorHom_bijective (R := R) (M := V) (N := D)).1
+  apply LinearMap.ext
+  intro v
+  calc
+    dualTensorHom R V D (dualCoaction (X.mapCoalgebra f.toCoalgHom) φ) v =
+        f (HopfAlgebra.antipode R (A := C)
+          (dualContraction φ (X.coaction v))) :=
+      dualCoaction_mapCoalgebra_characteristic X f φ v
+    _ = f (dualTensorHom R V C (dualCoaction X φ) v) := by
+      rw [dualCoaction_characteristic]
+    _ = dualTensorHom R V D
+        ((f.toCoalgHom.toLinearMap.lTensor (Module.Dual R V) ∘ₗ dualCoaction X) φ) v :=
+      (congrArg
+        (fun k : Module.Dual R V ⊗[R] C →ₗ[R] V →ₗ[R] D => k (dualCoaction X φ) v)
+        (dualTensorHom_comp_lTensor (M := V) f.toCoalgHom.toLinearMap)).symm
+
+/-- The dual of a comodule after a Hopf coefficient map is the coefficient change
+of its dual on the same module of linear forms. -/
+theorem dual_mapCoalgebra
+    (X : Coalgebra.RightComodule R C V) (f : C →ₐc[R] D) :
+    dual (X.mapCoalgebra f.toCoalgHom) =
+      (dual X).mapCoalgebra f.toCoalgHom := by
+  apply Coalgebra.RightComodule.ext
+  simpa only [dual_coaction, mapCoalgebra_coaction] using dualCoaction_mapCoalgebra X f
+
+end MapCoalgebra
+
 end Coalgebra.RightComodule
 
 
@@ -385,5 +442,48 @@ variable [Module.Finite R U] [Module.Projective R U]
     dualMap (g.comp h) = (dualMap h).comp (dualMap g) := by
   ext f v
   rfl
+
+section MapCoalgebra
+
+variable {D : Type y} [Semiring D] [HopfAlgebra R D]
+
+/-- Pullback of linear forms commutes with a Hopf coefficient map, after identifying
+the dual objects by their coefficient-change equalities. -/
+theorem dualMap_mapCoalgebra
+    (f : C →ₐc[R] D)
+    {X : Coalgebra.RightComodule R C V}
+    {Y : Coalgebra.RightComodule R C W}
+    (h : Coalgebra.RightComoduleHom X Y) :
+    cast
+      (congrArg₂
+        (fun (A : Coalgebra.RightComodule R D (Module.Dual R W))
+             (B : Coalgebra.RightComodule R D (Module.Dual R V)) =>
+          Coalgebra.RightComoduleHom A B)
+        (Coalgebra.RightComodule.dual_mapCoalgebra Y f)
+        (Coalgebra.RightComodule.dual_mapCoalgebra X f))
+      (dualMap (h.mapCoalgebra f.toCoalgHom)) =
+        (dualMap h).mapCoalgebra f.toCoalgHom := by
+  have cast_apply
+      {A A' : Coalgebra.RightComodule R D (Module.Dual R W)}
+      {B B' : Coalgebra.RightComodule R D (Module.Dual R V)}
+      (eA : A = A') (eB : B = B') (k : Coalgebra.RightComoduleHom A B)
+      (φ : Module.Dual R W) (v : V) :
+      cast
+        (congrArg₂
+          (fun (A : Coalgebra.RightComodule R D (Module.Dual R W))
+               (B : Coalgebra.RightComodule R D (Module.Dual R V)) =>
+            Coalgebra.RightComoduleHom A B) eA eB) k φ v = k φ v := by
+    cases eA
+    cases eB
+    rfl
+  apply Coalgebra.RightComoduleHom.ext
+  intro φ
+  apply LinearMap.ext
+  intro v
+  rw [cast_apply (Coalgebra.RightComodule.dual_mapCoalgebra Y f)
+    (Coalgebra.RightComodule.dual_mapCoalgebra X f)]
+  simp only [dualMap_apply, mapCoalgebra_apply]
+
+end MapCoalgebra
 
 end Coalgebra.RightComoduleHom
