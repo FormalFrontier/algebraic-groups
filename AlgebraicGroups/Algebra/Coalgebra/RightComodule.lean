@@ -35,8 +35,14 @@ flatness, projectivity or freeness.
 * `RightComoduleHom` is a linear map intertwining the specified coactions, with
   underlying map `toLinearMap`, identities and composition.
   `RightComoduleHom.mapCoalgebra` preserves this underlying map and respects
-  identities and composition. `RightComoduleHom.ofCoalgHom` regards a coalgebra
-  morphism as a colinear map from its changed regular source to its regular target.
+  identities and composition. If the coefficient map remains injective after
+  tensoring with the target module,
+  `RightComoduleHom.colinear_mapCoalgebra_iff_of_lTensor_injective` reflects
+  colinearity and `RightComoduleHom.mapCoalgebraEquiv` identifies the two
+  hom-sets, with inverse preserving underlying maps, identities and composition.
+  Target flatness and injectivity of the coefficient map suffice for reflection.
+  `RightComoduleHom.ofCoalgHom` regards a coalgebra morphism as a colinear map
+  from its changed regular source to its regular target.
   `RightComoduleHom.colinear_symm` gives colinearity of the inverse of a linear
   equivalence whose forward map intertwines the two specified coactions.
 * `RightComodule.IsStable` describes image stability for every member of an
@@ -75,6 +81,12 @@ flatness, projectivity or freeness.
 * `RightComodule.directed_fg_toSubmodule` makes the underlying submodules of
   module-finite subcomodules directed under `[Module.Projective R C]`.
 * `RightComodule.iUnion_fg_eq_univ` says that these same subcomodules cover `M`.
+
+For coefficient reflection over a field, `Module.Flat.of_field` from
+`AlgebraicGroups.RingTheory.Flat.Field` supplies target flatness with the given
+additive monoid and module structures. For a coefficient coalgebra isomorphism,
+its underlying linear equivalence supplies the tensor-injectivity condition by
+`LinearEquiv.lTensor`, even when the target module is not flat.
 
 The regular and scalar constructors give coactions by comultiplication and the
 inverse right unitor. `RightComodule.ofTensor` gives `m ↦ m ⊗ e` when
@@ -495,6 +507,104 @@ def mapCoalgebra (h : RightComoduleHom X Y) (f : C →ₗc[R] D) :
     (k.comp h).mapCoalgebra f = (k.mapCoalgebra f).comp (h.mapCoalgebra f) := by
   ext m
   rfl
+
+/-- Colinearity is reflected by changing coefficients whenever the coefficient map
+remains injective after tensoring with the target module. No tensor-injectivity
+condition on the source module is needed. -/
+theorem colinear_mapCoalgebra_iff_of_lTensor_injective
+    (η : RightComodule R C M) (θ : RightComodule R C N) (ν : C →ₗc[R] D)
+    (hT : Function.Injective (ν.toLinearMap.lTensor N)) (f : M →ₗ[R] N) :
+    ((θ.mapCoalgebra ν).coaction ∘ₗ f =
+      f.rTensor D ∘ₗ (η.mapCoalgebra ν).coaction) ↔
+    (θ.coaction ∘ₗ f = f.rTensor C ∘ₗ η.coaction) := by
+  constructor
+  · intro h
+    have h' : ν.toLinearMap.lTensor N ∘ₗ (θ.coaction ∘ₗ f) =
+        ν.toLinearMap.lTensor N ∘ₗ (f.rTensor C ∘ₗ η.coaction) := by
+      calc
+        ν.toLinearMap.lTensor N ∘ₗ (θ.coaction ∘ₗ f) =
+            (θ.mapCoalgebra ν).coaction ∘ₗ f := by
+          rw [RightComodule.mapCoalgebra_coaction, LinearMap.comp_assoc]
+        _ = f.rTensor D ∘ₗ (η.mapCoalgebra ν).coaction := h
+        _ = ν.toLinearMap.lTensor N ∘ₗ (f.rTensor C ∘ₗ η.coaction) := by
+          rw [RightComodule.mapCoalgebra_coaction, ← LinearMap.comp_assoc,
+            LinearMap.rTensor_comp_lTensor, ← LinearMap.lTensor_comp_rTensor,
+            LinearMap.comp_assoc]
+    ext m
+    exact hT (LinearMap.congr_fun h' m)
+  · intro h
+    exact ((⟨f, h⟩ : RightComoduleHom η θ).mapCoalgebra ν).colinear
+
+/-- An injective change of coefficient coalgebra reflects colinearity when the
+target module is flat. Flatness of the source module or either coalgebra is not
+required. -/
+theorem colinear_mapCoalgebra_iff [Module.Flat R N]
+    (η : RightComodule R C M) (θ : RightComodule R C N) (ν : C →ₗc[R] D)
+    (hν : Function.Injective ν) (f : M →ₗ[R] N) :
+    ((θ.mapCoalgebra ν).coaction ∘ₗ f =
+      f.rTensor D ∘ₗ (η.mapCoalgebra ν).coaction) ↔
+    (θ.coaction ∘ₗ f = f.rTensor C ∘ₗ η.coaction) :=
+  colinear_mapCoalgebra_iff_of_lTensor_injective η θ ν
+    (Module.Flat.lTensor_preserves_injective_linearMap ν.toLinearMap hν) f
+
+/-- Changing coefficients gives an equivalence on colinear maps when the
+coefficient map is injective after tensoring with the target module. Both
+functions retain the original underlying linear map. -/
+def mapCoalgebraEquiv
+    (η : RightComodule R C M) (θ : RightComodule R C N) (ν : C →ₗc[R] D)
+    (hT : Function.Injective (ν.toLinearMap.lTensor N)) :
+    RightComoduleHom η θ ≃
+      RightComoduleHom (η.mapCoalgebra ν) (θ.mapCoalgebra ν) where
+  toFun f := f.mapCoalgebra ν
+  invFun f :=
+    { toLinearMap := f.toLinearMap
+      colinear := (colinear_mapCoalgebra_iff_of_lTensor_injective η θ ν hT
+        f.toLinearMap).mp f.colinear }
+  left_inv f := by ext m; rfl
+  right_inv f := by ext m; rfl
+
+/-- The forward equivalence is the usual change of coefficients on morphisms. -/
+@[simp] theorem mapCoalgebraEquiv_apply
+    (η : RightComodule R C M) (θ : RightComodule R C N) (ν : C →ₗc[R] D)
+    (hT : Function.Injective (ν.toLinearMap.lTensor N)) (f : RightComoduleHom η θ) :
+    mapCoalgebraEquiv η θ ν hT f = f.mapCoalgebra ν := rfl
+
+/-- Reflecting a morphism retains its underlying linear map. -/
+@[simp] theorem mapCoalgebraEquiv_symm_toLinearMap
+    (η : RightComodule R C M) (θ : RightComodule R C N) (ν : C →ₗc[R] D)
+    (hT : Function.Injective (ν.toLinearMap.lTensor N))
+    (f : RightComoduleHom (η.mapCoalgebra ν) (θ.mapCoalgebra ν)) :
+    ((mapCoalgebraEquiv η θ ν hT).symm f).toLinearMap = f.toLinearMap := rfl
+
+/-- Reflecting a morphism does not change its values. -/
+@[simp] theorem mapCoalgebraEquiv_symm_apply
+    (η : RightComodule R C M) (θ : RightComodule R C N) (ν : C →ₗc[R] D)
+    (hT : Function.Injective (ν.toLinearMap.lTensor N))
+    (f : RightComoduleHom (η.mapCoalgebra ν) (θ.mapCoalgebra ν)) (m : M) :
+    (mapCoalgebraEquiv η θ ν hT).symm f m = f m := rfl
+
+/-- Reflection of morphisms preserves the identity. -/
+@[simp] theorem mapCoalgebraEquiv_symm_id
+    (η : RightComodule R C M) (ν : C →ₗc[R] D)
+    (hM : Function.Injective (ν.toLinearMap.lTensor M)) :
+    (mapCoalgebraEquiv η η ν hM).symm (id (η.mapCoalgebra ν)) = id η := by
+  ext m
+  simp only [mapCoalgebraEquiv_symm_apply, id_apply]
+
+/-- Reflection commutes with composition of colinear maps. Only the two target
+modules of the factors need the tensor-injectivity condition. -/
+theorem mapCoalgebraEquiv_symm_comp
+    (η : RightComodule R C M) (θ : RightComodule R C N) (ν : C →ₗc[R] D)
+    {χ : RightComodule R C P}
+    (hN : Function.Injective (ν.toLinearMap.lTensor N))
+    (hP : Function.Injective (ν.toLinearMap.lTensor P))
+    (g : RightComoduleHom (θ.mapCoalgebra ν) (χ.mapCoalgebra ν))
+    (f : RightComoduleHom (η.mapCoalgebra ν) (θ.mapCoalgebra ν)) :
+    (mapCoalgebraEquiv η χ ν hP).symm (g.comp f) =
+      ((mapCoalgebraEquiv θ χ ν hP).symm g).comp
+        ((mapCoalgebraEquiv η θ ν hN).symm f) := by
+  ext m
+  simp only [mapCoalgebraEquiv_symm_apply, comp_apply]
 
 /-- A coalgebra morphism is colinear from its changed regular source to its regular target. -/
 def ofCoalgHom (f : C →ₗc[R] D) :
