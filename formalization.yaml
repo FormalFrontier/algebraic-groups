@@ -23,6 +23,32 @@ project:
 repository:
   role: substantive-development
 
+highlights:
+  - title: Point representations and comodules
+    statement: >-
+      For a commutative Hopf algebra over a commutative ring and a fixed arbitrary
+      module, natural point representations on the module's scalar extensions,
+      tested on commutative base algebras in any universe containing the Hopf
+      algebra, correspond bijectively to right-comodule structures on that module.
+    declarations:
+      - declaration: AlgebraicGeometry.PointRepresentation.rightComoduleEquiv
+        file: AlgebraicGroups/GroupScheme/RepresentationEquivalence.lean
+  - title: Finite-dimensional subcoalgebra containment
+    statement: >-
+      Every finite subset of a coalgebra over a field is contained in a
+      finite-dimensional subcoalgebra.
+    declarations:
+      - declaration: Coalgebra.exists_finite_subcoalgebra_of_finite
+        file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean
+  - title: Finitely generated subcomodule containment
+    statement: >-
+      For a coalgebra over a commutative semiring whose underlying module is
+      projective, every finite subset of any right comodule is contained in a
+      finitely generated subcomodule.
+    declarations:
+      - declaration: Coalgebra.RightComodule.exists_fg_subcomodule_of_finite
+        file: AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean
+
 sources:
   - title: Hopf Algebras
     authors:
