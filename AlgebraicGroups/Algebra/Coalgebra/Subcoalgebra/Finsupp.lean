@@ -18,6 +18,10 @@ unit coordinate vectors indexed by `s`. Its carrier is finitely generated, and i
 underlying module is finite, whenever `s` is finite; the construction itself requires
 no finiteness assumption.
 
+`Finsupp.supportedSubcoalgebraOrderIso` classifies every subcoalgebra by its unit
+coordinate vectors. Its inverse records exactly the indices whose unit vectors lie in
+the subcoalgebra. The classification allows arbitrary and empty index types.
+
 The construction extends the two-coordinate construction in
 `AlgebraicGroupsTest.Algebra.Coalgebra.SubcoalgebraDiagonal` to arbitrary index types and
 supports. It uses `Subcoalgebra.mk'` and the closure of spans of group-like elements from
@@ -37,6 +41,8 @@ The diagonal coalgebra and the unit-coordinate formulas are from Mathlib's
 noncomputable section
 
 universe u v
+
+open scoped TensorProduct
 
 namespace Finsupp
 
@@ -102,5 +108,103 @@ theorem supportedSubcoalgebra_fg (hs : s.Finite) :
 theorem supportedSubcoalgebra_finite (hs : s.Finite) :
     Module.Finite K (supportedSubcoalgebra K s) :=
   Module.Finite.iff_fg.mpr (supportedSubcoalgebra_fg K s hs)
+
+variable {K s}
+
+private theorem contract_comul_eq_single (i : ι) :
+    (TensorProduct.lid K (ι →₀ K)).toLinearMap ∘ₗ
+        (lapply i : (ι →₀ K) →ₗ[K] K).rTensor (ι →₀ K) ∘ₗ
+        Coalgebra.comul (R := K) =
+      (lsingle i : K →ₗ[K] (ι →₀ K)) ∘ₗ lapply i := by
+  classical
+  apply Finsupp.lhom_ext
+  intro j a
+  by_cases h : j = i
+  · subst j
+    simp
+  · simp [Ne.symm h]
+
+private theorem single_mem_of_mem
+    (D : Subcoalgebra K (ι →₀ K)) {x : ι →₀ K} (hx : x ∈ D) (i : ι) :
+    single i (x i) ∈ D := by
+  let c : ((ι →₀ K) ⊗[K] (ι →₀ K)) →ₗ[K] (ι →₀ K) :=
+    (TensorProduct.lid K (ι →₀ K)).toLinearMap ∘ₗ
+      (lapply i : (ι →₀ K) →ₗ[K] K).rTensor (ι →₀ K)
+  have hclosed : ∀ t : D.toSubmodule ⊗[K] D.toSubmodule,
+      c (TensorProduct.mapIncl D.toSubmodule D.toSubmodule t) ∈ D := by
+    intro t
+    induction t using TensorProduct.inductionOn with
+    | tmul u v =>
+        change (TensorProduct.lid K (ι →₀ K))
+          ((lapply i : (ι →₀ K) →ₗ[K] K).rTensor (ι →₀ K)
+            (TensorProduct.map D.toSubmodule.subtype D.toSubmodule.subtype
+              (u ⊗ₜ[K] v))) ∈ D
+        rw [TensorProduct.map_tmul, LinearMap.rTensor_tmul,
+          TensorProduct.lid_tmul]
+        simpa only [lapply_apply, Submodule.subtype_apply] using
+          D.smul_mem ((u : ι →₀ K) i) v.property
+    | add t u iht ihu =>
+        simpa only [map_add] using D.add_mem iht ihu
+  obtain ⟨t, ht⟩ := D.comul_mem hx
+  have hct := hclosed t
+  rw [ht] at hct
+  have hc := LinearMap.congr_fun (contract_comul_eq_single (K := K) i) x
+  change c (Coalgebra.comul (R := K) x) = single i (x i) at hc
+  simpa only [hc] using hct
+
+private theorem single_one_mem_of_mem
+    (D : Subcoalgebra K (ι →₀ K)) {x : ι →₀ K} (hx : x ∈ D)
+    {i : ι} (hxi : x i ≠ 0) : single i (1 : K) ∈ D := by
+  have h := D.smul_mem (x i)⁻¹ (single_mem_of_mem D hx i)
+  simpa only [Finsupp.smul_single, smul_eq_mul, inv_mul_cancel₀ hxi] using h
+
+private theorem single_one_mem_supportedSubcoalgebra (s : Set ι) (i : ι) :
+    single i (1 : K) ∈ supportedSubcoalgebra K s ↔ i ∈ s := by
+  rw [Subcoalgebra.mem_iff, supportedSubcoalgebra_toSubmodule_eq_span]
+  exact Finsupp.single_mem_span_single (R := K)
+
+private theorem supportedSubcoalgebra_unitCoordinates
+    (D : Subcoalgebra K (ι →₀ K)) :
+    supportedSubcoalgebra K {i | single i (1 : K) ∈ D} = D := by
+  apply le_antisymm
+  · change (supportedSubcoalgebra K _).toSubmodule ≤ D.toSubmodule
+    exact (supportedSubcoalgebra_toSubmodule_le_iff K _ D.toSubmodule).mpr
+      (fun i hi => hi)
+  · intro x hx
+    rw [mem_supportedSubcoalgebra]
+    intro i hi
+    exact single_one_mem_of_mem D hx (Finsupp.mem_support_iff.mp hi)
+
+/-- Subcoalgebras of the diagonal coalgebra of finitely supported functions correspond
+in order to subsets of its unit coordinate basis. -/
+noncomputable def supportedSubcoalgebraOrderIso
+    (K : Type u) [Field K] (ι : Type v) :
+    Set ι ≃o Subcoalgebra K (ι →₀ K) where
+  toFun := supportedSubcoalgebra K
+  invFun := fun D => {i | single i (1 : K) ∈ D}
+  left_inv s := by
+    ext i
+    exact single_one_mem_supportedSubcoalgebra s i
+  right_inv D := by exact supportedSubcoalgebra_unitCoordinates D
+  map_rel_iff' := by
+    intro s t
+    constructor
+    · intro h i hi
+      exact (single_one_mem_supportedSubcoalgebra t i).mp
+        (h (single_mem_supportedSubcoalgebra K s (1 : K) hi))
+    · intro h x hx
+      exact (mem_supportedSubcoalgebra K t x).mpr
+        (fun i hi => h ((mem_supportedSubcoalgebra K s x).mp hx hi))
+
+/-- The forward classification is the supported subcoalgebra. -/
+@[simp] theorem supportedSubcoalgebraOrderIso_apply
+    (K : Type u) [Field K] (ι : Type v) (s : Set ι) :
+    supportedSubcoalgebraOrderIso K ι s = supportedSubcoalgebra K s := rfl
+
+/-- The inverse classification records membership of unit coordinate vectors. -/
+@[simp] theorem supportedSubcoalgebraOrderIso_symm_apply
+    (K : Type u) [Field K] (ι : Type v) (D : Subcoalgebra K (ι →₀ K)) :
+    (supportedSubcoalgebraOrderIso K ι).symm D =
+      {i | single i (1 : K) ∈ D} := rfl
 
 end Finsupp

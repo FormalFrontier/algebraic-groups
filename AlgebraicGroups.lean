@@ -252,6 +252,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Map
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.TensorProduct
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finite
 public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Equiv
+public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.GroupLikeBasis
 public import AlgebraicGroups.Algebra.Coalgebra.Surjective
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Duality

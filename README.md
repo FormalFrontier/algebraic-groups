@@ -356,6 +356,15 @@ maintained project libraries; it does not claim to formalize an entire source.
   restricted coalgebra laws, bundled inclusion and unique morphism factorization.
   No ambient finite dimension, algebra/Hopf structure or least finite closure is
   assumed. [Modules and example](docs/COALGEBRAS.md#subcoalgebras-and-finite-containment-over-a-field).
+- **Subcoalgebras with a group-like basis.** Over a field, a given group-like
+  basis `b` identifies subsets of its index type with subcoalgebras through
+  `b.groupLikeSubcoalgebraOrderIso`. The API gives the span of the chosen basis
+  vectors, membership by finite coordinate support, inverse basis membership,
+  and extensionality on basis vectors. Arbitrary and empty index types are
+  allowed, including the zero coalgebra with its empty basis. For the unit
+  coordinate basis, the classification agrees with supported diagonal
+  subcoalgebras. No ambient finite dimension is assumed.
+  [Classification module](AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/GroupLikeBasis.lean).
 - **Supported diagonal subcoalgebras.** Over a field, for any index type and
   set `s`, `Finsupp.supportedSubcoalgebra K s` consists exactly of the finitely
   supported functions whose support lies in `s`, equivalently the span of the
