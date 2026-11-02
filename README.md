@@ -651,6 +651,17 @@ maintained project libraries; it does not claim to formalize an entire source.
   submodules indexed by group-like elements are independent for arbitrary
   modules; no spanning or finite-dimensional hypothesis is used.
   [Module](AlgebraicGroups/Algebra/Coalgebra/RightComodule/WeightSpace.lean).
+- **Flat scalar extension of weight spaces.** For a specified right comodule
+  over a commutative ring `R` and a flat commutative `R`-algebra `S`, the
+  `S`-module `S ⊗[R] X.weightSpace c` is canonically linearly equivalent to
+  `(X.baseChange S).weightSpace (1 ⊗ c)`, for every coalgebra element `c`.
+  The comparison sends `s ⊗ w` to the same ambient tensor, commutes with
+  the original subtype inclusions in both directions on every vector, and
+  is natural in colinear maps. The coalgebra and comodule carriers need only
+  be additive-commutative-monoid modules in independent universes; neither needs
+  flatness, projectivity or finiteness. Group-like and bialgebra-unit weights
+  specialize this result.
+  [Comparison and formulas](AlgebraicGroups/Algebra/Coalgebra/RightComodule/WeightSpaceBaseChange.lean).
 - **Components in a group-like basis.** Let `C` be a full coalgebra over a
   commutative semiring `R`, with a given basis `b` whose vectors are group-like.
   For any specified right `C`-comodule `V`, the stock right-basis tensor

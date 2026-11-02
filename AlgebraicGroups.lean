@@ -52,6 +52,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.GeneralLinear
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Kernel
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.SymmetricAlgebra
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightSpace
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightSpaceBaseChange
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.WeightDecomposition
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.Associator
