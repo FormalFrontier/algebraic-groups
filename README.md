@@ -102,6 +102,15 @@ maintained project libraries; it does not claim to formalize an entire source.
   field. No flatness, finiteness or perfectness is required.
   [Construction and API](AlgebraicGroups/Algebra/Bialgebra/RelativeFrobenius.lean),
   [scalar roles and universal property](docs/MATHEMATICS.md#frobenius-scalar-extension).
+- **Pure-power coactions over the relative Frobenius image.** Over a field `K`
+  with `(p : K) = 0` and prime `p`, a specified right coaction of a commutative
+  Hopf `K`-algebra `A` induces a unique coaction on the original span of
+  `(ι v)^(p^r)` with coefficients in the full Hopf range of relative Frobenius.
+  Range inclusion recovers the original subtype coaction. The finite-sum
+  generator formula corestricts each coefficient by relative Frobenius, and
+  in particular sends a weight `a` to a coefficient with ambient value
+  `a^(p^r)`. No perfection, basis or finite-dimensionality hypothesis is needed.
+  [Construction and characteristic API](AlgebraicGroups/Algebra/Coalgebra/RightComodule/FrobeniusPowerImage.lean).
 - **A finitely presented rank-one nonflat coalgebra over a PID.** For any
   field `K`, put `R = K[X]`, `T = R/(X²)` and give `C = R ⊕ T`
   (implemented as `TrivSqZeroExt R T`) its primitive `R`-coalgebra structure.

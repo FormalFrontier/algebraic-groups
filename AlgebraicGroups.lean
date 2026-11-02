@@ -45,6 +45,8 @@ public import AlgebraicGroups.Algebra.Coalgebra.Quotient
 public import AlgebraicGroups.Algebra.Coalgebra.Range
 public import AlgebraicGroups.Algebra.Coalgebra.TensorProductQuotient
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.FrobeniusPowerImage
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.SymmetricAlgebra
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Components
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.DirectSum
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Gluing
