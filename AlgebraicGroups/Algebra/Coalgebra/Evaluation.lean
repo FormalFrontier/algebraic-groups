@@ -15,7 +15,8 @@ A coaction term `vᵢ ⊗ cᵢ` contributes `φ cᵢ ⊗ vᵢ` on a one-tensor.
 The coalgebra need not be an algebra, and the input need not preserve products
 or the unit. The counit gives the identity endomorphism.
 
-Evaluation is natural in the scalar algebra and in colinear maps. It preserves
+Evaluation is natural in the scalar algebra and in colinear maps. Changing
+the coacting coalgebra is precomposition of the coefficient map. It preserves
 the scalar-extension image of every image-stable submodule, without flatness or
 a coaction on the submodule subtype. For algebra-homomorphism inputs, the
 identity and maximum-universe stability criteria reuse the evaluation criteria
@@ -33,7 +34,7 @@ is constructed here.
 
 @[expose] public section
 
-universe u c v a b w
+universe u c d v a b w
 
 open scoped TensorProduct
 
@@ -65,6 +66,17 @@ theorem evaluate_one_tmul (X : RightComodule K C V) (φ : C →ₗ[K] A) (v : V)
       TensorProduct.map φ (LinearMap.id : V →ₗ[K] V)
         (TensorProduct.comm K V C (X.coaction v)) := by
   rw [evaluate_tmul, one_smul]
+
+/-- Changing the coacting coalgebra precomposes the coefficient map, without
+changing the scalar-extended module or its evaluation operator. -/
+@[simp] theorem evaluate_mapCoalgebra (X : RightComodule K C V)
+    {D : Type d} [AddCommMonoid D] [Module K D] [Coalgebra K D]
+    (f : C →ₗc[K] D) (φ : D →ₗ[K] A) :
+    (X.mapCoalgebra f).evaluate φ = X.evaluate (φ.comp f.toLinearMap) := by
+  apply TensorProduct.AlgebraTensorModule.ext
+  intro a v
+  simp only [evaluate_tmul, mapCoalgebra_coaction_apply, LinearMap.lTensor_def]
+  rw [← TensorProduct.map_comm, TensorProduct.map_map, LinearMap.id_comp]
 
 /-- Evaluation commutes with change of scalar algebra. The tensor transport is
 only `K`-linear; neither scalar algebra is assumed to act on the other. -/

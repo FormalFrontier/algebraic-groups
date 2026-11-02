@@ -371,6 +371,60 @@ def affineGroupIsoSpec :
   rw [affineGroupIsoSpec_hom_left] at h
   exact (cancel_epi G.isoSpec.hom).1 (h.trans G.isoSpec.hom_inv_id.symm)
 
+section CoordinateMaps
+
+variable {G} {N : Scheme.{u}} [N.Over (Spec (.of K))]
+  [GrpObj (N.asOver (Spec (.of K)))] [IsAffine N]
+
+/-- The coordinate bialgebra map obtained by fully faithful Hopf spectrum from
+an affine group-scheme morphism has pullback on global sections as its ring map. -/
+theorem affineCoordinateMap_toRingHom
+    (i : N.asOver (Spec (.of K)) ⟶ G.asOver (Spec (.of K))) [IsMonHom i] :
+    CommRingCat.ofHom
+      (((hopfSpec.fullyFaithful (R := .of K)).preimage
+        ((affineGroupIsoSpec (K := K) N).inv ≫ Grp.ofHom i ≫
+          (affineGroupIsoSpec (K := K) G).hom)).unop.hom.toAlgHom.toRingHom) =
+      i.left.appTop := by
+  let j : (hopfSpec (.of K)).obj (op (CommHopfAlgCat.of K Γ(N, ⊤))) ⟶
+      (hopfSpec (.of K)).obj (op (CommHopfAlgCat.of K Γ(G, ⊤))) :=
+    (affineGroupIsoSpec (K := K) N).inv ≫ Grp.ofHom i ≫
+      (affineGroupIsoSpec (K := K) G).hom
+  have hmap :
+      Spec.map (CommRingCat.ofHom
+        ((hopfSpec.fullyFaithful (R := .of K)).preimage j).unop.hom.toAlgHom.toRingHom) =
+        j.hom.hom.left :=
+    congrArg
+      (fun f : (hopfSpec (.of K)).obj (op (CommHopfAlgCat.of K Γ(N, ⊤))) ⟶
+          (hopfSpec (.of K)).obj (op (CommHopfAlgCat.of K Γ(G, ⊤))) ↦
+        f.hom.hom.left)
+      ((hopfSpec.fullyFaithful (R := .of K)).map_preimage j)
+  have hj : (j.hom.hom.left : Spec Γ(N, ⊤) ⟶ Spec Γ(G, ⊤)) =
+      N.isoSpec.inv ≫ i.left ≫ G.isoSpec.hom := by
+    change (affineGroupIsoSpec (K := K) N).inv.hom.hom.left ≫ i.left ≫
+      (affineGroupIsoSpec (K := K) G).hom.hom.hom.left =
+        N.isoSpec.inv ≫ i.left ≫ G.isoSpec.hom
+    exact congrArg₂
+      (fun (f : Spec Γ(N, ⊤) ⟶ N) (g : G ⟶ Spec Γ(G, ⊤)) ↦
+        f ≫ i.left ≫ g)
+      (affineGroupIsoSpec_inv_left (K := K) N)
+      (affineGroupIsoSpec_hom_left (K := K) G)
+  have hnat :
+      (N.isoSpec.inv ≫ i.left ≫ G.isoSpec.hom : Spec Γ(N, ⊤) ⟶ Spec Γ(G, ⊤)) =
+        Spec.map i.left.appTop := by
+    have h :
+        (N.isoSpec.inv ≫ i.left ≫ G.isoSpec.hom : Spec Γ(N, ⊤) ⟶ Spec Γ(G, ⊤)) =
+          N.isoSpec.inv ≫ N.isoSpec.hom ≫ Spec.map i.left.appTop :=
+      congrArg (fun f : N ⟶ Spec Γ(G, ⊤) ↦ N.isoSpec.inv ≫ f)
+        (Scheme.isoSpec_hom_naturality (X := N) (Y := G) i.left).symm
+    exact Eq.trans h (Iso.inv_hom_id_assoc N.isoSpec (Spec.map i.left.appTop))
+  apply Spec.map_injective
+  change Spec.map (CommRingCat.ofHom
+      ((hopfSpec.fullyFaithful (R := .of K)).preimage j).unop.hom.toAlgHom.toRingHom) =
+    Spec.map i.left.appTop
+  exact Eq.trans hmap (Eq.trans hj hnat)
+
+end CoordinateMaps
+
 /-- The geometric point functor in the scheme universe, with coefficient maps
 acting by precomposition. The opposite functor here is `rightOp`. -/
 abbrev affineGeometricPointFunctor : CommAlgCat.{u, u} K ⥤ GrpCat.{u} :=

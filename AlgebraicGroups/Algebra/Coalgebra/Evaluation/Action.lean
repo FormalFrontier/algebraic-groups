@@ -24,8 +24,9 @@ algebra needs no coalgebra structure.
 The action is on the left: `T_(φ * ψ) = T_φ.comp T_ψ`. Its value on a
 one-tensor is coefficient evaluation of the original right coaction, and its
 inverse is evaluation after precomposition with the source antipode.
-Coefficient change and colinear maps intertwine the operators. Image-stable
-submodules have invariant scalar-extension images, in both directions.
+Changing the coacting Hopf algebra along a bialgebra morphism precomposes
+the point. Coefficient change and colinear maps intertwine the operators.
+Image-stable submodules have invariant scalar-extension images, in both directions.
 
 ## References
 
@@ -45,7 +46,7 @@ submodules have invariant scalar-extension images, in both directions.
 open scoped TensorProduct
 open WithConv
 
-universe u c v a b w
+universe u c d v a b w
 
 namespace Coalgebra.RightComodule
 
@@ -102,6 +103,31 @@ noncomputable def pointAction (X : RightComodule K C V) :
 @[simp] theorem pointAction_val (X : RightComodule K C V)
     (φ : WithConv (C →ₐ[K] A)) :
     (X.pointAction φ).val = X.evaluate φ.ofConv.toLinearMap := rfl
+
+/-- Changing the coacting Hopf algebra along a bialgebra morphism precomposes
+the point and leaves the general-linear operator on the same module unchanged. -/
+@[simp] theorem pointAction_mapCoalgebra (X : RightComodule K C V)
+    {D : Type d} [Semiring D] [HopfAlgebra K D] (f : C →ₐc[K] D)
+    (φ : WithConv (D →ₐ[K] A)) :
+    (X.mapCoalgebra f.toCoalgHom).pointAction φ =
+      X.pointAction (toConv (φ.ofConv.comp f.toAlgHom)) := by
+  apply Units.ext
+  have hcoeff :
+      φ.ofConv.toLinearMap.comp f.toCoalgHom.toLinearMap =
+        (φ.ofConv.comp f.toAlgHom).toLinearMap := by
+    apply LinearMap.ext
+    intro x
+    rfl
+  calc
+    ((X.mapCoalgebra f.toCoalgHom).pointAction φ).val =
+        (X.mapCoalgebra f.toCoalgHom).evaluate φ.ofConv.toLinearMap :=
+      pointAction_val _ _
+    _ = X.evaluate (φ.ofConv.toLinearMap.comp f.toCoalgHom.toLinearMap) :=
+      X.evaluate_mapCoalgebra f.toCoalgHom φ.ofConv.toLinearMap
+    _ = X.evaluate (φ.ofConv.comp f.toAlgHom).toLinearMap :=
+      congrArg X.evaluate hcoeff
+    _ = (X.pointAction (toConv (φ.ofConv.comp f.toAlgHom))).val := by
+      rw [pointAction_val, ofConv_toConv]
 
 /-- The inverse endomorphism uses the source antipode, with no target coalgebra. -/
 theorem pointAction_inv_val (X : RightComodule K C V)
