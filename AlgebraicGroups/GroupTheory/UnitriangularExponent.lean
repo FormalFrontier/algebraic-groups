@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.GroupScheme.Unitriangular
+public import GeneralLinearGroups.UpperTriangularNilpotent
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.GroupTheory.Exponent
@@ -14,12 +15,16 @@ public import Mathlib.GroupTheory.Exponent
 
 The exponent bound and its sharpness concern the native group
 `Matrix.UnitriangularGroup (Fin n) R`, over a commutative ring.
-The bound uses Cayley–Hamilton for strictly upper-triangular matrices and a
-commuting prime-power identity; sharpness uses a consecutive superdiagonal
-shift. Neither conclusion is a group-scheme exponent statement.
+The bound uses the cardinal-power vanishing of a strictly upper-triangular
+matrix and a commuting prime-power identity; sharpness uses a consecutive
+superdiagonal shift. Neither conclusion is a group-scheme exponent statement.
+The matrix vanishing result holds over arbitrary semirings and is the constant
+exponent-one case of the diagonal nilpotence bound.
 
 ## References
 
+- Formal Frontier Agents, `GeneralLinearGroups.UpperTriangularNilpotent`
+  (diagonal nilpotence bounds over semirings).
 - Mathlib contributors, `Mathlib.LinearAlgebra.Matrix.Charpoly.Basic`
   (triangular characteristic polynomial and Cayley–Hamilton),
   `Mathlib.Algebra.CharP.Lemmas` (commuting prime-power identity) and
@@ -32,19 +37,21 @@ noncomputable section
 
 namespace Matrix
 
-/-- A strictly upper-triangular matrix over a commutative ring vanishes at the
-power given by the number of its indices, including for an empty index type.
-The proof applies Cayley–Hamilton as formalized by Mathlib's
-`Matrix.aeval_self_charpoly` to its triangular characteristic polynomial. -/
+universe u v
+
+/-- A strictly upper-triangular matrix over a semiring vanishes at the power
+given by the number of its indices, including for an empty index type.
+This is the `e = 1` case of the diagonal nilpotence bound for upper-triangular
+matrices. -/
 theorem pow_card_eq_zero_of_upperTriangular_diag_zero
-    {ι R : Type*} [Fintype ι] [LinearOrder ι] [CommRing R]
+    {ι : Type u} {R : Type v} [Fintype ι] [LinearOrder ι] [Semiring R]
     (N : Matrix ι ι R) (hupper : N.IsUpperTriangular)
     (hdiag : ∀ i, N i i = 0) : N ^ Fintype.card ι = 0 := by
-  classical
-  have hpoly : N.charpoly = Polynomial.X ^ Fintype.card ι := by
-    rw [N.charpoly_of_isUpperTriangular hupper]
-    simp [hdiag]
-  simpa [hpoly] using N.aeval_self_charpoly
+  have hone : ∀ i : ι, (N i i) ^ (1 : ℕ) = 0 := by
+    simpa only [pow_one] using hdiag
+  simpa only [← Fintype.card_eq_sum_ones] using
+    (Matrix.IsUpperTriangular.pow_eq_zero_of_diagonal_pow_eq_zero
+      (ι := ι) (R := R) (A := N) (hA := hupper) (fun _ : ι => 1) hone)
 
 namespace UnitriangularGroup
 
@@ -98,7 +105,8 @@ private theorem shift_pow_mul_natCast_apply (n : ℕ) (R : Type) [CommRing R]
 
 /-- A characteristic-`p` native upper-unitriangular matrix has prime-power order
 bounded by the first power of `p` at least its dimension. The proof combines
-Cayley–Hamilton with Mathlib's `Commute.add_pow_prime_pow_eq'`. -/
+cardinal-power vanishing of the strictly upper-triangular part with Mathlib's
+commuting prime-power identity `Commute.add_pow_prime_pow_eq'`. -/
 theorem pow_prime_pow_eq_one {n p t : ℕ} {R : Type} [CommRing R]
     (hp : Nat.Prime p) (hchar : (p : R) = 0) (hn : n ≤ p ^ t)
     (g : Matrix.UnitriangularGroup (Fin n) R) : g ^ (p ^ t) = 1 := by

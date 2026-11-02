@@ -32,7 +32,7 @@ rev = "44b23fb524e62c7f91f7cbe7f07db873cb5c1d66"
 [[require]]
 name = "general-linear-groups"
 git = "https://github.com/FormalFrontier/general-linear-groups.git"
-rev = "8b3b07bf2744a870b53934542e4c5ed383765bd6"
+rev = "a9b20bb169eefda6e76e33c50d098f4870c021f2"
 
 [[require]]
 name = "coherent-modules"
