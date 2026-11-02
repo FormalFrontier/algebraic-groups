@@ -62,6 +62,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.Cohe
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.Symmetry
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.SymmetryCoherence
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProduct.Unitors
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Bidual
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Cofree
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Prod
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Quotient

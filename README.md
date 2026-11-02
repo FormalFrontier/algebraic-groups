@@ -20,6 +20,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   ordinary ideal quotient.
   See [`HopfAlgebra/Ideal`](AlgebraicGroups/Algebra/HopfAlgebra/Ideal.lean).
 
+- **Bidual coactions and the antipode square.** For a specified right comodule
+  on a finite projective module over a commutative semiring, canonical bidual
+  evaluation identifies the bidual coaction with the original coaction twisted
+  on coefficients by `S²`. The coefficient Hopf algebra may be noncommutative,
+  and its antipode need not be invertible. For commutative coefficients the
+  twist disappears.
+  See [the bidual comparison](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Bidual.lean).
+
 ## Further results
 
 ### Group objects

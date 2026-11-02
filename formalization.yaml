@@ -58,6 +58,19 @@ highlights:
       - declaration: Coalgebra.RightComodule.exists_fg_subcomodule_of_finite
         file: AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean
 
+  - title: Bidual coactions and the antipode square
+    statement: >-
+      For a specified right comodule on a finite projective module over a
+      commutative semiring, canonical bidual evaluation identifies its bidual
+      with the original coaction twisted on coefficients by the antipode square.
+      The coefficient Hopf algebra need not be commutative and its antipode
+      need not be invertible. For commutative coefficients the twist is identity.
+    declarations:
+      - declaration: Coalgebra.RightComodule.dual_dual_coaction_eval
+        file: AlgebraicGroups/Algebra/Coalgebra/RightComodule/Bidual.lean
+      - declaration: Coalgebra.RightComodule.dual_dual_eq_transport
+        file: AlgebraicGroups/Algebra/Coalgebra/RightComodule/Bidual.lean
+
 sources:
   - title: Hopf Algebras
     authors:
