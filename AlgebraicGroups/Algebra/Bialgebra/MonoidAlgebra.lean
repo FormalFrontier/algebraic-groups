@@ -5,7 +5,9 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Bialgebra.GroupLike
+public import AlgebraicGroups.Algebra.Coalgebra.GroupLikeCoordinates
 public import AlgebraicGroups.Algebra.Coalgebra.MonoidAlgebra
+public import AlgebraicGroups.LinearAlgebra.Coalgebra.GroupLikeBasis
 public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
 
 /-!
@@ -17,6 +19,10 @@ extends by Mathlib's group-like evaluation after the induced map on monoid algeb
 These maps form an equivalence over an arbitrary commutative semiring, with
 algebra and coalgebra agreement, evaluation, uniqueness and naturality laws.
 The target semiring need not be commutative or a Hopf algebra.
+
+Evaluation is surjective for any target with a basis of group-like elements.
+If the scalar prime spectrum is preconnected, this evaluation is bijective;
+no nontriviality or domain assumption on the scalars is required.
 
 ## References
 
@@ -32,7 +38,7 @@ The coalgebra extension and transport are those of
 
 @[expose] public section
 
-universe uR uM uN uH uA uB
+universe uR uM uN uH uA uB uI
 
 namespace MonoidAlgebra
 
@@ -230,5 +236,80 @@ theorem liftGroupLikeBialgHom_mapDomain_groupLikeHomOfBialgHom_id
     (groupLikeHomOfBialgHom (BialgHom.id R R[H]) (f m)).val
   rw [mapDomainBialgHom_single, groupLikeHomOfBialgHom_apply_val, BialgHom.coe_id]
   rfl
+
+section Basis
+
+variable {I : Type uI}
+variable [CommSemiring R] [Semiring A] [Bialgebra R A]
+
+/-- Group-like evaluation is surjective when the target has a basis of group-like elements. -/
+theorem liftGroupLikeBialgHom_surjective_of_basis
+    (b : Module.Basis I R A)
+    (hb : ∀ i, IsGroupLikeElem R (b i)) :
+    Function.Surjective
+      (liftGroupLikeBialgHom (R := R) (A := A)) := by
+  change Function.Surjective
+    (liftGroupLikeBialgHom (R := R) (A := A)).toCoalgHom.toLinearMap
+  rw [← liftGroupLikeCoalgHom_id_eq_liftGroupLikeBialgHom]
+  apply LinearMap.range_eq_top.mp
+  rw [range_liftGroupLikeCoalgHom]
+  apply top_unique
+  rw [← b.span_eq]
+  apply Submodule.span_mono
+  rintro _ ⟨i, rfl⟩
+  exact ⟨(⟨b i, hb i⟩ : GroupLike R A), rfl⟩
+
+/-- A basis of group-like elements over scalars with preconnected prime spectrum
+makes evaluation on all group-like elements bijective. -/
+theorem liftGroupLikeBialgHom_bijective_of_basis
+    [PreconnectedSpace (PrimeSpectrum R)]
+    (b : Module.Basis I R A)
+    (hb : ∀ i, IsGroupLikeElem R (b i)) :
+    Function.Bijective
+      (liftGroupLikeBialgHom (R := R) (A := A)) := by
+  classical
+  rcases subsingleton_or_nontrivial R with hR | hR
+  · let : Subsingleton R := hR
+    let : Subsingleton A := Module.subsingleton R A
+    let : Subsingleton (R[GroupLike R A]) :=
+      Module.subsingleton R (R[GroupLike R A])
+    constructor
+    · intro x y _
+      exact Subsingleton.elim x y
+    · intro a
+      exact ⟨0, Subsingleton.elim _ _⟩
+  · let : Nontrivial R := hR
+    let k : I → GroupLike R A := fun i => ⟨b i, hb i⟩
+    have hk : Function.Bijective k := by
+      constructor
+      · intro i j hij
+        exact b.injective (congrArg (GroupLike.val (R := R) (A := A)) hij)
+      · intro g
+        obtain ⟨i, hi, _⟩ :=
+          b.existsUnique_eq_of_isGroupLikeElem hb g.val g.isGroupLikeElem_val
+        exact ⟨i, GroupLike.val_injective hi.symm⟩
+    let e : I ≃ GroupLike R A := Equiv.ofBijective k hk
+    let bG : Module.Basis (GroupLike R A) R A := b.reindex e
+    have hval (g : GroupLike R A) : bG g = g.val :=
+      (b.reindex_apply e g).trans
+        (congrArg (GroupLike.val (R := R) (A := A)) (e.apply_symm_apply g))
+    have hbG : ∀ g, IsGroupLikeElem R (bG g) := fun g =>
+      (hval g).symm ▸ g.isGroupLikeElem_val
+    have hfamily :
+        (fun g : GroupLike R A => (⟨bG g, hbG g⟩ : GroupLike R A)) = id := by
+      funext g
+      exact GroupLike.val_injective (hval g)
+    have hEval :
+        (bG.groupLikeCoalgebraEquiv hbG).toCoalgHom =
+          (liftGroupLikeBialgHom (R := R) (A := A)).toCoalgHom := by
+      rw [bG.groupLikeCoalgebraEquiv_toCoalgHom hbG, hfamily,
+        liftGroupLikeCoalgHom_id_eq_liftGroupLikeBialgHom]
+    change Function.Bijective
+      ((liftGroupLikeBialgHom (R := R) (A := A)).toCoalgHom :
+        R[GroupLike R A] → A)
+    rw [← hEval]
+    exact (bG.groupLikeCoalgebraEquiv hbG).toEquiv.bijective
+
+end Basis
 
 end MonoidAlgebra

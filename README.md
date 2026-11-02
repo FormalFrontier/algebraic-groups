@@ -887,6 +887,14 @@ maintained project libraries; it does not claim to formalize an entire source.
   nontriviality is required. Evaluation, uniqueness and naturality laws describe
   the equivalence in independent scalar, monoid and target universes.
   [Module](AlgebraicGroups/Algebra/Bialgebra/MonoidAlgebra.lean).
+- **Evaluation on all group-like elements.** Over a commutative semiring `R`,
+  the evaluation `R[GroupLike R A] →ₐc[R] A` is surjective whenever the bialgebra
+  `A` has a basis of group-like elements. If `PrimeSpectrum R` is preconnected,
+  it is bijective, including for subsingleton scalars; no domain or finiteness
+  assumption is needed. The existing `BialgEquiv.ofBijective` forms the
+  corresponding bialgebra equivalence. In the Hopf specialization,
+  `BialgHom.map_antipode` gives compatibility with the given antipodes.
+  [Evaluation API][bialg-monoid].
 - **Group-like coordinates.** In a coalgebra with a basis of group-like elements
   over a commutative semiring, an element is group-like exactly when distinct
   coordinates have product zero and their finite-support sum is one. Coordinate
