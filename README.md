@@ -681,6 +681,13 @@ maintained project libraries; it does not claim to formalize an entire source.
   positive-rank hypothesis is required; the module universe is independent.
   [Coordinate evaluation](AlgebraicGroups/Algebra/Coalgebra/RightComodule/GeneralLinear.lean),
   [group morphism and closed immersion](AlgebraicGroups/GroupScheme/ComoduleGeneralLinear.lean).
+- **Right Hopf-module compatibility.** Over a commutative semiring, a specified
+  right comodule over a possibly noncommutative bialgebra is compatible with its
+  given right action exactly when the balanced action map is colinear. The
+  ordered tensor formula, constructor and eliminator, and bundled action use
+  the original scalar module. Right multiplication and the regular coaction
+  satisfy this condition for every bialgebra, without an antipode or finiteness.
+  [Compatibility and regular action](AlgebraicGroups/Algebra/Coalgebra/RightComodule/HopfModule/Basic.lean).
 - **Right-comodule weight spaces.** For a full coalgebra over a commutative
   semiring and a specified right comodule, weight spaces are the submodules
   where the coaction is `v ↦ v ⊗ c`, for any coalgebra element `c`. The
