@@ -85,6 +85,7 @@ roots = [
   "AlgebraicGroupsTest.GroupScheme.UpperTriangularSchemeProduct",
   "AlgebraicGroupsTest.AlgebraicallyClosedCommonZero",
   "AlgebraicGroupsTest.Algebra.Coalgebra.BaseChange",
+  "AlgebraicGroupsTest.Algebra.Coalgebra.SemilinearEquiv",
   "AlgebraicGroupsTest.Algebra.Coalgebra.CoefficientMatrixUnit",
   "AlgebraicGroupsTest.Algebra.Coalgebra.CoefficientOperators",
   "AlgebraicGroupsTest.Algebra.Coalgebra.Coefficients",
