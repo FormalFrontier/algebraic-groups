@@ -14,6 +14,7 @@ module
 
 public import AlgebraicGroups.FieldTheory.GeometricallyReduced
 public import AlgebraicGroups.Scheme.JointlySchemeTheoreticallyDominant
+public import AlgebraicGroups.Scheme.Smooth
 public import Mathlib.AlgebraicGeometry.Geometrically.Reduced
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 import Mathlib.Algebra.MvPolynomial.Funext
@@ -22,14 +23,16 @@ import Mathlib.AlgebraicGeometry.Pullbacks
 import Mathlib.AlgebraicGeometry.Sites.EtalePoint
 
 /-!
-# Smooth loci of geometrically reduced schemes
+# Geometric reducedness and smooth loci over fields
 
-This file connects scheme-theoretic geometric reducedness with the corresponding algebraic
+This file proves geometric reducedness of reduced schemes locally of finite type over perfect
+fields and connects scheme-theoretic geometric reducedness with the corresponding algebraic
 predicate on affine opens. It then proves generic smoothness, and density of the smooth locus, for
 a geometrically reduced scheme locally of finite presentation over an arbitrary field.
 
 ## Main results
 
+- `AlgebraicGeometry.GeometricallyReduced.of_isReduced_of_perfectField`
 - `AlgebraicGeometry.Algebra.isGeometricallyReduced_of_geometricallyReduced_appLE`
 - `AlgebraicGeometry.GeometricallyReduced.comp_of_flat_of_locallyOfFiniteType`
 - `AlgebraicGeometry.Scheme.Hom.genericPoint_mem_smoothLocus_of_geometricallyReduced`
@@ -55,6 +58,10 @@ a geometrically reduced scheme locally of finite presentation over an arbitrary 
   `GeometricallyReduced.isReduced_of_flat_of_isLocallyNoetherian`,
   `Scheme.Hom.smoothLocus`, and `Scheme.exists_fac_of_etale_of_isSepClosed`
   provide the relative geometric-reducedness, smooth-locus, and étale-point APIs.
+- Mathlib's `IsSchemeTheoreticallyDominant.of_isDominant`,
+  `IsSchemeTheoreticallyDominant.pullbackSnd`, and `IsSchemeTheoreticallyDominant.isReduced`,
+  together with `Smooth.geometricallyReduced`, give geometric reducedness over perfect fields
+  by descent from the dense smooth locus.
 -/
 
 public section
@@ -71,6 +78,30 @@ namespace AlgebraicGeometry
 /-- Geometric reducedness of scheme morphisms respects isomorphisms. -/
 instance : MorphismProperty.RespectsIso @GeometricallyReduced :=
   GeometricallyReduced.eq_geometrically ▸ inferInstance
+
+/-- A reduced scheme locally of finite type over a perfect field is geometrically reduced.
+The proof descends reducedness after field extension from the dense smooth locus. -/
+lemma GeometricallyReduced.of_isReduced_of_perfectField
+    {K : Type u} [Field K] [PerfectField K] {X : Scheme.{u}} [IsReduced X]
+    (f : X ⟶ Spec (.of K)) [LocallyOfFiniteType f] : GeometricallyReduced f := by
+  let _ : IsLocallyNoetherian X := LocallyOfFiniteType.isLocallyNoetherian f
+  let U : X.Opens := f.smoothLocus
+  let _ : IsDominant U.ι := Opens.isDominant_ι f.dense_smoothLocus_of_perfectField
+  let _ : IsSchemeTheoreticallyDominant U.ι :=
+    IsSchemeTheoreticallyDominant.of_isDominant U.ι
+  let _ : Smooth (U.ι ≫ f) := by
+    apply Scheme.Hom.smoothLocus_eq_top_iff.mp
+    rw [← Scheme.Hom.preimage_smoothLocus_eq]
+    exact U.ι_preimage_self
+  constructor
+  intro L _ y Z fst snd h
+  let _ : Flat fst :=
+    MorphismProperty.IsStableUnderBaseChange.of_isPullback h.flip inferInstance
+  let _ : IsReduced (pullback U.ι fst) :=
+    GeometricallyReduced.geometrically_isReduced (f := U.ι ≫ f) y
+      (pullback.fst U.ι fst) (pullback.snd U.ι fst ≫ snd)
+      ((IsPullback.of_hasPullback U.ι fst).paste_vert h)
+  exact IsSchemeTheoreticallyDominant.isReduced (pullback.snd U.ι fst)
 
 /-- Restricting the source of a geometrically reduced morphism to an open subscheme preserves
 geometric reducedness. -/
