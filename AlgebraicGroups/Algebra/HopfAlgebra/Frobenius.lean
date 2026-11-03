@@ -6,14 +6,19 @@ module
 
 public import AlgebraicGroups.Algebra.HopfAlgebra.DualCoinvariants
 public import CoherentModules.LinearAlgebra.Dual.TensorProduct
+public import ProjectiveModules.Module.Injective.Frobenius
 
 /-!
-# Frobenius functionals on finite-dimensional Hopf algebras
+# Frobenius functionals and self-injectivity of finite-dimensional Hopf algebras
 
 A finite-dimensional Hopf algebra over a field admits a linear functional `λ`
 for which the multiplication pairing `(a, x) ↦ λ (a * x)` separates both
 arguments. Neither commutativity nor cocommutativity is required, and the
 field may have any characteristic.
+
+Such an algebra is also injective as a left module over itself. The theorem
+`HopfAlgebra.injective_self` combines the functional with
+`Module.injective_of_nondegenerate_mul`, using the original regular action.
 
 The dual Hopf-module decomposition
 `HopfAlgebra.antipodeDualCoinvariantsTensorEquiv` supplies the equivalence
@@ -38,9 +43,13 @@ of the multiplication pairing.
   finite-dimensional dual Hopf-module method.
 * M. E. Sweedler, *Hopf Algebras*, Benjamin, 1969, for the fundamental theorem
   of Hopf modules.
+* T. Y. Lam, *Lectures on Modules and Rings*, Graduate Texts in Mathematics 189,
+  Springer, 1999, for the Frobenius self-injectivity criterion.
 
 The construction reuses the dual tensor-product criterion in CoherentModules
-and the canonical dual Hopf-module decomposition in this library.
+and the canonical dual Hopf-module decomposition in this library. The
+self-injectivity corollary reuses `Module.injective_of_nondegenerate_mul`
+from ProjectiveModules.
 -/
 
 @[expose] public section
@@ -64,3 +73,13 @@ theorem exists_nondegenerate_mul :
     (antipodeDualCoinvariantsTensorEquiv_tmul_apply K H)
 
 end HopfAlgebra
+
+/-- The left regular module of a finite-dimensional Hopf algebra over a field
+is injective. This is the Frobenius self-injectivity consequence from
+T. Y. Lam, *Lectures on Modules and Rings* (1999), applied to
+`HopfAlgebra.exists_nondegenerate_mul`. -/
+theorem HopfAlgebra.injective_self (K : Type u) (H : Type v)
+    [Field K] [Ring H] [HopfAlgebra K H] [Module.Finite K H] :
+    Module.Injective H H := by
+  obtain ⟨φ, hφ⟩ := HopfAlgebra.exists_nondegenerate_mul K H
+  exact Module.injective_of_nondegenerate_mul φ hφ

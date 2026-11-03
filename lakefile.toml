@@ -47,7 +47,7 @@ rev = "29001ecda5eff8e37c9ddb712f8abb509c31461d"
 [[require]]
 name = "projective-modules"
 git = "https://github.com/FormalFrontier/projective-modules.git"
-rev = "22d1db051251bee9a7ad69ebd2ea8867afffef79"
+rev = "031aeecd871f902b936a2d31eba766327eb4f728"
 
 [[lean_lib]]
 name = "AlgebraicGroups"
