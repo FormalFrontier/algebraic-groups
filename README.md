@@ -28,13 +28,21 @@ maintained project libraries; it does not claim to formalize an entire source.
   twist disappears.
   See [the bidual comparison](AlgebraicGroups/Algebra/Coalgebra/RightComodule/Bidual.lean).
 
-- **Hopf tensor–quotient equivalence.** For a central bialgebra map from a
+- **Hopf tensor–quotient equivalences.** For a central bialgebra map from a
   commutative bialgebra `A` over a commutative ring `R` to a possibly
   noncommutative Hopf algebra `B`, comultiplication gives a first-factor
   `B`-linear equivalence `B ⊗[A] B ≃ₗ[B] B ⊗[R] (B / (ker ε_A)B)`.
-  The quotient is only a module quotient, and `A` need not have an antipode.
-  The finite-comultiplication formulas describe both directions; for a
-  group-like `c`, the inverse sends `(b c) ⊗ [c]` to `b ⊗ c`.
+  In this generality the quotient is only a module quotient, and `A` need
+  not have an antipode. When `B` is commutative,
+  `HopfAlgebra.tensorQuotientAlgEquiv` refines the same map to a `B`-algebra
+  equivalence on the canonical tensor and quotient algebras. The simp equality
+  `tensorQuotientAlgEquiv_toLinearEquiv` recovers `tensorQuotientEquiv`, so its
+  finite-comultiplication formulas compute both directions. For a group-like
+  `c`, the inverse sends `(b c) ⊗ [c]` to `b ⊗ c`. Mixed scalar extension is
+  the composition of inverse tensor cancellation, congruence with this
+  refinement, and tensor cancellation. Compatible ordinary algebra maps
+  and scalar towers suffice; the commutative coefficient algebra needs no
+  Hopf structure.
   See [`HopfAlgebra/TensorQuotient`](AlgebraicGroups/Algebra/HopfAlgebra/TensorQuotient.lean).
 
 ## Further results

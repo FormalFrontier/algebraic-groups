@@ -133,6 +133,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Antipode",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.CocommutativeAntipode",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Comultiplication",
+  "AlgebraicGroupsTest.Algebra.HopfAlgebra.TensorQuotient",
   "AlgebraicGroupsTest.Algebra.LocalizedCoordinateQuotient",
   "AlgebraicGroupsTest.Algebra.FinitePolynomialLocalizationDimension",
   "AlgebraicGroupsTest.Algebra.UnitriangularBaseChange",

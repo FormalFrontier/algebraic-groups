@@ -185,13 +185,24 @@ status:
     For a central bialgebra map from a commutative bialgebra A over a
     commutative ring R to a possibly noncommutative Hopf algebra B, the
     tensor-quotient equivalence compares B tensor_A B with B tensor_R
-    (B / (ker counit_A)B) as first-factor B-modules. The target uses only
-    the original module quotient, and A need not have an antipode.
+    (B / (ker counit_A)B) as first-factor B-modules. In this generality the
+    target uses only the original module quotient, and A need not have an
+    antipode. When B is commutative, tensorQuotientAlgEquiv refines the same
+    map to a B-algebra equivalence on the canonical tensor and quotient
+    algebras. Its simp toLinearEquiv equality recovers tensorQuotientEquiv
+    and its finite-comultiplication formulas in both directions. Mixed scalar
+    extension is a composition of tensor cancellation and congruence for
+    compatible ordinary algebra maps and scalar towers, with no Hopf
+    structure required on the commutative coefficient algebra.
     The library is not a blanket arbitrary-base classification or full
     quotient-effectivity theory,
     or complete formalization of Milne's book. Read exact limitations with
     each mathematical guide.
   main_results:
+    - declaration: HopfAlgebra.tensorQuotientAlgEquiv
+      file: AlgebraicGroups/Algebra/HopfAlgebra/TensorQuotient.lean
+    - declaration: HopfAlgebra.tensorQuotientAlgEquiv_toLinearEquiv
+      file: AlgebraicGroups/Algebra/HopfAlgebra/TensorQuotient.lean
     - declaration: HopfAlgebra.tensorQuotientEquiv
       file: AlgebraicGroups/Algebra/HopfAlgebra/TensorQuotient.lean
     - declaration: HopfAlgebra.tensorQuotientEquiv_tmul

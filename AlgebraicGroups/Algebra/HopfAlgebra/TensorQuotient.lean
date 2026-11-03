@@ -10,6 +10,8 @@ public import Mathlib.RingTheory.Bialgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.GroupLike
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.TensorProduct.Maps
 public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
@@ -19,7 +21,10 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
 For a central bialgebra map from a commutative bialgebra `A` to a possibly
 noncommutative Hopf algebra `B`, comultiplication identifies `B ⊗[A] B` with
 `B ⊗[R] (B / (ker ε_A)B)` as left `B`-modules. Both actions are on the first
-factor. The quotient is only a module quotient; no multiplication on it is used.
+factor. The linear construction uses only the module structure on the quotient.
+When `B` is commutative, the same equivalence respects the quotient-ring and
+tensor-product multiplications, giving an equivalence of `B`-algebras with the
+same forward and inverse functions.
 
 The antipode of `B` supplies the inverse. No antipode on `A`, injectivity,
 flatness, or finiteness assumption is needed. The compatibility equations concern
@@ -35,6 +40,10 @@ flatness, or finiteness assumption is needed. The compatibility equations concer
   for both directions. These are the computation API for the opaque construction.
 * `HopfAlgebra.tensorQuotientEquiv_symm_mul_tmul_of_isGroupLikeElem`: the
   resulting coordinate conversion for a group-like element.
+* `HopfAlgebra.tensorQuotientAlgEquiv`: the algebra equivalence when `B` is
+  commutative. Its underlying linear equivalence is characterized by
+  `HopfAlgebra.tensorQuotientAlgEquiv_toLinearEquiv`, so the same finite formulas
+  compute both directions.
 
 ## References
 
@@ -42,6 +51,9 @@ flatness, or finiteness assumption is needed. The compatibility equations concer
   and convolution of linear maps.
 * Mathlib, `LinearAlgebra/TensorProduct/Tower` and `LinearAlgebra/Quotient/Basic`:
   the tensor and quotient universal properties.
+* Mathlib, `Algebra/Algebra/Equiv`, `RingTheory/TensorProduct/Maps`, and
+  `RingTheory/Ideal/Quotient/Operations`: algebra refinement of linear equivalences,
+  multiplication on tensor generators, and the quotient algebra structure.
 -/
 
 public section
@@ -498,5 +510,78 @@ theorem tensorQuotientEquiv_symm_mul_tmul_of_isGroupLikeElem (b c : B)
   simp only [r, Finset.sum_singleton] at h
   rw [← h]
   exact (tensorQuotientEquiv R A B counit_comp map_comp_comul).symm_apply_apply _
+
+end HopfAlgebra
+
+namespace HopfAlgebra
+
+variable (R : Type uR) (A : Type uA) (B : Type uB)
+variable [CommRing R] [CommRing A] [Bialgebra R A]
+variable [CommRing B] [HopfAlgebra R B] [Algebra A B] [IsScalarTower R A B]
+variable
+  (counit_comp :
+    (Bialgebra.counitAlgHom R B).comp (IsScalarTower.toAlgHom R A B) =
+      Bialgebra.counitAlgHom R A)
+  (map_comp_comul :
+    (Algebra.TensorProduct.map
+      (IsScalarTower.toAlgHom R A B)
+      (IsScalarTower.toAlgHom R A B)).comp (Bialgebra.comulAlgHom R A) =
+        (Bialgebra.comulAlgHom R B).comp (IsScalarTower.toAlgHom R A B))
+
+local notation "J" =>
+  Ideal.map (algebraMap A B) (RingHom.ker (Bialgebra.counitAlgHom R A : A →+* R))
+local notation "Q" => B ⧸ J
+local notation "U" => B ⊗[A] B
+
+private theorem tensorQuotientEquiv_map_one :
+    tensorQuotientEquiv R A B counit_comp map_comp_comul 1 = 1 := by
+  change tensorQuotientEquiv R A B counit_comp map_comp_comul
+    ((1 : B) ⊗ₜ[A] (1 : B)) = (1 : B) ⊗ₜ[R] (1 : Q)
+  exact tensorQuotientEquiv_tmul_one R A B counit_comp map_comp_comul 1
+
+private theorem tensorQuotientEquiv_map_mul (x y : U) :
+    tensorQuotientEquiv R A B counit_comp map_comp_comul (x * y) =
+      tensorQuotientEquiv R A B counit_comp map_comp_comul x *
+        tensorQuotientEquiv R A B counit_comp map_comp_comul y := by
+  classical
+  refine LinearMap.map_mul_of_map_mul_tmul
+    (f := (tensorQuotientEquiv R A B counit_comp map_comp_comul).toLinearMap) ?_ x y
+  intro b d c e
+  simp only [LinearEquiv.coe_toLinearMap]
+  let r := Coalgebra.Repr.arbitrary R c
+  let t := Coalgebra.Repr.arbitrary R e
+  have hq (v w : B) :
+      (Submodule.Quotient.mk (v * w) : Q) =
+        (Submodule.Quotient.mk v : Q) * Submodule.Quotient.mk w :=
+    (Ideal.Quotient.mk J).map_mul v w
+  rw [tensorQuotientEquiv_tmul R A B counit_comp map_comp_comul _ _ (r.mul t),
+    tensorQuotientEquiv_tmul R A B counit_comp map_comp_comul _ _ r,
+    tensorQuotientEquiv_tmul R A B counit_comp map_comp_comul _ _ t]
+  simp only [Coalgebra.Repr.mul_index, Coalgebra.Repr.mul_left,
+    Coalgebra.Repr.mul_right, Finset.sum_product, Finset.sum_mul, Finset.mul_sum,
+    Algebra.TensorProduct.tmul_mul_tmul, hq]
+  -- Align the two finite summations with the product representation.
+  conv_rhs => rw [Finset.sum_comm]
+  refine Finset.sum_congr rfl fun k _ => ?_
+  refine Finset.sum_congr rfl fun l _ => ?_
+  rw [mul_mul_mul_comm b d (r.left k) (t.left l)]
+
+/-- The `B`-algebra tensor–quotient equivalence induced by comultiplication on the
+second factor. Its underlying `B`-linear equivalence is `tensorQuotientEquiv`. -/
+def tensorQuotientAlgEquiv :
+    (B ⊗[A] B) ≃ₐ[B]
+      (B ⊗[R] (B ⧸
+        ((RingHom.ker ((Bialgebra.counitAlgHom R A).toRingHom)).map
+          (algebraMap A B)))) :=
+  AlgEquiv.ofLinearEquiv
+    (tensorQuotientEquiv R A B counit_comp map_comp_comul)
+    (tensorQuotientEquiv_map_one R A B counit_comp map_comp_comul)
+    (tensorQuotientEquiv_map_mul R A B counit_comp map_comp_comul)
+
+/-- Forgetting multiplication recovers the `B`-linear tensor–quotient equivalence. -/
+@[simp] theorem tensorQuotientAlgEquiv_toLinearEquiv :
+    (tensorQuotientAlgEquiv R A B counit_comp map_comp_comul).toLinearEquiv =
+      tensorQuotientEquiv R A B counit_comp map_comp_comul :=
+  AlgEquiv.toLinearEquiv_ofLinearEquiv _ _ _
 
 end HopfAlgebra
