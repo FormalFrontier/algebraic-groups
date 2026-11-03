@@ -49,14 +49,15 @@ highlights:
     declarations:
       - declaration: Coalgebra.exists_finite_subcoalgebra_of_finite
         file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean
-  - title: Finitely generated subcomodule containment
+  - title: Decomposition of right Hopf modules
     statement: >-
-      For a coalgebra over a commutative semiring whose underlying module is
-      projective, every finite subset of any right comodule is contained in a
-      finitely generated subcomodule.
+      Over a commutative semiring, a specified right comodule over a possibly
+      noncommutative semiring Hopf algebra with a given compatible right action
+      and scalar tower is linearly equivalent to its coinvariants tensored with
+      that Hopf algebra, without flatness or finiteness assumptions.
     declarations:
-      - declaration: Coalgebra.RightComodule.exists_fg_subcomodule_of_finite
-        file: AlgebraicGroups/Algebra/Coalgebra/RightComodule.lean
+      - declaration: Coalgebra.RightComodule.coinvariantsTensorEquiv
+        file: AlgebraicGroups/Algebra/Coalgebra/RightComodule/HopfModule/Decomposition.lean
 
   - title: Bidual coactions and the antipode square
     statement: >-

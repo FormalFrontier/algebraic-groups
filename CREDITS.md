@@ -102,22 +102,26 @@ classification holds over reduced rings, and infinitude is concluded only under
 rational statement of the exposition.
 
 M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969, is credited
-bibliographically for the classical field coalgebra theorem and
-coefficient-coalgebra method. Formal Frontier Agents developed the coalgebra
+bibliographically for the classical field coalgebra theorem, the
+coefficient-coalgebra method and the fundamental theorem of Hopf modules over
+fields. Formal Frontier Agents developed the coalgebra
 proofs and examples using Mathlib's coalgebra laws, tensor-product maps and
 basis decompositions, linear extensions and finitely generated submodule APIs.
 The projective-ambient-module commutative-semiring right-coideal step is distinct
 from the field theorem's two-factor tensor-image closure. Its global-splitting
 argument follows Formal Frontier's earlier projective-coalgebra formalization
 and uses Kevin Buzzard and Antoine Labelle's Mathlib projective-module API in
-place of an ambient basis.
+place of an ambient basis. The Hopf-module decomposition over a commutative
+semiring uses the independent direct derivation in *Decomposition of a right
+Hopf module over a commutative semiring*.
 
 These are selected mathematical antecedents and prior formalizations, not
 claims to cover entire sources. Module References and the focused guides give
 the precise passage-to-construction distinctions.
 
 - M. E. Sweedler, *Hopf Algebras*, W. A. Benjamin, 1969: bibliographic credit
-  for classical comodules, the field coalgebra theorem and the coefficient method.
+  for classical comodules, the field coalgebra theorem, the coefficient method
+  and the fundamental theorem of Hopf modules over fields.
   The commutative-semiring containment results use projectivity of the coacting
   coalgebra, not of the coacted-on module. The regular case gives the
   right-coideal step, not a general two-factor semiring theorem.

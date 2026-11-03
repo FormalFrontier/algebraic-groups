@@ -45,6 +45,21 @@ maintained project libraries; it does not claim to formalize an entire source.
   Hopf structure.
   See [`HopfAlgebra/TensorQuotient`](AlgebraicGroups/Algebra/HopfAlgebra/TensorQuotient.lean).
 
+- **Decomposition of right Hopf modules.** Over a commutative semiring `R`, let
+  `H` be a possibly noncommutative semiring with full Hopf algebra structure, and
+  `X` a specified right comodule on an additive-commutative-monoid `R`-module `M`.
+  For its given right action with `IsScalarTower R Hᵐᵒᵖ M`, an explicit
+  `hX : X.IsHopfModule` gives
+  `X.coinvariantsTensorEquiv hX : (X.weightSpace (1 : H)) ⊗[R] H ≃ₗ[R] M`.
+  The forward map is the given action. The inverse `X.toCoinvariantsTensor hX`
+  corestricts the antipode contraction to coinvariants before tensoring it with
+  `H` and composing with the coaction. Both inverse identities hold, including
+  the tensor-side identity inside coinvariants tensored with `H` itself. Both
+  maps intertwine the given right action with right multiplication on the `H`
+  factor. Universes are independent; no flatness, finiteness or inverse antipode
+  is required.
+  See [the decomposition and its API](AlgebraicGroups/Algebra/Coalgebra/RightComodule/HopfModule/Decomposition.lean).
+
 ## Further results
 
 ### Group objects

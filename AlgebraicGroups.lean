@@ -272,6 +272,13 @@ public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProductDual
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.DualCoefficients
 public import AlgebraicGroups.LinearAlgebra.Coevaluation.Field
 
+public import AlgebraicGroups.Algebra.HopfAlgebra.TensorCancellation
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.HopfModule.CoinvariantTensor
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.HopfModule.AntipodeContractionCoinvariant
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.HopfModule.AntipodeContractionReconstruction
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.HopfModule.CoinvariantProjection
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.HopfModule.Decomposition
+
 /-!
 # Algebraic groups and group schemes
 
