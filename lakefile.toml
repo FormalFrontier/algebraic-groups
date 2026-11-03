@@ -247,3 +247,9 @@ name = "GroupObjectReflection"
 srcDir = "."
 roots = ["AlgebraicGroups.GroupObject.CartesianReflection"]
 globs = ["AlgebraicGroups.GroupObject.CartesianReflection"]
+
+
+[[require]]
+name = "smooth-regularity"
+git = "https://github.com/FormalFrontier/smooth-regularity.git"
+rev = "566a7c8a5ffec36701ff0206d42ee6fded6a7be3"

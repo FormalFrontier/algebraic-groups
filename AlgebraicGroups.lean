@@ -8,6 +8,7 @@ public import AlgebraicGroups.Algebra.HopfAlgebra.Equiv
 public import AlgebraicGroups.Algebra.HopfAlgebra.ULift
 
 public import AlgebraicGroups.Algebra.Bialgebra.Derivation
+public import AlgebraicGroups.Algebra.Bialgebra.Nilpotent
 
 public import AlgebraicGroups.Algebra.SymmetricAlgebra.Frobenius
 public import AlgebraicGroups.Algebra.AlgebraicallyClosedCommonZero
