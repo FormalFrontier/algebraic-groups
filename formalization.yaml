@@ -49,13 +49,20 @@ highlights:
     declarations:
       - declaration: Coalgebra.exists_finite_subcoalgebra_of_finite
         file: AlgebraicGroups/Algebra/Coalgebra/Subcoalgebra/Finite.lean
-  - title: Decomposition of right Hopf modules
+  - title: Finite Hopf algebras and right Hopf modules
     statement: >-
+      Every finite-dimensional Hopf algebra H over a field K admits a K-linear
+      functional λ whose multiplication pairing (a, x) ↦ λ(a * x) is nondegenerate
+      in both arguments. The Hopf algebra need not be commutative or
+      cocommutative, and no restriction on the characteristic or assumption of
+      antipode bijectivity is required.
       Over a commutative semiring, a specified right comodule over a possibly
       noncommutative semiring Hopf algebra with a given compatible right action
       and scalar tower is linearly equivalent to its coinvariants tensored with
       that Hopf algebra, without flatness or finiteness assumptions.
     declarations:
+      - declaration: HopfAlgebra.exists_nondegenerate_mul
+        file: AlgebraicGroups/Algebra/HopfAlgebra/Frobenius.lean
       - declaration: Coalgebra.RightComodule.coinvariantsTensorEquiv
         file: AlgebraicGroups/Algebra/Coalgebra/RightComodule/HopfModule/Decomposition.lean
 

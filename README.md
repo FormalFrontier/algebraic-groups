@@ -45,7 +45,12 @@ maintained project libraries; it does not claim to formalize an entire source.
   Hopf structure.
   See [`HopfAlgebra/TensorQuotient`](AlgebraicGroups/Algebra/HopfAlgebra/TensorQuotient.lean).
 
-- **Decomposition of right Hopf modules.** Over a commutative semiring `R`, let
+- **Finite Hopf algebras and Hopf modules.** Every finite-dimensional Hopf
+  algebra over a field has a linear functional `λ` such that `λ (a * x)`
+  is nondegenerate in both arguments. The algebra need not be commutative or
+  cocommutative, and the field may have any characteristic.
+  See [the Frobenius functional theorem](AlgebraicGroups/Algebra/HopfAlgebra/Frobenius.lean).
+  For decomposition over a commutative semiring `R`, let
   `H` be a possibly noncommutative semiring with full Hopf algebra structure, and
   `X` a specified right comodule on an additive-commutative-monoid `R`-module `M`.
   For its given right action with `IsScalarTower R Hᵐᵒᵖ M`, an explicit
