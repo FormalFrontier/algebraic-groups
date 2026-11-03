@@ -705,6 +705,13 @@ maintained project libraries; it does not claim to formalize an entire source.
   the original scalar module. Right multiplication and the regular coaction
   satisfy this condition for every bialgebra, without an antipode or finiteness.
   [Compatibility and regular action](AlgebraicGroups/Algebra/Coalgebra/RightComodule/HopfModule/Basic.lean).
+- **Dual evaluation criterion.** For a projective Hopf algebra over a commutative
+  semiring, any given right action and specified coaction on its original scalar
+  dual are compatible if their functional formulas are right translation and
+  antipode-twisted evaluation. No finite generation or invertibility of the
+  antipode is needed. This is a criterion for supplied structures, not a
+  construction of a coaction on every full dual.
+  [Criterion](AlgebraicGroups/Algebra/Coalgebra/RightComodule/HopfModule/DualEvaluation.lean).
 - **Right-comodule weight spaces.** For a full coalgebra over a commutative
   semiring and a specified right comodule, weight spaces are the submodules
   where the coaction is `v ↦ v ⊗ c`, for any coalgebra element `c`. The
@@ -1317,8 +1324,8 @@ lift of `−1` at order two with the point of the explicit root `−1 : ℚ`.
 Lean `v4.34.0-rc2` and exact GitHub dependencies are pinned in
 [lean-toolchain](lean-toolchain), [lakefile.toml](lakefile.toml) and
 [lake-manifest.json](lake-manifest.json). Direct requirements are Mathlib,
-SchemeProperties, MinimalPrimes, GeneralLinearGroups, CoherentModules and
-GroupTheory; building requires access to them.
+SchemeProperties, MultivariatePolynomials, MinimalPrimes, GeneralLinearGroups,
+CoherentModules, GroupTheory and ProjectiveModules; building requires access to them.
 At the root, install the pinned toolchain and fetch the matching cache **before**
 building both library and test targets:
 
