@@ -4,6 +4,9 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.HopfAlgebra.Equiv
+public import AlgebraicGroups.Algebra.HopfAlgebra.ULift
+
 public import AlgebraicGroups.Algebra.Bialgebra.Derivation
 
 public import AlgebraicGroups.Algebra.SymmetricAlgebra.Frobenius
