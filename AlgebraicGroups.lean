@@ -267,6 +267,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.GroupLikeBasis
 public import AlgebraicGroups.Algebra.Coalgebra.Surjective
 
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.Duality
+public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.TensorProductDual
 public import AlgebraicGroups.Algebra.Coalgebra.RightComodule.DualCoefficients
 public import AlgebraicGroups.LinearAlgebra.Coevaluation.Field
 
