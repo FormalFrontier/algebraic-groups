@@ -130,8 +130,13 @@ maintained project libraries; it does not claim to formalize an entire source.
   of the original `R`-module `H` gives a linear map from `Module.Dual R H`
   to `Module.Dual R H ⊗[R] H`. Its evaluation formula contracts the first
   comultiplication leg against the functional and applies the antipode to the
-  second; the API characterizes the tensor uniquely. No comodule laws are asserted.
-  [Construction and API](AlgebraicGroups/Algebra/HopfAlgebra/DualTensor.lean).
+  second; the API characterizes the tensor uniquely. With the full
+  `HopfAlgebra R H` laws, this map is the coaction of a named right comodule
+  on that same dual. Its counit and coassociativity equations require no
+  finiteness or projectivity of the dual or of the tensor target. No algebra
+  action on the dual or Hopf-module compatibility is asserted.
+  [Tensor and readbacks](AlgebraicGroups/Algebra/HopfAlgebra/DualTensor.lean),
+  [right comodule and laws](AlgebraicGroups/Algebra/HopfAlgebra/DualComodule.lean).
 - **Frobenius scalar extension and relative Frobenius.** Over a commutative
   semiring `K` with `ExpChar K p`, the coefficient-first Frobenius twist of a
   semiring `K`-algebra has a balanced lift into any central semiring `K`-algebra,

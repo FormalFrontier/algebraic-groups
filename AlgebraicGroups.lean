@@ -103,6 +103,7 @@ public import AlgebraicGroups.Algebra.HopfAlgebra.Comultiplication
 public import AlgebraicGroups.Algebra.HopfAlgebra.TensorQuotient
 public import AlgebraicGroups.Algebra.HopfAlgebra.Convolution
 public import AlgebraicGroups.Algebra.HopfAlgebra.DualTensor
+public import AlgebraicGroups.Algebra.HopfAlgebra.DualComodule
 public import AlgebraicGroups.Algebra.HopfAlgebra.GroupLike
 public import AlgebraicGroups.Algebra.HopfAlgebra.Subalgebra
 public import AlgebraicGroups.Category.Extensive
