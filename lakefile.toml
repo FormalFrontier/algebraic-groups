@@ -37,7 +37,7 @@ rev = "a9b20bb169eefda6e76e33c50d098f4870c021f2"
 [[require]]
 name = "coherent-modules"
 git = "https://github.com/FormalFrontier/coherent-modules.git"
-rev = "e848789ef591afbad356aa8bda7a0a61c2d5cd38"
+rev = "f812e9c5ab66fbdb5d16c5c479f5ba4c0cf71191"
 
 [[require]]
 name = "groupTheory"
