@@ -125,6 +125,13 @@ maintained project libraries; it does not claim to formalize an entire source.
 
 ### Coalgebras and Hopf algebras
 
+- **Antipode tensors on the linear dual.** For a semiring `H` with
+  `HopfAlgebraStruct R H` over a commutative semiring `R`, finite projectivity
+  of the original `R`-module `H` gives a linear map from `Module.Dual R H`
+  to `Module.Dual R H ⊗[R] H`. Its evaluation formula contracts the first
+  comultiplication leg against the functional and applies the antipode to the
+  second; the API characterizes the tensor uniquely. No comodule laws are asserted.
+  [Construction and API](AlgebraicGroups/Algebra/HopfAlgebra/DualTensor.lean).
 - **Frobenius scalar extension and relative Frobenius.** Over a commutative
   semiring `K` with `ExpChar K p`, the coefficient-first Frobenius twist of a
   semiring `K`-algebra has a balanced lift into any central semiring `K`-algebra,
