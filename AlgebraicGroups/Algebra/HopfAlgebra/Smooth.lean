@@ -5,6 +5,7 @@ Authors: Formal Frontier Agents
 module
 
 public import AlgebraicGroups.Algebra.Bialgebra.Nilpotent
+public import AlgebraicGroups.Algebra.HopfAlgebra.FiniteType
 public import AlgebraicGroups.Algebra.HopfAlgebra.Reduced
 public import AlgebraicGroups.Algebra.Smooth
 public import AlgebraicGroups.GroupScheme.Smooth
@@ -16,19 +17,20 @@ public import Mathlib.RingTheory.Noetherian.Nilpotent
 public import SmoothRegularity.Algebra.Localization
 
 /-!
-# Smoothness of Hopf algebras in characteristic zero
+# Smoothness and reducedness of Hopf algebras in characteristic zero
 
-Cartier's theorem asserts that a finite-type commutative Hopf algebra over a field of
-characteristic zero is smooth, and hence reduced. The scalar field and algebra may lie in
-independent universes. Smoothness concerns the given algebra structure; no reducedness
-assumption on the Hopf algebra is needed.
+Cartier's theorem gives smoothness for finite-type commutative Hopf algebras over
+characteristic-zero fields. Every commutative Hopf algebra over such a field is reduced:
+each nilpotent element lies in a finite-type Hopf subalgebra. The scalar field and algebra
+may lie in independent universes, and all assertions use the given coefficient algebra
+structure.
 
 ## Main results
 
 - `HopfAlgebra.smooth`: a finite-type commutative Hopf algebra over a characteristic-zero
   field is smooth.
-- `HopfAlgebra.isReduced`: a finite-type commutative Hopf algebra over a characteristic-zero
-  field is reduced.
+- `HopfAlgebra.isReduced`: a commutative Hopf algebra over a characteristic-zero field is
+  reduced.
 
 ## References
 
@@ -194,11 +196,22 @@ theorem smooth (K : Type u) (H : Type v) [Field K] [CharZero K] [CommRing H]
   rw [← hmap]
   exact (hD.comp hl).comp hE
 
-/-- A finite-type commutative Hopf algebra over a characteristic-zero field is reduced
-(Cartier's theorem). -/
+/-- A commutative Hopf algebra over a characteristic-zero field is reduced (Cartier's
+theorem), by reduction to a finite-type Hopf subalgebra containing each nilpotent element. -/
 theorem isReduced (K : Type u) (H : Type v) [Field K] [CharZero K] [CommRing H]
-    [HopfAlgebra K H] [Algebra.FiniteType K H] : IsReduced H := by
-  let : Algebra.Smooth K H := smooth K H
-  exact Algebra.Smooth.isReduced_of_isDomain K H
+    [HopfAlgebra K H] : IsReduced H := by
+  constructor
+  intro x hx
+  obtain ⟨A, hA, hAfin, hxA⟩ :=
+    Subalgebra.exists_finiteType_isHopfSubalgebra_of_finite_of_commutative
+      (K := K) (H := H) (Set.finite_singleton x)
+  let : HopfAlgebra K A := A.hopfAlgebra hA
+  let : Algebra.FiniteType K A := hAfin
+  let : Algebra.Smooth K A := smooth K A
+  let : IsReduced A := Algebra.Smooth.isReduced_of_isDomain K A
+  let a : A := ⟨x, hxA (by simp)⟩
+  have ha : IsNilpotent a :=
+    (IsNilpotent.map_iff (f := A.val) (r := a) Subtype.val_injective).mp hx
+  exact congrArg (fun y : A => (y : H)) ha.eq_zero
 
 end HopfAlgebra
