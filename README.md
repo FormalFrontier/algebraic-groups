@@ -5,6 +5,10 @@ coordinate algebras, and coalgebras. The library builds on Mathlib and separatel
 maintained project libraries; it does not claim to formalize an entire source.
 
 ## Headline results
+- **Cartier's theorem.** A finite-type commutative Hopf algebra over a characteristic-zero
+  field is smooth and reduced for its given coefficient algebra structure, with independent
+  scalar and carrier universes. See [Hopf algebra smoothness](AlgebraicGroups/Algebra/HopfAlgebra/Smooth.lean).
+
 
 - **Linear embeddings of affine algebraic groups.** Every affine group scheme
   locally of finite type over a field `K` admits a group-scheme morphism

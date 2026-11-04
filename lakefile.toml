@@ -252,4 +252,4 @@ globs = ["AlgebraicGroups.GroupObject.CartesianReflection"]
 [[require]]
 name = "smooth-regularity"
 git = "https://github.com/FormalFrontier/smooth-regularity.git"
-rev = "566a7c8a5ffec36701ff0206d42ee6fded6a7be3"
+rev = "8e054f1f528a37cf793e68d433db9dd568bead18"

@@ -2,7 +2,7 @@
  "packagesDir": ".lake/packages",
  "packages":
  [
-  {"url":"https://github.com/FormalFrontier/smooth-regularity.git","type":"git","subDir":null,"scope":"","rev":"566a7c8a5ffec36701ff0206d42ee6fded6a7be3","name":"«smooth-regularity»","manifestFile":"lake-manifest.json","inputRev":"566a7c8a5ffec36701ff0206d42ee6fded6a7be3","inherited":false,"configFile":"lakefile.toml"},{"url": "https://github.com/FormalFrontier/homological-algebra.git",
+  {"url":"https://github.com/FormalFrontier/smooth-regularity.git","type":"git","subDir":null,"scope":"","rev":"8e054f1f528a37cf793e68d433db9dd568bead18","name":"«smooth-regularity»","manifestFile":"lake-manifest.json","inputRev":"8e054f1f528a37cf793e68d433db9dd568bead18","inherited":false,"configFile":"lakefile.toml"},{"url": "https://github.com/FormalFrontier/homological-algebra.git",
    "type": "git",
    "subDir": null,
    "scope": "",
