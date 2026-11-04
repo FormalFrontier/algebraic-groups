@@ -6,6 +6,7 @@ module
 
 public import AlgebraicGroups.Algebra.Frobenius.Subalgebra
 public import AlgebraicGroups.Algebra.Frobenius.TensorProduct
+public import AlgebraicGroups.Algebra.PointFiber
 
 public import AlgebraicGroups.Algebra.HopfAlgebra.Reduced
 
