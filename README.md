@@ -24,6 +24,11 @@ maintained project libraries; it does not claim to formalize an entire source.
   target `H`, dominance or injectivity of the compatible coordinate map
   `A → B` gives `Module.FaithfullyFlat A B` for its given algebra structure.
   The coordinate presentations may have independent universes.
+  For finite-type commutative Hopf algebras over any field, an injective
+  morphism `f : A →ₐc[K] B` with reduced source coordinate algebra `A` satisfies
+  `f.toAlgHom.toRingHom.FaithfullyFlat`, by
+  [`BialgHom.faithfullyFlat_of_injective_of_isReduced`](AlgebraicGroups/Algebra/HopfAlgebra/FaithfullyFlat/Reduced.lean).
+  This uses the given Hopf structures, in independent scalar and carrier universes.
   See [surjectivity over algebraically closed fields](AlgebraicGroups/GroupScheme/Surjective.lean),
   [schematic dominance over fields](AlgebraicGroups/GroupScheme/SurjectiveBaseChange.lean), and
   [faithful flatness of coordinates](AlgebraicGroups/GroupScheme/FaithfullyFlatCoordinates.lean).
