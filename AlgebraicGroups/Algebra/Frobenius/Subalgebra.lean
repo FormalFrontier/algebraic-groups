@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+import AlgebraicGroups.Algebra.Frobenius.TensorProduct
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
@@ -162,16 +163,17 @@ theorem Algebra.TensorProduct.range_map_adjoin_pow_char
           simpa only [map_add] using D.add_mem hx hy
     · apply Algebra.adjoin_le
       rintro _ ⟨z, rfl⟩
-      induction z using TensorProduct.inductionOn with
-      | tmul l a =>
-          change (l ⊗ₜ[R] a) ^ (p ^ n) ∈ g.range
-          rw [Algebra.TensorProduct.tmul_pow]
-          exact Subalgebra.tmul_mem_baseChange (C := C)
-            (Algebra.subset_adjoin ⟨a, rfl⟩) (l ^ (p ^ n))
-      | add x y hx hy =>
-          change (x + y) ^ (p ^ n) ∈ g.range
-          rw [add_pow_char_pow x y p n]
-          exact g.range.add_mem hx hy
+      let C_L : Subalgebra R L :=
+        Algebra.adjoin R (Set.range fun l : L => l ^ (p ^ n))
+      rcases (AlgHom.mem_range _).mp
+          (Algebra.TensorProduct.pow_mem_range_map_adjoin_pow_of_expChar
+            (R := R) p n z) with ⟨x, hx⟩
+      apply (AlgHom.mem_range g).2
+      refine ⟨Algebra.TensorProduct.map C_L.val (AlgHom.id R C) x, ?_⟩
+      change ((Algebra.TensorProduct.map (AlgHom.id R L) C.val).comp
+        (Algebra.TensorProduct.map C_L.val (AlgHom.id R C))) x = _
+      rw [← Algebra.TensorProduct.map_comp, AlgHom.id_comp, AlgHom.comp_id]
+      exact hx
 
 /-- Separate field-flatness specialization for the very same inclusion map. -/
 private theorem Subalgebra.tensorProduct_val_injective
