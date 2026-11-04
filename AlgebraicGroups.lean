@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.Frobenius.HopfSubalgebra
 public import AlgebraicGroups.Algebra.Frobenius.Subalgebra
 public import AlgebraicGroups.Algebra.Frobenius.TensorProduct
 public import AlgebraicGroups.Algebra.PointFiber

@@ -240,6 +240,7 @@ roots = [
   "AlgebraicGroupsTest.RightComoduleProduct",
   "AlgebraicGroupsTest.RightComoduleProductExamples",
   "AlgebraicGroupsTest.RightComoduleDual",
+  "AlgebraicGroupsTest.FrobeniusHopfSubalgebra",
 ]
 
 
