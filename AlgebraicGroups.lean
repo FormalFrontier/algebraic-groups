@@ -175,6 +175,9 @@ public import AlgebraicGroups.GroupScheme.ClosedPoints
 public import AlgebraicGroups.GroupScheme.ClosedPointCommutators
 public import AlgebraicGroups.GroupScheme.ClosedPointSubgroup
 public import AlgebraicGroups.GroupScheme.ClosedPointHom
+public import AlgebraicGroups.GroupScheme.Surjective
+public import AlgebraicGroups.GroupScheme.SurjectiveBaseChange
+public import AlgebraicGroups.GroupScheme.FaithfullyFlatCoordinates
 public import AlgebraicGroups.GroupScheme.ClosedPointKernel
 public import AlgebraicGroups.GroupScheme.Commutative
 public import AlgebraicGroups.GroupScheme.ComponentGroup
