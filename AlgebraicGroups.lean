@@ -4,6 +4,8 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.HopfAlgebra.Reduced
+
 public import AlgebraicGroups.Algebra.HopfAlgebra.Adjoin
 public import AlgebraicGroups.Algebra.HopfAlgebra.Equiv
 public import AlgebraicGroups.Algebra.HopfAlgebra.Frobenius
