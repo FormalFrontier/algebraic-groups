@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import AlgebraicGroups.Algebra.HopfAlgebra.FaithfullyFlat.Finite
 public import AlgebraicGroups.Algebra.HopfAlgebra.FaithfullyFlat.FiniteType
 
 /-!
