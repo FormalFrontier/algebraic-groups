@@ -146,6 +146,7 @@ roots = [
   "AlgebraicGroupsTest.Algebra.UnitriangularHopfBaseChange",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Hom",
   "AlgebraicGroupsTest.Algebra.HopfAlgebra.Ideal",
+  "AlgebraicGroupsTest.Algebra.HopfAlgebra.IdealMap",
   "AlgebraicGroupsTest.Algebra.UnitriangularStagePolynomial",
   "AlgebraicGroupsTest.GroupScheme.UnitriangularBaseChange",
   "AlgebraicGroupsTest.GroupScheme.UnitriangularBaseChangeCoherence",

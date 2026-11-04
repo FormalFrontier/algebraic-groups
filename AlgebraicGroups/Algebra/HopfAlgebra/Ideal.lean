@@ -13,7 +13,7 @@ public import AlgebraicGroups.Algebra.HopfAlgebra.Hom
 public import Mathlib.RingTheory.HopfAlgebra.Quotient
 
 /-!
-# Hopf ideals and the surjective ideal correspondence
+# Hopf ideals, ideal extension and the surjective ideal correspondence
 
 For full Hopf algebras and a bundled bialgebra homomorphism, inverse images
 preserve `Ideal.IsHopfIdeal` whenever the scalar-restricted ordinary ideal
@@ -24,7 +24,14 @@ bialgebra homomorphism over a commutative ring, the ordinary ideal
 correspondence restricts to the Hopf-ideal predicates: target Hopf ideals
 correspond to source Hopf ideals containing the ordinary ring kernel.
 
-The source and target rings need not be commutative. The kernel theorems allow
+Ordinary ideal extension along any bialgebra homomorphism preserves coideality.
+For full Hopf algebras it preserves the Hopf-ideal property when the extended
+ideal is two-sided, in particular when the target is commutative, without a
+surjectivity assumption. The counit kernel supplies a
+canonical Hopf ideal over any commutative coefficient ring.
+
+In the surjective correspondence, the source and target rings need not be
+commutative. The kernel theorems allow
 a semiring target. The property `Ideal.IsHopfIdeal` consists of restricted
 coideality and antipode stability; two-sidedness is not a field of this predicate. A quotient
 ring or quotient Hopf algebra requires the separate two-sidedness condition.
@@ -42,6 +49,8 @@ uses ring kernels on the tensor square, not scalar-linearity of Frobenius.
 * Mathlib, `Mathlib.RingTheory.HopfAlgebra.Quotient`, for `Ideal.IsHopfIdeal`.
 * `AlgebraicGroups.Algebra.HopfAlgebra.Hom`, for compatibility of bialgebra
   homomorphisms with antipodes.
+* Mathlib, `Mathlib.RingTheory.HopfAlgebra.Convolution`, for the antipode
+  anti-multiplicativity used in ideal extension.
 * `AlgebraicGroups.Algebra.Coalgebra.Quotient`, for field kernel coideality,
   and Mathlib, `Mathlib.RingTheory.Coalgebra.Quotient`, for the linear
   coalgebra quotient used for inverse images.
@@ -145,6 +154,142 @@ theorem Ideal.restrictScalars_map_of_surjective
   rw [Ideal.mem_map_iff_of_surjective f.toRingHom hf, Submodule.mem_map]
   rfl
 
+open scoped TensorProduct
+
+private theorem tensor_subtype_ranges_le
+    {K : Type u} {M : Type v} [CommSemiring K] [AddCommMonoid M] [Module K M]
+    (I : Submodule K M) (N : Submodule K (M ⊗[K] M))
+    (hl : ∀ a ∈ I, ∀ b : M, a ⊗ₜ[K] b ∈ N)
+    (hr : ∀ a ∈ I, ∀ b : M, b ⊗ₜ[K] a ∈ N) :
+    LinearMap.range (LinearMap.lTensor M I.subtype) ⊔
+      LinearMap.range (LinearMap.rTensor M I.subtype) ≤ N := by
+  refine sup_le ?_ ?_
+  · rw [LinearMap.lTensor_def, TensorProduct.range_map_eq_span_tmul]
+    refine Submodule.span_le.2 ?_
+    rintro _ ⟨a, b, rfl⟩
+    exact hr b b.property a
+  · rw [LinearMap.rTensor_def, TensorProduct.range_map_eq_span_tmul]
+    refine Submodule.span_le.2 ?_
+    rintro _ ⟨a, b, rfl⟩
+    exact hl a a.property b
+
+private theorem tensor_subtype_ranges_mul_mem
+    {R : Type u} {B : Type v} [CommRing R] [Ring B] [Algebra R B]
+    (J : Ideal B) {x y : B ⊗[R] B}
+    (hy : y ∈ LinearMap.range (LinearMap.lTensor B (J.restrictScalars R).subtype) ⊔
+      LinearMap.range (LinearMap.rTensor B (J.restrictScalars R).subtype)) :
+    x * y ∈ LinearMap.range (LinearMap.lTensor B (J.restrictScalars R).subtype) ⊔
+      LinearMap.range (LinearMap.rTensor B (J.restrictScalars R).subtype) := by
+  let N := LinearMap.range (LinearMap.lTensor B (J.restrictScalars R).subtype) ⊔
+    LinearMap.range (LinearMap.rTensor B (J.restrictScalars R).subtype)
+  change x * y ∈ N
+  induction x using TensorProduct.inductionOn with
+  | tmul b c =>
+      let L := TensorProduct.map (LinearMap.mulLeft R b) (LinearMap.mulLeft R c)
+      have hL : N ≤ N.comap L := by
+        apply tensor_subtype_ranges_le
+        · intro a ha d
+          change (b * a) ⊗ₜ[R] (c * d) ∈ N
+          apply (show LinearMap.range
+            (LinearMap.rTensor B (J.restrictScalars R).subtype) ≤ N from le_sup_right)
+          exact ⟨(⟨b * a, J.mul_mem_left b ha⟩ : J.restrictScalars R) ⊗ₜ[R]
+            (c * d), rfl⟩
+        · intro a ha d
+          change (b * d) ⊗ₜ[R] (c * a) ∈ N
+          apply (show LinearMap.range
+            (LinearMap.lTensor B (J.restrictScalars R).subtype) ≤ N from le_sup_left)
+          exact ⟨(b * d) ⊗ₜ[R]
+            (⟨c * a, J.mul_mem_left c ha⟩ : J.restrictScalars R), rfl⟩
+      have hLy : L y = (b ⊗ₜ[R] c) * y := by
+        clear hy
+        induction y using TensorProduct.inductionOn with
+        | tmul a d => simp [L, Algebra.TensorProduct.tmul_mul_tmul]
+        | add y z hy hz => simp [map_add, mul_add, hy, hz]
+      rw [← hLy]
+      exact hL hy
+  | add x z hx hz => simpa only [add_mul] using N.add_mem hx hz
+
+/-- Ordinary ideal extension along a bialgebra homomorphism preserves coideality
+of the scalar-restricted ideal. Neither ring need be commutative. -/
+theorem Ideal.isCoideal_map
+    {R : Type u} {A : Type v} {B : Type w}
+    [CommRing R] [Ring A] [Ring B] [Bialgebra R A] [Bialgebra R B]
+    (I : Ideal A) (hI : (I.restrictScalars R).IsCoideal) (f : A →ₐc[R] B) :
+    ((I.map f.toAlgHom.toRingHom).restrictScalars R).IsCoideal := by
+  let J := I.map f.toAlgHom.toRingHom
+  let N := LinearMap.range (LinearMap.lTensor B (J.restrictScalars R).subtype) ⊔
+    LinearMap.range (LinearMap.rTensor B (J.restrictScalars R).subtype)
+  let H : Ideal B :=
+    { carrier := {b | Coalgebra.comul (R := R) b ∈ N}
+      zero_mem' := by simp [N]
+      add_mem' := by
+        intro a b ha hb
+        change Coalgebra.comul (R := R) (a + b) ∈ N
+        simpa only [map_add] using N.add_mem ha hb
+      smul_mem' := by
+        intro b a ha
+        change (Bialgebra.comulAlgHom R B) (b * a) ∈ N
+        rw [map_mul]
+        exact tensor_subtype_ranges_mul_mem J ha }
+  have hN :
+      LinearMap.range (LinearMap.lTensor A (I.restrictScalars R).subtype) ⊔
+        LinearMap.range (LinearMap.rTensor A (I.restrictScalars R).subtype) ≤
+      N.comap (TensorProduct.map f.toLinearMap f.toLinearMap) := by
+    apply tensor_subtype_ranges_le
+    · intro a ha b
+      change f a ⊗ₜ[R] f b ∈ N
+      apply (show LinearMap.range
+        (LinearMap.rTensor B (J.restrictScalars R).subtype) ≤ N from le_sup_right)
+      exact ⟨(⟨f a, Ideal.mem_map_of_mem _ ha⟩ : J.restrictScalars R) ⊗ₜ[R]
+        f b, rfl⟩
+    · intro a ha b
+      change f b ⊗ₜ[R] f a ∈ N
+      apply (show LinearMap.range
+        (LinearMap.lTensor B (J.restrictScalars R).subtype) ≤ N from le_sup_left)
+      exact ⟨f b ⊗ₜ[R]
+        (⟨f a, Ideal.mem_map_of_mem _ ha⟩ : J.restrictScalars R), rfl⟩
+  have hJΔ : J ≤ H := by
+    refine Ideal.span_le.2 ?_
+    rintro _ ⟨a, ha, rfl⟩
+    change Coalgebra.comul (R := R) (f a) ∈ N
+    rw [← CoalgHomClass.map_comp_comul_apply f a]
+    exact hN (((Submodule.isCoideal_iff_comul_mem (I.restrictScalars R)).1 hI).2 a ha)
+  have hJε : J ≤ RingHom.ker (Bialgebra.counitAlgHom R B).toRingHom := by
+    refine Ideal.span_le.2 ?_
+    rintro _ ⟨a, ha, rfl⟩
+    change Coalgebra.counit (R := R) (f a) = 0
+    rw [CoalgHomClass.counit_comp_apply f a]
+    exact hI.counit_eq_zero ha
+  apply (Submodule.isCoideal_iff_comul_mem (J.restrictScalars R)).2
+  exact ⟨fun _ ha => hJε ha, fun _ ha => hJΔ ha⟩
+
+/-- Ordinary ideal extension along a bialgebra homomorphism preserves the
+Hopf-ideal property when the extended ideal is two-sided. The ambient rings
+need not be commutative. For a commutative target, two-sidedness is automatic;
+no surjectivity assumption is needed. -/
+theorem Ideal.IsHopfIdeal.map
+    {R : Type u} {A : Type v} {B : Type w}
+    [CommRing R] [Ring A] [Ring B] [HopfAlgebra R A] [HopfAlgebra R B]
+    {I : Ideal A} (hI : Ideal.IsHopfIdeal R I) (f : A →ₐc[R] B)
+    [(I.map f.toAlgHom.toRingHom).IsTwoSided] :
+    Ideal.IsHopfIdeal R (I.map f.toAlgHom.toRingHom) := by
+  let J := I.map f.toAlgHom.toRingHom
+  refine { toIsCoideal := I.isCoideal_map hI.toIsCoideal f, antipode_mem := ?_ }
+  intro y hy
+  change y ∈ Submodule.span B (f.toAlgHom.toRingHom '' (I : Set A)) at hy
+  induction hy using Submodule.span_induction with
+  | mem y hy =>
+      obtain ⟨a, ha, rfl⟩ := hy
+      change HopfAlgebra.antipode R (f a) ∈ J
+      rw [← f.map_antipode]
+      exact Ideal.mem_map_of_mem _ (hI.antipode_mem ha)
+  | zero => simp
+  | add a b ha hb hSa hSb => simpa only [map_add] using J.add_mem hSa hSb
+  | smul b a ha hSa =>
+      change HopfAlgebra.antipode R (b * a) ∈ J
+      rw [HopfAlgebra.antipode_mul_antidistrib]
+      exact J.mul_mem_right _ hSa
+
 /-- The ordinary ideal image under a surjective bialgebra homomorphism between
 full Hopf algebras has the Hopf-ideal property. -/
 theorem Ideal.IsHopfIdeal.map_of_surjective
@@ -153,8 +298,7 @@ theorem Ideal.IsHopfIdeal.map_of_surjective
     {I : Ideal A} (hI : Ideal.IsHopfIdeal R I) (f : A →ₐc[R] B)
     (hf : Function.Surjective f) : Ideal.IsHopfIdeal R (I.map f.toAlgHom.toRingHom) := by
   refine { toIsCoideal := ?_, antipode_mem := ?_ }
-  · rw [Ideal.restrictScalars_map_of_surjective f.toAlgHom hf]
-    exact hI.toIsCoideal.map f.toCoalgHom
+  · exact I.isCoideal_map hI.toIsCoideal f
   · intro y hy
     obtain ⟨x, hx, rfl⟩ := (Ideal.mem_map_iff_of_surjective f.toAlgHom.toRingHom hf).mp hy
     change HopfAlgebra.antipode R (f x) ∈ I.map f.toAlgHom.toRingHom
@@ -222,8 +366,6 @@ theorem Ideal.hopfIdealOrderIsoOfSurjective_symm_apply_val (f : A →ₐc[R] B)
 
 end SurjectiveCorrespondence
 
-open scoped TensorProduct
-
 private theorem expChar_tensor_square_of_bialgebra
     {K : Type u} {A : Type v} [CommRing K] [CommRing A]
     [Bialgebra K A] {p : ℕ} [ExpChar K p] : ExpChar (A ⊗[K] A) p := by
@@ -234,23 +376,6 @@ private theorem expChar_tensor_square_of_bialgebra
   have hE : Function.LeftInverse E (algebraMap K (A ⊗[K] A)) :=
     fun c => E.commutes c
   exact expChar_of_injective_algebraMap hE.injective p
-
-private theorem tensor_subtype_ranges_le
-    {K : Type u} {M : Type v} [CommSemiring K] [AddCommMonoid M] [Module K M]
-    (I : Submodule K M) (N : Submodule K (M ⊗[K] M))
-    (hl : ∀ a ∈ I, ∀ b : M, a ⊗ₜ[K] b ∈ N)
-    (hr : ∀ a ∈ I, ∀ b : M, b ⊗ₜ[K] a ∈ N) :
-    LinearMap.range (LinearMap.lTensor M I.subtype) ⊔
-      LinearMap.range (LinearMap.rTensor M I.subtype) ≤ N := by
-  refine sup_le ?_ ?_
-  · rw [LinearMap.lTensor_def, TensorProduct.range_map_eq_span_tmul]
-    refine Submodule.span_le.2 ?_
-    rintro _ ⟨a, b, rfl⟩
-    exact hr b b.property a
-  · rw [LinearMap.rTensor_def, TensorProduct.range_map_eq_span_tmul]
-    refine Submodule.span_le.2 ?_
-    rintro _ ⟨a, b, rfl⟩
-    exact hl a a.property b
 
 /-- The ideal generated by the characteristic powers of all members of an ordinary
 ideal whose scalar restriction is a coideal again has coideal scalar restriction. -/
@@ -342,7 +467,8 @@ theorem Ideal.IsHopfIdeal.map_pow_expChar_pow
   intro a ha
   exact hJS ha
 
-private theorem counit_ker_isCoideal
+/-- The ordinary counit kernel of a bialgebra is a coideal over its coefficient ring. -/
+theorem Bialgebra.counit_ker_isCoideal
     {K : Type u} {A : Type v} [CommRing K] [Ring A] [Bialgebra K A] :
     ((RingHom.ker (Bialgebra.counitAlgHom K A).toRingHom).restrictScalars K).IsCoideal := by
   have hker :
@@ -353,6 +479,16 @@ private theorem counit_ker_isCoideal
   rw [← hker]
   exact CoalgHomClass.ker_isCoideal_of_surjective (Coalgebra.counitCoalgHom K A)
     (Bialgebra.counit_surjective (R := K) (A := A))
+
+/-- The ordinary counit kernel of a full Hopf algebra is a Hopf ideal. -/
+theorem Bialgebra.counit_ker_isHopfIdeal
+    {K : Type u} {A : Type v} [CommRing K] [Ring A] [HopfAlgebra K A] :
+    Ideal.IsHopfIdeal K (RingHom.ker (Bialgebra.counitAlgHom K A).toRingHom) := by
+  refine { toIsCoideal := Bialgebra.counit_ker_isCoideal, antipode_mem := ?_ }
+  intro a ha
+  change Coalgebra.counit (R := K) (HopfAlgebra.antipode K a) = 0
+  rw [HopfAlgebra.counit_antipode]
+  exact ha
 
 noncomputable section
 
@@ -366,7 +502,7 @@ example
         (powMonoidHom (α := A) (p ^ r)))) := by
   let : (((RingHom.ker (Bialgebra.counitAlgHom K A).toRingHom).map
       (powMonoidHom (α := A) (p ^ r))).restrictScalars K).IsCoideal :=
-    Ideal.isCoideal_map_pow_expChar_pow _ (counit_ker_isCoideal (K := K) (A := A)) r
+    Ideal.isCoideal_map_pow_expChar_pow _ (Bialgebra.counit_ker_isCoideal (K := K) (A := A)) r
   infer_instance
 
 /-- The same ordinary ideal quotient by the characteristic-power image of the canonical
@@ -377,14 +513,7 @@ example
     HopfAlgebra K
       (A ⧸ ((RingHom.ker (Bialgebra.counitAlgHom K A).toRingHom).map
         (powMonoidHom (α := A) (p ^ r)))) := by
-  have hI : Ideal.IsHopfIdeal K (RingHom.ker (Bialgebra.counitAlgHom K A).toRingHom) := by
-    refine
-      { toIsCoideal := counit_ker_isCoideal
-        antipode_mem := ?_ }
-    intro a ha
-    change Coalgebra.counit (R := K) (HopfAlgebra.antipode K a) = 0
-    rw [HopfAlgebra.counit_antipode]
-    exact ha
+  have hI := Bialgebra.counit_ker_isHopfIdeal (K := K) (A := A)
   let : Ideal.IsHopfIdeal K
       ((RingHom.ker (Bialgebra.counitAlgHom K A).toRingHom).map
         (powMonoidHom (α := A) (p ^ r))) :=
