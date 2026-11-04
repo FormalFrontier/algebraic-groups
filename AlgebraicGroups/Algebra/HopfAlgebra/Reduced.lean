@@ -10,6 +10,9 @@ public import AlgebraicGroups.Scheme.GeometricallyReduced
 public import Mathlib.Algebra.Field.ULift
 public import Mathlib.AlgebraicGeometry.Group.Affine
 public import Mathlib.AlgebraicGeometry.Group.Smooth
+public import Mathlib.RingTheory.Etale.Descent
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 public import Mathlib.RingTheory.RingHom.Smooth
 
 /-!
@@ -174,5 +177,29 @@ theorem smooth_quotient_nilradical
   apply RingHom.smooth_algebraMap.mp
   rw [← hmap]
   exact (hD.comp hl).comp hQ
+
+/-- A reduced finite-type commutative Hopf algebra over a perfect field is smooth
+for its original algebra structure. -/
+theorem smooth_of_isReduced
+    (K : Type u) (A : Type v) [Field K] [PerfectField K] [CommRing A]
+    [HopfAlgebra K A] [Algebra.FiniteType K A] [IsReduced A] :
+    Algebra.Smooth K A := by
+  let _ : Algebra.Smooth K (A ⧸ nilradical A) := smooth_quotient_nilradical K A
+  let e : (A ⧸ nilradical A) ≃ₐ[K] (A ⧸ (⊥ : Ideal A)) :=
+    Ideal.quotientEquivAlgOfEq K (_root_.nilradical_eq_zero A)
+  exact Algebra.Smooth.of_equiv (e.trans (AlgEquiv.quotientBot K A))
+
+/-- A geometrically reduced finite-type commutative Hopf algebra over a field is smooth
+for its original algebra structure. -/
+theorem smooth_of_isGeometricallyReduced
+    (K : Type u) (A : Type v) [Field K] [CommRing A] [HopfAlgebra K A]
+    [Algebra.FiniteType K A] [Algebra.IsGeometricallyReduced K A] :
+    Algebra.Smooth K A := by
+  let Ω := AlgebraicClosure K
+  let _ : IsReduced (TensorProduct K Ω A) :=
+    (Algebra.isGeometricallyReduced_field_iff K A).mp inferInstance
+  let _ : Algebra.Smooth Ω (TensorProduct K Ω A) :=
+    smooth_of_isReduced Ω (TensorProduct K Ω A)
+  exact Algebra.Smooth.of_smooth_tensorProduct_of_faithfullyFlat Ω
 
 end HopfAlgebra
