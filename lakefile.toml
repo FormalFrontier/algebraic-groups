@@ -53,6 +53,7 @@ rev = "031aeecd871f902b936a2d31eba766327eb4f728"
 name = "AlgebraicGroups"
 roots = [
   "AlgebraicGroups",
+  "AlgebraicGroups.Algebra.Bialgebra.Transport",
   "AlgebraicGroups.Algebra.Coalgebra.IdempotentIdealTensor",
   "AlgebraicGroups.Algebra.Coalgebra.Subcoalgebra.Finsupp",
   "AlgebraicGroups.Examples.UnitStalkDimension",
