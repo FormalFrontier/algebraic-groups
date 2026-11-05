@@ -256,6 +256,16 @@ maintained project libraries; it does not claim to formalize an entire source.
   With full `Coalgebra` laws, the annihilator defines a canonical subalgebra of
   `WithConv (Module.Dual R C)`, with membership and underlying-submodule API.
   [Module](AlgebraicGroups/Algebra/Coalgebra/DualAnnihilator.lean).
+  For `p : Submodule R C` whose original quotient module `C ⧸ p` is projective,
+  `p.IsCoideal` holds if and only if its full-dual annihilator contains the
+  original counit and is closed under the original dual convolution, with the
+  same `CoalgebraStruct` hypotheses and independent universes. No projectivity
+  of `C`, finiteness, purity or flatness hypotheses, quotient coalgebra, or
+  coalgebra-morphism assumptions are added.
+  [`Submodule.isCoideal_iff_counit_mem_dualAnnihilator_and_convMul_mem`](AlgebraicGroups/Algebra/Coalgebra/DualAnnihilatorConverse.lean).
+  The converse uses Mathlib's coalgebra quotient theory
+  (`Mathlib.RingTheory.Coalgebra.Quotient`) and rank-one tensor separation from
+  `ProjectiveModules.Dual.TensorProduct`.
 - **Coideals, cores and the complete lattice.** Over a commutative ring, an
   additive commutative group with a module structure and `CoalgebraStruct`,
   coideals bundle `Submodule.IsCoideal` and are ordered by inclusion. The greatest

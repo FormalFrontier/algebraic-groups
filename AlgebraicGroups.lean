@@ -40,6 +40,7 @@ public import AlgebraicGroups.Algebra.Coalgebra.Coideal
 public import AlgebraicGroups.Algebra.Coalgebra.ComoduleCoefficients
 public import AlgebraicGroups.Algebra.Coalgebra.CounitRange
 public import AlgebraicGroups.Algebra.Coalgebra.DualAnnihilator
+public import AlgebraicGroups.Algebra.Coalgebra.DualAnnihilatorConverse
 public import AlgebraicGroups.Algebra.Coalgebra.Equiv
 public import AlgebraicGroups.Algebra.Coalgebra.Evaluation
 public import AlgebraicGroups.Algebra.Coalgebra.Evaluation.Convolution
