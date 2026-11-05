@@ -72,6 +72,7 @@ name = "AlgebraicGroupsTest"
 # Regression tests exercise imported mathematical APIs; private-only test modules are intentional.
 leanOptions = { weak.linter.privateModule = false }
 roots = [
+  "AlgebraicGroupsTest.FaithfullyFlatRangeTyping",
   "AlgebraicGroupsTest.GroupObject.CartesianReflection",
   "AlgebraicGroupsTest.Additive",
   "AlgebraicGroupsTest.AdditivePowerQuotient",

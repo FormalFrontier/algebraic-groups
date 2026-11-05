@@ -4,6 +4,7 @@ Authors: Formal Frontier Agents
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.RingTheory.Finiteness.Descent
@@ -25,6 +26,11 @@ family of idempotents.
 It also proves descent of finite *module presentation* by descending a finite
 free presentation and its kernel. This does not assert finite presentation of
 the algebra itself, nor does it assume a field or a nonzero base ring.
+
+It also characterizes faithful flatness of a ring map by injectivity together
+with faithful flatness of the inclusion of its range.
+For algebra maps, the scalar base may be a commutative semiring: the range
+is equipped with its inherited subring structure.
 
 ## References
 
@@ -125,7 +131,7 @@ lemma Module.FinitePresentation.of_finitePresentation_tensorProduct_of_faithfull
       (LinearMap.lTensor_surjective S hf)
   exact Module.Finite.of_finite_tensorProduct_of_faithfullyFlat S
 
-universe uR uS uT
+universe uR uS uT uA uB
 
 namespace RingHom.FaithfullyFlat
 
@@ -161,4 +167,49 @@ lemma comp_iff_of_bijective_right {f : S →+* T} {g : R →+* S}
 
 end
 
+section Range
+
+variable {A : Type uA} {B : Type uB} [CommRing A] [CommRing B]
+
+/-- A ring map is faithfully flat if and only if it is injective and the
+inclusion of its range is faithfully flat. -/
+theorem iff_injective_and_range (f : A →+* B) :
+    f.FaithfullyFlat ↔
+      (Function.Injective f ∧ f.range.subtype.FaithfullyFlat) := by
+  have h (hinj : Function.Injective f) :
+      f.FaithfullyFlat ↔ f.range.subtype.FaithfullyFlat :=
+    comp_iff_of_bijective_right (f := f.range.subtype) (g := f.rangeRestrict)
+      ⟨fun _ _ hxy ↦ hinj (congrArg Subtype.val hxy), f.rangeRestrict_surjective⟩
+  exact ⟨fun hf ↦ ⟨hf.injective, (h hf.injective).mp hf⟩,
+    fun ⟨hinj, hrange⟩ ↦ (h hinj).mpr hrange⟩
+
+end Range
+
 end RingHom.FaithfullyFlat
+
+namespace AlgHom
+
+variable {R : Type uR} {A : Type uA} {B : Type uB}
+variable [CommSemiring R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+
+/-- The subalgebra range inclusion is the canonical subring inclusion on the
+same range subtype. -/
+theorem range_val_toRingHom_eq_subtype (f : A →ₐ[R] B) :
+    (show f.toRingHom.range →+* B from f.range.val.toRingHom) =
+      f.toRingHom.range.subtype := rfl
+
+/-- An algebra homomorphism is faithfully flat if and only if it is injective
+and its range inclusion is faithfully flat.
+
+The subalgebra range is viewed with the canonical ring structure of the range
+of the underlying ring homomorphism. The carrier, inherited semiring structure,
+and scalar action agree with those of the subalgebra range. This supplies the
+ring structure even when the scalar base is only a commutative semiring. -/
+theorem faithfullyFlat_iff_injective_and_range_val (f : A →ₐ[R] B) :
+    f.toRingHom.FaithfullyFlat ↔
+      (Function.Injective f ∧
+        (show f.toRingHom.range →+* B from f.range.val.toRingHom).FaithfullyFlat) := by
+  rw [range_val_toRingHom_eq_subtype f]
+  exact RingHom.FaithfullyFlat.iff_injective_and_range f.toRingHom
+
+end AlgHom
