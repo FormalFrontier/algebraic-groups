@@ -25,7 +25,7 @@ inclusion preserving coalgebra maps supplied separately on the ambient algebra.
 
 open scoped TensorProduct
 
-universe u v w
+universe u v w x
 
 namespace AlgEquiv
 
@@ -95,6 +95,40 @@ theorem AlgEquiv.bialgebra_refl {R : Type u} {A : Type v}
   cases b
   simp [AlgEquiv.bialgebra, Bialgebra.mk', LinearEquiv.coalgebra,
     LinearEquiv.coalgebraStruct]
+
+/-- Pullback along a composite algebra equivalence agrees with successive pullback. -/
+theorem AlgEquiv.bialgebra_trans {R : Type u} {A : Type v} {B : Type w} {C : Type x}
+    [CommSemiring R] [Semiring A] [Semiring B] [Semiring C]
+    [Algebra R A] [Algebra R B] [Bialgebra R C]
+    (e : A ≃ₐ[R] B) (f : B ≃ₐ[R] C) :
+    (e.trans f).bialgebra R =
+      @AlgEquiv.bialgebra R A B _ _ _ _ (f.bialgebra R) e := by
+  have ext_bialgebra (b₁ b₂ : Bialgebra R A)
+      (hA : b₁.toAlgebra = b₂.toAlgebra)
+      (hΔ : HEq b₁.comul b₂.comul) (hε : HEq b₁.counit b₂.counit) : b₁ = b₂ := by
+    cases b₁ with
+    | @mk a₁ c₁ _ _ _ _ =>
+      cases b₂ with
+      | @mk a₂ c₂ _ _ _ _ =>
+        cases hA
+        cases c₁ with
+        | @mk s₁ _ _ _ =>
+          cases c₂ with
+          | @mk s₂ _ _ _ =>
+            cases s₁
+            cases s₂
+            cases hΔ
+            cases hε
+            rfl
+  refine ext_bialgebra _ _ ?_ ?_ ?_
+  · rfl
+  · apply heq_of_eq
+    ext a
+    simp [AlgEquiv.bialgebra_comul_apply, TensorProduct.map_map]
+    rfl
+  · apply heq_of_eq
+    ext a
+    simp [AlgEquiv.bialgebra_counit_apply]
 
 namespace AlgHom
 
