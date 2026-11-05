@@ -124,3 +124,41 @@ lemma Module.FinitePresentation.of_finitePresentation_tensorProduct_of_faithfull
       (TensorProduct.AlgebraTensorModule.lTensor S S f)
       (LinearMap.lTensor_surjective S hf)
   exact Module.Finite.of_finite_tensorProduct_of_faithfullyFlat S
+
+universe uR uS uT
+
+namespace RingHom.FaithfullyFlat
+
+section
+
+variable {R : Type uR} {S : Type uS} {T : Type uT}
+  [CommRing R] [CommRing S] [CommRing T]
+
+/-- Precomposition by a bijective ring homomorphism preserves and reflects faithful flatness. -/
+lemma comp_iff_of_bijective_right {f : S →+* T} {g : R →+* S}
+    (hg : Function.Bijective g) : (f.comp g).FaithfullyFlat ↔ f.FaithfullyFlat := by
+  rw [iff_flat_and_comap_surjective (f := f.comp g),
+    iff_flat_and_comap_surjective (f := f),
+    RingHom.Flat.comp_iff_of_bijective_right (f := f) (g := g) hg]
+  constructor
+  · rintro ⟨hf, hfg⟩
+    refine ⟨hf, ?_⟩
+    intro p
+    obtain ⟨q, hq⟩ := hfg (PrimeSpectrum.comap g p)
+    refine ⟨q, ?_⟩
+    apply PrimeSpectrum.comap_injective_of_surjective g hg.2
+    simpa only [PrimeSpectrum.comap_comp, Function.comp_apply] using hq
+  · rintro ⟨hf, hf_surj⟩
+    have hg_surj : Function.Surjective (PrimeSpectrum.comap g) :=
+      ((iff_flat_and_comap_surjective (f := g)).mp (of_bijective hg)).2
+    refine ⟨hf, ?_⟩
+    simpa only [PrimeSpectrum.comap_comp] using hg_surj.comp hf_surj
+
+/-- Precomposition by a ring equivalence preserves and reflects faithful flatness. -/
+@[simp] lemma comp_ringEquiv_iff (f : S →+* T) (e : R ≃+* S) :
+    (f.comp (e : R →+* S)).FaithfullyFlat ↔ f.FaithfullyFlat :=
+  comp_iff_of_bijective_right (f := f) (g := e.toRingHom) e.bijective
+
+end
+
+end RingHom.FaithfullyFlat
